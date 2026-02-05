@@ -1,6 +1,10 @@
 dependencies {
     compileOnly(libs.jetbrains.annotations)
 
+    // Math Parser
+    jarJar(implementation(libs.evalEx.get()))
+    additionalRuntimeClasspath(libs.evalEx.get())
+
     // Mixin (& Extras)
     annotationProcessor(variantOf(libs.mixin) { classifier("processor") })
     compileOnly(annotationProcessor(forge.mixinExtras.common.get()))
