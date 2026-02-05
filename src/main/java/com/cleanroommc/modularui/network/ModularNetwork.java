@@ -46,8 +46,8 @@ public abstract class ModularNetwork {
         }
 
         @Override
-        void sendPacket(MUINetwork.INetPacket packet, Player player) {
-            MUINetwork.sendToServer(packet);
+        void sendPacket(NetworkHandler.INetPacket packet, Player player) {
+            NetworkHandler.sendToServer(packet);
         }
 
         @Override
@@ -91,8 +91,8 @@ public abstract class ModularNetwork {
         }
 
         @Override
-        protected void sendPacket(MUINetwork.INetPacket packet, Player player) {
-            MUINetwork.sendToPlayer((ServerPlayer) player, packet);
+        protected void sendPacket(NetworkHandler.INetPacket packet, Player player) {
+            NetworkHandler.sendToPlayer((ServerPlayer) player, packet);
         }
 
         @Override

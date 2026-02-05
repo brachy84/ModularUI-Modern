@@ -22,7 +22,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class MUINetwork {
+public class NetworkHandler {
 
     private static final String PROTOCOL_VERSION = "1.0.0";
     private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(ModularUI.id("network"),

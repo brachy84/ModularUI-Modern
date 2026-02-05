@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.network.packets;
 
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
 import com.cleanroommc.modularui.utils.NetworkUtils;
 
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiStatus.Internal
-public class SyncHandlerPacket implements MUINetwork.INetPacket {
+public class SyncHandlerPacket implements NetworkHandler.INetPacket {
 
     public int networkId;
     public String panel;

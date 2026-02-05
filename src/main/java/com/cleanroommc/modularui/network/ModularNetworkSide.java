@@ -31,7 +31,7 @@ public abstract class ModularNetworkSide {
         this.client = client;
     }
 
-    abstract void sendPacket(MUINetwork.INetPacket packet, Player player);
+    abstract void sendPacket(NetworkHandler.INetPacket packet, Player player);
 
     void activateInternal(int networkId, ModularSyncManager manager) {
         if (activeScreens.containsKey(networkId))

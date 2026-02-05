@@ -5,7 +5,7 @@ import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.api.UIFactory;
 import com.cleanroommc.modularui.api.XeiSettings;
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
 import com.cleanroommc.modularui.network.packets.OpenGuiPacket;
 import com.cleanroommc.modularui.screen.ContainerScreenWrapper;
@@ -98,7 +98,7 @@ public class GuiManager {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         factory.writeGuiData(guiData, buffer);
         int nid = ModularNetwork.SERVER.activate(msm);
-        MUINetwork.sendToPlayer(player, new OpenGuiPacket<>(windowId, nid, factory, buffer));
+        NetworkHandler.sendToPlayer(player, new OpenGuiPacket<>(windowId, nid, factory, buffer));
         // open the menu // this mimics forge behaviour
         player.initMenu(menu);
         player.containerMenu = menu;
@@ -143,7 +143,7 @@ public class GuiManager {
         // server will send packet back to actually open the gui
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         factory.writeGuiData(guiData, buffer);
-        MUINetwork.sendToServer(new OpenGuiPacket<>(0, 0, factory, buffer));
+        NetworkHandler.sendToServer(new OpenGuiPacket<>(0, 0, factory, buffer));
     }
 
     @OnlyIn(Dist.CLIENT)

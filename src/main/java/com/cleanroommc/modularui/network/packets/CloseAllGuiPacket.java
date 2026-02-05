@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.network.packets;
 
 import com.cleanroommc.modularui.api.MCHelper;
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,7 +11,7 @@ import net.minecraftforge.network.NetworkEvent;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class CloseAllGuiPacket implements MUINetwork.INetPacket {
+public class CloseAllGuiPacket implements NetworkHandler.INetPacket {
 
     public CloseAllGuiPacket(FriendlyByteBuf buffer) {}
 

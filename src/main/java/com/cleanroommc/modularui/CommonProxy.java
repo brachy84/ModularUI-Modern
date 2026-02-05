@@ -31,7 +31,7 @@ public class CommonProxy {
         UIFactories.init();
         InventoryTypes.init();
 
-        MUINetwork.init();
+        NetworkHandler.init();
         ModularUIMenuTypes.init(modBus);
         ModularUIItems.init(modBus);
     }

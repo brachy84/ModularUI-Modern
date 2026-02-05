@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.network.packets;
 
 import com.cleanroommc.modularui.api.MCHelper;
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReopenGuiPacket implements MUINetwork.INetPacket {
+public class ReopenGuiPacket implements NetworkHandler.INetPacket {
 
     private int networkId;
 

@@ -3,7 +3,7 @@ package com.cleanroommc.modularui.network.packets;
 import com.cleanroommc.modularui.api.UIFactory;
 import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.GuiManager;
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.utils.NetworkUtils;
 
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class OpenGuiPacket<T extends GuiData> implements MUINetwork.INetPacket {
+public class OpenGuiPacket<T extends GuiData> implements NetworkHandler.INetPacket {
 
     private int windowId;
     private int networkId;
