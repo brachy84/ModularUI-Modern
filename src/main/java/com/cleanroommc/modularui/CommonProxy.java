@@ -3,9 +3,9 @@ package com.cleanroommc.modularui;
 import com.cleanroommc.modularui.base.drawable.IKey;
 import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
-import com.cleanroommc.modularui.network.MUINetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.screen.ModularContainerMenu;
-import com.cleanroommc.modularui.test.ModularUIItems;
+import com.cleanroommc.modularui.test.ModularUITestingRegistration;
 import com.cleanroommc.modularui.theme.ThemeManager;
 
 import net.minecraft.commands.Commands;
@@ -32,8 +32,10 @@ public class CommonProxy {
         InventoryTypes.init();
 
         NetworkHandler.init();
-        ModularUIMenuTypes.init(modBus);
-        ModularUIItems.init(modBus);
+        ModularUIMenuTypes.register(modBus);
+        if (ModularUI.isDev()) {
+            ModularUITestingRegistration.register(modBus);
+        }
     }
 
     public void onTick(TickEvent.PlayerTickEvent event) {

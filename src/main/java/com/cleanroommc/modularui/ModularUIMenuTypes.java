@@ -16,7 +16,7 @@ public class ModularUIMenuTypes {
     public static final RegistryObject<MenuType<ModularContainerMenu>> MODULAR_CONTAINER = MENU_TYPES.register("modular",
             () -> IForgeMenuType.create(ModularContainerMenu::new));
 
-    public static void init(IEventBus modBus) {
+    public static void register(IEventBus modBus) {
         MENU_TYPES.register(modBus);
     }
 }

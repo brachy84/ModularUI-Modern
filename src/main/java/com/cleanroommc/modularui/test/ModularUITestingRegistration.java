@@ -8,13 +8,13 @@ import net.minecraftforge.registries.RegistryObject;
 
 import com.cleanroommc.modularui.ModularUI;
 
-public class ModularUIItems {
+public class ModularUITestingRegistration {
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModularUI.MOD_ID);
 
     public static final RegistryObject<TestItem> TEST_ITEM = ITEMS.register("mui_test_item", () -> new TestItem(new Item.Properties()));
 
-    public static void init(IEventBus modBus) {
+    public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }
 }
