@@ -1,12 +1,6 @@
 dependencies {
     compileOnly(libs.jetbrains.annotations)
 
-    // Registrate
-    jarJar(modApi(forge.registrate.get()))
-
-    // Configuration
-    jarJar(modApi(forge.configuration.get()))
-
     // Mixin (& Extras)
     annotationProcessor(variantOf(libs.mixin) { classifier("processor") })
     compileOnly(annotationProcessor(forge.mixinExtras.common.get()))
@@ -19,24 +13,13 @@ dependencies {
     modCompileOnly(forge.bundles.rei)
     modCompileOnly(forge.emi)
 
-    // WAILA-likes
-    modCompileOnly(forge.theoneprobe)
-    modCompileOnly(forge.jade)
-
-    // KJS
-    //modCompileOnly(forge.kubejs)
-    modCompileOnly(forge.architectury)
-    //modCompileOnly(forge.rhino)
-
-    // Curios
+    // Optional dependencies
     modCompileOnly(variantOf(forge.curios) { classifier("api") })
-    modLocalRuntime(forge.curios)
-
     modCompileOnly(forge.embeddium)
 
     // Standard runtime mods //
+    modLocalRuntime(forge.curios)
     modLocalRuntime(forge.jade)
-    modLocalRuntime(forge.ae2)
     modLocalRuntime(forge.spark)
     modLocalRuntime(forge.modernfix)
 
@@ -49,30 +32,4 @@ dependencies {
     modClientLocalRuntime(forge.embeddium)
     modClientLocalRuntime(forge.oculus)
     renderNurseCfg(libs.renderNurse)
-
-    //////////////////////////////////////////////////////
-    // Runtime mods for dev testing with unclean client //
-    //////////////////////////////////////////////////////
-    //modExtraLocalRuntime(forge.javd)
-    //modExtraLocalRuntime(forge.trenzalore)
-    //modExtraLocalRuntime(forge.curios)
-//    modExtraLocalRuntime(forge.worldstripper)
-//    modExtraLocalRuntime(forge.cc.tweaked.forge.impl) for some reason this breaks create
-
-    //modExtraLocalRuntime(forge.bundles.kjs)
-
-    //modExtraLocalRuntime(forge.ftblibrary)
-    //modExtraLocalRuntime(forge.ftbteams)
-    //modExtraLocalRuntime(forge.ftbquests)
-
-    //modExtraLocalRuntime(forge.heracles)
-    //modExtraLocalRuntime(forge.resourcefullib)
-
-//    modExtraLocalRuntime(forge.xaerosminimap)
-//    modExtraLocalRuntime(forge.xaerosworldmap)
-//    modExtraLocalRuntime(forge.journeymap.forge)
-//    modExtraLocalRuntime(forge.ftbchunks)
-
-    //modExtraLocalRuntime(forge.kotlinforforge)
-    //modExtraLocalRuntime(forge.observable)
 }

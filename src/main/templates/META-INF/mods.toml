@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "${mod_name}"
 authors = "brachy"
 description = "${mod_description}"
-logoFile = "icon.png"
+logoFile = "assets/modularui/textures/modular_ui_logo.png"
 displayURL = "${mod_url}"
 credits = "People"
 
@@ -29,18 +29,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${ mod_id }]]
-modId = "configuration"
-mandatory = true
-embedded = true
-versionRange = "[${configuration_version},)"
-ordering = "AFTER"
-side = "BOTH"
-[dependencies.${ mod_id }.mc-publish]
-ignore = false
-modrinth = "configuration"
-curseforge = "configuration"
-
-[[dependencies.${ mod_id }]]
 modId = "jei"
 mandatory = false
 versionRange = "[${jei_version},)"
@@ -51,5 +39,19 @@ side = "BOTH"
 modId = "emi"
 mandatory = false
 versionRange = "[${emi_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "roughlyenoughitems"
+mandatory = false
+versionRange = "[${rei_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "curios"
+mandatory = false
+versionRange = "[${curios_version},)"
 ordering = "AFTER"
 side = "BOTH"
