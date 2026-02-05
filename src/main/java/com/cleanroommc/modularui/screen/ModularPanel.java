@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.animation.Animator;
 import com.cleanroommc.modularui.base.IPanelHandler;
 import com.cleanroommc.modularui.base.ITheme;
@@ -753,7 +753,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     }
 
     public float getScale() {
-        if (ConfigHolder.INSTANCE.client.ui.animationTime == 0) return 1f;
+        if (ModularUIConfig.animationTime() == 0) return 1f;
         // 0.9 is default nea value
         return Interpolations.lerp(0.9f, 1f, getAnimator().getValue());
         // TODO NEA
@@ -762,7 +762,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     }
 
     public float getAlpha() {
-        if (ConfigHolder.INSTANCE.client.ui.animationTime == 0) return 1f;
+        if (ModularUIConfig.animationTime() == 0) return 1f;
         return getAnimator().getValue();
         // if (!ModularUI.Mods.NEA.isLoaded() || NEAConfig.openingAnimationTime == 0) return 1f;
         // return getAnimator().getValue();
@@ -777,7 +777,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         if (this.animator == null) {
             this.animator = new Animator()
                     .bounds(0f, 1f)
-                    .duration(ConfigHolder.INSTANCE.client.ui.animationTime)
+                    .duration(ModularUIConfig.animationTime())
                     .curve(Interpolation.SINE_OUT); // TODO: NEA config values
             this.animator.reset(true);
         }

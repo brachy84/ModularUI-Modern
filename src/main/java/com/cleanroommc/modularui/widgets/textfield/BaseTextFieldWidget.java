@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets.textfield;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.base.ITheme;
 import com.cleanroommc.modularui.base.widget.IFocusedWidget;
 import com.cleanroommc.modularui.base.widget.IWidget;
@@ -244,7 +244,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
                 }
                 return Result.SUCCESS;
             case InputConstants.KEY_ESCAPE:
-                if (ConfigHolder.INSTANCE.client.ui.escRestoresLastText) {
+                if (ModularUIConfig.escRestoresLastText()) {
                     this.handler.clear();
                     this.handler.insert(this.lastText, canScrollHorizontally());
                 }

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widget.sizer;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.GuiError;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.base.GuiAxis;
@@ -372,7 +372,7 @@ public class DimensionSizer {
             if (ret == this.start) this.start = null;
             if (ret == this.end) this.end = null;
             if (ret == this.size) this.size = null;
-            if (ConfigHolder.INSTANCE.dev.debugUI && ModularUI.isClientThread()) {
+            if (ModularUIConfig.Dev.debugUI() && ModularUI.isClientThread()) {
                 // only log on client in debug mode since its sometimes intentional
                 ModularUI.LOGGER.info("unit {} of widget {} was already used and will be overwritten with unit {}",
                         ret.state.getText(this.axis), widget, newState.getText(this.axis));

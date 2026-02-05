@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.overlay;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.base.IMuiScreen;
 import com.cleanroommc.modularui.base.drawable.IIcon;
@@ -47,10 +47,9 @@ public class DebugOverlay extends CustomModularScreen {
                         .bottom(0)
                         .height(12)
                         .width(160)
-                        .background(
-                                new Rectangle()
-                                        .color(Color.withAlpha(Color.parseString(ConfigHolder.INSTANCE.dev.mui.outlineColor),
-                                                0.4f)).cornerRadius(4))
+                        .background(new Rectangle()
+                                .color(Color.withAlpha(ModularUIConfig.Dev.outlineColor(), 0.4f))
+                                .cornerRadius(4))
                         .disableHoverBackground()
                         .overlay(IKey.str("Debug Options"))
                         .openUp()

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.test;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.base.IThemeApi;
 import com.cleanroommc.modularui.base.drawable.IDrawable;
@@ -91,7 +91,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onOpenScreen(OpenScreenEvent event) {
-        if (ConfigHolder.INSTANCE.client.ui.enableTestOverlays) {
+        if (ModularUIConfig.enableTestOverlays()) {
             /*if (event.getScreen() instanceof  gui) {
                 event.addOverlay(getMainMenuOverlayTest(gui));
             } else */

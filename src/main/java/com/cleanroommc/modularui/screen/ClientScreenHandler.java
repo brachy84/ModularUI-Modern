@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.GuiErrorHandler;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.base.IMuiScreen;
@@ -335,7 +335,7 @@ public class ClientScreenHandler {
         if (keyCode == 'C' && Interactable.isControl(modifiers) && Interactable.isShift(modifiers) &&
                 Interactable.isAlt(modifiers)) {
             if (!debugToggleActive) {
-                ConfigHolder.INSTANCE.dev.debugUI = !ConfigHolder.INSTANCE.dev.debugUI;
+                ModularUIConfig.DEBUG_UI.set(!ModularUIConfig.Dev.debugUI());
                 debugToggleActive = true;
             }
             return true;
@@ -535,7 +535,7 @@ public class ClientScreenHandler {
     public static void drawDebugScreen(GuiGraphics graphics, @Nullable ModularScreen muiScreen,
                                        @Nullable ModularScreen fallback) {
         fpsCounter.onDraw();
-        if (!ConfigHolder.INSTANCE.dev.debugUI) return;
+        if (!ModularUIConfig.Dev.debugUI()) return;
         if (muiScreen == null) {
             if (validateGui()) {
                 muiScreen = currentScreen;
@@ -552,11 +552,9 @@ public class ClientScreenHandler {
 
         int mouseX = context.getAbsMouseX(), mouseY = context.getAbsMouseY();
         int screenH = muiScreen.getScreenArea().height;
-        int outlineColor = Color.parseString(ConfigHolder.INSTANCE.dev.mui.outlineColor);
-        // 115, 220);
-        int textColor = Color.parseString(ConfigHolder.INSTANCE.dev.mui.textColor);
-        // 220);
-        float scale = ConfigHolder.INSTANCE.dev.mui.scale;
+        int outlineColor = ModularUIConfig.Dev.outlineColor(); // Color.argb(180, 40, 115, 220);
+        int textColor = ModularUIConfig.Dev.textColor(); // Color.argb(180, 40, 115, 220);
+        float scale = ModularUIConfig.Dev.scale();
         int shift = (int) (11 * scale + 0.5f);
         int lineY = screenH - shift - 2;
         if (ModularUI.Mods.isRecipeViewerLoaded() &&
@@ -569,8 +567,8 @@ public class ClientScreenHandler {
         GuiDraw.drawText(graphics, "FPS: " + fpsCounter.getFps(), 5, lineY, scale, outlineColor, false);
         lineY -= shift;
         LocatedWidget locatedHovered = muiScreen.getPanelManager().getTopWidgetLocated(true);
-        boolean showHovered = ConfigHolder.INSTANCE.dev.mui.showHovered;
-        boolean showParent = ConfigHolder.INSTANCE.dev.mui.showParent;
+        boolean showHovered = ModularUIConfig.Dev.showHovered();
+        boolean showParent = ModularUIConfig.Dev.showParent();
 
         ITheme theme;
         if (locatedHovered != null && (showHovered || showParent)) {
@@ -592,26 +590,26 @@ public class ClientScreenHandler {
             Area area = hovered.getArea();
             IWidget parent = hovered.getParent();
 
-            if (showHovered && ConfigHolder.INSTANCE.dev.mui.showOutline) {
+            if (showHovered && ModularUIConfig.Dev.showOutline()) {
                 GuiDraw.drawBorderOutsideXYWH(graphics, 0, 0, area.width, area.height, scale, outlineColor);
             }
-            if (hovered.hasParent() && showParent && ConfigHolder.INSTANCE.dev.mui.showParentOutline) {
+            if (hovered.hasParent() && showParent && ModularUIConfig.Dev.showParentOutline()) {
                 GuiDraw.drawBorderOutsideXYWH(graphics, -area.rx, -area.ry, parent.getArea().width,
                         parent.getArea().height, scale, Color.withAlpha(outlineColor, 0.3f));
             }
             graphics.pose().popPose();
             locatedHovered.unapplyMatrix(context);
             if (showHovered) {
-                if (ConfigHolder.INSTANCE.dev.mui.showWidgetTheme) {
+                if (ModularUIConfig.Dev.showWidgetTheme()) {
                     GuiDraw.drawText(graphics, "Widget Theme: " + hovered.getWidgetTheme(hovered.getPanel().getTheme()).key().getFullName(),
                             5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }
-                if (ConfigHolder.INSTANCE.dev.mui.showSize) {
+                if (ModularUIConfig.Dev.showSize()) {
                     GuiDraw.drawText(graphics, "Size: " + area.width + ", " + area.height, 5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }
-                if (ConfigHolder.INSTANCE.dev.mui.showPos) {
+                if (ModularUIConfig.Dev.showPos()) {
                     GuiDraw.drawText(graphics, "Pos: " + area.x + ", " + area.y + "  Rel: " + area.rx + ", " + area.ry,
                             5, lineY, scale, textColor, false);
                     lineY -= shift;
@@ -623,14 +621,14 @@ public class ClientScreenHandler {
                     drawSegmentLine(graphics, lineY -= 4, scale, textColor);
                     lineY -= 10;
                 }
-                if (ConfigHolder.INSTANCE.dev.mui.showParentWidgetTheme) {
+                if (ModularUIConfig.Dev.showParentWidgetTheme()) {
                     GuiDraw.drawText(graphics, "Widget Theme: " +
                                     parent.getWidgetTheme(parent.getPanel().getTheme()).key().getFullName(),
                             5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }
                 area = parent.getArea();
-                if (ConfigHolder.INSTANCE.dev.mui.showParentSize) {
+                if (ModularUIConfig.Dev.showParentSize()) {
                     GuiDraw.drawText(graphics, "Parent size: " + area.width + ", " + area.height, 5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }
@@ -640,7 +638,7 @@ public class ClientScreenHandler {
                 }
                 GuiDraw.drawText(graphics, "Parent: " + parent, 5, lineY, scale, textColor, false);
             }
-            if (ConfigHolder.INSTANCE.dev.mui.showExtra) {
+            if (ModularUIConfig.Dev.showExtra()) {
                 if (hovered instanceof ItemSlot slotWidget) {
                     drawSegmentLine(graphics, lineY -= 4, scale, textColor);
                     lineY -= 10;
@@ -667,8 +665,7 @@ public class ClientScreenHandler {
             }
         }
         // dot at mouse pos
-        GuiDraw.drawRect(graphics, mouseX, mouseY, 1, 1,
-                Long.decode(ConfigHolder.INSTANCE.dev.mui.cursorColor).intValue());
+        GuiDraw.drawRect(graphics, mouseX, mouseY, 1, 1, ModularUIConfig.Dev.cursorColor());
         graphics.setColor(1f, 1f, 1f, 1f);
     }
 

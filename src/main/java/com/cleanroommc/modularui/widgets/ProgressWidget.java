@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.base.drawable.IDrawable;
 import com.cleanroommc.modularui.base.value.IDoubleValue;
 import com.cleanroommc.modularui.base.value.ISyncOrValue;
@@ -124,7 +124,7 @@ public class ProgressWidget extends Widget<ProgressWidget> {
     }
 
     public float getProgressUV(float uv) {
-        if (ConfigHolder.INSTANCE.client.ui.smoothProgressBar) {
+        if (ModularUIConfig.smoothProgressBars()) {
             return uv;
         }
         return (float) (Math.floor(uv * this.imageSize) / this.imageSize);

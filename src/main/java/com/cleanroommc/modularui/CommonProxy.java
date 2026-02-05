@@ -32,8 +32,6 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        // used for forge events (ClientProxy + CommonProxy)
-        ConfigHolder.init();
 
         /* MUI Initialization */
         UIFactories.init();

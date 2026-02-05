@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.theme;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.base.ITheme;
 import com.cleanroommc.modularui.base.IThemeApi;
 import com.cleanroommc.modularui.utils.serialization.json.JsonBuilder;
@@ -67,7 +67,7 @@ public class ThemeAPI implements IThemeApi {
         if (theme != null) return getTheme(theme);
         if (defaultTheme != null) return getTheme(defaultTheme);
         if (fallbackTheme != null) return getTheme(fallbackTheme);
-        return getTheme(ConfigHolder.INSTANCE.client.ui.useDarkThemeByDefault ? "vanilla_dark" : "vanilla");
+        return getTheme(ModularUIConfig.useDarkThemeByDefault() ? "vanilla_dark" : "vanilla");
     }
 
     private String getThemeIdForScreen(String mod, String name, String panelName) {

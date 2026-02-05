@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.overlay;
 
-import com.cleanroommc.modularui.ConfigHolder;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.base.IMuiScreen;
 import com.cleanroommc.modularui.base.widget.IWidget;
 import com.cleanroommc.modularui.screen.ClientScreenHandler;
@@ -140,7 +140,7 @@ public class OverlayStack {
                 overlay.constructOverlay(newScreen);
                 open(overlay);
             }
-            if (ConfigHolder.INSTANCE.dev.debugUI && newScreen instanceof IMuiScreen muiScreen) {
+            if (ModularUIConfig.Dev.debugUI() && newScreen instanceof IMuiScreen muiScreen) {
                 ModularScreen overlay = new DebugOverlay(muiScreen);
                 overlay.constructOverlay(newScreen);
                 open(overlay);
