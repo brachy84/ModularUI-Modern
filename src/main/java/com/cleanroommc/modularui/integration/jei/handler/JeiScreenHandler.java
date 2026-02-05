@@ -164,7 +164,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         }
 
         private <I> I mapFirstIngredient(IngredientProvider<I> provider) {
-            return provider.renderMappingFunction().apply(provider.getIngredients().getStacks().getFirst());
+            return provider.renderMappingFunction().apply(provider.getIngredients().getStacks().get(0));
         }
 
         private <I> Optional<IClickableIngredient<I>> createClickableIngredient(I ingredient, Rectangle area) {

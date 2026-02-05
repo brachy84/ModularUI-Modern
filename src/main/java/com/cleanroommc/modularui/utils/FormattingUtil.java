@@ -101,15 +101,6 @@ public class FormattingUtil {
     }
 
     /**
-     * @deprecated use {@link FormattingUtil#toLowerCaseUnderscore(String) toLowerCaseUnderscore} instead.
-     */
-    @ApiStatus.Obsolete(since = "7.0.0")
-    @Deprecated(since = "7.0.0")
-    public static String toLowerCaseUnder(String string) {
-        return toLowerCaseUnderscore(string);
-    }
-
-    /**
      * Check if {@code string} has any uppercase characters.
      *
      * @param string the string to check

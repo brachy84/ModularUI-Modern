@@ -1,5 +1,7 @@
 package com.cleanroommc.modularui.overlay;
 
+import net.minecraftforge.common.ForgeConfigSpec;
+
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.api.IMuiScreen;
@@ -25,7 +27,7 @@ import com.cleanroommc.modularui.widgets.menu.Menu;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
+import java.util.List;
 
 public class DebugOverlay extends CustomModularScreen {
 
@@ -111,27 +113,8 @@ public class DebugOverlay extends CustomModularScreen {
     }
 
     public static IWidget toggleOption(int i, String name, String field) {
-
-        ConfigHolder.DeveloperConfigs.MuiConfigs c = ConfigHolder.INSTANCE.dev.mui;
-        Field f;
-        try {
-            f = c.getClass().getField(field);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-        IBoolValue<?> val = new BoolValue.Dynamic(() -> {
-            try {
-                return (boolean) f.get(c);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }, v -> {
-            try {
-                f.set(c, v);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        ForgeConfigSpec.ConfigValue<Boolean> configField = ModularUIConfig.CONFIG.get(List.of("dev", field));
+        IBoolValue<?> val = new BoolValue.Dynamic(configField::get, configField::set);
 
         return new ToggleButton()
                 .name("hover_info_toggle" + i)

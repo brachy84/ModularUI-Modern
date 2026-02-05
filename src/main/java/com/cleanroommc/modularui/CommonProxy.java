@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui;
 
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.network.NetworkHandler;

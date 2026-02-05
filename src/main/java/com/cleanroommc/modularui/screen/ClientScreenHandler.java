@@ -561,7 +561,7 @@ public class ClientScreenHandler {
         int lineY = screenH - shift - 2;
         if (ModularUI.Mods.isRecipeViewerLoaded() &&
                 muiScreen.getContext().hasSettings() &&
-                muiScreen.getContext().getXeiSettings().isEnabled(muiScreen)) {
+                muiScreen.getContext().getRecipeViewerSettings().isEnabled(muiScreen)) {
             lineY -= 12;
         }
         GuiDraw.drawText(graphics, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, scale, outlineColor, false);
@@ -634,7 +634,7 @@ public class ClientScreenHandler {
                     GuiDraw.drawText(graphics, "Parent size: " + area.width + ", " + area.height, 5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }
-                if (ConfigHolder.INSTANCE.dev.mui.showParentPos) {
+                if (ModularUIConfig.Dev.showParentPos()) {
                     GuiDraw.drawText(graphics, "Parent pos: " + area.x + ", " + area.y + "  Rel: " + area.rx + ", " + area.ry, 5, lineY, scale, textColor, false);
                     lineY -= shift;
                 }

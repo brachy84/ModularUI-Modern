@@ -93,7 +93,7 @@ public class ClientTestEventHandler {
     }
 
     @SubscribeEvent
-    public void onOpenScreen(OpenScreenEvent event) {
+    public static void onOpenScreen(OpenScreenEvent event) {
         if (ModularUIConfig.enableTestOverlays()) {
             /*if (event.getScreen() instanceof  gui) {
                 event.addOverlay(getMainMenuOverlayTest(gui));
