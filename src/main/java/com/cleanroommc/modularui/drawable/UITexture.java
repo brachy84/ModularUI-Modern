@@ -10,6 +10,7 @@ import com.cleanroommc.modularui.utils.Interpolations;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", ColorType.DEFAULT);
+    public static final FileToIdConverter GUI_TEXTURE_ID_CONVERTER = new FileToIdConverter("textures/gui", ".png");
 
     private static final ResourceLocation ICONS_LOCATION = ModularUI.id("textures/gui/icons.png");
 

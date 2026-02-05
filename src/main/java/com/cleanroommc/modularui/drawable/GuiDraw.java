@@ -1,6 +1,7 @@
 package com.cleanroommc.modularui.drawable;
 
 import com.cleanroommc.modularui.GTRenderTypes;
+import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.client.GuiSpriteManager;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;
 import com.cleanroommc.modularui.screen.RichTooltip;
@@ -22,7 +23,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -56,6 +56,7 @@ import org.joml.Vector3d;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static com.cleanroommc.modularui.drawable.UITexture.GUI_TEXTURE_ID_CONVERTER;
 import static net.minecraft.util.Mth.HALF_PI;
 import static net.minecraft.util.Mth.TWO_PI;
 
@@ -257,23 +258,24 @@ public class GuiDraw {
      */
     public static RectangleF setupTexture(ResourceLocation location, float u0, float v0, float u1, float v1) {
         TextureAtlasSprite sprite = GuiSpriteManager.getInstance()
-                .getSprite(SpriteSource.TEXTURE_ID_CONVERTER.fileToId(location));
+                .getSprite(GUI_TEXTURE_ID_CONVERTER.fileToId(location));
 
         // check if the atlas doesn't have this sprite, default to using the resloc as is if so
-        if (sprite.atlasLocation() != MissingTextureAtlasSprite.getLocation()) {
+        if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
             RenderSystem.setShaderTexture(0, sprite.atlasLocation());
 
             // have to multiply by 16 here because of MC weirdness
             // REMOVE THE MULTIPLICATION IN 1.21!!!
             return new RectangleF(sprite.getU(u0 * 16), sprite.getV(u0 * 16), sprite.getU(u1 * 16), sprite.getV(v1 * 16));
         } else {
+            ModularUI.LOGGER.warn("Could not find texture {} in GUI atlas", location);
             RenderSystem.setShaderTexture(0, location);
             return new RectangleF(u0, v0, u1, v1);
         }
     }
 
     public static boolean isGuiAtlasSprite(ResourceLocation location) {
-        location = SpriteSource.TEXTURE_ID_CONVERTER.fileToId(location);
+        location = GUI_TEXTURE_ID_CONVERTER.fileToId(location);
         return GuiSpriteManager.getInstance().getSprite(location).atlasLocation() != MissingTextureAtlasSprite.getLocation();
     }
 
