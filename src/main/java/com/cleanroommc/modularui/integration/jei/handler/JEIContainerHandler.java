@@ -1,80 +1,104 @@
 package com.cleanroommc.modularui.integration.jei.handler;
 
-import com.cleanroommc.modularui.api.widget.IGuiElement;
-import com.cleanroommc.modularui.integration.jei.GTJEIPlugin;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
-import com.cleanroommc.modularui.screen.ContainerScreenWrapper;
-import com.cleanroommc.modularui.utils.Rectangle;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeTransferError;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeTransferHandler;
+import com.cleanroommc.modularui.screen.ModularContainerMenu;
+import com.cleanroommc.modularui.screen.ModularScreen;
 
-import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 
-import lombok.Getter;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickableIngredient;
-import org.jetbrains.annotations.NotNull;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-public class JEIContainerHandler implements IGuiContainerHandler<ContainerScreenWrapper> {
+import org.jetbrains.annotations.Nullable;
 
-    public static final JEIContainerHandler INSTANCE = new JEIContainerHandler();
+public class JeiContainerHandler<T extends ModularContainerMenu> implements IUniversalRecipeTransferHandler<T> {
 
-    private JEIContainerHandler() {}
+    public static <T extends ModularContainerMenu> void register(Class<T> clz, IRecipeTransferRegistration registration) {
+        new JeiContainerHandler<>(clz, registration.getTransferHelper()).register(registration);
+    }
 
-    @Override
-    public @NotNull List<Rect2i> getGuiExtraAreas(ContainerScreenWrapper screen) {
-        return screen.screen().getContext()
-                .getXeiSettings().getAllExclusionAreas()
-                .stream().map(Rectangle::asRect2i)
-                .toList();
+    private final Class<T> clazz;
+    private final IRecipeTransferHandlerHelper handlerHelper;
+
+    private JeiContainerHandler(Class<T> clazz, IRecipeTransferHandlerHelper handlerHelper) {
+        this.clazz = clazz;
+        this.handlerHelper = handlerHelper;
+    }
+
+    private void register(IRecipeTransferRegistration registration) {
+        registration.addUniversalRecipeTransferHandler(this);
     }
 
     @Override
-    public @NotNull Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(@NotNull ContainerScreenWrapper screen,
-                                                                                       double mouseX, double mouseY) {
-        IGuiElement hovered = screen.screen().getContext().getTopHovered();
-        if (hovered instanceof IngredientProvider<?> provider) {
-            var override = provider.ingredientOverride();
-            if (override != null) {
-                JEIScreenHandler.currentIngredient = ((IClickableIngredient<?>) override).getTypedIngredient();
-                return Optional.of((IClickableIngredient<?>) override);
-            }
-            if (provider.getIngredients().isEmpty()) return Optional.empty();
+    public Class<T> getContainerClass() {
+        return clazz;
+    }
 
-            Optional<? extends ITypedIngredient<?>> ingredient = GTJEIPlugin.getRuntime()
-                    .getIngredientManager()
-                    .createTypedIngredient(mapFirstIngredient(provider));
-
-            JEIScreenHandler.currentIngredient = ingredient.orElse(null);
-            return ingredient.map(i -> new ClickableIngredient<>(i, hovered.getArea().asRect2i()));
-        }
+    @Override
+    public Optional<MenuType<T>> getMenuType() {
         return Optional.empty();
     }
 
-    private <T> T mapFirstIngredient(IngredientProvider<T> provider) {
-        return provider.renderMappingFunction().apply(provider.getIngredients().getStacks().get(0));
+    @Override
+    public @Nullable IRecipeTransferError transferRecipe(T container, Object recipe, IRecipeSlotsView recipeSlots,
+                                                         Player player, boolean maxTransfer, boolean doTransfer) {
+        ModularScreen screen = container.getScreen();
+        if (screen instanceof RecipeTransferHandler<?> transferHandler &&
+                Objects.equals(recipe.getClass(), transferHandler.getRecipeClass())) {
+            RecipeTransferError muiError = transferHandler.transferRecipeSafe(recipe, maxTransfer, !doTransfer);
+            if (muiError != null) {
+                return new CosmeticJeiTransferError(muiError);
+            }
+        }
+        return null;
     }
 
-    private record ClickableIngredient<T>(ITypedIngredient<T> ingredient, @Getter Rect2i area)
-            implements IClickableIngredient<T> {
+    public record CosmeticJeiTransferError(RecipeTransferError muiError) implements IRecipeTransferError {
 
-        @SuppressWarnings("removal") // I have to override this.
         @Override
-        public @NotNull ITypedIngredient<T> getTypedIngredient() {
-            return ingredient;
+        public Type getType() {
+            if (muiError instanceof RecipeTransferError.Internal) {
+                return Type.INTERNAL;
+            } else if (muiError instanceof RecipeTransferError.UserFacing) {
+                return Type.USER_FACING;
+            } else if (muiError instanceof RecipeTransferError.Cosmetic) {
+                return Type.COSMETIC;
+            } else {
+                throw new IllegalStateException("Recipe transfer error %s is not an internal, user facing or cosmetic error".formatted(muiError));
+            }
         }
 
         @Override
-        public @NotNull IIngredientType<T> getIngredientType() {
-            return ingredient.getType();
+        public int getButtonHighlightColor() {
+            return muiError.getButtonHighlightColor();
         }
 
         @Override
-        public @NotNull T getIngredient() {
-            return ingredient.getIngredient();
+        public void getTooltip(ITooltipBuilder tooltip) {
+            if (this.muiError instanceof RecipeTransferError.UserFacing) {
+                tooltip.add(Component.translatable("jei.tooltip.transfer"));
+                for (Component component : muiError.getTooltip()) {
+                    tooltip.add(component.copy().withStyle(ChatFormatting.RED));
+                }
+            } else {
+                tooltip.addAll(muiError.getTooltip());
+            }
+        }
+
+        @Override
+        public int getMissingCountHint() {
+            return muiError.getMissingCountHint();
         }
     }
 }

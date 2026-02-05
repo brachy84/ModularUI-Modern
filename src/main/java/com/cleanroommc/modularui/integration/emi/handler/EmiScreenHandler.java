@@ -2,9 +2,10 @@ package com.cleanroommc.modularui.integration.emi.handler;
 
 import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.widget.IGuiElement;
-import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
-import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
+import com.cleanroommc.modularui.integration.emi.EmiStackConverter;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.IngredientProvider;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.Item;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.material.Fluid;
 
 import dev.emi.emi.api.EmiDragDropHandler;
 import dev.emi.emi.api.EmiExclusionArea;
+import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.EmiStackProvider;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -19,29 +21,42 @@ import dev.emi.emi.api.stack.EmiStackInteraction;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.screen.EmiScreenManager;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewerHandler
-        implements EmiExclusionArea<T>, EmiDragDropHandler<T>, EmiStackProvider<T> {
+                             implements EmiExclusionArea<T>, EmiDragDropHandler<T>, EmiStackProvider<T> {
 
     private static final Map<Class<?>, EmiScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
     @SuppressWarnings("unchecked")
     public static <T extends Screen & IMuiScreen> EmiScreenHandler<T> of(Class<T> cls) {
-        return (EmiScreenHandler<T>) CACHE.computeIfAbsent(cls, c -> new EmiScreenHandler<T>());
+        return (EmiScreenHandler<T>) CACHE.computeIfAbsent(cls, c -> new EmiScreenHandler<T>((Class<T>) c));
     }
 
-    private EmiScreenHandler() {}
+    protected final Class<T> clazz;
+
+    private EmiScreenHandler(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
+    public void register(EmiRegistry registry) {
+        registry.addExclusionArea(this.clazz, this);
+    }
+
+    public static <T extends Screen & IMuiScreen> void register(Class<T> clazz, EmiRegistry registry) {
+        of(clazz).register(registry);
+    }
 
     @Override
     public boolean dropStack(T screen, EmiIngredient stack, int x, int y) {
         List<GhostIngredientSlot<?>> ghostSlots = screen.screen().getContext()
-                .getXeiSettings().getGhostIngredientSlots();
+                .getRecipeViewerSettings().getGhostIngredientSlots();
 
         var stacks = stack.getEmiStacks();
         if (stacks.isEmpty()) return false;
@@ -72,7 +87,7 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     @Override
     public void addExclusionArea(T screen, Consumer<Bounds> consumer) {
         screen.screen().getContext()
-                .getXeiSettings().getAllExclusionAreas()
+                .getRecipeViewerSettings().getAllExclusionAreas()
                 .stream()
                 .map(rect -> new Bounds(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()))
                 .forEach(consumer);
@@ -92,7 +107,7 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (converter == null) {
                 return EmiStackInteraction.EMPTY;
             }
-            @SuppressWarnings({"rawtypes", "unchecked"})
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             var converted = ((EmiStackConverter.Converter) converter).convertTo(provider);
             return new EmiStackInteraction(converted, null, false);
         }

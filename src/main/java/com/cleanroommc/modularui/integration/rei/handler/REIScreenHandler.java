@@ -2,9 +2,9 @@ package com.cleanroommc.modularui.integration.rei.handler;
 
 import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.widget.IGuiElement;
-import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
-import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.IngredientProvider;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
+import com.cleanroommc.modularui.integration.rei.REIStackConverter;
 import com.cleanroommc.modularui.utils.Rectangle;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -19,75 +19,48 @@ import me.shedaniel.rei.api.client.gui.drag.DraggedAcceptorResult;
 import me.shedaniel.rei.api.client.gui.drag.DraggingContext;
 import me.shedaniel.rei.api.client.gui.widgets.TextField;
 import me.shedaniel.rei.api.client.registry.screen.ExclusionZonesProvider;
+import me.shedaniel.rei.api.client.registry.screen.OverlayDecider;
+import me.shedaniel.rei.api.client.registry.screen.ScreenRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
 
 public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewerHandler
-        implements DraggableStackProvider<T>, ExclusionZonesProvider<T> {
+                             implements DraggableStackProvider<T>, ExclusionZonesProvider<T> {
 
     private static final Map<Class<?>, REIScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <T extends Screen & IMuiScreen> REIScreenHandler<T> of(Class<T> cls) {
-        return (REIScreenHandler<T>) CACHE.computeIfAbsent(cls, c -> new REIScreenHandler<T>());
+    public static <T extends Screen & IMuiScreen> REIScreenHandler<T> of(Class<T> clazz) {
+        return (REIScreenHandler<T>) CACHE.computeIfAbsent(clazz, clz -> new REIScreenHandler<>((Class<T>) clz));
     }
 
-    // I have to do this mess because of conflicting comparable impls.
+    protected final Class<T> clazz;
+
     @Getter
-    private final DraggableStackVisitor<T> draggableVisitor = new DraggableStackVisitor<T>() {
+    private final DraggableStackVisitor<T> draggableVisitor;
+    @Getter
+    private final OverlayDecider overlayDecider;
 
-        @Override
-        public <R extends Screen> boolean isHandingScreen(R screen) {
-            return REIScreenHandler.this.isHandingScreen(screen);
-        }
+    private REIScreenHandler(Class<T> clazz) {
+        this.clazz = clazz;
 
-        @Override
-        public Stream<BoundsProvider> getDraggableAcceptingBounds(DraggingContext<T> context,
-                                                                  DraggableStack stack) {
-            currentIngredient = stack;
-            return context.getScreen().screen().getContext()
-                    .getXeiSettings().getGhostIngredientSlots().stream()
-                    .map(target -> BoundsProvider.ofRectangle(asREIRect(target.getArea())));
-        }
+        this.draggableVisitor = new MUIDraggableStackVisitor<>(this.clazz);
+        this.overlayDecider = new MUIOverlayDecider(this.clazz);
+    }
 
-        @Override
-        public DraggedAcceptorResult acceptDraggedStack(DraggingContext<T> context,
-                                                        DraggableStack stack) {
-            List<GhostIngredientSlot<?>> ghostSlots = context.getScreen().screen().getContext()
-                    .getXeiSettings().getGhostIngredientSlots();
-            for (var slot : ghostSlots) {
-                if (!slot.isEnabled()) {
-                    continue;
-                }
-                var entryStack = stack.getStack();
+    public void register(ScreenRegistry registry) {
+        registry.registerDraggableStackProvider(this);
+        registry.registerDraggableStackVisitor(this.getDraggableVisitor());
+        registry.registerDecider(this.getOverlayDecider());
+    }
 
-                if (slot.ingredientHandlingOverride(entryStack)) {
-                    currentIngredient = null;
-                    return DraggedAcceptorResult.ACCEPTED;
-                }
-                REIStackConverter.Converter<?> converter = REIStackConverter.getForNullable(slot.ingredientClass());
-                if (converter == null) {
-                    continue;
-                }
-                var converted = converter.convertFrom(entryStack);
-                if (converted != null) {
-                    // noinspection unchecked,rawtypes
-                    ((GhostIngredientSlot) slot).setGhostIngredient(converted);
-                    currentIngredient = null;
-                    return DraggedAcceptorResult.ACCEPTED;
-                }
-            }
-            currentIngredient = null;
-            return DraggedAcceptorResult.PASS;
-        }
-    };
-
-    private REIScreenHandler() {}
+    public static <T extends Screen & IMuiScreen> void register(Class<T> clazz, ScreenRegistry registry) {
+        of(clazz).register(registry);
+    }
 
     @Override
     public @Nullable DraggableStack getHoveredStack(DraggingContext<T> context, double mouseX, double mouseY) {
@@ -103,7 +76,7 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (converter == null) {
                 return null;
             }
-            @SuppressWarnings({"rawtypes", "unchecked"})
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             var converted = ((REIStackConverter.Converter) converter).convertTo(provider);
             return new DraggableStack() {
 
@@ -129,7 +102,7 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public <R extends Screen> boolean isHandingScreen(R screen) {
-        return screen instanceof IMuiScreen;
+        return this.clazz.isAssignableFrom(screen.getClass());
     }
 
     @Override
@@ -139,22 +112,22 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public double getPriority() {
-        return DraggableStackProvider.super.getPriority();
+        return 10;
     }
 
     @Override
     public Collection<me.shedaniel.math.Rectangle> provide(T screen) {
         return screen.screen().getContext()
-                .getXeiSettings().getAllExclusionAreas().stream()
+                .getRecipeViewerSettings().getAllExclusionAreas().stream()
                 .map(REIScreenHandler::asREIRect)
                 .toList();
     }
 
-    private static me.shedaniel.math.Rectangle asREIRect(Rectangle rect) {
+    protected static me.shedaniel.math.Rectangle asREIRect(Rectangle rect) {
         return new me.shedaniel.math.Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
-    static DraggableStack currentIngredient = null;
+    protected static DraggableStack currentIngredient = null;
 
     @Override
     public void setSearchFocused(boolean focused) {
