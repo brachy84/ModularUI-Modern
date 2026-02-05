@@ -61,7 +61,6 @@ import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 import java.lang.reflect.InvocationTargetException;
@@ -74,6 +73,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.jetbrains.annotations.NotNull;
 
 public class TestGuis extends CustomModularScreen {
 

@@ -11,9 +11,10 @@ import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.eventbus.api.Cancelable;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
 public class RichTooltipEvent {

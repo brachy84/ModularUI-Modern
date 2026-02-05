@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 import lombok.Getter;
+
 import org.jetbrains.annotations.Nullable;
 
 public class CompoundKey extends BaseKey {

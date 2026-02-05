@@ -12,11 +12,12 @@ import com.cleanroommc.modularui.widget.sizer.StandardResizer;
 import net.minecraft.ChatFormatting;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This is the base class for a button that can open a floating widget by clicking or hovering the button. In ModularUI

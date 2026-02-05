@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui;
 
+import com.cleanroommc.modularui.screen.RichTooltip;
+
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.*;
-
-import com.cleanroommc.modularui.screen.RichTooltip;
 
 import java.util.Objects;
 

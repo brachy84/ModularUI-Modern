@@ -10,11 +10,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ISyncRegistrar<S extends ISyncRegistrar<S>> {
 

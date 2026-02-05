@@ -17,6 +17,8 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Locale;
 import java.util.function.ToIntFunction;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * Utility class for dealing with colors.
  * <b>All methods assume the color int to be AARRGGBB if not stated otherwise!</b>

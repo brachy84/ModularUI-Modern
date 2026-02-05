@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.network.packets;
 
-import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.utils.NetworkUtils;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,6 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
 import org.jetbrains.annotations.ApiStatus;
 
 @NoArgsConstructor

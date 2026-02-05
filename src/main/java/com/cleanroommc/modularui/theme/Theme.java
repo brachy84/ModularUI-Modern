@@ -3,10 +3,10 @@ package com.cleanroommc.modularui.theme;
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.api.IThemeApi;
 
-import org.jetbrains.annotations.UnmodifiableView;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.jetbrains.annotations.UnmodifiableView;
 
 public class Theme extends AbstractTheme {
 

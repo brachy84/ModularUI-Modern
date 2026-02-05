@@ -13,12 +13,12 @@ import com.cleanroommc.modularui.widget.EmptyWidget;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Expandable extends Widget<Expandable> implements Interactable, IViewport {
 

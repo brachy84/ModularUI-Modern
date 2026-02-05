@@ -10,10 +10,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Sometimes you don't want to open guis which are bound to a BlockEntity or an Item.

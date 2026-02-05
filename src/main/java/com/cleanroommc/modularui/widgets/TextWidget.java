@@ -14,10 +14,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntSupplier;
+
+import org.jetbrains.annotations.Nullable;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 

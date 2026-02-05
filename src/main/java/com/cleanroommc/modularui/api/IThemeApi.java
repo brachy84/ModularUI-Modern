@@ -16,13 +16,13 @@ import com.cleanroommc.modularui.theme.WidgetThemeKeyBuilder;
 import com.cleanroommc.modularui.theme.WidgetThemeParser;
 import com.cleanroommc.modularui.utils.serialization.json.JsonBuilder;
 
+import java.util.List;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-
-import java.util.List;
 
 /**
  * An API interface for Themes.

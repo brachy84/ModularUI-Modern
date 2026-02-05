@@ -37,12 +37,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 @Accessors(fluent = true, chain = true)
 public class RichTooltip implements IRichTextBuilder<RichTooltip> {

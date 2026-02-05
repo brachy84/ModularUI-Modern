@@ -6,11 +6,11 @@ import com.cleanroommc.modularui.widget.WidgetTree;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This sync handler is used to update a widget dynamically. The update can be called from client and server side.

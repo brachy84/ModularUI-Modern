@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.drawable;
 
-import com.cleanroommc.modularui.schema.ISchema;
 import com.cleanroommc.modularui.client.schemarenderer.BaseSchemaRenderer;
 import com.cleanroommc.modularui.client.schemarenderer.BlockHighlight;
 import com.cleanroommc.modularui.client.schemarenderer.Camera;
+import com.cleanroommc.modularui.schema.ISchema;
 
 import net.minecraft.world.phys.BlockHitResult;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -11,13 +11,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
 
 @Accessors(fluent = true, chain = true)
 public class SchemaRenderer extends BaseSchemaRenderer {

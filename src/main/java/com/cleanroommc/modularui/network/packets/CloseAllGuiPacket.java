@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.network.packets;
 
 import com.cleanroommc.modularui.api.MCHelper;
-import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;

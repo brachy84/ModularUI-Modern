@@ -5,8 +5,9 @@ import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.util.Mth.HALF_PI;
 

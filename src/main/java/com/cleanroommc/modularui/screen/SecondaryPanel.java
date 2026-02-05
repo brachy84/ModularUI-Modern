@@ -9,9 +9,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public class SecondaryPanel implements IPanelHandler {
 

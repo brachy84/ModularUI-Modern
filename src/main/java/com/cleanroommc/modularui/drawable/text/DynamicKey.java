@@ -4,9 +4,9 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 
 import net.minecraft.network.chat.MutableComponent;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
 
 public class DynamicKey extends BaseKey {
 

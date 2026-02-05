@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+
 import org.jetbrains.annotations.Nullable;
 
 @Accessors(fluent = true, chain = true)

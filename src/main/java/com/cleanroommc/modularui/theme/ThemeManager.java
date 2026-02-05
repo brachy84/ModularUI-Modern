@@ -7,6 +7,7 @@ import com.cleanroommc.modularui.utils.serialization.json.JsonBuilder;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 public class ThemeManager extends SimplePreparableReloadListener<Map<String, List<ResourceLocation>>> {
 
     public static final String THEMES_PATH = "themes.json";
+    public static final FileToIdConverter THEME_LISTER = FileToIdConverter.json("themes");
     protected static final WidgetThemeEntry<WidgetTheme> defaultFallbackWidgetTheme = IThemeApi.get().getDefaultTheme()
             .getWidgetTheme(IThemeApi.FALLBACK);
     private static final JsonObject emptyJson = new JsonObject();
@@ -49,10 +51,11 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     public ThemeManager() {}
 
     public static void reload() {
-        ThemeManager tm = new ThemeManager();
-        ResourceManager rm = Minecraft.getInstance().getResourceManager();
-        ProfilerFiller p = Minecraft.getInstance().getProfiler();
-        tm.apply(tm.prepare(rm, p), rm, p);
+        // wtf is this hackery??
+        ThemeManager themeManager = new ThemeManager();
+        ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
+        themeManager.apply(themeManager.prepare(resourceManager, profiler), resourceManager, profiler);
     }
 
     @Override
@@ -216,7 +219,7 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
         boolean override = false;
         for (ResourceLocation path : paths) {
             profiler.push(path.toString());
-            ResourceLocation rl = new ResourceLocation(path.getNamespace(), "themes/" + path.getPath() + ".json");
+            ResourceLocation rl = THEME_LISTER.idToFile(path);
             Resource resource = resourceManager.getResource(rl).orElse(null);
             if (resource == null) {
                 profiler.pop();

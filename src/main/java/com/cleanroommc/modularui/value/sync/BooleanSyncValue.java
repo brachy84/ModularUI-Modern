@@ -7,12 +7,13 @@ import com.cleanroommc.modularui.api.value.sync.IStringSyncValue;
 import net.minecraft.network.FriendlyByteBuf;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BooleanSyncValue extends ValueSyncHandler<Boolean>
         implements IBoolSyncValue<Boolean>, IStringSyncValue<Boolean> {

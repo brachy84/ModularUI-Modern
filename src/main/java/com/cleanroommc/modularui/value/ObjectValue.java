@@ -2,11 +2,11 @@ package com.cleanroommc.modularui.value;
 
 import com.cleanroommc.modularui.api.value.IValue;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public class ObjectValue<T> implements IValue<T> {
 

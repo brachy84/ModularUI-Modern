@@ -11,15 +11,16 @@ import com.cleanroommc.modularui.widget.DraggableWidget;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget.Item<T>, SortableListWidget<T>> {
 

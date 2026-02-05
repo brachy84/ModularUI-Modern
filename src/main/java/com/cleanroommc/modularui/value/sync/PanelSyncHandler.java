@@ -8,10 +8,10 @@ import com.cleanroommc.modularui.widget.WidgetTree;
 
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * If you want another panel where some widgets may be able to sync data, you will need this.

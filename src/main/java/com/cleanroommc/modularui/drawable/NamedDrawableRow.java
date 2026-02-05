@@ -8,6 +8,7 @@ import com.cleanroommc.modularui.theme.WidgetTheme;
 import com.cleanroommc.modularui.utils.Alignment;
 
 import lombok.Getter;
+
 import org.jetbrains.annotations.Nullable;
 
 public class NamedDrawableRow implements IDrawable {

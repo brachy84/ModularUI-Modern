@@ -4,11 +4,11 @@ import com.cleanroommc.modularui.api.GuiAxis;
 import com.cleanroommc.modularui.api.ITreeNode;
 import com.cleanroommc.modularui.api.layout.IResizeable;
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 

@@ -4,9 +4,9 @@ import com.cleanroommc.modularui.api.IUIHolder;
 
 import net.minecraft.resources.ResourceLocation;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public class UIFactories {
 

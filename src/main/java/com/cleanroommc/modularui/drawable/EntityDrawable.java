@@ -10,9 +10,10 @@ import net.minecraft.world.entity.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
+
+import org.jetbrains.annotations.Nullable;
 
 @Accessors(fluent = true, chain = true)
 public class EntityDrawable<T extends Entity> implements IDrawable {

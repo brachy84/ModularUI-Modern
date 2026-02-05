@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.ParsePosition;
 import java.util.function.Consumer;
@@ -29,6 +28,8 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.LongSupplier;
 import java.util.function.LongUnaryOperator;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Text input widget with one line only. Can be synced between client and server. Can handle text validation.

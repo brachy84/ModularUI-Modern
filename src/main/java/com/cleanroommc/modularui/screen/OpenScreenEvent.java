@@ -6,10 +6,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.eventbus.api.Event;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
 
 public class OpenScreenEvent extends Event {
 

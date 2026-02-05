@@ -7,13 +7,13 @@ import com.cleanroommc.modularui.api.value.sync.IStringSyncValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LongSyncValue extends ValueSyncHandler<Long>
         implements ILongSyncValue<Long>, IIntSyncValue<Long>, IStringSyncValue<Long> {

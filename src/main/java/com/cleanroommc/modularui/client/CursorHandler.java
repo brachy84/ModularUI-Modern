@@ -5,13 +5,14 @@ import com.cleanroommc.modularui.api.widget.ResizeDragArea;
 
 import net.minecraft.client.Minecraft;
 
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+
+import org.jetbrains.annotations.Nullable;
 
 public class CursorHandler {
 

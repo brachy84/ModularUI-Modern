@@ -11,11 +11,12 @@ import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
 import java.text.DecimalFormat;
 import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
 public class GraphAxis {

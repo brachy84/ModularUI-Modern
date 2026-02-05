@@ -11,6 +11,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An interface that handles user interactions on {@link IWidget} objects.
  * These methods get called on the client

@@ -6,11 +6,11 @@ import com.cleanroommc.modularui.value.ByteValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class ByteSyncValue extends ValueSyncHandler<Byte> implements IByteSyncValue<Byte> {
 

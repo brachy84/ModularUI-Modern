@@ -9,11 +9,11 @@ import com.cleanroommc.modularui.utils.FloatSupplier;
 
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.Objects;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class FloatSyncValue extends ValueSyncHandler<Float> implements
         IFloatSyncValue<Float>, IDoubleSyncValue<Float>, IStringSyncValue<Float> {

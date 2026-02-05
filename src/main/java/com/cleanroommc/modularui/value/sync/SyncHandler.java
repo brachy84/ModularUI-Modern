@@ -13,11 +13,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
+
+import java.util.Objects;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * Base class for handling syncing of widgets.

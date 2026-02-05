@@ -7,13 +7,13 @@ import com.cleanroommc.modularui.api.value.sync.IStringSyncValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IntSyncValue extends ValueSyncHandler<Integer>
         implements IIntSyncValue<Integer>, IDoubleSyncValue<Integer>, IStringSyncValue<Integer> {

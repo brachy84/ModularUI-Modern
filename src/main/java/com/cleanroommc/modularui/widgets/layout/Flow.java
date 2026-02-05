@@ -13,12 +13,13 @@ import com.cleanroommc.modularui.widget.sizer.ExpanderResizer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+
+import org.jetbrains.annotations.ApiStatus;
 
 @Accessors(fluent = true, chain = true)
 public class Flow extends ParentWidget<Flow> implements ILayoutWidget {

@@ -5,6 +5,7 @@ import com.cleanroommc.modularui.api.ISyncedAction;
 import net.minecraft.network.FriendlyByteBuf;
 
 import lombok.Getter;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SyncedAction {

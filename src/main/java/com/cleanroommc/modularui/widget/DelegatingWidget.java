@@ -7,9 +7,9 @@ import com.cleanroommc.modularui.utils.MutableSingletonList;
 import com.cleanroommc.modularui.widget.sizer.Area;
 import com.cleanroommc.modularui.widget.sizer.StandardResizer;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 public class DelegatingWidget extends AbstractWidget implements IDelegatingWidget {
 

@@ -8,11 +8,11 @@ import com.cleanroommc.modularui.value.sync.IDynamicSyncNotifiable;
 import com.cleanroommc.modularui.value.sync.SyncHandler;
 import com.cleanroommc.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A widget which can update its child based on a function in {@link DynamicSyncHandler}.

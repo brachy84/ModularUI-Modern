@@ -2,9 +2,9 @@ package com.cleanroommc.modularui.value.sync;
 
 import com.cleanroommc.modularui.api.widget.IWidget;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public interface IDynamicSyncNotifiable {
 

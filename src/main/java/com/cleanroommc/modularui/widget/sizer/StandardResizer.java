@@ -11,11 +11,11 @@ import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.core.mixins.client.SlotAccessor;
 import com.cleanroommc.modularui.utils.Alignment;
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.function.DoubleSupplier;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class handles resizing and positioning of widgets.

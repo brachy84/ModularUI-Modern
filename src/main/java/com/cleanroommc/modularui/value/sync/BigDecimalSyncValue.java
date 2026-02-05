@@ -4,12 +4,12 @@ import com.cleanroommc.modularui.api.value.IStringValue;
 import com.cleanroommc.modularui.utils.ICopy;
 import com.cleanroommc.modularui.utils.serialization.network.ByteBufAdapters;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BigDecimalSyncValue extends GenericSyncValue<BigDecimal> implements IStringValue<BigDecimal> {
 

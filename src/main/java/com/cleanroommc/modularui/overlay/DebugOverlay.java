@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.overlay;
 
-import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.ModularUI;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.drawable.IIcon;
 import com.cleanroommc.modularui.api.drawable.IKey;

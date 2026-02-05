@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.test;
 
-import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.ModularUI;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.api.IThemeApi;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IIcon;

@@ -28,10 +28,11 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
+
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

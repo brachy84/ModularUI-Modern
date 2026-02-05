@@ -2,12 +2,12 @@ package com.cleanroommc.modularui.value.sync;
 
 import com.cleanroommc.modularui.api.value.sync.IBoolSyncValue;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Accepts enums which have exactly two elements. Can act as {@link IBoolSyncValue}.

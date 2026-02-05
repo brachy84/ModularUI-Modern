@@ -7,9 +7,9 @@ import com.cleanroommc.modularui.theme.WidgetTheme;
 import com.cleanroommc.modularui.theme.WidgetThemeEntry;
 import com.cleanroommc.modularui.theme.WidgetThemeKey;
 
-import org.jetbrains.annotations.UnmodifiableView;
-
 import java.util.Collection;
+
+import org.jetbrains.annotations.UnmodifiableView;
 
 /**
  * A theme is parsed from json and contains style information like color or background texture.

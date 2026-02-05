@@ -14,10 +14,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntSupplier;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Accessors(fluent = true, chain = true)
 public class StyledText extends BaseKey {

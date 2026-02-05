@@ -13,9 +13,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerInventoryUIFactory extends AbstractUIFactory<PlayerInventoryGuiData<?>> {
 

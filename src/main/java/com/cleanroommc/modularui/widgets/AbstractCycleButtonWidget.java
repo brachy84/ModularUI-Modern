@@ -18,11 +18,11 @@ import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.value.IntValue;
 import com.cleanroommc.modularui.widget.SingleChildWidget;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Arrays;
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> extends SingleChildWidget<W>
         implements Interactable {

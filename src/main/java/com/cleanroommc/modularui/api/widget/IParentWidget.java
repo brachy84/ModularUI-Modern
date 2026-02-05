@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.api.widget;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public interface IParentWidget<I extends IWidget, W extends IParentWidget<I, W>> {
 
