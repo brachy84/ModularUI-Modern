@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widget.sizer;
 
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.ITreeNode;
-import com.cleanroommc.modularui.base.layout.IResizeable;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.ITreeNode;
+import com.cleanroommc.modularui.api.layout.IResizeable;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;

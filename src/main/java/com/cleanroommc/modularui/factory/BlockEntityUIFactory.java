@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.factory;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IUIHolder;
-import com.cleanroommc.modularui.base.MCHelper;
+import com.cleanroommc.modularui.api.IUIHolder;
+import com.cleanroommc.modularui.api.MCHelper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

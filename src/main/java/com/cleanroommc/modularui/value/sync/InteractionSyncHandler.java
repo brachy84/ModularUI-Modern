@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.value.sync.IServerKeyboardAction;
-import com.cleanroommc.modularui.base.value.sync.IServerMouseAction;
+import com.cleanroommc.modularui.api.value.sync.IServerKeyboardAction;
+import com.cleanroommc.modularui.api.value.sync.IServerMouseAction;
 import com.cleanroommc.modularui.utils.KeyboardData;
 import com.cleanroommc.modularui.utils.MouseData;
 

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui;
 
-import com.cleanroommc.modularui.base.widget.ResizeDragArea;
+import com.cleanroommc.modularui.api.widget.ResizeDragArea;
 
 import net.minecraft.client.Minecraft;
 

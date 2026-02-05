@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widget;
 
-import com.cleanroommc.modularui.base.layout.IViewportStack;
-import com.cleanroommc.modularui.base.widget.IDelegatingWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.layout.IViewportStack;
+import com.cleanroommc.modularui.api.widget.IDelegatingWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.utils.MutableSingletonList;
 import com.cleanroommc.modularui.widget.sizer.Area;
 import com.cleanroommc.modularui.widget.sizer.StandardResizer;

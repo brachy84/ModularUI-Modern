@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.value.IBoolValue;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.value.IBoolValue;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.theme.SelectableTheme;
 import com.cleanroommc.modularui.theme.WidgetTheme;

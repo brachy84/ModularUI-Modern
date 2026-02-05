@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.drawable;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 
 import static com.cleanroommc.modularui.drawable.UITexture.icon;
 

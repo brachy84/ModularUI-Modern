@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.integration.jei.handler;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.core.mixins.jei.IngredientListOverlayAccessor;
 import com.cleanroommc.modularui.integration.jei.GTJEIPlugin;
 import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;

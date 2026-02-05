@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 import org.jetbrains.annotations.ApiStatus;
 

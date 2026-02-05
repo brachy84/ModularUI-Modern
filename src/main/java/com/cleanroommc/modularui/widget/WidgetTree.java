@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.widget;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.widget.ISynced;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.widget.ISynced;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.FormattingUtil;

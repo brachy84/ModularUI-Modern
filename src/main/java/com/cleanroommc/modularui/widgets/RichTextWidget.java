@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.drawable.IHoverable;
-import com.cleanroommc.modularui.base.drawable.IRichTextBuilder;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.drawable.IHoverable;
+import com.cleanroommc.modularui.api.drawable.IRichTextBuilder;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.text.RichText;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
@@ -115,7 +115,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
 
     /**
      * Returns the currently hovered element of this rich text or {@code null} if none is hovered.
-     * Note that this method assumes, that the {@link com.cleanroommc.modularui.base.layout.IViewportStack
+     * Note that this method assumes, that the {@link com.cleanroommc.modularui.api.layout.IViewportStack
      * IViewportStack}
      * is transformed to this widget.
      *
@@ -128,7 +128,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
 
     /**
      * Returns the currently hovered element of this rich text or {@code null} if none is hovered.
-     * Note that this method assumes, that the {@link com.cleanroommc.modularui.base.layout.IViewportStack
+     * Note that this method assumes, that the {@link com.cleanroommc.modularui.api.layout.IViewportStack
      * IViewportStack}
      * is transformed to this widget.
      *

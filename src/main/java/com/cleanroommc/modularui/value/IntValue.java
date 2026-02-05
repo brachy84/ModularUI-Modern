@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IDoubleValue;
-import com.cleanroommc.modularui.base.value.IIntValue;
-import com.cleanroommc.modularui.base.value.IStringValue;
+import com.cleanroommc.modularui.api.value.IDoubleValue;
+import com.cleanroommc.modularui.api.value.IIntValue;
+import com.cleanroommc.modularui.api.value.IStringValue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntConsumer;

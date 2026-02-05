@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.factory;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.UIFactory;
-import com.cleanroommc.modularui.base.XeiSettings;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.UIFactory;
+import com.cleanroommc.modularui.api.XeiSettings;
 import com.cleanroommc.modularui.network.MUINetwork;
 import com.cleanroommc.modularui.network.ModularNetwork;
 import com.cleanroommc.modularui.network.packets.OpenGuiPacket;

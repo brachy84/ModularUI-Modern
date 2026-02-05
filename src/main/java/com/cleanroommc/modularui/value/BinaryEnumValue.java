@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IBoolValue;
+import com.cleanroommc.modularui.api.value.IBoolValue;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

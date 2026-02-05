@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.utils;
 
-import com.cleanroommc.modularui.base.layout.IViewportStack;
+import com.cleanroommc.modularui.api.layout.IViewportStack;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.widget.sizer.Area;
 

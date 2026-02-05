@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.utils.Rectangle;
 
 import net.minecraft.client.gui.GuiGraphics;

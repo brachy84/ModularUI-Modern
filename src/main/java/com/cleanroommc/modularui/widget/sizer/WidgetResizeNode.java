@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget.sizer;
 
-import com.cleanroommc.modularui.base.layout.ILayoutWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.layout.ILayoutWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 import java.util.Objects;
 

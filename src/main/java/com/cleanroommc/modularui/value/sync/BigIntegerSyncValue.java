@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.value.IStringValue;
+import com.cleanroommc.modularui.api.value.IStringValue;
 import com.cleanroommc.modularui.utils.ICopy;
 import com.cleanroommc.modularui.utils.serialization.network.ByteBufAdapters;
 

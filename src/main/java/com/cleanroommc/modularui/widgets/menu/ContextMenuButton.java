@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets.menu;
 
-import com.cleanroommc.modularui.base.widget.IPositioned;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IPositioned;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;
 
 import java.util.function.Consumer;

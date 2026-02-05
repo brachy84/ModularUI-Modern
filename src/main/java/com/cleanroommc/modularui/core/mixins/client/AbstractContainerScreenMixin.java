@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.core.mixins.client;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.screen.IClickableContainerScreen;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

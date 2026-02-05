@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget.sizer;
 
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.widgets.layout.IExpander;
 
 public class ExpanderResizer extends StandardResizer implements IExpander {

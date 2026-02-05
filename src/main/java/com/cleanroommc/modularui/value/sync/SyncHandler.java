@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.IPacketWriter;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.IPacketWriter;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
 import com.cleanroommc.modularui.network.ModularNetwork;
 import com.cleanroommc.modularui.network.ModularNetworkSide;
 

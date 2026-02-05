@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.value.sync.IValueSyncHandler;
+import com.cleanroommc.modularui.api.value.sync.IValueSyncHandler;
 
 import net.minecraft.network.FriendlyByteBuf;
 

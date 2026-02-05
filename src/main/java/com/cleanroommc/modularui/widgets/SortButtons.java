@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.widget.Widget;

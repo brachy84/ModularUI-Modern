@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.theme;
 
-import com.cleanroommc.modularui.base.IThemeApi;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
+import com.cleanroommc.modularui.api.IThemeApi;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.DrawableSerialization;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.utils.serialization.json.JsonBuilder;

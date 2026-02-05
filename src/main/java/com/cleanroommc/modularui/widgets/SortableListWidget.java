@@ -2,8 +2,8 @@ package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.animation.Animator;
-import com.cleanroommc.modularui.base.widget.IValueWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IValueWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.screen.viewport.LocatedWidget;
 import com.cleanroommc.modularui.utils.ObjectList;

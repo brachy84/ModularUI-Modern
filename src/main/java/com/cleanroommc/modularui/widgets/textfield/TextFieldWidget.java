@@ -1,11 +1,11 @@
 package com.cleanroommc.modularui.widgets.textfield;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.drawable.ITextLine;
-import com.cleanroommc.modularui.base.value.IStringValue;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
+import com.cleanroommc.modularui.api.value.IStringValue;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.MathUtil;
@@ -236,7 +236,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
      * Normally, Tooltips on text field widgets are used to display the contents of the widget when the scrollbar is
      * active
      * This value is an override, that allows the methods provided by
-     * {@link com.cleanroommc.modularui.base.widget.ITooltip} to be used
+     * {@link com.cleanroommc.modularui.api.widget.ITooltip} to be used
      * Every method that adds a tooltip from ITooltip is overridden to enable the tooltipOverride
      *
      * @param value - sets the tooltip override on or off

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.network.packets;
 
-import com.cleanroommc.modularui.base.MCHelper;
+import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.network.MUINetwork;
 import com.cleanroommc.modularui.network.ModularNetwork;
 

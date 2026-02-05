@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget.sizer;
 
 import com.cleanroommc.modularui.animation.IAnimatable;
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 import com.cleanroommc.modularui.utils.Interpolations;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 

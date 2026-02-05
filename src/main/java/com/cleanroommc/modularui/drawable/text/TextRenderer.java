@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.drawable.text;
 
-import com.cleanroommc.modularui.base.drawable.ITextLine;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
 import com.cleanroommc.modularui.core.mixins.client.StringSplitterAccessor;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.utils.Alignment;

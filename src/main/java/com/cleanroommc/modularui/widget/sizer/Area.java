@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widget.sizer;
 
 import com.cleanroommc.modularui.animation.IAnimatable;
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.layout.IViewportStack;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.layout.IViewportStack;
 import com.cleanroommc.modularui.utils.Interpolations;
 import com.cleanroommc.modularui.utils.MathUtil;
 import com.cleanroommc.modularui.utils.Point;
@@ -245,7 +245,7 @@ public class Area extends Rectangle implements IAnimatable<Area> {
 
     /**
      * Check whether given position is inside the rect.
-     * Use {@link com.cleanroommc.modularui.base.widget.IWidget#isInside(IViewportStack, int, int)} rather than
+     * Use {@link com.cleanroommc.modularui.api.widget.IWidget#isInside(IViewportStack, int, int)} rather than
      * this!
      */
     public boolean isInside(int x, int y) {
@@ -254,7 +254,7 @@ public class Area extends Rectangle implements IAnimatable<Area> {
 
     /**
      * Check whether given point is inside the rect.
-     * Use {@link com.cleanroommc.modularui.base.widget.IWidget#isInside(IViewportStack, int, int)} rather than
+     * Use {@link com.cleanroommc.modularui.api.widget.IWidget#isInside(IViewportStack, int, int)} rather than
      * this!
      */
     public boolean isInside(Point point) {

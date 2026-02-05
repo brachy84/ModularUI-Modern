@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget.wrapper;
 
-import com.cleanroommc.modularui.base.widget.IFocusedWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IFocusedWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.widget.EmptyWidget;

@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.drawable;
 
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.WidgetTheme;
 import com.cleanroommc.modularui.utils.Alignment;

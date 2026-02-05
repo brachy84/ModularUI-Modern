@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.ITheme;
+import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.integration.xei.entry.EntryList;
 import com.cleanroommc.modularui.integration.xei.entry.fluid.FluidStackList;

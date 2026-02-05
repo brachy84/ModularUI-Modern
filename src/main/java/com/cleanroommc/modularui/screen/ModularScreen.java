@@ -1,12 +1,12 @@
 package com.cleanroommc.modularui.screen;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.IThemeApi;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.widget.IGuiAction;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.IThemeApi;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.widget.IGuiAction;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.overlay.OverlayScreenWrapper;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
@@ -394,7 +394,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is pressed. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onMousePressed(double, double, int)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onMousePressed(double, double, int)
      * Interactable#onMousePressed(double, double, int)} on every widget under
      * the mouse after gui action listeners have been called. Will try to focus widgets that have been interacted with.
      * Focused widgets will be interacted with first in other interaction methods (mouse scroll, release and drag, key
@@ -425,7 +425,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is released. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onMouseReleased(double, double, int)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onMouseReleased(double, double, int)
      * Interactable#onMouseRelease(int)} on every widget under
      * the mouse after gui action listeners have been called.
      *
@@ -455,7 +455,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is pressed. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onKeyPressed(int, int, int)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onKeyPressed(int, int, int)
      * Interactable#onKeyPressed(int, int, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
@@ -482,7 +482,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is released. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onKeyReleased(int, int, int)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onKeyReleased(int, int, int)
      * Interactable#onKeyRelease(int, int, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
@@ -509,7 +509,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is released. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onCharTyped(char, int)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onCharTyped(char, int)
      * Interactable#onCharTyped(char, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
@@ -535,7 +535,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is released. Tries to invoke
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onMouseScrolled(double, double, double)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onMouseScrolled(double, double, double)
      * Interactable#onMouseScrolled(double, double, double)} on every widget under
      * the mouse after gui action listeners have been called.
      *
@@ -562,7 +562,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called every time the mouse pos changes and a mouse button is held down. Invokes
-     * {@link com.cleanroommc.modularui.base.widget.Interactable#onMouseDrag(double, double, int, double, double)
+     * {@link com.cleanroommc.modularui.api.widget.Interactable#onMouseDrag(double, double, int, double, double)
      * Interactable#onMouseDrag(double, double, int, double, double)} on every widget
      * under the mouse after gui action listeners have been called.
      *
@@ -592,7 +592,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called with {@code true} after a widget which implements
-     * {@link com.cleanroommc.modularui.base.widget.IFocusedWidget IFocusedWidget}
+     * {@link com.cleanroommc.modularui.api.widget.IFocusedWidget IFocusedWidget}
      * has consumed a mouse press and called with {@code false} if a widget is currently focused and anything else has
      * consumed a mouse
      * press. This is required for other mods like JEI/EMI to not interfere with inputs.

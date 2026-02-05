@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.drawable;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IJsonSerializable;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.IJsonSerializable;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.utils.ObjectList;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 

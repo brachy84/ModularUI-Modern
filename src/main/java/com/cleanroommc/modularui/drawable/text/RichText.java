@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.drawable.text;
 
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.drawable.IRichTextBuilder;
-import com.cleanroommc.modularui.base.drawable.ITextLine;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IRichTextBuilder;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
 import com.cleanroommc.modularui.component.DrawableTooltipComponent;
 import com.cleanroommc.modularui.component.TooltipComponentIcon;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
@@ -341,7 +341,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     /**
      * Returns the currently hovered element of this rich text or {@code null} if none is hovered.
-     * Note that this method assumes, that the {@link com.cleanroommc.modularui.base.layout.IViewportStack
+     * Note that this method assumes, that the {@link com.cleanroommc.modularui.api.layout.IViewportStack
      * IViewportStack}
      * is transformed to 0,0 of this {@link IDrawable}.
      *

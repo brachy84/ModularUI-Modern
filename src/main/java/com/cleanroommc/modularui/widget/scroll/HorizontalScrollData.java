@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget.scroll;
 
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.WidgetTheme;

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui;
 
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 import lombok.Getter;
 import org.apache.logging.log4j.Level;

@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.screen;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.UIFactory;
-import com.cleanroommc.modularui.base.XeiSettings;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.UIFactory;
+import com.cleanroommc.modularui.api.XeiSettings;
 import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.PosGuiData;
 

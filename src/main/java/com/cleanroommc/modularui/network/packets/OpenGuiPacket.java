@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.network.packets;
 
-import com.cleanroommc.modularui.base.UIFactory;
+import com.cleanroommc.modularui.api.UIFactory;
 import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.GuiManager;
 import com.cleanroommc.modularui.network.MUINetwork;

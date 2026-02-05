@@ -1,7 +1,6 @@
 package com.cleanroommc.modularui.factory.inventory;
 
-import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.MCHelper;
+import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.test.TestItem;
 

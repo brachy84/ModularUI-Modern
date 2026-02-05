@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.widget.ISynced;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.ISynced;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.SlotGroup;

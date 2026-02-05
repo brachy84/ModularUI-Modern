@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.utils.serialization.json;
 
-import com.cleanroommc.modularui.base.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.DrawableSerialization;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;

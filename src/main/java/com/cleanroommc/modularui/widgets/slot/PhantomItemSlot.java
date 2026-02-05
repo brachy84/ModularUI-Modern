@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets.slot;
 
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
 import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
 import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;

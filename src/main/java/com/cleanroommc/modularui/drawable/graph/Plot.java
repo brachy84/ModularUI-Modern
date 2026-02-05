@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.drawable.graph;
 
 import com.cleanroommc.modularui.GTRenderTypes;
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.utils.DAM;

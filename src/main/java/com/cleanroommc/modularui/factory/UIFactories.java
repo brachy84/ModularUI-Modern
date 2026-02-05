@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.factory;
 
-import com.cleanroommc.modularui.base.IUIHolder;
+import com.cleanroommc.modularui.api.IUIHolder;
 
 import net.minecraft.resources.ResourceLocation;
 

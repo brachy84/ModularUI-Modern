@@ -2,11 +2,11 @@ package com.cleanroommc.modularui.overlay;
 
 import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.value.IBoolValue;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.value.IBoolValue;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.NamedDrawableRow;
 import com.cleanroommc.modularui.drawable.Rectangle;

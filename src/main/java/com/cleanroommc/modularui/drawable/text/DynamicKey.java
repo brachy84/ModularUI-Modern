@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.drawable.text;
 
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IKey;
 
 import net.minecraft.network.chat.MutableComponent;
 

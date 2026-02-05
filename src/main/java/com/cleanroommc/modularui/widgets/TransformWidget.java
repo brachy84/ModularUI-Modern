@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.layout.IViewportStack;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.layout.IViewportStack;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.widget.DelegatingWidget;
 
 import org.joml.Matrix4f;

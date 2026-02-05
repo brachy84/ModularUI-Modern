@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.utils;
 
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.widget.Interactable;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;

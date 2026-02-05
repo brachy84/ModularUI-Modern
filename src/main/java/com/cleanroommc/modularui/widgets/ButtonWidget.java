@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.IThemeApi;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.widget.IGuiAction;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.IThemeApi;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.widget.IGuiAction;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.theme.WidgetThemeEntry;
 import com.cleanroommc.modularui.value.sync.InteractionSyncHandler;

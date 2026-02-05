@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets.layout;
 
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 
 public interface IExpander {
 

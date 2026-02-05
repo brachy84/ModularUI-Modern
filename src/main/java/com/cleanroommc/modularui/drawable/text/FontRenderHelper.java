@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.drawable.text;
 
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.drawable.IKey;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;

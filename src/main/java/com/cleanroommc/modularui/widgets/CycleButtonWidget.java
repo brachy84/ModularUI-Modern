@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.value.IIntValue;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.value.IIntValue;
 import com.cleanroommc.modularui.screen.RichTooltip;
 
 import java.util.function.Consumer;
@@ -11,9 +11,9 @@ import java.util.function.Consumer;
  * state.
  * <p>
  * Note that you need to set the amount of states before setting any state backgrounds etc. The state count is
- * automatically set, if the passed {@link com.cleanroommc.modularui.base.value.IIntValue} is a
- * {@link com.cleanroommc.modularui.base.value.IEnumValue IEnumValue} or a
- * {@link com.cleanroommc.modularui.base.value.IBoolValue IBoolValue}.
+ * automatically set, if the passed {@link com.cleanroommc.modularui.api.value.IIntValue} is a
+ * {@link com.cleanroommc.modularui.api.value.IEnumValue IEnumValue} or a
+ * {@link com.cleanroommc.modularui.api.value.IBoolValue IBoolValue}.
  * </p>
  *
  * @see ToggleButton

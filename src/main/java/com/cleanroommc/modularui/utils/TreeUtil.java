@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.utils;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.ITreeNode;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.ITreeNode;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.widget.sizer.ResizeNode;
 

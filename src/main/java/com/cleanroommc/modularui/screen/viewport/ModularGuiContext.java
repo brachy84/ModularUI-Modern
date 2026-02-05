@@ -1,13 +1,13 @@
 package com.cleanroommc.modularui.screen.viewport;
 
 import com.cleanroommc.modularui.CursorHandler;
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.widget.IDraggable;
-import com.cleanroommc.modularui.base.widget.IFocusedWidget;
-import com.cleanroommc.modularui.base.widget.IVanillaSlot;
-import com.cleanroommc.modularui.base.widget.IWidget;
-import com.cleanroommc.modularui.base.widget.ResizeDragArea;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.widget.IDraggable;
+import com.cleanroommc.modularui.api.widget.IFocusedWidget;
+import com.cleanroommc.modularui.api.widget.IVanillaSlot;
+import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.ResizeDragArea;
 import com.cleanroommc.modularui.screen.DraggablePanelWrapper;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;

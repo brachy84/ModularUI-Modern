@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.utils;
 
-import com.cleanroommc.modularui.base.drawable.IInterpolation;
+import com.cleanroommc.modularui.api.drawable.IInterpolation;
 
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;

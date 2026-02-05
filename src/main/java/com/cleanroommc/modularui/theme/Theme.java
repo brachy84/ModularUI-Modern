@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.theme;
 
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.IThemeApi;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.IThemeApi;
 
 import org.jetbrains.annotations.UnmodifiableView;
 

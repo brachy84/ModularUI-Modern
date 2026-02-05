@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.drawable;
 
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 
 import lombok.Getter;
 

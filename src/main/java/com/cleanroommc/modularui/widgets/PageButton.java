@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.DrawableStack;
 import com.cleanroommc.modularui.drawable.TabTexture;
 import com.cleanroommc.modularui.theme.SelectableTheme;

@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.widgets.textfield;
 
 import com.cleanroommc.modularui.ModularUIConfig;
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.widget.IFocusedWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.widget.IFocusedWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.TextFieldTheme;
 import com.cleanroommc.modularui.theme.WidgetTheme;

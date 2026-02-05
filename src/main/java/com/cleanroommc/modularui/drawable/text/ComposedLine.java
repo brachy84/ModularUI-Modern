@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.drawable.text;
 
-import com.cleanroommc.modularui.base.IThemeApi;
-import com.cleanroommc.modularui.base.drawable.IHoverable;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.drawable.ITextLine;
+import com.cleanroommc.modularui.api.IThemeApi;
+import com.cleanroommc.modularui.api.drawable.IHoverable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;

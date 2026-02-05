@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.value.IValue;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.value.IValue;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.value.ObjectValue;
 

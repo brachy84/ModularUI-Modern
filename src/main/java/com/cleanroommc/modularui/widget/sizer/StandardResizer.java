@@ -1,13 +1,13 @@
 package com.cleanroommc.modularui.widget.sizer;
 
 import com.cleanroommc.modularui.GuiError;
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.layout.ILayoutWidget;
-import com.cleanroommc.modularui.base.layout.IResizeable;
-import com.cleanroommc.modularui.base.widget.IDelegatingWidget;
-import com.cleanroommc.modularui.base.widget.IPositioned;
-import com.cleanroommc.modularui.base.widget.IVanillaSlot;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.layout.ILayoutWidget;
+import com.cleanroommc.modularui.api.layout.IResizeable;
+import com.cleanroommc.modularui.api.widget.IDelegatingWidget;
+import com.cleanroommc.modularui.api.widget.IPositioned;
+import com.cleanroommc.modularui.api.widget.IVanillaSlot;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.core.mixins.client.SlotAccessor;
 import com.cleanroommc.modularui.utils.Alignment;
 

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.integration.rei.handler;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.screen.ModularScreen;
 
 import me.shedaniel.math.Rectangle;

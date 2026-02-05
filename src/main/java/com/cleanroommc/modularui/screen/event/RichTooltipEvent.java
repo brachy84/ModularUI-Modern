@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen.event;
 
-import com.cleanroommc.modularui.base.drawable.IRichTextBuilder;
+import com.cleanroommc.modularui.api.drawable.IRichTextBuilder;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.screen;
 
 import com.cleanroommc.modularui.ModularUIConfig;
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.drawable.IRichTextBuilder;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.drawable.IRichTextBuilder;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.drawable.text.RichText;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;

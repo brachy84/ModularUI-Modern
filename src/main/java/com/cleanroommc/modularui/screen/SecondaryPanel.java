@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.base.IPanelHandler;
-import com.cleanroommc.modularui.base.MCHelper;
+import com.cleanroommc.modularui.api.IPanelHandler;
+import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.widget.WidgetTree;
 
 import net.minecraft.world.entity.player.Player;

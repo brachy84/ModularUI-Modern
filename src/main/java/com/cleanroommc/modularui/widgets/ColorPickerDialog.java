@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.HueBar;
 import com.cleanroommc.modularui.drawable.Rectangle;

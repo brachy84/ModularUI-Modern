@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.factory;
 
-import com.cleanroommc.modularui.base.IUIHolder;
-import com.cleanroommc.modularui.base.UIFactory;
+import com.cleanroommc.modularui.api.IUIHolder;
+import com.cleanroommc.modularui.api.UIFactory;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.UISettings;

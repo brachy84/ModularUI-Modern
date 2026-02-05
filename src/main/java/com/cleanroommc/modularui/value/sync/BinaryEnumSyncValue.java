@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.value.sync.IBoolSyncValue;
+import com.cleanroommc.modularui.api.value.sync.IBoolSyncValue;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

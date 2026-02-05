@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.drawable.text;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.drawable.ITextLine;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
 import com.cleanroommc.modularui.drawable.DelegateIcon;
 import com.cleanroommc.modularui.drawable.Icon;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;

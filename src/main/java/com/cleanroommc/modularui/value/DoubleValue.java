@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IDoubleValue;
-import com.cleanroommc.modularui.base.value.IFloatValue;
-import com.cleanroommc.modularui.base.value.IStringValue;
+import com.cleanroommc.modularui.api.value.IDoubleValue;
+import com.cleanroommc.modularui.api.value.IFloatValue;
+import com.cleanroommc.modularui.api.value.IStringValue;
 
 import com.google.common.util.concurrent.AtomicDouble;
 

@@ -1,10 +1,10 @@
 package com.cleanroommc.modularui.widgets.slot;
 
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
 import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;

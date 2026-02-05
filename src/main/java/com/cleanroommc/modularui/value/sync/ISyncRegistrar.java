@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.value.sync;
 
-import com.cleanroommc.modularui.base.IPanelHandler;
-import com.cleanroommc.modularui.base.ISyncedAction;
+import com.cleanroommc.modularui.api.IPanelHandler;
+import com.cleanroommc.modularui.api.ISyncedAction;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import com.cleanroommc.modularui.widgets.slot.PlayerSlotGroup;
 import com.cleanroommc.modularui.widgets.slot.SlotGroup;

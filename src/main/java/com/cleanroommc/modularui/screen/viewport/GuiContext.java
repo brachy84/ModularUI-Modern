@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.MCHelper;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ClientScreenHandler;
 import com.cleanroommc.modularui.utils.Stencil;
 import com.cleanroommc.modularui.widget.sizer.Area;

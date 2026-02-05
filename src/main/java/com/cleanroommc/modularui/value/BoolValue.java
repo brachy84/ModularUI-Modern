@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IBoolValue;
-import com.cleanroommc.modularui.base.value.IIntValue;
-import com.cleanroommc.modularui.base.value.IStringValue;
+import com.cleanroommc.modularui.api.value.IBoolValue;
+import com.cleanroommc.modularui.api.value.IIntValue;
+import com.cleanroommc.modularui.api.value.IStringValue;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 

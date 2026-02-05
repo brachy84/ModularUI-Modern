@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.base.layout.IViewport;
-import com.cleanroommc.modularui.base.layout.IViewportStack;
+import com.cleanroommc.modularui.api.layout.IViewport;
+import com.cleanroommc.modularui.api.layout.IViewportStack;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
 import com.mojang.blaze3d.vertex.PoseStack;

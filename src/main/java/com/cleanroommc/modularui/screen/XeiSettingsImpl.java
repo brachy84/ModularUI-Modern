@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.base.XeiSettings;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.XeiSettings;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.integration.xei.XeiState;
 import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
 import com.cleanroommc.modularui.utils.Rectangle;

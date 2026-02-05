@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.theme;
 
-import com.cleanroommc.modularui.base.IThemeApi;
+import com.cleanroommc.modularui.api.IThemeApi;
 
 import com.google.gson.JsonObject;
 

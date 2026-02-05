@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.schemarenderer;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.Icon;
 import com.cleanroommc.modularui.integration.embeddium.MUIEmbeddiumCompat;
 import com.cleanroommc.modularui.schema.ISchema;

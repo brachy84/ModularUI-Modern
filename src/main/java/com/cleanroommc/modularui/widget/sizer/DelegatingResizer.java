@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widget.sizer;
 
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 public class DelegatingResizer extends StandardResizer {
 

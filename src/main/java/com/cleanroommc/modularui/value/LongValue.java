@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IIntValue;
-import com.cleanroommc.modularui.base.value.ILongValue;
-import com.cleanroommc.modularui.base.value.IStringValue;
+import com.cleanroommc.modularui.api.value.IIntValue;
+import com.cleanroommc.modularui.api.value.ILongValue;
+import com.cleanroommc.modularui.api.value.IStringValue;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongConsumer;

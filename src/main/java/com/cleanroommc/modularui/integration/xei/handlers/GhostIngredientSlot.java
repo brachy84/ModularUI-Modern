@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.integration.xei.handlers;
 
-import com.cleanroommc.modularui.base.widget.IGuiElement;
+import com.cleanroommc.modularui.api.widget.IGuiElement;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.utils.Color;

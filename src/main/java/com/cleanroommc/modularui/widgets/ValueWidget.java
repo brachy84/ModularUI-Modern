@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.widget.IValueWidget;
+import com.cleanroommc.modularui.api.widget.IValueWidget;
 import com.cleanroommc.modularui.widget.Widget;
 
 import lombok.Getter;

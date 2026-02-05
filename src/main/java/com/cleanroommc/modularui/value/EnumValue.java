@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IEnumValue;
-import com.cleanroommc.modularui.base.value.IIntValue;
+import com.cleanroommc.modularui.api.value.IEnumValue;
+import com.cleanroommc.modularui.api.value.IIntValue;
 
 import lombok.Getter;
 import lombok.Setter;

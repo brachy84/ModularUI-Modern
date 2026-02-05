@@ -3,8 +3,8 @@ package com.cleanroommc.modularui.widget.sizer;
 import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.GuiError;
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.GuiAxis;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.GuiAxis;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 import lombok.Getter;
 import lombok.Setter;

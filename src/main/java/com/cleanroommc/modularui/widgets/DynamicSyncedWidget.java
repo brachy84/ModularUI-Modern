@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.value.sync.DynamicLinkedSyncHandler;
 import com.cleanroommc.modularui.value.sync.DynamicSyncHandler;
 import com.cleanroommc.modularui.value.sync.IDynamicSyncNotifiable;

@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.utils;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.drawable.IInterpolation;
+import com.cleanroommc.modularui.api.drawable.IInterpolation;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.util.Mth;

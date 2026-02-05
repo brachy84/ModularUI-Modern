@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widgets;
 
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 import java.util.ArrayList;
 import java.util.List;

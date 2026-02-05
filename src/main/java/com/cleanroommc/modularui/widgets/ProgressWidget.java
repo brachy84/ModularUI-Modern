@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.ModularUIConfig;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.value.IDoubleValue;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.value.IDoubleValue;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;

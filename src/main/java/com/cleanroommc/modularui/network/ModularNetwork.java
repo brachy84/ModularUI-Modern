@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.network;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.utils.NetworkUtils;
 import com.cleanroommc.modularui.value.sync.ModularSyncManager;
 

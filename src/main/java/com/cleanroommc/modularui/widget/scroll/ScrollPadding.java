@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.widget.scroll;
 
-import com.cleanroommc.modularui.base.GuiAxis;
+import com.cleanroommc.modularui.api.GuiAxis;
 import com.cleanroommc.modularui.utils.Interpolations;
 import com.cleanroommc.modularui.widget.sizer.Box;
 

@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.drawable;
 
-import com.cleanroommc.modularui.base.drawable.IHoverable;
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.widget.ITooltip;
+import com.cleanroommc.modularui.api.drawable.IHoverable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.widget.ITooltip;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.widget.sizer.Area;
 

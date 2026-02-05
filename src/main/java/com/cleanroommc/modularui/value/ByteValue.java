@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.value;
 
-import com.cleanroommc.modularui.base.value.IByteValue;
+import com.cleanroommc.modularui.api.value.IByteValue;
 
 public class ByteValue implements IByteValue<Byte> {
 

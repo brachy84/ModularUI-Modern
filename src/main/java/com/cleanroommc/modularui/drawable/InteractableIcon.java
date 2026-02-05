@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.drawable;
 
-import com.cleanroommc.modularui.base.drawable.IIcon;
-import com.cleanroommc.modularui.base.widget.IGuiAction;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.drawable.IIcon;
+import com.cleanroommc.modularui.api.widget.IGuiAction;
+import com.cleanroommc.modularui.api.widget.Interactable;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;

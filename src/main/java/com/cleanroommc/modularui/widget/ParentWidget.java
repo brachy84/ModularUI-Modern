@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.widget;
 
-import com.cleanroommc.modularui.base.widget.IParentWidget;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IParentWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
 
 /**
  * A widget which can hold any amount of children.

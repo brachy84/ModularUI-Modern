@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widget;
 
-import com.cleanroommc.modularui.base.widget.IDelegatingWidget;
-import com.cleanroommc.modularui.base.widget.INotifyEnabled;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.IDelegatingWidget;
+import com.cleanroommc.modularui.api.widget.INotifyEnabled;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;

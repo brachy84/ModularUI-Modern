@@ -2,10 +2,10 @@ package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.animation.Animator;
 import com.cleanroommc.modularui.animation.MutableObjectAnimator;
-import com.cleanroommc.modularui.base.drawable.IInterpolation;
-import com.cleanroommc.modularui.base.layout.IViewport;
-import com.cleanroommc.modularui.base.widget.IWidget;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.drawable.IInterpolation;
+import com.cleanroommc.modularui.api.layout.IViewport;
+import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.Interpolation;
 import com.cleanroommc.modularui.utils.Rectangle;

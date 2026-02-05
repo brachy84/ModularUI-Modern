@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.overlay;
 
 import com.cleanroommc.modularui.ModularUIConfig;
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ClientScreenHandler;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.OpenScreenEvent;

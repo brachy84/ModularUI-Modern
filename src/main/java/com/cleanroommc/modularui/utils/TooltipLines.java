@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.utils;
 
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.text.FontRenderHelper;
 import com.cleanroommc.modularui.drawable.text.TextIcon;
 

@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.test;
 
-import com.cleanroommc.modularui.base.IPanelHandler;
-import com.cleanroommc.modularui.base.IUIHolder;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.IPanelHandler;
+import com.cleanroommc.modularui.api.IUIHolder;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.drawable.Rectangle;
 import com.cleanroommc.modularui.factory.PlayerInventoryGuiData;

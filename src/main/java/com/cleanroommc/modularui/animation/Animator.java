@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.animation;
 
-import com.cleanroommc.modularui.base.drawable.IInterpolation;
+import com.cleanroommc.modularui.api.drawable.IInterpolation;
 import com.cleanroommc.modularui.utils.Interpolation;
 
 import lombok.Getter;

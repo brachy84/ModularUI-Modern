@@ -1,16 +1,16 @@
 package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.ITheme;
-import com.cleanroommc.modularui.base.drawable.IDrawable;
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.drawable.ITextLine;
-import com.cleanroommc.modularui.base.value.IBoolValue;
-import com.cleanroommc.modularui.base.value.IEnumValue;
-import com.cleanroommc.modularui.base.value.IIntValue;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.widget.IWidget;
-import com.cleanroommc.modularui.base.widget.Interactable;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.ITextLine;
+import com.cleanroommc.modularui.api.value.IBoolValue;
+import com.cleanroommc.modularui.api.value.IEnumValue;
+import com.cleanroommc.modularui.api.value.IIntValue;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.theme.WidgetThemeEntry;

@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.base.layout.IViewport;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.layout.IViewport;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.screen.ModularPanel;
 
 import it.unimi.dsi.fastutil.Hash;

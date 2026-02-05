@@ -4,7 +4,7 @@ import com.cleanroommc.modularui.animation.Animator;
 import com.cleanroommc.modularui.animation.IAnimator;
 import com.cleanroommc.modularui.animation.SequentialAnimator;
 import com.cleanroommc.modularui.animation.Wait;
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.WidgetTheme;

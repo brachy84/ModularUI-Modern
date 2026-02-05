@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.value.sync;
 
 import com.cleanroommc.modularui.ModularUI;
-import com.cleanroommc.modularui.base.value.sync.IBoolSyncValue;
-import com.cleanroommc.modularui.base.value.sync.IStringSyncValue;
+import com.cleanroommc.modularui.api.value.sync.IBoolSyncValue;
+import com.cleanroommc.modularui.api.value.sync.IStringSyncValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 

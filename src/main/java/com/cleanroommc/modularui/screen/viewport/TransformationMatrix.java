@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.base.layout.IViewport;
+import com.cleanroommc.modularui.api.layout.IViewport;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
 import lombok.Getter;

@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.widgets.menu;
 
-import com.cleanroommc.modularui.base.drawable.IKey;
-import com.cleanroommc.modularui.base.value.ISyncOrValue;
-import com.cleanroommc.modularui.base.value.IValue;
-import com.cleanroommc.modularui.base.widget.IWidget;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.value.ISyncOrValue;
+import com.cleanroommc.modularui.api.value.IValue;
+import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.utils.MutableSingletonList;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;

@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.integration.jei.handler;
 
-import com.cleanroommc.modularui.base.widget.IGuiElement;
+import com.cleanroommc.modularui.api.widget.IGuiElement;
 import com.cleanroommc.modularui.integration.jei.GTJEIPlugin;
 import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
 import com.cleanroommc.modularui.screen.ContainerScreenWrapper;

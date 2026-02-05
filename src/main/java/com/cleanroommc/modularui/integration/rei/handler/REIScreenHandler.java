@@ -1,7 +1,7 @@
 package com.cleanroommc.modularui.integration.rei.handler;
 
-import com.cleanroommc.modularui.base.IMuiScreen;
-import com.cleanroommc.modularui.base.widget.IGuiElement;
+import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.widget.IGuiElement;
 import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
 import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
 import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
