@@ -3,7 +3,7 @@ package com.cleanroommc.modularui.client.schemarenderer;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.drawable.Icon;
-import com.cleanroommc.modularui.integration.embeddium.MUIEmbeddiumCompat;
+import com.cleanroommc.modularui.integration.embeddium.SodiumCompat;
 import com.cleanroommc.modularui.schema.ISchema;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.WidgetTheme;
@@ -355,7 +355,7 @@ public class BaseSchemaRenderer implements IDrawable {
         RenderCompileResults compileResults = this.compileResults.get();
         if (compileResults != null && !compileResults.isEmpty(renderType)) {
             if (ModularUI.Mods.isSodiumLikeLoaded()) {
-                MUIEmbeddiumCompat.markSpritesAsActive(compileResults.activeFluidSprites);
+                SodiumCompat.markSpritesAsActive(compileResults.activeFluidSprites);
             }
 
             VertexBuffer vertexBuffer = getOrCreateChunkBuffers().get(renderType);
