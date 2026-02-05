@@ -16,9 +16,6 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
-import com.tterrag.registrate.Registrate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -35,8 +32,6 @@ public class ModularUI {
     private static final ResourceLocation TEMPLATE_LOCATION = new ResourceLocation(MOD_ID, "");
 
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-
-    public static final Supplier<Registrate> REG = Suppliers.memoize(() -> Registrate.create(ModularUI.MOD_ID));
 
     public ModularUI() {
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);

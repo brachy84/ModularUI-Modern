@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.MUIMenuTypes;
+import com.cleanroommc.modularui.ModularUIMenuTypes;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.core.mixins.client.AbstractContainerMenuAccessor;
 import com.cleanroommc.modularui.factory.GuiData;
@@ -16,7 +16,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,12 +63,11 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     private ModularScreen optionalScreen;
 
     public ModularContainerMenu(int containerId) {
-        super(MUIMenuTypes.MODULAR_CONTAINER.get(), containerId);
+        super(ModularUIMenuTypes.MODULAR_CONTAINER.get(), containerId);
     }
 
-    public <T extends GuiData> ModularContainerMenu(MenuType<ModularContainerMenu> type, int containerId,
-                                                    Inventory playerInv, @Nullable FriendlyByteBuf data) {
-        super(type, containerId);
+    public <T extends GuiData> ModularContainerMenu(int containerId, Inventory playerInv, @Nullable FriendlyByteBuf data) {
+        this(containerId);
         // TODO: Better integration with menu types for custom containers and screens.
         throw new IllegalArgumentException("Do not open the modular container the forge way. Use an UIFactory!");
     }

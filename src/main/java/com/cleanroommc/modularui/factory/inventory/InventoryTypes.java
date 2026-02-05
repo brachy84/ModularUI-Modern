@@ -12,9 +12,6 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.util.entry.ItemEntry;
-import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -24,13 +21,6 @@ import java.util.Collections;
 import java.util.Map;
 
 public final class InventoryTypes {
-
-    // TODO move these 3 methods to proper place
-    public static final ItemEntry<TestItem> TEST_ITEM = ModularUI.REG.get().item("mui_test_item", TestItem::new)
-            //.tab(GTCreativeModeTabs.ITEM.getKey())
-            .setData(ProviderType.LANG, NonNullBiConsumer.noop())
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .register();
 
     @ApiStatus.Internal
     public static void init() {

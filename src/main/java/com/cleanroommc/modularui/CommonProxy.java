@@ -5,7 +5,7 @@ import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.network.MUINetwork;
 import com.cleanroommc.modularui.screen.ModularContainerMenu;
-import com.cleanroommc.modularui.test.EventHandler;
+import com.cleanroommc.modularui.test.ModularUIItems;
 import com.cleanroommc.modularui.theme.ThemeManager;
 
 import net.minecraft.commands.Commands;
@@ -16,18 +16,14 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 
 public class CommonProxy {
 
     public CommonProxy() {
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.register(this);
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
@@ -39,7 +35,8 @@ public class CommonProxy {
 
     public void init() {
         MUINetwork.init();
-        MUIMenuTypes.init();
+        ModularUIMenuTypes.init(modBus);
+        ModularUIItems.init(modBus);
     }
 
     @SubscribeEvent
