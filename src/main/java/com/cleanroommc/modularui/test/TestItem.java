@@ -102,7 +102,7 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
                                 .build()
                                 .align(Alignment.TopLeft)))
                 .child(SlotGroupWidget.playerInventory(false)))
-                .child(GuiTextures.ANIMATED_TEXTURE_TEST.asWidget().size(32).align(Alignment.CenterLeft).margin(7));
+                .child(GuiTextures.ANIMATED_TEXTURE_TEST.asWidget().size(32).align(Alignment.TopRight).margin(7));
 
         return panel;
     }
