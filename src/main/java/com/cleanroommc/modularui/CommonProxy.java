@@ -17,7 +17,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
 
 public class CommonProxy {
 
@@ -31,28 +30,11 @@ public class CommonProxy {
         /* MUI Initialization */
         UIFactories.init();
         InventoryTypes.init();
-    }
 
-    public void init() {
         MUINetwork.init();
         ModularUIMenuTypes.init(modBus);
         ModularUIItems.init(modBus);
     }
-
-    @SubscribeEvent
-    public void register(RegisterEvent event) {}
-
-    @SubscribeEvent
-    public void modConstruct(FMLConstructModEvent event) {
-        // this is done to delay initialization of content to be after KJS has set up.
-        event.enqueueWork(this::init);
-    }
-
-    @SubscribeEvent
-    public void commonSetup(FMLCommonSetupEvent event) {}
-
-    @SubscribeEvent
-    public void loadComplete(FMLLoadCompleteEvent e) {}
 
     public void onTick(TickEvent.PlayerTickEvent event) {
         if (event.player.containerMenu instanceof ModularContainerMenu containerMenu) {

@@ -91,7 +91,6 @@ public class MUINetwork {
     }
 
     public static void init() {
-
         register(OpenGuiPacket.class, OpenGuiPacket::new, null);
         register(SyncHandlerPacket.class, SyncHandlerPacket::new, null);
         register(CloseAllGuiPacket.class, CloseAllGuiPacket::new, null);
