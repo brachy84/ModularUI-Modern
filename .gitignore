@@ -24,3 +24,6 @@ src/generated/resources/.cache/
 *.patch
 *.DS_Store
 
+# Ignore GIMP/Photoshop/etc project files
+*.xcf
+*.psf
