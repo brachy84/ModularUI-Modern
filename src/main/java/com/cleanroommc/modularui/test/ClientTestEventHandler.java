@@ -59,7 +59,7 @@ public class ClientTestEventHandler {
 
     @SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
-        if (event.getEntity().level().isClientSide) {
+        if (event.getEntity().level().isClientSide && ModularUI.isDev()) {
             ItemStack itemStack = event.getItemStack();
             if (itemStack.getItem() == Items.DIAMOND) {
                 ClientGUI.open(new TestGuis());
@@ -74,7 +74,7 @@ public class ClientTestEventHandler {
 
     @SubscribeEvent
     public static void onRichTooltip(RichTooltipEvent.Pre event) {
-        if (enabledRichTooltipEventTest) {
+        if (enabledRichTooltipEventTest && ModularUI.isDev()) {
             event.getTooltip()
                     .add(IKey.str("Powered By: ").style(IKey.GOLD, IKey.ITALIC))
                     .add(GuiTextures.MUI_LOGO.asIcon().size(18)).newLine()
@@ -89,7 +89,9 @@ public class ClientTestEventHandler {
 
     @SubscribeEvent
     public static void onThemeReload(ReloadThemeEvent.Pre event) {
-        IThemeApi.get().registerTheme(testTheme);
+        if (ModularUI.isDev()) {
+            IThemeApi.get().registerTheme(testTheme);
+        }
     }
 
     @SubscribeEvent
