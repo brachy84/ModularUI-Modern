@@ -33,10 +33,9 @@ public class PlayerInventoryUIFactory extends AbstractUIFactory<PlayerInventoryG
 
     public void openFromCurios(Player player, String type, int index) {
         if (!ModularUI.Mods.CURIOS.isLoaded()) {
-            throw new IllegalArgumentException("Can't open UI for curios item when bauble is not loaded!");
+            throw new IllegalArgumentException("Can't open UI for curio item when curios is not loaded!");
         }
-        GuiManager.open(
-                this, PlayerInventoryGuiData.of(player, InventoryTypes.CURIOS, type, index), verifyServerSide(player));
+        GuiManager.open(this, PlayerInventoryGuiData.of(player, InventoryTypes.CURIOS, type, index), verifyServerSide(player));
     }
 
     public <T> void open(Player player, InventoryType<T> type, T context, int index) {
@@ -59,7 +58,7 @@ public class PlayerInventoryUIFactory extends AbstractUIFactory<PlayerInventoryG
     @SideOnly(Side.CLIENT)
     public void openFromCuriosClient(String type, int index) {
         if (!ModularUI.Mods.CURIOS.isLoaded()) {
-            throw new IllegalArgumentException("Can't open UI for baubles item when bauble is not loaded!");
+            throw new IllegalArgumentException("Can't open UI for curios item when curios is not loaded!");
         }
         GuiManager.openFromClient(
                 this, PlayerInventoryGuiData.of(MCHelper.getPlayer(), InventoryTypes.CURIOS, type, index));

@@ -168,24 +168,26 @@ public class ModularUI {
 
     public enum Mods {
 
-        //BAUBLES(ModIds.BAUBLES),
         //BLUR(ModIds.BLUR),
         //BOGOSORTER(ModIds.BOGOSORTER),
         CURIOS(ModIds.CURIOS),
-        EMBEDDIUM(ModIds.EMBEDDIUM),
         EMI(ModIds.EMI),
-        IRIS(ModIds.IRIS),
         JEI(ModIds.JEI),
+        REI(ModIds.REI),
         KUBEJS(ModIds.KUBEJS),
         //MODNAMETOOLTIP(ModIds.MODNAMETOOLTIP)
         //NEA(ModIds.NEA),
-        OCCULUS(ModIds.OCCULUS),
-        REI(ModIds.REI),
-        RUBIDIUM(ModIds.RUBIDIUM),
-        SODIUM(ModIds.SODIUM);
+        EMBEDDIUM(ModIds.EMBEDDIUM),
+        SODIUM(ModIds.SODIUM),
+        IRIS(ModIds.IRIS),
+        OCULUS(ModIds.OCULUS);
 
         public static boolean isSodiumLikeLoaded() {
-            return SODIUM.isLoaded() || RUBIDIUM.isLoaded() || EMBEDDIUM.isLoaded();
+            return SODIUM.isLoaded() || EMBEDDIUM.isLoaded();
+        }
+
+        public static boolean isIrisLikeLoaded() {
+            return IRIS.isLoaded() || OCULUS.isLoaded();
         }
 
         public static boolean isRecipeViewerLoaded() {
@@ -220,20 +222,18 @@ public class ModularUI {
 
     public static class ModIds {
 
-        public static final String BAUBLES = "baubles";
         public static final String BLUR = "blur";
         public static final String BOGOSORTER = "bogosorter";
         public static final String CURIOS = "curios";
-        public static final String EMBEDDIUM = "embeddium";
         public static final String EMI = "emi";
-        public static final String IRIS = "iris";
         public static final String JEI = "jei";
+        public static final String REI = "roughlyenoughitems";
         public static final String KUBEJS = "kubejs";
         public static final String MODNAMETOOLTIP = "modnametooltip";
         public static final String NEA = "neverenoughanimations";
-        public static final String OCCULUS = "occulus";
-        public static final String REI = "roughlyenoughitems";
-        public static final String RUBIDIUM = "rubidium";
+        public static final String IRIS = "iris";
+        public static final String OCULUS = "oculus";
         public static final String SODIUM = "sodium";
+        public static final String EMBEDDIUM = "embeddium";
     }
 }

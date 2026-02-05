@@ -70,7 +70,7 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
         if (!(itemHandler instanceof IItemHandlerModifiable ihm)) return null;
 
         // if the player slot is the slot with this item, then disallow any interaction
-        // if the item is not in the player inventory (bauble for example), then this items slot is not on the screen,
+        // if the item is not in the player inventory (curio for example), then this items slot is not on the screen,
         // and we don't need to limit accessibility
         if (data.getInventoryType() == InventoryTypes.PLAYER) {
             syncManager.bindPlayerInventory(data.getPlayer(), (inv, index) -> index == data.getSlotIndex() ?

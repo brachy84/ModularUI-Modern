@@ -19,8 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerInventoryGuiData<T> extends GuiData {
 
     public static <T> PlayerInventoryGuiData<T> of(@NotNull Player player, @NotNull InventoryType<T> inventoryType,
-                                                   T context,
-                                                   int slotIndex) {
+                                                   T context, int slotIndex) {
         return new PlayerInventoryGuiData<>(player, inventoryType, context, slotIndex);
     }
 
