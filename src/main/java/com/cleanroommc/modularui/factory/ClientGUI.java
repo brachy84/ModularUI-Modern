@@ -3,17 +3,17 @@ package com.cleanroommc.modularui.factory;
 import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.screen.ModularContainerMenu;
 import com.cleanroommc.modularui.screen.ModularScreen;
+import com.cleanroommc.modularui.screen.RecipeViewerSettingsImpl;
 import com.cleanroommc.modularui.screen.UISettings;
-import com.cleanroommc.modularui.screen.XeiSettingsImpl;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.function.IntFunction;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.IntFunction;
 
 /**
  * Helper class to open client only GUIs. This class is safe to use inside a Modular GUI.
@@ -39,7 +39,7 @@ public class ClientGUI {
      * @param screen      new modular screen
      * @param jeiSettings custom jei settings
      */
-    public static void open(@NotNull ModularScreen screen, @NotNull XeiSettingsImpl jeiSettings) {
+    public static void open(@NotNull ModularScreen screen, @NotNull RecipeViewerSettingsImpl jeiSettings) {
         GuiManager.openScreen(screen, new UISettings(jeiSettings));
     }
 
@@ -64,7 +64,7 @@ public class ClientGUI {
      * @param jeiSettings custom jei settings
      * @param container   custom container
      */
-    public static void open(@NotNull ModularScreen screen, @NotNull XeiSettingsImpl jeiSettings,
+    public static void open(@NotNull ModularScreen screen, @NotNull RecipeViewerSettingsImpl jeiSettings,
                             @Nullable IntFunction<ModularContainerMenu> container) {
         UISettings settings = new UISettings(jeiSettings);
         settings.customContainer(container);

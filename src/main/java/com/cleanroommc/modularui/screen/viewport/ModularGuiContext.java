@@ -1,6 +1,5 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.client.CursorHandler;
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.api.widget.IDraggable;
@@ -8,12 +7,13 @@ import com.cleanroommc.modularui.api.widget.IFocusedWidget;
 import com.cleanroommc.modularui.api.widget.IVanillaSlot;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.api.widget.ResizeDragArea;
+import com.cleanroommc.modularui.client.CursorHandler;
 import com.cleanroommc.modularui.screen.DraggablePanelWrapper;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.PanelManager;
+import com.cleanroommc.modularui.screen.RecipeViewerSettingsImpl;
 import com.cleanroommc.modularui.screen.UISettings;
-import com.cleanroommc.modularui.screen.XeiSettingsImpl;
 
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,10 +24,6 @@ import net.minecraft.world.inventory.Slot;
 import com.google.common.collect.AbstractIterator;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,10 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
+
 /**
  * This class contains all the info from {@link GuiContext} and additional MUI specific info like the current
  * {@link ModularScreen},
- * current hovered widget, current dragged widget, current focused widget and XEI settings.
+ * current hovered widget, current dragged widget, current focused widget and recipe viewer settings.
  * An instance can only be obtained from {@link ModularScreen#getContext()}. One instance is created every time a
  * {@link ModularScreen}
  * is created.
@@ -474,11 +475,11 @@ public class ModularGuiContext extends GuiContext {
         return this.settings;
     }
 
-    public XeiSettingsImpl getXeiSettings() {
+    public RecipeViewerSettingsImpl getRecipeViewerSettings() {
         if (this.screen.isOverlay()) {
             throw new IllegalStateException("Overlays don't have JEI settings!");
         }
-        return (XeiSettingsImpl) getUISettings().getXeiSettings();
+        return (RecipeViewerSettingsImpl) getUISettings().getRecipeViewerSettings();
     }
 
     @ApiStatus.Internal

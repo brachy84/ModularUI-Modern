@@ -26,16 +26,17 @@ import com.cleanroommc.modularui.value.sync.ValueSyncHandler;
 import com.cleanroommc.modularui.widget.sizer.StandardResizer;
 
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A very modular implementation of {@link IWidget}. This is the base class for almost all UI elements.
@@ -52,7 +53,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
 
     // other
     @Getter
-    private boolean excludeAreaInXei = false;
+    private boolean excludeAreaInRecipeViewer = false;
     // sizing
     private BiConsumer<W, IViewportStack> transform;
     // syncing
@@ -139,8 +140,8 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         if (!getScreen().isClientOnly()) {
             initialiseSyncHandler(getScreen().getSyncManager(), late);
         }
-        if (isExcludeAreaInXei()) {
-            getContext().getXeiSettings().addExclusionArea(this);
+        if (isExcludeAreaInRecipeViewer()) {
+            getContext().getRecipeViewerSettings().addExclusionArea(this);
         }
     }
 
@@ -178,8 +179,8 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
                     getScreen().removeGuiActionListener(action);
                 }
             }
-            if (isExcludeAreaInXei()) {
-                getContext().getXeiSettings().removeExclusionArea(this);
+            if (isExcludeAreaInRecipeViewer()) {
+                getContext().getRecipeViewerSettings().removeExclusionArea(this);
             }
         }
         super.dispose();
@@ -682,14 +683,14 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     // === Other ===
     // -------------
 
-    public W excludeAreaInXei() {
-        return excludeAreaInXei(true);
+    public W excludeAreaInRecipeViewer() {
+        return excludeAreaInRecipeViewer(true);
     }
 
-    public W excludeAreaInXei(boolean val) {
-        this.excludeAreaInXei = val;
+    public W excludeAreaInRecipeViewer(boolean val) {
+        this.excludeAreaInRecipeViewer = val;
         if (isValid()) {
-            getContext().getXeiSettings().addExclusionArea(this);
+            getContext().getRecipeViewerSettings().addExclusionArea(this);
         }
         return getThis();
     }

@@ -9,8 +9,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import org.jetbrains.annotations.NotNull;
 
+@Accessors(fluent = true)
 @OnlyIn(Dist.CLIENT)
 public class ScreenWrapper extends Screen implements IMuiScreen {
 
@@ -36,10 +39,5 @@ public class ScreenWrapper extends Screen implements IMuiScreen {
     @Override
     public String toString() {
         return "Wrapper(" + screen() + ")";
-    }
-
-    @Override
-    public @NotNull ModularScreen screen() {
-        return screen;
     }
 }

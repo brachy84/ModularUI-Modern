@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.screen;
 
-import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.GuiErrorHandler;
 import com.cleanroommc.modularui.ModularUI;
+import com.cleanroommc.modularui.ModularUIConfig;
 import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.api.MCHelper;
@@ -12,7 +12,7 @@ import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.core.mixins.client.AbstractContainerScreenAccessor;
 import com.cleanroommc.modularui.core.mixins.client.ScreenAccessor;
 import com.cleanroommc.modularui.drawable.GuiDraw;
-import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
 import com.cleanroommc.modularui.overlay.OverlayStack;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
@@ -53,9 +53,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -63,6 +60,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 @ApiStatus.Internal
 @Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -97,7 +98,7 @@ public class ClientScreenHandler {
     @SubscribeEvent
     public static void onScreenKeyPressedHigh(ScreenEvent.KeyPressed.Pre event) {
         defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        // TODO: early needs to be before XEI, but emi does mixin into KeyboardHandler so it is before everything
+        // TODO: early needs to be before recipe viewers, but emi does mixin into KeyboardHandler so it is before everything
         if (keyPressedEvent(event, InputPhase.EARLY)) {
             keyPressedEvent(event, InputPhase.LATE);
         }
@@ -118,7 +119,7 @@ public class ClientScreenHandler {
     @SubscribeEvent
     public static void onScreenKeyReleasedHigh(ScreenEvent.KeyReleased.Pre event) {
         defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        // TODO also needs to be before XEI
+        // TODO also needs to be before recipe viewers
         // dont need late for release event
         keyReleasedEvent(event, InputPhase.EARLY);
     }
@@ -525,8 +526,9 @@ public class ClientScreenHandler {
         graphics.pose().popPose();
     }
 
-    private static void drawVanillaElements(GuiGraphics graphics, Screen mcScreen, int mouseX, int mouseY,
-                                            float partialTicks) {
+    @ApiStatus.Internal
+    public static void drawVanillaElements(GuiGraphics graphics, Screen mcScreen, int mouseX, int mouseY,
+                                           float partialTicks) {
         for (Renderable renderable : mcScreen.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
         }

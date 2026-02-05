@@ -1,8 +1,8 @@
 package com.cleanroommc.modularui.widgets.slot;
 
 import com.cleanroommc.modularui.api.value.ISyncOrValue;
-import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
-import com.cleanroommc.modularui.integration.xei.handlers.RecipeViewerHandler;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.MouseData;
 import com.cleanroommc.modularui.value.sync.ItemSlotSyncHandler;
@@ -20,7 +20,7 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     @Override
     public void onInit() {
         super.onInit();
-        getContext().getXeiSettings().addGhostIngredientSlot(this);
+        getContext().getRecipeViewerSettings().addGhostIngredientSlot(this);
     }
 
     @Override

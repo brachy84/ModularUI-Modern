@@ -2,9 +2,9 @@ package com.cleanroommc.modularui.widgets;
 
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.drawable.GuiDraw;
-import com.cleanroommc.modularui.integration.xei.entry.EntryList;
-import com.cleanroommc.modularui.integration.xei.entry.fluid.FluidStackList;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
+import com.cleanroommc.modularui.integration.recipeviewer.entry.EntryList;
+import com.cleanroommc.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.WidgetThemeEntry;
 import com.cleanroommc.modularui.utils.Alignment;
@@ -17,6 +17,7 @@ import com.cleanroommc.modularui.widget.sizer.Box;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

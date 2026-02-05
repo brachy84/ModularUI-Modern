@@ -2,8 +2,8 @@ package com.cleanroommc.modularui.screen;
 
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.api.IMuiScreen;
+import com.cleanroommc.modularui.api.RecipeViewerSettings;
 import com.cleanroommc.modularui.api.UIFactory;
-import com.cleanroommc.modularui.api.XeiSettings;
 import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.factory.PosGuiData;
 
@@ -17,11 +17,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
 
 public class UISettings {
 
@@ -34,14 +35,14 @@ public class UISettings {
     @Getter
     private String theme;
     @Getter
-    private final XeiSettings xeiSettings;
+    private final RecipeViewerSettings recipeViewerSettings;
 
     public UISettings() {
-        this(new XeiSettingsImpl());
+        this(new RecipeViewerSettingsImpl());
     }
 
-    public UISettings(XeiSettings xeiSettings) {
-        this.xeiSettings = xeiSettings;
+    public UISettings(RecipeViewerSettings recipeViewerSettings) {
+        this.recipeViewerSettings = recipeViewerSettings;
     }
 
     /**

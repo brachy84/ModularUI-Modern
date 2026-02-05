@@ -33,10 +33,6 @@ import net.minecraft.Util;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +42,11 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class is like a window in windows. It can hold any amount of widgets. It may also be draggable.
@@ -261,8 +262,8 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     }
 
     @Override
-    public boolean isExcludeAreaInXei() {
-        return super.isExcludeAreaInXei() || (!getScreen().isOverlay() && !this.invisible && !resizer().isFullSize());
+    public boolean isExcludeAreaInRecipeViewer() {
+        return super.isExcludeAreaInRecipeViewer() || (!getScreen().isOverlay() && !this.invisible && !resizer().isFullSize());
     }
 
     @MustBeInvokedByOverriders

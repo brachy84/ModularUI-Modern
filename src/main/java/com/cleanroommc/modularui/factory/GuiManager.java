@@ -3,10 +3,10 @@ package com.cleanroommc.modularui.factory;
 import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.MCHelper;
+import com.cleanroommc.modularui.api.RecipeViewerSettings;
 import com.cleanroommc.modularui.api.UIFactory;
-import com.cleanroommc.modularui.api.XeiSettings;
-import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.ModularNetwork;
+import com.cleanroommc.modularui.network.NetworkHandler;
 import com.cleanroommc.modularui.network.packets.OpenGuiPacket;
 import com.cleanroommc.modularui.screen.ContainerScreenWrapper;
 import com.cleanroommc.modularui.screen.ModularContainerMenu;
@@ -37,13 +37,14 @@ import net.minecraftforge.fml.common.Mod;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 @Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GuiManager {
@@ -77,7 +78,7 @@ public class GuiManager {
         if (player instanceof FakePlayer || openedContainers.contains(player)) return;
         openedContainers.add(player);
         // create panel, collect sync handlers and create menu
-        UISettings settings = new UISettings(XeiSettings.DUMMY);
+        UISettings settings = new UISettings(RecipeViewerSettings.DUMMY);
         settings.defaultCanInteractWith(factory, guiData);
         ModularSyncManager msm = new ModularSyncManager(false);
         PanelSyncManager syncManager = new PanelSyncManager(msm, true);

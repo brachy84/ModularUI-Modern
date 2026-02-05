@@ -9,8 +9,8 @@ import com.cleanroommc.modularui.core.mixins.client.AbstractContainerScreenAcces
 import com.cleanroommc.modularui.core.mixins.client.ScreenAccessor;
 import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;
-import com.cleanroommc.modularui.integration.xei.entry.item.ItemStackList;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
+import com.cleanroommc.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import com.cleanroommc.modularui.screen.ClientScreenHandler;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
@@ -32,10 +32,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interactable, IngredientProvider<ItemStack> {
 

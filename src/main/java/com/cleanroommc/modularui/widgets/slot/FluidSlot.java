@@ -6,8 +6,8 @@ import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.value.ISyncOrValue;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.GuiDraw;
-import com.cleanroommc.modularui.integration.xei.handlers.GhostIngredientSlot;
-import com.cleanroommc.modularui.integration.xei.handlers.IngredientProvider;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
+import com.cleanroommc.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.SlotTheme;
@@ -133,7 +133,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     @Override
     public void onInit() {
-        getContext().getXeiSettings().addGhostIngredientSlot(this);
+        getContext().getRecipeViewerSettings().addGhostIngredientSlot(this);
     }
 
     @Override
