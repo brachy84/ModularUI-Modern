@@ -1,6 +1,7 @@
 package com.cleanroommc.modularui.drawable;
 
 import com.cleanroommc.modularui.GTRenderTypes;
+import com.cleanroommc.modularui.client.GuiSpriteManager;
 import com.cleanroommc.modularui.drawable.text.TextRenderer;
 import com.cleanroommc.modularui.screen.RichTooltip;
 import com.cleanroommc.modularui.screen.event.RichTooltipEvent;
@@ -9,6 +10,7 @@ import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.utils.FormattingUtil;
+import com.cleanroommc.modularui.utils.RectangleF;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
 import net.minecraft.client.Minecraft;
@@ -18,7 +20,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -237,10 +241,55 @@ public class GuiDraw {
                 .endVertex();
     }
 
+    /**
+     * Set up the texture as a sampler differently depending on if it's part of the GUI atlas or not.
+     * <p>
+     * If the texture is part of the GUI atlas, the atlas will be used for drawing and the UV coordinates will be scaled to the atlas texture.<br>
+     * If it's not part of the GUI atlas, nothing special is done.
+     *
+     * @param location the texture <i>file's</i> location, e.g. {@code "modularui:textures/gui/slot/item.png"}
+     * @param u0       u0 UV coordinate
+     * @param v0       v0 UV coordinate
+     * @param u1       u1 UV coordinate
+     * @param v1       v1 UV coordinate
+     * @return If texture is in the GUI atlas, rescaled UV coordinates {@code u0, v0, u1, v1}.<br>
+     * If not, the same coordinates that were passed in.
+     */
+    public static RectangleF setupTexture(ResourceLocation location, float u0, float v0, float u1, float v1) {
+        TextureAtlasSprite sprite = GuiSpriteManager.getInstance()
+                .getSprite(SpriteSource.TEXTURE_ID_CONVERTER.fileToId(location));
+
+        // check if the atlas doesn't have this sprite, default to using the resloc as is if so
+        if (sprite.atlasLocation() != MissingTextureAtlasSprite.getLocation()) {
+            RenderSystem.setShaderTexture(0, sprite.atlasLocation());
+
+            // have to multiply by 16 here because of MC weirdness
+            // REMOVE THE MULTIPLICATION IN 1.21!!!
+            return new RectangleF(sprite.getU(u0 * 16), sprite.getV(u0 * 16), sprite.getU(u1 * 16), sprite.getV(v1 * 16));
+        } else {
+            RenderSystem.setShaderTexture(0, location);
+            return new RectangleF(u0, v0, u1, v1);
+        }
+    }
+
+    public static boolean isGuiAtlasSprite(ResourceLocation location) {
+        location = SpriteSource.TEXTURE_ID_CONVERTER.fileToId(location);
+        return GuiSpriteManager.getInstance().getSprite(location).atlasLocation() != MissingTextureAtlasSprite.getLocation();
+    }
+
     public static void drawTexture(Matrix4f pose, ResourceLocation location, float x, float y, float w, float h,
                                    int u, int v, int textureWidth, int textureHeight) {
-        RenderSystem.setShaderTexture(0, location);
-        drawTexture(pose, x, y, u, v, w, h, textureWidth, textureHeight);
+        if (!isGuiAtlasSprite(location)) {
+            RenderSystem.setShaderTexture(0, location);
+            drawTexture(pose, x, y, u, v, w, h, textureWidth, textureHeight);
+            return;
+        }
+
+        float tw = 1F / textureWidth;
+        float th = 1F / textureHeight;
+        RectangleF newUvs = setupTexture(location, u * tw, v * th, (u + w) * tw, (v + h) * th);
+
+        drawTexture(pose, x, y, x + w, y + h, newUvs.u0(), newUvs.v0(), newUvs.u1(), newUvs.v1());
     }
 
     public static void drawTexture(Matrix4f pose, float x, float y, int u, int v, float w, float h,
@@ -308,14 +357,15 @@ public class GuiDraw {
 
     public static void drawTexture(Matrix4f pose, ResourceLocation location, float x0, float y0, float x1, float y1,
                                    float u0, float v0, float u1, float v1, boolean withBlend) {
-        RenderSystem.setShaderTexture(0, location);
+        RectangleF newUvs = setupTexture(location, u0, v0, u1, v1);
+
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         if (withBlend) {
             RenderSystem.enableBlend();
         } else {
             RenderSystem.disableBlend();
         }
-        drawTexture(pose, x0, y0, x1, y1, u0, v0, u1, v1, 0);
+        drawTexture(pose, x0, y0, x1, y1, newUvs.u0(), newUvs.v0(), newUvs.u1(), newUvs.v1(), 0);
     }
 
     public static void drawTexture(Matrix4f pose, float x0, float y0, float x1, float y1,
@@ -342,9 +392,19 @@ public class GuiDraw {
     }
 
     public static void drawTiledTexture(Matrix4f pose, ResourceLocation location, float x, float y, float w, float h,
-                                        int u, int v, int tileW, int tileH, int tw, int th, float z) {
-        RenderSystem.setShaderTexture(0, location);
-        drawTiledTexture(pose, x, y, w, h, u, v, tileW, tileH, tw, th, z);
+                                        int u, int v, int tileWidth, int tileHeight, int textureWidth, int textureHeight, float z) {
+        if (!isGuiAtlasSprite(location)) {
+            RenderSystem.setShaderTexture(0, location);
+            drawTiledTexture(pose, x, y, w, h, u, v, tileWidth, tileHeight, textureWidth, textureHeight, z);
+            return;
+        }
+
+        float wRatio = 1f / textureWidth;
+        float hRatio = 1f / textureHeight;
+        RectangleF newUvs = setupTexture(location, u * wRatio, v * hRatio, (u + w) * wRatio, (v + h) * hRatio);
+
+        drawTiledTexture(pose, x, y, x + w, y + h, newUvs.u0(), newUvs.v0(),
+                newUvs.u1(), newUvs.v1(), tileWidth, tileHeight, z);
     }
 
     public static void drawTiledTexture(Matrix4f pose, float x, float y, float w, float h,
@@ -376,8 +436,10 @@ public class GuiDraw {
                                         float u0, float v0, float u1, float v1,
                                         int textureWidth, int textureHeight, float z) {
         RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, location);
-        drawTiledTexture(pose, x, y, w, h, u0, v0, u1, v1, textureWidth, textureHeight, z);
+
+        RectangleF newUvs = setupTexture(location, u0, v0, u1, v1);
+
+        drawTiledTexture(pose, x, y, w, h, newUvs.u0(), newUvs.v0(), newUvs.u1(), newUvs.v1(), textureWidth, textureHeight, z);
         RenderSystem.disableBlend();
     }
 

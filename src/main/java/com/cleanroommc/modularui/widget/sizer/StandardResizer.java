@@ -14,6 +14,7 @@ import com.cleanroommc.modularui.utils.Alignment;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
 
     private final DimensionSizer x;
     private final DimensionSizer y;
+    @Getter
     private boolean expanded = false;
 
     private boolean childrenResized = false;
@@ -436,11 +438,6 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
         this.expanded = true;
         scheduleResize();
         return this;
-    }
-
-    @Override
-    public boolean isExpanded() {
-        return this.expanded;
     }
 
     @Override
