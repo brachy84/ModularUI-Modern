@@ -113,7 +113,12 @@ public class DebugOverlay extends CustomModularScreen {
     }
 
     public static IWidget toggleOption(int i, String name, String field) {
-        ForgeConfigSpec.ConfigValue<Boolean> configField = ModularUIConfig.CONFIG.get(List.of("dev", field));
+        Object config = ModularUIConfig.CONFIG.getValues().get(List.of("dev", field));
+        if (!(config instanceof ForgeConfigSpec.ConfigValue<?> configValue) || !(configValue.get() instanceof Boolean)) {
+            throw new IllegalArgumentException("Config field 'dev.%s' is not a boolean value!".formatted(field));
+        }
+        @SuppressWarnings("unchecked")
+        ForgeConfigSpec.ConfigValue<Boolean> configField = (ForgeConfigSpec.ConfigValue<Boolean>) config;
         IBoolValue<?> val = new BoolValue.Dynamic(configField::get, configField::set);
 
         return new ToggleButton()
