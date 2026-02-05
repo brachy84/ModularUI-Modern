@@ -31,7 +31,6 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
-        MinecraftForge.EVENT_BUS.register(new EventHandler());
 
         /* MUI Initialization */
         UIFactories.init();
@@ -72,14 +71,14 @@ public class CommonProxy {
     }
 
     public void registerCommand(RegisterCommandsEvent event) {
-        event.getDispatcher().register(
-                Commands.literal("mui")
-                        .then(Commands.literal("reloadThemes")
-                                .executes(ctx -> {
-                                    ThemeManager.reload();
-                                    ctx.getSource().source.sendSystemMessage(Component.literal("ModularUI Themes reloaded").withStyle(IKey.GREEN));
-                                    return Command.SINGLE_SUCCESS;
-                                }))
-        );
+        var command = Commands.literal("mui")
+                .then(Commands.literal("reload_themes")
+                        .executes(ctx -> {
+                            ThemeManager.reload();
+                            // TODO translations for this
+                            ctx.getSource().sendSuccess(() -> Component.literal("ModularUI Themes reloaded").withStyle(IKey.GREEN), true);
+                            return Command.SINGLE_SUCCESS;
+                        }));
+        event.getDispatcher().register(command);
     }
 }

@@ -171,7 +171,7 @@ public class TestGuis extends CustomModularScreen {
             @Override
             public void onInit() {
                 super.onInit();
-                getScreen().useTheme(EventHandler.TEST_THEME);
+                getScreen().useTheme(ClientTestEventHandler.TEST_THEME);
             }
         }.height(100)
                 .coverChildrenWidth()

@@ -25,12 +25,15 @@ import com.cleanroommc.modularui.utils.Color;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import org.jetbrains.annotations.NotNull;
 
-public class EventHandler {
+@Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class ClientTestEventHandler {
 
     public static boolean enabledRichTooltipEventTest = false;
     public static final String TEST_THEME = "mui:test_theme";
@@ -55,7 +58,7 @@ public class EventHandler {
     }.asIcon().height(3);
 
     @SubscribeEvent
-    public void onItemUse(PlayerInteractEvent.RightClickItem event) {
+    public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity().level().isClientSide) {
             ItemStack itemStack = event.getItemStack();
             if (itemStack.getItem() == Items.DIAMOND) {
@@ -70,7 +73,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onRichTooltip(RichTooltipEvent.Pre event) {
+    public static void onRichTooltip(RichTooltipEvent.Pre event) {
         if (enabledRichTooltipEventTest) {
             event.getTooltip()
                     .add(IKey.str("Powered By: ").style(IKey.GOLD, IKey.ITALIC))
@@ -85,7 +88,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onThemeReload(ReloadThemeEvent.Pre event) {
+    public static void onThemeReload(ReloadThemeEvent.Pre event) {
         IThemeApi.get().registerTheme(testTheme);
     }
 
@@ -124,7 +127,7 @@ public class EventHandler {
                                 })));
     }*/
 
-    private ModularScreen getContainerOverlayTest(AbstractContainerScreen<?> gui) {
+    private static ModularScreen getContainerOverlayTest(AbstractContainerScreen<?> gui) {
         return new CustomModularScreen(ModularUI.MOD_ID) {
 
             @Override
