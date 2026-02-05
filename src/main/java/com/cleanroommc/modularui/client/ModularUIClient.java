@@ -11,7 +11,7 @@ import com.cleanroommc.modularui.ModularUIMenuTypes;
 import com.cleanroommc.modularui.screen.ContainerScreenWrapper;
 
 @Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientEventListener {
+public class ModularUIClient {
 
     // Event is listened to on the mod event bus
     @SubscribeEvent

@@ -1,9 +1,9 @@
 package com.cleanroommc.modularui.drawable;
 
 import com.cleanroommc.modularui.schema.ISchema;
-import com.cleanroommc.modularui.schemarenderer.BaseSchemaRenderer;
-import com.cleanroommc.modularui.schemarenderer.BlockHighlight;
-import com.cleanroommc.modularui.schemarenderer.Camera;
+import com.cleanroommc.modularui.client.schemarenderer.BaseSchemaRenderer;
+import com.cleanroommc.modularui.client.schemarenderer.BlockHighlight;
+import com.cleanroommc.modularui.client.schemarenderer.Camera;
 
 import net.minecraft.world.phys.BlockHitResult;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,6 +1,7 @@
 package com.cleanroommc.modularui;
 
 import com.cleanroommc.modularui.animation.AnimatorManager;
+import com.cleanroommc.modularui.client.CursorHandler;
 import com.cleanroommc.modularui.drawable.DrawableSerialization;
 
 import net.minecraft.client.Minecraft;

@@ -3,7 +3,7 @@ package com.cleanroommc.modularui.widgets;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.schema.ISchema;
-import com.cleanroommc.modularui.schemarenderer.BaseSchemaRenderer;
+import com.cleanroommc.modularui.client.schemarenderer.BaseSchemaRenderer;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.WidgetThemeEntry;
 import com.cleanroommc.modularui.utils.MathUtil;

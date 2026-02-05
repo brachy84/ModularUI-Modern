@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui.screen.viewport;
 
-import com.cleanroommc.modularui.CursorHandler;
+import com.cleanroommc.modularui.client.CursorHandler;
 import com.cleanroommc.modularui.api.ITheme;
 import com.cleanroommc.modularui.api.MCHelper;
 import com.cleanroommc.modularui.api.widget.IDraggable;
