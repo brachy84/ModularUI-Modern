@@ -15,7 +15,7 @@
         "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [
-        "TransientCraftingContainerAccessor"
+
     ],
     "injectors": {
         "defaultRequire": 1,

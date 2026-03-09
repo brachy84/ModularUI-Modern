@@ -1,8 +1,5 @@
 package brachy.modularui.widgets.slot;
 
-import brachy.modularui.core.mixins.TransientCraftingContainerAccessor;
-
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -40,40 +37,6 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
             throw new IllegalArgumentException("Inventory does not have enough slots for given size. Requires " +
                     (startIndex + this.size) + " slots, but only has " + delegate.getSlots() + " slots!");
         }
-        // save inventory snapshot
-        for (int i = 0; i < size; i++) {
-            ItemStack stack = this.delegate.getStackInSlot(i + this.startIndex);
-            updateSnapshot(i, stack);
-        }
-    }
-
-    private NonNullList<ItemStack> getBackingList() {
-        return ((TransientCraftingContainerAccessor) this).modularui$getActualItems();
-    }
-
-    private void updateSnapshot(int index, ItemStack stack) {
-        getBackingList().set(index, stack.copy());
-    }
-
-    public void detectChanges() {
-        // detect changes from snapshot and notify container
-        boolean notify = false;
-        for (int slot = 0; slot < size; slot++) {
-            ItemStack snapshot = getBackingList().get(slot);
-            ItemStack current = this.delegate.getStackInSlot(slot + this.startIndex);
-
-            if (current.isEmpty() && current != ItemStack.EMPTY) {
-                current = ItemStack.EMPTY;
-                this.delegate.setStackInSlot(slot + this.startIndex, ItemStack.EMPTY);
-            }
-
-            if (!ItemStack.isSameItemSameTags(snapshot, current)) {
-                setItem(slot, current);
-                updateSnapshot(slot, current);
-                notify = true;
-            }
-        }
-        if (notify) notifyContainer();
     }
 
     @Override
