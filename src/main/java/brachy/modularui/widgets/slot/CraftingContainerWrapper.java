@@ -50,7 +50,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     private void updateSnapshot(int index, ItemStack stack) {
-        getBackingList().set(index, stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
+        getBackingList().set(index, stack.copy());
     }
 
     public void detectChanges() {

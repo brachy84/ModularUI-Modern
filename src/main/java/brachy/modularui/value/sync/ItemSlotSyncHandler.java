@@ -70,7 +70,7 @@ public class ItemSlotSyncHandler extends SyncHandler {
             if (onlyAmountChanged) {
                 this.lastStoredItem.setCount(itemStack.getCount());
             } else {
-                this.lastStoredItem = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
+                this.lastStoredItem = itemStack.copy();
             }
             final boolean finalOnlyAmountChanged = onlyAmountChanged;
             final boolean forceSync = false;
@@ -122,7 +122,7 @@ public class ItemSlotSyncHandler extends SyncHandler {
         boolean init = false;
         boolean forceSync = true;
         onSlotUpdate(stack, onlyAmountChanged, getSyncManager().isClient(), init);
-        this.lastStoredItem = stack.isEmpty() ? ItemStack.EMPTY : stack;
+        this.lastStoredItem = stack.copy();
         syncToClient(SYNC_ITEM, buffer -> {
             buffer.writeBoolean(onlyAmountChanged);
             buffer.writeItem(stack);
