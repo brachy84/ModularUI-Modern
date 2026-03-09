@@ -137,17 +137,14 @@ public class ModularCraftingSlot extends ModularSlot {
     protected void checkTakeAchievements(@NotNull ItemStack stack) {
         if (this.amountCrafted > 0) {
             stack.onCraftedBy(getPlayer().level(), getPlayer(), this.amountCrafted);
-            net.minecraftforge.event.ForgeEventFactory.firePlayerCraftingEvent(getPlayer(), stack, this.craftSlots);
+            firePlayerCraftingEvent(getPlayer(), stack, this.getCraftSlots());
+        }
+
+        if (this.getItemHandler() instanceof RecipeHolder recipeHolder) {
+            recipeHolder.awardUsedRecipes(getPlayer(), this.getCraftSlots().getItems());
         }
 
         this.amountCrafted = 0;
-
-        if (this.container instanceof RecipeHolder recipeHolder) {
-            recipeHolder.awardUsedRecipes(getPlayer(), this.craftSlots.getItems());
-        }
-        if (this.getItemHandler() instanceof RecipeHolder recipeHolder) {
-            recipeHolder.awardUsedRecipes(getPlayer(), this.craftSlots.getItems());
-        }
     }
 
     @Override
@@ -160,31 +157,33 @@ public class ModularCraftingSlot extends ModularSlot {
     @Override
     public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
         this.checkTakeAchievements(stack);
-        ForgeHooks.setCraftingPlayer(player);
-        NonNullList<ItemStack> nonnulllist = player.level().getRecipeManager().getRemainingItemsFor(RecipeType.CRAFTING,
-                this.craftSlots, player.level());
-        ForgeHooks.setCraftingPlayer(null);
-        for (int i = 0; i < nonnulllist.size(); ++i) {
-            ItemStack itemstack = this.craftSlots.getItem(i);
-            ItemStack itemstack1 = nonnulllist.get(i);
 
-            if (!itemstack.isEmpty()) {
-                this.craftSlots.removeItem(i, 1);
-                itemstack = this.craftSlots.getItem(i);
+        ForgeHooks.setCraftingPlayer(player);
+        NonNullList<ItemStack> recipeInputs = player.level().getRecipeManager()
+                .getRemainingItemsFor(RecipeType.CRAFTING, this.getCraftSlots(), player.level());
+        ForgeHooks.setCraftingPlayer(null);
+
+        for (int i = 0; i < recipeInputs.size(); ++i) {
+            ItemStack slotItem = this.getCraftSlots().getItem(i);
+            ItemStack recipeItem = recipeInputs.get(i);
+
+            if (!slotItem.isEmpty()) {
+                this.getCraftSlots().removeItem(i, 1);
+                slotItem = this.getCraftSlots().getItem(i);
             }
 
-            if (!itemstack1.isEmpty()) {
-                if (itemstack.isEmpty()) {
-                    this.craftSlots.setItem(i, itemstack1);
-                } else if (ItemStack.isSameItemSameTags(itemstack, itemstack1)) {
-                    itemstack1.grow(itemstack.getCount());
-                    this.craftSlots.setItem(i, itemstack1);
-                } else if (!getPlayer().getInventory().add(itemstack1)) {
-                    getPlayer().drop(itemstack1, false);
-                }
+            if (recipeItem.isEmpty()) {
+                continue;
+            }
+            if (slotItem.isEmpty()) {
+                this.getCraftSlots().setItem(i, recipeItem);
+            } else if (ItemStack.isSameItemSameTags(slotItem, recipeItem)) {
+                recipeItem.grow(slotItem.getCount());
+                this.getCraftSlots().setItem(i, recipeItem);
+            } else if (!player.getInventory().add(recipeItem)) {
+                player.drop(recipeItem, false);
             }
         }
-        craftMatrix.notifyContainer();
     }
 
     protected void updateCraftResult(Slot slot) {

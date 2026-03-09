@@ -22,6 +22,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -43,10 +45,6 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         }
         return null;
     }
-
-    private static final int DROP_TO_WORLD = -999;
-    private static final int LEFT_MOUSE = 0;
-    private static final int RIGHT_MOUSE = 1;
 
     @Getter
     private Player player;
@@ -261,14 +259,14 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         ItemStack returnable = ItemStack.EMPTY;
         Inventory inventory = player.getInventory();
 
-        if (clickTypeIn == ClickType.QUICK_CRAFT || acc().getQuickcraftType() != -1) {
+        if (clickTypeIn == ClickType.QUICK_CRAFT) {
             superClicked(slotId, mouseButton, clickTypeIn, player);
             return;
         }
 
         if ((clickTypeIn == ClickType.PICKUP || clickTypeIn == ClickType.QUICK_MOVE) &&
-                (mouseButton == LEFT_MOUSE || mouseButton == RIGHT_MOUSE)) {
-            if (slotId == DROP_TO_WORLD) {
+                (mouseButton == InputConstants.MOUSE_BUTTON_LEFT || mouseButton == InputConstants.MOUSE_BUTTON_RIGHT)) {
+            if (slotId == SLOT_CLICKED_OUTSIDE) {
                 superClicked(slotId, mouseButton, clickTypeIn, player);
                 return;
             }
@@ -297,11 +295,11 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 if (slotStack.isEmpty()) {
                     // no dif
                     if (!heldStack.isEmpty() && clickedSlot.mayPlace(heldStack)) {
-                        int stackCount = mouseButton == LEFT_MOUSE ? heldStack.getCount() : 1;
+                        int stackCount = mouseButton == InputConstants.MOUSE_BUTTON_LEFT ? heldStack.getCount() : 1;
 
-                        int lim = clickedSlot.getMaxStackSize(heldStack);
-                        if (stackCount > lim) {
-                            stackCount = lim;
+                        int limit = clickedSlot.getMaxStackSize(heldStack);
+                        if (stackCount > limit) {
+                            stackCount = limit;
                         }
 
                         clickedSlot.setByPlayer(heldStack.split(stackCount));
@@ -310,13 +308,13 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                     if (heldStack.isEmpty() && !slotStack.isEmpty()) {
                         // checking max stack size here, probably for oversized slots
                         int s = Math.min(slotStack.getCount(), slotStack.getMaxStackSize());
-                        int toRemove = mouseButton == LEFT_MOUSE ? s : (s + 1) / 2;
+                        int toRemove = mouseButton == InputConstants.MOUSE_BUTTON_LEFT ? s : (s + 1) / 2;
                         this.setCarried(slotStack.split(toRemove));
                         clickedSlot.setByPlayer(slotStack);
                         clickedSlot.onTake(player, this.getCarried());
                     } else if (clickedSlot.mayPlace(heldStack)) {
                         if (ItemStack.isSameItemSameTags(slotStack, heldStack)) {
-                            int stackCount = mouseButton == LEFT_MOUSE ? heldStack.getCount() : 1;
+                            int stackCount = mouseButton == InputConstants.MOUSE_BUTTON_LEFT ? heldStack.getCount() : 1;
 
                             int lim = clickedSlot.getMaxStackSize(heldStack);
                             if (stackCount > lim - slotStack.getCount()) {
@@ -354,44 +352,46 @@ public class ModularContainerMenu extends AbstractContainerMenu {
             Slot slot = slots.get(slotId);
             ItemStack carried = this.getCarried();
 
-            if (!carried.isEmpty() && (!slot.hasItem() || !slot.mayPickup(player))) {
-                int i = mouseButton == 0 ? 0 : slots.size() - 1;
-                int j = mouseButton == 0 ? 1 : -1;
+            if (carried.isEmpty() || (slot.hasItem() && slot.mayPickup(player))) {
+                return;
+            }
+            int start = mouseButton == InputConstants.MOUSE_BUTTON_LEFT ? 0 : slots.size() - 1;
+            int step = mouseButton == InputConstants.MOUSE_BUTTON_LEFT ? 1 : -1;
 
-                for (int k = 0; k < 2; ++k) {
-                    for (int l = i; l >= 0 && l < slots.size() &&
-                            carried.getCount() < carried.getMaxStackSize(); l += j) {
-                        Slot slot1 = slots.get(l);
-                        if (slot1 instanceof ModularSlot modularSlot && modularSlot.isPhantom()) continue;
+            for (int i = 0; i < 2; ++i) {
+                for (int s = start; s >= 0 && s < slots.size() && carried.getCount() < carried.getMaxStackSize(); s += step) {
+                    Slot current = slots.get(s);
+                    if (current instanceof ModularSlot modularSlot && modularSlot.isPhantom()) continue;
 
-                        if (slot1.hasItem() && canItemQuickReplace(slot1, carried, true) && slot1.mayPickup(player) &&
-                                canTakeItemForPickAll(carried, slot1)) {
-                            ItemStack slotItem = slot1.getItem();
-
-                            if (k != 0 || slotItem.getCount() != slotItem.getMaxStackSize()) {
-                                int toRemove = Math.min(carried.getMaxStackSize() - carried.getCount(),
-                                        slotItem.getCount());
-                                ItemStack removed = slot1.remove(toRemove);
-                                carried.grow(toRemove);
-
-                                if (removed.isEmpty()) {
-                                    slot1.setByPlayer(ItemStack.EMPTY);
-                                }
-
-                                slot1.onTake(player, removed);
-                            }
-                        }
+                    if (!current.hasItem() || !canItemQuickReplace(current, carried, true) ||
+                            !current.mayPickup(player) || !canTakeItemForPickAll(carried, current)) {
+                        continue;
                     }
+                    ItemStack slotItem = current.getItem();
+
+                    if (i == 0 && slotItem.getCount() == slotItem.getMaxStackSize()) {
+                        continue;
+                    }
+                    int toRemove = Math.min(carried.getMaxStackSize() - carried.getCount(),
+                            slotItem.getCount());
+                    ItemStack removed = current.remove(toRemove);
+                    carried.grow(toRemove);
+
+                    if (removed.isEmpty()) {
+                        current.setByPlayer(ItemStack.EMPTY);
+                    }
+
+                    current.onTake(player, removed);
                 }
             }
 
             broadcastChanges();
         } else if (clickTypeIn == ClickType.SWAP && mouseButton >= 0 && mouseButton < 9) {
-            ModularSlot phantom = getModularSlot(slotId);
+            ModularSlot slot = getModularSlot(slotId);
             ItemStack hotbarStack = inventory.getItem(mouseButton);
-            if (phantom.isPhantom()) {
+            if (slot.isPhantom()) {
                 // insert stack from hotbar slot into phantom slot
-                phantom.setByPlayer(hotbarStack.isEmpty() ? ItemStack.EMPTY : hotbarStack.copy());
+                slot.setByPlayer(hotbarStack.copy());
                 broadcastChanges();
             }
         } else {
@@ -399,8 +399,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         }
     }
 
-    protected final void superClicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn,
-                                      @NotNull Player player) {
+    protected final void superClicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
         super.clicked(slotId, mouseButton, clickTypeIn, player);
     }
 
