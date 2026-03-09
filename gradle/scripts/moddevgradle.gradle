@@ -35,23 +35,20 @@ legacyForge {
     //interfaceInjectionData = project.files('injected_interfaces/interfaces.json')
 
     addModdingDependenciesTo(sourceSets.test)
-//    addModdingDependenciesTo(sourceSets.extra)
+    addModdingDependenciesTo(sourceSets.client)
 
     mods {
         // define mod <-> source bindings
         "${mod_id}" {
             sourceSet(sourceSets.main)
             sourceSet(sourceSets.client)
-            sourceSet(sourceSets.test)
-            sourceSet(sourceSets.extra)
-            sourceSet(sourceSets.clientExtra)
         }
     }
 
     runs {
         client {
             client()
-            sourceSet = sourceSets.clientExtra
+            sourceSet = sourceSets.client
             ideName = "Client 1"
 
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
@@ -59,7 +56,7 @@ legacyForge {
 
         client2 {
             client()
-            sourceSet = sourceSets.clientExtra
+            sourceSet = sourceSets.client
             ideName = "Client 2"
 
             programArguments.addAll('--username', 'YoungOnion', '--uuid', '3a27782d-6864-4814-a9fe-7c6931f29a8a')
@@ -68,27 +65,8 @@ legacyForge {
 
         server {
             server()
-            sourceSet = sourceSets.extra
-            ideName = "Server"
-
-            gameDirectory.set(file('run/server'))
-            programArguments.addAll('--nogui', '--world', 'world-extra')
-            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
-        }
-
-        // Client with GTM + Jade, EMI, AE2
-        cleanClient {
-            client()
-            sourceSet = sourceSets.client
-            ideName = "Clean Client"
-
-            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
-        }
-
-        cleanServer {
-            server()
             sourceSet = sourceSets.main
-            ideName = "Clean Server"
+            ideName = "Server"
 
             gameDirectory.set(file('run/server'))
             programArgument '--nogui'
@@ -127,7 +105,7 @@ legacyForge {
             create("renderDocClient") {
                 client()
                 sourceSet = sourceSets.client
-                ideName = "Clean Client + RenderDoc (Requires Java 21)"
+                ideName = "Client w/ RenderDoc (Requires Java 21)"
 
                 programArguments.addAll('--username', 'screret', '--uuid', '1184eb79-5831-4f7d-b8f4-3a46fccf7a1d')
 
