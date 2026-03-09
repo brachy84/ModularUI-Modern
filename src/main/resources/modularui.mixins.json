@@ -9,7 +9,8 @@
         "client.AbstractContainerScreenMixin",
         "client.MinecraftMixin",
         "client.ScreenAccessor",
-        "client.StringSplitterAccessor"
+        "client.StringSplitterAccessor",
+        "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [
         "TransientCraftingContainerAccessor",
