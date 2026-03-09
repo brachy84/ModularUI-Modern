@@ -13,6 +13,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A slot group is a group of slots that can be sorted (via Inventory BogoSorter)
@@ -30,6 +31,7 @@ public class SlotGroup {
     @Getter
     private final String name;
     private final List<Slot> slots = new ArrayList<>();
+    private final List<Consumer<Slot>> slotChangeListeners = new ArrayList<>();
     @Getter
     private final int rowSize;
     @Getter
@@ -92,6 +94,24 @@ public class SlotGroup {
     @ApiStatus.Internal
     void removeSlot(ModularSlot slot) {
         this.slots.remove(slot);
+    }
+
+    @ApiStatus.Internal
+    void slotChanged(Slot slot) {
+        if (!this.slots.contains(slot)) {
+            throw new IllegalStateException("Cannot run slot change listeners for slot not in group!");
+        }
+        for (var listener : this.slotChangeListeners) {
+            listener.accept(slot);
+        }
+    }
+
+    public void addSlotChangeListener(Consumer<Slot> changeListener) {
+        this.slotChangeListeners.add(changeListener);
+    }
+
+    public void removeSlotChangeListener(Consumer<Slot> changeListener) {
+        this.slotChangeListeners.remove(changeListener);
     }
 
     @UnmodifiableView

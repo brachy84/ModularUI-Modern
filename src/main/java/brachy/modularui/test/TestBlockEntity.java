@@ -120,6 +120,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         //settings.customGui(() -> TestGuiContainer::new);
 
         syncManager.registerSlotGroup("item_inv", 3);
+        syncManager.registerSlotGroup("crafting", 3);
         IntSyncValue cycleStateValue = new IntSyncValue(() -> this.cycleState, val -> this.cycleState = val);
         syncManager.getHyperVisor().syncValue("cycle_state", cycleStateValue);
         syncManager.syncValue("progress", new DoubleSyncValue(() -> (double) this.progress / this.duration));
@@ -165,7 +166,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("other_panel", true, this::openSecondWindow);
 
         PagedWidget.Controller tabController = new PagedWidget.Controller();
-        panel.resizer()                        // returns object which is responsible for sizing
+        panel.resizer()                      // returns object which is responsible for sizing
                 .size(176, 210)       // set a static size for the main panel
                 .align(Alignment.Center);    // center the panel in the screen
         panel
@@ -203,10 +204,13 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                         .row("III   ")
                                         .key('I', i -> new ItemSlot().slot(new ModularSlot(this.craftingInventory, i))
                                                 .addTooltipLine("This slot is empty"))
-                                        .key('O', new ItemSlot().slot(new ModularCraftingSlot(this.craftingInventory, 9)))
+                                        .key('O', new ItemSlot().slot(new ModularCraftingSlot(this.craftingInventory, 9)
+                                                .grid(3, 3, 0)))
                                         .key('D', new ItemDisplayWidget().syncHandler("display_item").displayAmount(true))
+                                        .slotGroup("crafting")
                                         .build()
-                                        .margin(5, 5, 20, 5).name("crafting"))))
+                                        .margin(5, 5, 20, 5)
+                                        .name("crafting"))))
                 .child(Flow.col()
                         .name("main_col")
                         .sizeRel(1f)

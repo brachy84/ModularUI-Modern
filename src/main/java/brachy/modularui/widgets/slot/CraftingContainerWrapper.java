@@ -46,11 +46,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     private NonNullList<ItemStack> getBackingList() {
-        return ((TransientCraftingContainerAccessor) this).gtceu$getActualItems();
-    }
-
-    public AbstractContainerMenu getMenu() {
-        return ((TransientCraftingContainerAccessor) this).getMenu();
+        return ((TransientCraftingContainerAccessor) this).modularui$getActualItems();
     }
 
     private void updateSnapshot(int index, ItemStack stack) {
@@ -150,6 +146,6 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     public void notifyContainer() {
-        getMenu().slotsChanged(this);
+        this.slot.setChanged();
     }
 }

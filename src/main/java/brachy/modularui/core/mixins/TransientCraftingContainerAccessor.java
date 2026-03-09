@@ -12,8 +12,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface TransientCraftingContainerAccessor {
 
     @Accessor("items")
-    NonNullList<ItemStack> gtceu$getActualItems();
-
-    @Accessor
-    AbstractContainerMenu getMenu();
+    NonNullList<ItemStack> modularui$getActualItems();
 }
