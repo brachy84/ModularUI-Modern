@@ -308,6 +308,6 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
 
     @Override
     public UnaryOperator<ItemStack> renderMappingFunction() {
-        return this.itemHook;
+        return this.itemHook != null ? this.itemHook : UnaryOperator.identity();
     }
 }

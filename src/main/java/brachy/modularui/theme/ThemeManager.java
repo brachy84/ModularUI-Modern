@@ -354,7 +354,7 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
                         map.putTheme(key, new WidgetThemeEntry<>(key, entry.theme(), entry.hoverTheme()));
                         return;
                     }
-                    // we still need to parse non inherited values (fallback)
+                    // we still need to parse non-inherited values (fallback)
                     widgetThemeJson = emptyJson;
                     widgetThemeHoverJson = emptyJson;
                 }

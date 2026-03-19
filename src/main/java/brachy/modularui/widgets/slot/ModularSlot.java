@@ -125,7 +125,6 @@ public class ModularSlot extends SlotItemHandler {
     public void set(@NotNull ItemStack stack) {
         if (ItemStack.matches(stack, getItem())) return;
         super.set(stack);
-        if (this.syncHandler != null) this.syncHandler.checkUpdate();
     }
 
     @Override

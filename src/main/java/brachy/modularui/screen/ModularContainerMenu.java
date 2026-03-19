@@ -122,7 +122,6 @@ public class ModularContainerMenu extends AbstractContainerMenu {
      * This happens when a temporary client screen takes over (like JEI,NEI,etc.). This is only called when the
      * container actually closes.
      */
-
     public void closed() {}
 
     public void disposed() {}
