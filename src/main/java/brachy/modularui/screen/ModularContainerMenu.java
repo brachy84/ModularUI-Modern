@@ -72,8 +72,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @ApiStatus.Internal
-    public void construct(Player player, ModularSyncManager msm, UISettings settings, String mainPanelName,
-                          GuiData guiData) {
+    public void construct(Player player, ModularSyncManager msm, UISettings settings, String mainPanelName, GuiData guiData) {
         this.player = player;
         this.syncManager = msm;
         this.syncManager.construct(this, mainPanelName);

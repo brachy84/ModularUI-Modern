@@ -31,7 +31,7 @@ public class ModularCraftingSlot extends ModularSlot {
 
     private @Nullable CraftingContainerWrapper craftSlots = null;
     private int gridWidth = 3, gridHeight = 3;
-    private int gridStartIndex = 0;
+    private int inventoryStartIndex = 0;
 
     private int amountCrafted;
 
@@ -43,36 +43,14 @@ public class ModularCraftingSlot extends ModularSlot {
         this.canPut(false);
     }
 
-    public ModularCraftingSlot gridWidth(int width) {
-        this.gridWidth = width;
-        // reset craftSlots in case this slot is modified after the screen is built
-        this.craftSlots = null;
-        return this;
-    }
-
-    public ModularCraftingSlot gridHeight(int height) {
-        this.gridHeight = height;
-        // reset craftSlots in case this slot is modified after the screen is built
-        this.craftSlots = null;
-        return this;
-    }
-
     public ModularCraftingSlot grid(int width, int height) {
-        this.gridWidth = width;
-        this.gridHeight = height;
-        // reset craftSlots in case this slot is modified after the screen is built
-        this.craftSlots = null;
-        return this;
+        return grid(width, height, 0);
     }
 
-    public ModularCraftingSlot grid(int width, int height, int startIndex) {
+    public ModularCraftingSlot grid(int width, int height, int inventoryStartIndex) {
         this.gridWidth = width;
         this.gridHeight = height;
-        return this.gridStartIndex(startIndex);
-    }
-
-    public ModularCraftingSlot gridStartIndex(int startIndex) {
-        this.gridStartIndex = startIndex;
+        this.inventoryStartIndex = inventoryStartIndex;
         // reset craftSlots in case this slot is modified after the screen is built
         this.craftSlots = null;
         return this;
@@ -82,7 +60,7 @@ public class ModularCraftingSlot extends ModularSlot {
         if (this.craftSlots == null) {
             this.craftSlots = new CraftingContainerWrapper(this,
                     this.gridWidth, this.gridHeight,
-                    (IItemHandlerModifiable) this.getItemHandler(), this.gridStartIndex);
+                    (IItemHandlerModifiable) this.getItemHandler(), this.inventoryStartIndex);
             this.craftSlots.notifyContainer();
         }
         return this.craftSlots;
