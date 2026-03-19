@@ -33,7 +33,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
         this.delegate = delegate;
         this.startIndex = startIndex;
 
-        if (startIndex + this.size < delegate.getSlots()) {
+        if (startIndex + this.size > delegate.getSlots()) {
             throw new IllegalArgumentException("Inventory does not have enough slots for given size. Requires " +
                     (startIndex + this.size) + " slots, but only has " + delegate.getSlots() + " slots!");
         }
