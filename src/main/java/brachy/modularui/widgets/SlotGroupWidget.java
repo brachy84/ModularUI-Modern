@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.chars.Char2IntMap;
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,8 +64,8 @@ public class SlotGroupWidget extends ParentWidget<SlotGroupWidget> {
         return slotGroupWidget;
     }
 
-    private String slotGroupName;
-    private SlotGroup slotGroup;
+    @Getter private String slotGroupName;
+    @Getter private SlotGroup slotGroup;
     private boolean sortButtonsAdded = false;
     private Consumer<SortButtons> sortButtonsEditor;
 

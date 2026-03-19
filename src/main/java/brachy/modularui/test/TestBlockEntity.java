@@ -62,7 +62,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -166,10 +165,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("other_panel", true, this::openSecondWindow);
 
         PagedWidget.Controller tabController = new PagedWidget.Controller();
-        panel.resizer()                      // returns object which is responsible for sizing
-                .size(176, 210)       // set a static size for the main panel
-                .align(Alignment.Center);    // center the panel in the screen
-        panel
+        panel.size(176, 210)
                 .child(Flow.row()
                         .name("Tab row")
                         .coverChildren()
@@ -395,9 +391,8 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
     public void update() {
         if (!getLevel().isClientSide) {
             if (this.time++ % 20 == 0) {
-                Collection<Item> vals = ForgeRegistries.ITEMS.getValues();
-                Item item = vals.stream().skip(new Random().nextInt(vals.size())).findFirst().orElse(Items.DIAMOND);
-                this.displayItem = new ItemStack(item, 26735987);
+                this.displayItem = TestHandler.getRandomItem();
+                this.displayItem.setCount(26735987);
             }
             if (++this.time % 60 == 0) {
                 Random rnd = new Random();

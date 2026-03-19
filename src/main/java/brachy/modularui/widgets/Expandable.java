@@ -13,6 +13,7 @@ import brachy.modularui.widget.EmptyWidget;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -22,16 +23,16 @@ import java.util.function.BiConsumer;
 
 public class Expandable extends Widget<Expandable> implements Interactable, IViewport {
 
-    private IWidget normalView = new EmptyWidget();
-    private IWidget expandedView = new EmptyWidget();
+    @Getter private IWidget normalView = new EmptyWidget();
+    @Getter private IWidget expandedView = new EmptyWidget();
     private final List<IWidget> children = Arrays.asList(normalView, expandedView);
     private List<IWidget> currentChildren = children;
-    private boolean expanded = false;
+    @Getter private boolean expanded = false;
     private Area areaSnapshot;
-    private Animator animator;
-    private BiConsumer<Rectangle, Boolean> stencilTransform;
-    private int animationDuration = 300;
-    private IInterpolation interpolation = Interpolation.SINE_OUT;
+    @Getter private Animator animator;
+    @Getter private BiConsumer<Rectangle, Boolean> stencilTransform;
+    @Getter private int animationDuration = 300;
+    @Getter private IInterpolation interpolation = Interpolation.SINE_OUT;
 
     public Expandable() {
         coverChildren();

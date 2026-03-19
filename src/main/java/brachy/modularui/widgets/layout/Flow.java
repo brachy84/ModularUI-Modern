@@ -11,8 +11,6 @@ import brachy.modularui.widget.sizer.Box;
 import brachy.modularui.widget.sizer.ExpanderResizer;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-@Accessors(fluent = true, chain = true)
 public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
 
     public static Flow row() {
@@ -38,33 +35,30 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
     /**
      * The main axis on which to align children.
      */
-    @Getter
-    private final GuiAxis axis;
+    @Getter private final GuiAxis axis;
     /**
      * How the children should be laid out on the main axis.
      */
-    private Alignment.MainAxis mainAxisAlignment = Alignment.MainAxis.START;
+    @Getter private Alignment.MainAxis mainAxisAlignment = Alignment.MainAxis.START;
     /**
      * How the children should be laid out on the cross axis.
      */
-    private Alignment.CrossAxis crossAxisAlignment = Alignment.CrossAxis.CENTER;
+    @Getter private Alignment.CrossAxis crossAxisAlignment = Alignment.CrossAxis.CENTER;
     /**
      * Additional space between each child on main axis.
      * Does not work with {@link Alignment.MainAxis#SPACE_BETWEEN} and {@link Alignment.MainAxis#SPACE_AROUND}.
      */
-    @Setter
-    private int childPadding = 0;
-    private int crossAxisChildPadding = 0;
+    @Getter private int childPadding = 0;
+    @Getter private int crossAxisChildPadding = 0;
     /**
      * Whether disabled child widgets should be collapsed for display.
      */
-    private boolean collapseDisabledChild = false;
+    @Getter private boolean collapseDisabledChildren = false;
     /**
      * Whether the children list should be laid out in reverse order
      */
-    private boolean reverseLayout = false;
-
-    private boolean wrap = false;
+    @Getter private boolean reverseLayout = false;
+    @Getter private boolean wrap = false;
     private final List<IWidget> ignoredWidgets = new ArrayList<>();
     private final List<SimpleFlow> layoutWidgets = new ArrayList<>();
 
@@ -267,12 +261,12 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
 
     @Override
     public boolean shouldIgnoreChildSize(IWidget child) {
-        return this.collapseDisabledChild && !child.isEnabled();
+        return this.collapseDisabledChildren && !child.isEnabled();
     }
 
     @Override
     public void onChildChangeEnabled(IWidget child, boolean enabled) {
-        if (this.collapseDisabledChild) {
+        if (this.collapseDisabledChildren) {
             ILayoutWidget.super.onChildChangeEnabled(child, enabled);
         }
     }
@@ -330,12 +324,16 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
      * @param spaceBetween pixel size padding between children
      * @return this
      */
+    public Flow childPadding(int spaceBetween) {
+        this.childPadding = spaceBetween;
+        return this;
+    }
 
     /**
      * Sets if disabled children should be collapsed.
      */
-    public Flow collapseDisabledChild() {
-        this.collapseDisabledChild = true;
+    public Flow collapseDisabledChildren() {
+        this.collapseDisabledChildren = true;
         return this;
     }
 
@@ -347,8 +345,8 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
      * @param collapse true if disabled children should be collapsed.
      * @return this
      */
-    public Flow collapseDisabledChild(boolean collapse) {
-        this.collapseDisabledChild = collapse;
+    public Flow collapseDisabledChildren(boolean collapse) {
+        this.collapseDisabledChildren = collapse;
         return this;
     }
 

@@ -23,6 +23,7 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,7 +32,13 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import net.minecraftforge.registries.ForgeRegistries;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TestHandler {
@@ -57,6 +64,18 @@ public class TestHandler {
             GuiDraw.drawHorizontalGradientRect(context.getGraphics(), x + width / 2f, y + 1, width / 2f, 1, high, low);
         }
     }.asIcon().height(3);
+
+    private static List<ItemStack> allItems = null;
+
+    public static ItemStack getRandomItem() {
+        if (allItems == null) {
+            allItems = new ArrayList<>();
+            for (Item item : ForgeRegistries.ITEMS) {
+                allItems.add(new ItemStack(item));
+            }
+        }
+        return allItems.get(new Random().nextInt(allItems.size())).copy();
+    }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent

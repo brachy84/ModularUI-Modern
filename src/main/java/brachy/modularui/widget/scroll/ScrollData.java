@@ -5,6 +5,7 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.Scrollbar;
 import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Interpolation;
 
@@ -253,10 +254,10 @@ public abstract class ScrollData {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public abstract void drawScrollbar(GuiContext context, ScrollArea area, WidgetTheme widgetTheme, IDrawable texture);
+    public abstract void drawScrollbar(ModularGuiContext context, ScrollArea area, WidgetTheme widgetTheme, IDrawable texture);
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawScrollBar(GuiContext context, int x, int y, int w, int h, WidgetTheme widgetTheme,
+    protected void drawScrollBar(ModularGuiContext context, int x, int y, int w, int h, WidgetTheme widgetTheme,
                                  IDrawable texture) {
         IDrawable drawable;
         if (this.scrollbar != null) {
@@ -269,6 +270,9 @@ public abstract class ScrollData {
         if (drawable == null) drawable = Scrollbar.DEFAULT;
         drawable.draw(context, x, y, w, h, widgetTheme);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public abstract void drawScrollShadow(ScrollArea area, ModularGuiContext context);
 
     public boolean onMouseClicked(ScrollArea area, int mainAxisPos, int crossAxisPos, int button) {
         if (isAxisStart() ? crossAxisPos <= getThickness() :

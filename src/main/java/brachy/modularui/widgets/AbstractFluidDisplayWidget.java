@@ -20,17 +20,15 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayWidget<W>> extends Widget<W>
-        implements IngredientProvider<FluidStack> {
+public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayWidget<W>> extends Widget<W> implements IngredientProvider<FluidStack> {
 
     public static final String UNIT_BUCKET = "B";
     public static final String UNIT_LITER = "L";
 
-    private final Box contentPadding = new Box().all(1);
+    @Getter private final Box contentPadding = new Box().all(1);
     private String unit = UNIT_BUCKET;
-    private SIPrefix baseUnitPrefix = SIPrefix.Milli;
-    @Getter
-    private boolean flipLighterThanAir = true;
+    @Getter private SIPrefix baseUnitPrefix = SIPrefix.Milli;
+    @Getter private boolean flipLighterThanAir = true;
 
     protected AbstractFluidDisplayWidget() {
         size(18);

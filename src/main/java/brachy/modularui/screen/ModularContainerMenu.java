@@ -7,6 +7,7 @@ import brachy.modularui.factory.GuiData;
 import brachy.modularui.utils.NetworkUtils;
 import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.widgets.slot.ModularSlot;
+import brachy.modularui.widgets.slot.PlayerSlotGroup;
 import brachy.modularui.widgets.slot.SlotGroup;
 
 import net.minecraft.client.Minecraft;
@@ -240,9 +241,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         return Collections.unmodifiableList(this.shiftClickSlots);
     }
 
-    public void onSlotChanged(ModularSlot slot, ItemStack stack, boolean onlyAmountChanged) {
-        this.broadcastChanges();
-    }
+    public void onSlotChanged(ModularSlot slot, ItemStack stack, boolean onlyAmountChanged) {}
 
     @Override
     public boolean canDragTo(@NotNull Slot slot) {
@@ -387,6 +386,16 @@ public class ModularContainerMenu extends AbstractContainerMenu {
 
             broadcastChanges();
         } else if (clickTypeIn == ClickType.SWAP && mouseButton >= 0 && mouseButton < 9) {
+            // minecraft does not check if the hotbar slot can actually take and put items
+            Slot hotbarSlot = findPlayerSlot(player, mouseButton); // mouseButton is the slot index here
+            if (hotbarSlot != null) {
+                Slot fromSlot = getSlot(slotId);
+                ItemStack fromItem = fromSlot.getItem();
+                ItemStack hotbarStack = hotbarSlot.getItem();
+                if (!fromItem.isEmpty() && !hotbarSlot.mayPlace(fromItem)) return;
+                if (!hotbarStack.isEmpty() && !hotbarSlot.mayPickup(player)) return;
+            }
+
             ModularSlot slot = getModularSlot(slotId);
             ItemStack hotbarStack = inventory.getItem(mouseButton);
             if (slot.isPhantom()) {
@@ -401,6 +410,33 @@ public class ModularContainerMenu extends AbstractContainerMenu {
 
     protected final void superClicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
         super.clicked(slotId, mouseButton, clickTypeIn, player);
+    }
+
+    protected Slot findPlayerSlot(Player player, int index) {
+        if (player == this.player || Objects.equals(player.getEncodeId(), this.player.getEncodeId())) {
+            // if we want a slot of the player who opened the ui, we can just use the slot group
+            SlotGroup slotGroup = this.syncManager.getSlotGroup(PlayerSlotGroup.NAME);
+            if (slotGroup == null) return findExternalPlayerSlot(player, index);
+            for (Slot slot : slotGroup.getSlots()) {
+                if (slot.getSlotIndex() == index) {
+                    return slot;
+                }
+            }
+        }
+        return findExternalPlayerSlot(player, index);
+    }
+
+    protected Slot findExternalPlayerSlot(Player player, int index) {
+        // go through all slots and find a slot with a matching player and index
+        for (Slot slot : this.slots) {
+            Player slotPlayer = ModularSlot.getPlayerSlotPlayer(slot);
+            if (slotPlayer != null &&
+                    (player == slotPlayer || Objects.equals(player.getEncodeId(), this.player.getEncodeId())) &&
+                    slot.getSlotIndex() == index) {
+                return slot;
+            }
+        }
+        return null;
     }
 
     @Override

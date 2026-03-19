@@ -65,6 +65,10 @@ public class DynamicSyncedWidget<W extends DynamicSyncedWidget<W>> extends Widge
         }
     }
 
+    public @NotNull IDynamicSyncNotifiable getDynamicSyncHandler() {
+        return syncHandler;
+    }
+
     public W syncHandler(DynamicSyncHandler syncHandler) {
         setSyncOrValue(ISyncOrValue.orEmpty(syncHandler));
         return getThis();

@@ -16,6 +16,8 @@ import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
 
+import lombok.Getter;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -51,9 +53,8 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     private FluidSlotSyncHandler syncHandler;
-    private boolean alwaysShowFull = true;
-    private boolean displayAmount = true;
 
+    @Getter private boolean alwaysShowFull = true;
     public FluidSlot() {
         tooltip().autoUpdate(true);
         tooltipBuilder(this::addTooltip);
@@ -147,6 +148,14 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     @Override
+    public @NotNull FluidSlotSyncHandler getSyncHandler() {
+        if (this.syncHandler == null) {
+            throw new IllegalStateException("Widget is not initialised or not synced!");
+        }
+        return syncHandler;
+    }
+
+    @Override
     protected boolean displayAmountText() {
         return this.syncHandler == null || this.syncHandler.controlsAmount();
     }
@@ -227,11 +236,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     public IFluidTank getFluidTank() {
         return this.syncHandler == null ? EMPTY : this.syncHandler.fluidTank();
-    }
-
-    public FluidSlot displayAmount(boolean displayAmount) {
-        this.displayAmount = displayAmount;
-        return this;
     }
 
     /**

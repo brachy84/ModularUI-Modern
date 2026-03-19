@@ -14,15 +14,11 @@ import java.util.function.IntConsumer;
 
 public class PagedWidget<W extends PagedWidget<W>> extends Widget<W> {
 
-    @Getter
-    private final List<IWidget> pages = new ArrayList<>();
-    @Getter
-    private IWidget currentPage;
-    @Getter
-    private int currentPageIndex = 0;
+    @Getter private final List<IWidget> pages = new ArrayList<>();
+    @Getter private IWidget currentPage;
+    @Getter private int currentPageIndex = 0;
 
-    @Nullable
-    private IntConsumer onPageChange;
+    @Nullable private IntConsumer onPageChange;
 
     @Override
     public void afterInit() {

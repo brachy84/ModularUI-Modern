@@ -12,14 +12,16 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.ObjectValue;
 import brachy.modularui.widget.Widget;
 
+import lombok.Getter;
+
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.NotNull;
 
 public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements IngredientProvider<ItemStack> {
 
-    private IValue<ItemStack> value;
-    private boolean displayAmount = false;
+    @Getter private IValue<ItemStack> value;
+    @Getter private boolean displayAmount = false;
 
     public ItemDisplayWidget() {
         size(18);

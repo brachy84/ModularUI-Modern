@@ -4,7 +4,10 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
+import brachy.modularui.utils.Color;
+import brachy.modularui.utils.math.MathUtils;
 
 public class HorizontalScrollData extends ScrollData {
 
@@ -68,7 +71,7 @@ public class HorizontalScrollData extends ScrollData {
     }
 
     @Override
-    public void drawScrollbar(GuiContext context, ScrollArea area, WidgetTheme widgetTheme, IDrawable texture) {
+    public void drawScrollbar(ModularGuiContext context, ScrollArea area, WidgetTheme widgetTheme, IDrawable texture) {
         boolean isOtherActive = isOtherScrollBarActive(area, true);
         int l = getScrollBarLength(area);
         int x = 0;
@@ -85,5 +88,34 @@ public class HorizontalScrollData extends ScrollData {
 
         w = l;
         drawScrollBar(context, x, y, w, h, widgetTheme, texture);
+    }
+
+    @Override
+    public void drawScrollShadow(ScrollArea area, ModularGuiContext context) {
+        int min = 0, max = getScrollSize() - getFullVisibleSize(area);
+        int s = getScroll();
+        final float maxOpacityScroll = 30f;
+        final int maxShadowSize = 12;
+
+        int endColor = 0;
+        int startColorFull = Color.BLACK.brighter(4);
+
+        ScrollPadding sp = area.getScrollPadding();
+        int y = sp.getScrollPaddingTop();
+        int h = area.height - sp.verticalScrollPadding();
+        final int maxShadowSizeLimit = (area.w() - sp.horizontalScrollPadding()) / 3;
+
+        if (s > min) {
+            float prog = MathUtils.clamp(s / maxOpacityScroll, 0, 1);
+            int startColor = Color.withAlpha(startColorFull, prog * 0.8f);
+            int size = Math.min((int) (prog * maxShadowSize), maxShadowSizeLimit);
+            GuiDraw.drawHorizontalGradientRect(context.getGraphics(), sp.getScrollPaddingLeft(), y, size, h, startColor, endColor);
+        }
+        if (s < max) {
+            float prog = MathUtils.clamp((max - s) / maxOpacityScroll, 0, 1);
+            int startColor = Color.withAlpha(startColorFull, prog * 0.8f);
+            int size = Math.min((int) (prog * maxShadowSize), maxShadowSizeLimit);
+            GuiDraw.drawHorizontalGradientRect(context.getGraphics(), area.w() - size - sp.getScrollPaddingRight(), y, size, h, endColor, startColor);
+        }
     }
 }

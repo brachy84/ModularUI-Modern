@@ -15,20 +15,22 @@ import brachy.modularui.value.StringValue;
 import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 
+import lombok.Getter;
+
 public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
 
     private static final IDrawable handleBackground = new Rectangle().color(Color.WHITE.main);
 
-    private int color;
-    private int red;
-    private int green;
-    private int blue;
-    private double hue;
-    private double saturation;
+    @Getter private int color;
+    @Getter private int red;
+    @Getter private int green;
+    @Getter private int blue;
+    @Getter private double hue;
+    @Getter private double saturation;
     private double value;
 
     private int alpha;
-    private final boolean controlAlpha;
+    @Getter private final boolean controlAlpha;
 
     private final Rectangle preview = new Rectangle();
     private final Rectangle sliderBackgroundR = new Rectangle();
@@ -266,5 +268,13 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                 Color.withHSVSaturation(color, 1f));
         this.sliderBackgroundV.horizontalGradient(Color.withValue(color, 0f), Color.withValue(color, 1f));
         this.preview.color(color);
+    }
+
+    public double getHSVValue() {
+        return value;
+    }
+
+    public int getColorAlpha() {
+        return alpha;
     }
 }

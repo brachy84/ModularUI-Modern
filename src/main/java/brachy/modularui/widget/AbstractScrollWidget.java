@@ -15,6 +15,7 @@ import brachy.modularui.widget.scroll.ScrollData;
 import brachy.modularui.widget.scroll.VerticalScrollData;
 import brachy.modularui.widget.sizer.Area;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,8 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
 
     private final ScrollArea scroll = new ScrollArea();
     private boolean scrollXActive, scrollYActive;
+
+    @Getter private boolean showScrollShadows = true;
 
     public AbstractScrollWidget(@Nullable HorizontalScrollData x, @Nullable VerticalScrollData y) {
         super();
@@ -139,8 +142,8 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
         if (!transformed) {
             context.getStencil().pop();
             WidgetThemeEntry<WidgetTheme> scrollbarTheme = getPanel().getTheme().getScrollbarTheme();
-            this.scroll.drawScrollbar(context, scrollbarTheme.getTheme(isHovering()),
-                    scrollbarTheme.theme().getBackground());
+            this.scroll.drawScrollbar(context, scrollbarTheme.getTheme(isHovering()), scrollbarTheme.theme().getBackground());
+            if (this.showScrollShadows) this.scroll.drawScrollShadow(context);
         }
     }
 
@@ -150,5 +153,10 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
 
     public int getScrollY() {
         return this.scroll.getScrollY() != null ? this.scroll.getScrollY().getScroll() : 0;
+    }
+
+    public W showScrollShadows(boolean showScrollShadows) {
+        this.showScrollShadows = showScrollShadows;
+        return getThis();
     }
 }

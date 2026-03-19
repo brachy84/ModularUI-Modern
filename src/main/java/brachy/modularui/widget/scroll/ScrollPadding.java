@@ -4,6 +4,8 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.widget.sizer.Box;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 public class ScrollPadding extends Box {
@@ -11,10 +13,10 @@ public class ScrollPadding extends Box {
     public static final ScrollPadding SHARED = new ScrollPadding();
     public static final ScrollPadding ZERO = new ScrollPadding();
 
-    protected int scrollPaddingLeft;
-    protected int scrollPaddingTop;
-    protected int scrollPaddingRight;
-    protected int scrollPaddingBottom;
+    @Getter protected int scrollPaddingLeft;
+    @Getter protected int scrollPaddingTop;
+    @Getter protected int scrollPaddingRight;
+    @Getter protected int scrollPaddingBottom;
 
     public ScrollPadding scrollPaddingAll(int all) {
         return this.scrollPaddingAll(all, all);
@@ -91,25 +93,36 @@ public class ScrollPadding extends Box {
         return this.bottom + this.scrollPaddingBottom;
     }
 
+    @Override
     public int vertical() {
         return super.vertical() + this.scrollPaddingTop + this.scrollPaddingBottom;
     }
 
+    @Override
     public int horizontal() {
         return super.horizontal() + this.scrollPaddingLeft + this.scrollPaddingRight;
     }
 
+    public int verticalScrollPadding() {
+        return this.scrollPaddingTop + this.scrollPaddingBottom;
+    }
+
+    public int horizontalScrollPadding() {
+        return this.scrollPaddingLeft + this.scrollPaddingRight;
+    }
+
+    @Override
     public int getStart(GuiAxis axis) {
         return axis.isHorizontal() ? this.left + this.scrollPaddingLeft : this.top + this.scrollPaddingTop;
     }
 
+    @Override
     public int getEnd(GuiAxis axis) {
         return axis.isHorizontal() ? this.right + this.scrollPaddingRight : this.bottom + this.scrollPaddingBottom;
     }
 
     public int getTotalScrollPadding(GuiAxis axis) {
-        return axis.isHorizontal() ? this.scrollPaddingLeft + this.scrollPaddingRight :
-                this.scrollPaddingTop + this.scrollPaddingBottom;
+        return axis.isHorizontal() ? horizontalScrollPadding() : verticalScrollPadding();
     }
 
     @Override

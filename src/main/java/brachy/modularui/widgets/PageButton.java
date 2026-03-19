@@ -10,14 +10,15 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class PageButton extends Widget<PageButton> implements Interactable {
 
-    private final int index;
+    @Getter private final int index;
     private final PagedWidget.Controller controller;
     private IDrawable inactiveTexture = null;
-    private boolean invert = false;
+    @Getter private boolean invert = false;
 
     public PageButton(int index, PagedWidget.Controller controller) {
         this.index = index;

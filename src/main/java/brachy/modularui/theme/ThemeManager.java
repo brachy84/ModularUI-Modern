@@ -378,7 +378,7 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
             }
 
             // only inherit from the widget theme if it was actually defined, otherwise use parent
-            T parentWidgetHoverTheme = widgetThemeJson != null ? widgetTheme :
+            T parentWidgetHoverTheme = definedStandard ? widgetTheme :
                     parent.getWidgetTheme(key).hoverTheme();
             T widgetThemeHover = parser.parse(parentWidgetHoverTheme, widgetThemeHoverJson, fallback);
 

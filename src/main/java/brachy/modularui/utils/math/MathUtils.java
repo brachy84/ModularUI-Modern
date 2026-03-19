@@ -145,6 +145,10 @@ public class MathUtils {
         return Math.max(min, Math.min(max, v));
     }
 
+    public static float clamp(float v, float min, float max) {
+        return Math.max(min, Math.min(max, v));
+    }
+
     public static int cycler(int x, int min, int max) {
         return x < min ? max : (x > max ? min : x);
     }

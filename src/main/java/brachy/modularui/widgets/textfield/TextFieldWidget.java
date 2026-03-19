@@ -6,6 +6,7 @@ import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.value.IStringValue;
 import brachy.modularui.api.value.ISyncOrValue;
+import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
@@ -20,6 +21,7 @@ import net.minecraft.util.Mth;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -39,18 +41,14 @@ import java.util.regex.Pattern;
 @Accessors(chain = true)
 public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
-    @Getter
-    private IStringValue<?> stringValue;
+    @Getter private IStringValue<?> stringValue;
     private Function<String, String> validator = val -> val;
-    private boolean numbers = false;
-    @Getter
-    private String mathFailMessage = null;
-    private double defaultNumber = 0;
-    private boolean tooltipOverride = false;
-    @Getter
-    private boolean autoUpdateOnChange = false;
-    @Getter
-    private boolean acceptsExpression = true;
+    @Getter private boolean numbers = false;
+    @Getter private String mathFailMessage = null;
+    @Getter private double defaultNumber = 0;
+    @Getter private boolean tooltipOverride = false;
+    @Getter private boolean autoUpdateOnChange = false;
+    @Getter private boolean acceptsExpression = true;
 
     public double parse(String num) {
         if (!this.acceptsExpression) {

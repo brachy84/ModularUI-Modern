@@ -3,6 +3,7 @@ package brachy.modularui.widget.scroll;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.widget.sizer.Area;
@@ -32,6 +33,7 @@ public class ScrollArea extends Area {
     @Getter
     @Setter
     private VerticalScrollData scrollY;
+    @Getter
     private final ScrollPadding scrollPadding = new ScrollPadding();
     @Getter
     @Setter
@@ -44,12 +46,7 @@ public class ScrollArea extends Area {
     public ScrollArea() {}
 
     @Override
-
     public Box getPadding() {
-        return this.scrollPadding;
-    }
-
-    public ScrollPadding getScrollPadding() {
         return this.scrollPadding;
     }
 
@@ -207,7 +204,7 @@ public class ScrollArea extends Area {
      * This method is responsible for drawing a scroll bar
      */
     @OnlyIn(Dist.CLIENT)
-    public void drawScrollbar(GuiContext context, WidgetTheme widgetTheme, IDrawable texture) {
+    public void drawScrollbar(ModularGuiContext context, WidgetTheme widgetTheme, IDrawable texture) {
         boolean isXActive = false; // micro optimisation
         if (this.scrollX != null && this.scrollX.isScrollBarActive(this, false)) {
             isXActive = true;
@@ -215,6 +212,18 @@ public class ScrollArea extends Area {
         }
         if (this.scrollY != null && this.scrollY.isScrollBarActive(this, isXActive)) {
             this.scrollY.drawScrollbar(context, this, widgetTheme, texture);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void drawScrollShadow(ModularGuiContext context) {
+        boolean isXActive = false; // micro optimisation
+        if (this.scrollX != null && this.scrollX.isScrollBarActive(this, false)) {
+            isXActive = true;
+            this.scrollX.drawScrollShadow(this, context);
+        }
+        if (this.scrollY != null && this.scrollY.isScrollBarActive(this, isXActive)) {
+            this.scrollY.drawScrollShadow(this, context);
         }
     }
 }

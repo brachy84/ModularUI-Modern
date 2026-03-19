@@ -11,6 +11,7 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.widget.AbstractParentWidget;
 import brachy.modularui.widget.WidgetTree;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
 public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> implements Interactable, ILayoutWidget {
 
     private final List<CategoryList> subCategories = new ArrayList<>();
-    private boolean expanded = false;
+    @Getter private boolean expanded = false;
     private int totalHeight = 0;
     private IDrawable expandedOverlay;
     private IDrawable collapsedOverlay;

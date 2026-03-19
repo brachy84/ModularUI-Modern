@@ -18,6 +18,7 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.value.IntValue;
 import brachy.modularui.widget.SingleChildWidget;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,10 +29,10 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
 
     private static final RichTooltip[] EMPTY_TOOLTIP = new RichTooltip[0];
 
-    private int stateCount = 1;
+    @Getter private int stateCount = 1;
     private boolean explicitStateCount = false;
     private boolean hasCount = false;
-    private IIntValue<?> intValue;
+    @Getter private IIntValue<?> intValue;
     private int lastValue = -1;
     protected IDrawable[] background = null;
     protected IDrawable[] hoverBackground = null;
@@ -172,26 +173,24 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     @Override
-    public IDrawable getCurrentBackground(ITheme theme, WidgetThemeEntry<?> widgetTheme) {
+    public IDrawable getCurrentBackground(WidgetThemeEntry<?> widgetTheme) {
         // make sure texture is up-to-date
         int state = getState();
         if (isHovering() && this.hoverBackground != null && this.hoverBackground[state] != null &&
                 this.hoverBackground[state] != IDrawable.NONE) {
             return this.hoverBackground[state];
         }
-        return this.background != null && this.background[state] != null ? this.background[state] :
-                super.getCurrentBackground(theme, widgetTheme);
+        return this.background != null && this.background[state] != null ? this.background[state] : super.getCurrentBackground(widgetTheme);
     }
 
     @Override
-    public IDrawable getCurrentOverlay(ITheme theme, WidgetThemeEntry<?> widgetTheme) {
+    public IDrawable getCurrentOverlay(WidgetThemeEntry<?> widgetTheme) {
         int state = getState();
         if (isHovering() && this.hoverOverlay != null && this.hoverOverlay[state] != null &&
                 this.hoverOverlay[state] != IDrawable.NONE) {
             return this.hoverOverlay[state];
         }
-        return this.overlay != null && this.overlay[state] != null ? this.overlay[state] :
-                super.getCurrentOverlay(theme, widgetTheme);
+        return this.overlay != null && this.overlay[state] != null ? this.overlay[state] : super.getCurrentOverlay(widgetTheme);
     }
 
     @Override
@@ -228,7 +227,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
             Arrays.fill(this.hoverBackground, IDrawable.NONE);
         }
         if (getHoverBackground() == null) {
-            super.hoverBackground(IDrawable.NONE);
+            super.disableHoverBackground();
         }
         return getThis();
     }
@@ -251,7 +250,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
             Arrays.fill(this.background, IDrawable.EMPTY);
         }
         if (getBackground() == null) {
-            super.background(IDrawable.EMPTY);
+            super.backgroundOverlay(IDrawable.EMPTY);
         }
         return disableHoverBackground();
     }
@@ -624,8 +623,8 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     protected static void splitTexture(UITexture texture, IDrawable[] dest) {
+        float a = 1f / dest.length;
         for (int i = 0; i < dest.length; i++) {
-            float a = 1f / dest.length;
             dest[i] = texture.getSubArea(0, i * a, 1, i * a + a);
         }
     }

@@ -10,6 +10,7 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     private final RichText text = new RichText();
     private Consumer<RichText> builder;
     private boolean dirty = false;
-    private boolean autoUpdate = false;
+    @Getter private boolean autoUpdate = false;
 
     public void markDirty() {
         this.dirty = true;

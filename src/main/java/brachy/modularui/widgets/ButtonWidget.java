@@ -10,6 +10,7 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.sync.InteractionSyncHandler;
 import brachy.modularui.widget.SingleChildWidget;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W> implements Interactable {
@@ -28,8 +29,8 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
                 });
     }
 
-    private boolean playClickSound = true;
-    private Runnable clickSound;
+    @Getter private boolean playClickSound = true;
+    @Getter private Runnable clickSound;
     private IGuiAction.MousePressed mousePressed;
     private IGuiAction.MouseReleased mouseReleased;
     private IGuiAction.MousePressed mouseTapped;
@@ -132,6 +133,14 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
     public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         return (this.mouseScroll != null && this.mouseScroll.scroll(mouseX, mouseY, delta)) ||
                 (this.syncHandler != null && this.syncHandler.onMouseScroll((int) delta));
+    }
+
+    @Override
+    public @NotNull InteractionSyncHandler getSyncHandler() {
+        if (this.syncHandler == null) {
+            throw new IllegalStateException("Widget is not initialised or not synced!");
+        }
+        return syncHandler;
     }
 
     public W onMousePressed(IGuiAction.MousePressed mousePressed) {

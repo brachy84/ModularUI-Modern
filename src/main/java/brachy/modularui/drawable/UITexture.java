@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 @Accessors(fluent = true, chain = true)
 public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
 
@@ -128,6 +130,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         return fullImage(new ResourceLocation(mod, location), colorType);
     }
 
+    public UITexture register(String name) {
+        DrawableSerialization.registerTexture(name, this);
+        return this;
+    }
+
     public UITexture getSubArea(Area bounds) {
         return getSubArea(bounds.x, bounds.y, bounds.ex(), bounds.ey());
     }
@@ -195,6 +202,8 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         if (name != null) {
             UITexture drawable = DrawableSerialization.getTexture(name);
             if (drawable != null) return drawable;
+            ModularUI.LOGGER.error("Tried to parse UITexture from json, but no texture with name '{}' is registered!", name);
+            return GuiTextures.HELP;
         }
         Builder builder = builder();
         builder.location(JsonHelper.getString(json, ModularUI.MOD_ID + ":gui/widgets/error", "location"))
@@ -245,6 +254,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
             json.addProperty("id", name);
             return true;
         }
+        saveTextureToJson(json);
+        return true;
+    }
+
+    protected void saveTextureToJson(JsonObject json) {
         json.addProperty("location", this.location.toString());
         json.addProperty("u0", this.u0);
         json.addProperty("v0", this.v0);
@@ -252,7 +266,22 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         json.addProperty("v1", this.v1);
         if (this.colorType != null) json.addProperty("colorType", this.colorType.getName());
         json.addProperty("colorOverride", this.colorOverride);
-        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o != null && getClass() == o.getClass() && isEqual((UITexture) o);
+    }
+
+    protected boolean isEqual(UITexture texture) {
+        return Objects.equals(location, texture.location) && Float.compare(u0, texture.u0) == 0 && Float.compare(v0, texture.v0) == 0 &&
+                Float.compare(u1, texture.u1) == 0 && Float.compare(v1, texture.v1) == 0 && nonOpaque == texture.nonOpaque &&
+                colorOverride == texture.colorOverride && Objects.equals(colorType, texture.colorType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, u0, v0, u1, v1, colorType, nonOpaque, colorOverride);
     }
 
     protected UITexture copy() {
@@ -528,15 +557,6 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
          */
         public UITexture build() {
             UITexture texture = create();
-            if (this.name == null) {
-                String[] p = texture.location.getPath().split("/");
-                p = p[p.length - 1].split("\\.");
-                this.name = texture.location.getNamespace().equals(ModularUI.MOD_ID) ? p[0] :
-                        texture.location.getNamespace() + ":" + p[0];
-                if (DrawableSerialization.getTexture(this.name) != null) {
-                    return texture;
-                }
-            }
             DrawableSerialization.registerTexture(this.name, texture);
             return texture;
         }

@@ -7,14 +7,17 @@ import brachy.modularui.utils.Color;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -28,6 +31,20 @@ public class JsonHelper {
             .registerTypeAdapter(IDrawable.class, new DrawableSerialization())
             .registerTypeAdapter(Alignment.class, new Alignment.Json())
             .create();
+
+    public static final JsonDeserializationContext DESERIALIZER = GSON::fromJson;
+    public static final JsonSerializationContext SERIALIZER = new JsonSerializationContext() {
+        @Override
+        public JsonElement serialize(Object o) {
+            return GSON.toJsonTree(o);
+        }
+
+        @Override
+        public JsonElement serialize(Object o, Type type) {
+            return GSON.toJsonTree(o, type);
+        }
+    };
+
 
     public static JsonElement serialize(Object object) {
         return GSON.toJsonTree(object);
