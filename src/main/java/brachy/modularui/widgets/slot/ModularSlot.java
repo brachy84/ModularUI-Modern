@@ -1,6 +1,6 @@
 package brachy.modularui.widgets.slot;
 
-import brachy.modularui.core.mixins.client.CombinedInvWrapperAccessor;
+import brachy.modularui.core.mixins.common.CombinedInvWrapperAccessor;
 import brachy.modularui.value.sync.ItemSlotSyncHandler;
 
 import net.minecraft.resources.ResourceLocation;

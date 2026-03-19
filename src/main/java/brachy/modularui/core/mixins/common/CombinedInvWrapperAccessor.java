@@ -1,4 +1,4 @@
-package brachy.modularui.core.mixins.client;
+package brachy.modularui.core.mixins.common;
 
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
