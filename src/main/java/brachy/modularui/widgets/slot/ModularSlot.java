@@ -107,12 +107,12 @@ public class ModularSlot extends SlotItemHandler {
         if (this.syncHandler != null) {
             this.syncHandler.checkUpdate();
         }
-        if (this.slotGroup != null) {
-            this.slotGroup.slotChanged(this);
-        }
     }
 
     public void onSlotChangedReal(ItemStack itemStack, boolean onlyChangedAmount, boolean client, boolean init) {
+        if (this.slotGroup != null) {
+            this.slotGroup.slotChanged(this);
+        }
         this.changeListener.onChange(itemStack, onlyChangedAmount, client, init);
         if (!init && isInitialized()) {
             getSyncHandler().getSyncManager().getContainer().onSlotChanged(this, itemStack, onlyChangedAmount);
@@ -120,12 +120,6 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     public void onCraftShiftClick(Player playerIn, ItemStack itemStack) {}
-
-    @Override
-    public void set(@NotNull ItemStack stack) {
-        if (ItemStack.matches(stack, getItem())) return;
-        super.set(stack);
-    }
 
     @Override
     public @Nullable Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {

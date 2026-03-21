@@ -57,15 +57,13 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     @Override
     public @NotNull ItemStack getItem(int slot) {
         if (slot < 0 || slot >= this.size) return ItemStack.EMPTY;
-
         return this.delegate.getStackInSlot(slot + this.startIndex);
     }
 
     @Override
     public void setItem(int slot, @NotNull ItemStack stack) {
         if (slot < 0 || slot >= this.size) return;
-
-        this.setSlot(slot, stack, true);
+        this.setSlot(slot + this.startIndex, stack, true);
     }
 
     public void setSlot(int slot, @NotNull ItemStack stack, boolean notify) {

@@ -172,8 +172,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         if (slot.getSlotGroupName() != null) {
             SlotGroup slotGroup = getSyncManager().getSlotGroup(panelName, slot.getSlotGroupName());
             if (slotGroup == null) {
-                ModularUI.LOGGER.throwing(
-                        new IllegalArgumentException("SlotGroup '" + slot.getSlotGroupName() + "' is not registered!"));
+                ModularUI.LOGGER.throwing(new IllegalArgumentException("SlotGroup '" + slot.getSlotGroupName() + "' is not registered!"));
                 return;
             }
             slot.slotGroup(slotGroup);
@@ -192,8 +191,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     @Contract("_, null, null -> fail")
     @NotNull
     @ApiStatus.Internal
-    public SlotGroup validateSlotGroup(String panelName, @Nullable String slotGroupName,
-                                       @Nullable SlotGroup slotGroup) {
+    public SlotGroup validateSlotGroup(String panelName, @Nullable String slotGroupName, @Nullable SlotGroup slotGroup) {
         if (slotGroup != null) {
             if (getSyncManager().getSlotGroup(panelName, slotGroup.getName()) == null) {
                 throw new IllegalArgumentException("Slot group is not registered in the GUI.");
@@ -451,14 +449,14 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                     stack.setCount(stack.getMaxStackSize());
                 }
                 ItemStack remainder = transferItem(slot, stack.copy());
-                if (ItemStack.isSameItemSameTags(remainder, stack)) return ItemStack.EMPTY;
+                if (ItemStack.matches(remainder, stack)) return ItemStack.EMPTY;
                 if (base == 0 && remainder.isEmpty()) stack = ItemStack.EMPTY;
                 else stack.setCount(base + remainder.getCount());
                 slot.set(stack);
                 slot.onQuickCraft(remainder, copy);
                 slot.onTake(playerIn, remainder);
                 slot.onCraftShiftClick(playerIn, remainder);
-                return ItemStack.EMPTY;
+                return copy; // return a non-empty stack if insertion was successful, this causes this function to be called again, important for crafting
             }
         }
         return ItemStack.EMPTY;

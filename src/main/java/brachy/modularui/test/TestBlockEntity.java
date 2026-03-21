@@ -119,7 +119,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         //settings.customGui(() -> TestGuiContainer::new);
 
         syncManager.registerSlotGroup("item_inv", 3);
-        syncManager.registerSlotGroup("crafting", 3);
+        syncManager.registerSlotGroup(new SlotGroup("crafting", 3).setAllowSorting(false));
         IntSyncValue cycleStateValue = new IntSyncValue(() -> this.cycleState, val -> this.cycleState = val);
         syncManager.getHyperVisor().syncValue("cycle_state", cycleStateValue);
         syncManager.syncValue("progress", new DoubleSyncValue(() -> (double) this.progress / this.duration));
@@ -201,7 +201,8 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                         .key('I', i -> new ItemSlot().slot(new ModularSlot(this.craftingInventory, i))
                                                 .addTooltipLine("This slot is empty"))
                                         .key('O', new ItemSlot().slot(new ModularCraftingSlot(this.craftingInventory, 9)
-                                                .grid(3, 3, 0)))
+                                                .inputInventory(this.craftingInventory)
+                                                .gridSize(3, 3)))
                                         .key('D', new ItemDisplayWidget().syncHandler("display_item").displayAmount(true))
                                         .slotGroup("crafting")
                                         .build()

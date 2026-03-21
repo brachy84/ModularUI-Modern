@@ -235,8 +235,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
         String format = null;
 
         if (!getSyncHandler().isPhantom()) {
-            if (slot == acc.getClickedSlot() && !acc.getDraggingItem().isEmpty() && acc.getIsSplittingStack() &&
-                    !slotStack.isEmpty()) {
+            if (slot == acc.getClickedSlot() && !acc.getDraggingItem().isEmpty() && acc.getIsSplittingStack() && !slotStack.isEmpty()) {
                 slotStack = slotStack.copy();
                 slotStack.setCount(slotStack.getCount() / 2);
             } else if (acc.getIsQuickCrafting() && acc.getQuickCraftSlots().contains(slot) && !carried.isEmpty()) {
@@ -249,8 +248,8 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
                     isDragPreview = true;
 
                     int maxSize = Math.min(slotStack.getMaxStackSize(), slot.getMaxStackSize(slotStack));
-                    int currentCount = slot.getItem().isEmpty() ? 0 : slot.getItem().getCount();
-                    amount = AbstractContainerMenu.getQuickCraftPlaceCount(acc.getQuickCraftSlots(), acc.getQuickCraftingType(), slotStack) + currentCount;
+                    amount = slot.getItem().getCount();
+                    amount += AbstractContainerMenu.getQuickCraftPlaceCount(acc.getQuickCraftSlots(), acc.getQuickCraftingType(), slotStack);
                     if (amount > maxSize) {
                         amount = maxSize;
                         format = ChatFormatting.YELLOW.toString();
