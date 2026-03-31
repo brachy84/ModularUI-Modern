@@ -15,7 +15,8 @@
         "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [
-        "common.CombinedInvWrapperAccessor"
+        "common.CombinedInvWrapperAccessor",
+        "common.MutableComponentMixin"
     ],
     "injectors": {
         "defaultRequire": 1,

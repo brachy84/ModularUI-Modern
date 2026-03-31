@@ -334,7 +334,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
      */
     protected W addTooltip(int state, IDrawable tooltip) {
         updateStateCount(state + 1, false);
-        this.tooltip[state].addLine(tooltip);
+        this.tooltip[state].addDrawableLine(tooltip);
         return getThis();
     }
 
@@ -385,7 +385,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     public W addTooltipElement(IDrawable drawable) {
         expectCount();
         for (RichTooltip tooltip : this.tooltip) {
-            tooltip.add(drawable);
+            tooltip.addDrawable(drawable);
         }
         return getThis();
     }
@@ -415,7 +415,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     public W addTooltipLine(IDrawable drawable) {
         expectCount();
         for (RichTooltip tooltip : this.tooltip) {
-            tooltip.addLine(drawable);
+            tooltip.addDrawableLine(drawable);
         }
         return getThis();
     }

@@ -25,7 +25,7 @@ public class ScrollingTextWidget extends TextWidget<ScrollingTextWidget> {
 
     private int speed = 15;
 
-    public ScrollingTextWidget(IKey key) {
+    public ScrollingTextWidget(Component key) {
         super(key);
         tooltipBuilder(tooltip -> {
             tooltip.showUpTimer(10);
@@ -63,7 +63,7 @@ public class ScrollingTextWidget extends TextWidget<ScrollingTextWidget> {
             animator(new Animator().curve(Interpolation.SINE_INOUT));
         }
         if (this.line == null) {
-            updateLine(getKey().getFormatted());
+            updateLine(getKey());
         }
         checkString();
         WidgetTheme theme = getActiveWidgetTheme(widgetTheme, isHovering());

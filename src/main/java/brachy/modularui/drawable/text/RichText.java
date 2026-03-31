@@ -14,6 +14,7 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.TooltipLines;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
@@ -117,7 +118,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     }
 
     @Override
-    public RichText add(IDrawable drawable) {
+    public RichText addDrawable(IDrawable drawable) {
         Object o = drawable;
         if (!(o instanceof IKey) && !(o instanceof IIcon)) o = drawable.asIcon();
         addElement(o);
@@ -128,10 +129,10 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     @Override
     public RichText add(TooltipComponent tooltipComponent) {
         if (tooltipComponent instanceof DrawableTooltipComponent drawable) {
-            return add(drawable.drawable());
+            return addDrawable(drawable.drawable());
         } else {
             TooltipComponentIcon tci = new TooltipComponentIcon(tooltipComponent);
-            return add(tci);
+            return addDrawable(tci);
         }
     }
 
@@ -258,7 +259,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         for (int i = current; i < this.elements.size(); i++) {
             Object o = this.elements.get(i);
             if (o == IKey.LINE_FEED) return i;
-            if (o instanceof IKey key && key.get().getString().trim().endsWith("\n")) return i;
+            if (o instanceof Component key && key.getString().trim().endsWith("\n")) return i;
             if (o instanceof String string && string.trim().endsWith("\n")) return i;
             if (o instanceof ITextLine) return i;
         }
@@ -270,7 +271,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         int lim = this.elements.size();
         while (i < lim) {
             Object o = this.elements.get(i);
-            if (o instanceof IKey key && test.test(key.get().getString())) return i;
+            if (o instanceof Component key && test.test(key.getString())) return i;
             if (o instanceof String string && test.test(string)) return i;
             if (++i == lim && wrapAround) {
                 i = 0;

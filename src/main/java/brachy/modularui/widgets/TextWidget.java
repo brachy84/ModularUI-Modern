@@ -21,17 +21,16 @@ import java.util.function.IntSupplier;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
-    @Getter private final IKey key;
+    @Getter private final Component key;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private IntSupplier color = null;
     @Getter private Boolean textShadow = null;
     @Getter private float scale = 1f;
     @Getter private int maxWidth = -1;
 
-    private Component lastText = null;
-    private Component textForDefaultSize = null;
+    private String lastText;
 
-    public TextWidget(IKey key) {
+    public TextWidget(Component key) {
         this.key = key;
     }
 
@@ -54,12 +53,12 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     protected Component checkString() {
-        Component text = this.key.getFormatted();
+        String text = this.key.getString();
         if (!Objects.equals(this.lastText, text)) {
-            onTextChanged(text);
+            onTextChanged(this.key);
             this.lastText = text;
         }
-        return text;
+        return this.key;
     }
 
     protected void onTextChanged(Component newText) {
@@ -74,7 +73,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setPos(padding.left(), padding.top());
         renderer.setScale(this.scale);
         renderer.setSimulate(true);
-        renderer.draw(null, getComponentForDefaultSize());
+        renderer.draw(null, this.key);
         renderer.setSimulate(false);
         return renderer;
     }
@@ -124,19 +123,6 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         return true;
     }
 
-    protected Component getComponentForDefaultSize() {
-        if (this.textForDefaultSize == null) {
-            this.textForDefaultSize = this.key.get();
-            this.lastText = this.textForDefaultSize;
-        }
-        return this.textForDefaultSize;
-    }
-
-    @Override
-    public void postResize() {
-        this.textForDefaultSize = null;
-    }
-
     @Deprecated
     public W alignment(Alignment alignment) {
         return textAlign(alignment);
@@ -167,7 +153,8 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     public W style(ChatFormatting formatting) {
-        this.key.style(formatting);
+        // TODO
+        //this.key.style(formatting);
         return getThis();
     }
 

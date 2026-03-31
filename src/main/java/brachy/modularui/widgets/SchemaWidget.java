@@ -144,7 +144,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
             this.minLayer = minLayer;
             this.maxLayer = maxLayer;
             overlay(IKey.dynamic(() -> currentLayer > Integer.MIN_VALUE ?
-                    Component.literal(Integer.toString(currentLayer)) : Component.literal("ALL")).scale(0.5f));
+                    Component.literal(Integer.toString(currentLayer)) : Component.literal("ALL"))/*.scale(0.5f)*/); // TODO
 
             onMousePressed((mouseX, mouseY, button) -> {
                 if (button == 0 || button == 1) {

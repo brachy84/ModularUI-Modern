@@ -94,10 +94,10 @@ public class TestHandler {
         if (enabledRichTooltipEventTest && ModularUI.isDev()) {
             event.getTooltip()
                     .add(IKey.str("Powered By: ").style(IKey.GOLD, IKey.ITALIC))
-                    .add(GuiTextures.MUI_LOGO.asIcon().size(18)).newLine()
+                    .addDrawable(GuiTextures.MUI_LOGO.asIcon().size(18)).newLine()
                     .moveCursorToStart()
                     .moveCursorToNextLine()
-                    .addLine(tooltipLine)
+                    .addDrawableLine(tooltipLine)
                     // replaces the Minecraft mod name in JEI item tooltips
                     .replace("Minecraft", key -> IKey.str("Chicken Jockey").style(IKey.BLUE, IKey.ITALIC))
                     .moveCursorToEnd();

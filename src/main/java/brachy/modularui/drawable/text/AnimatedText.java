@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntSupplier;
 
+// TODO turn into ComponentsContents
+/*
 @Accessors(fluent = true, chain = true)
 public class AnimatedText extends StyledText {
 
@@ -28,7 +30,7 @@ public class AnimatedText extends StyledText {
     private int currentIndex;
     /**
      * How fast the characters appear
-     */
+     *//*
     @Setter
     private int speed = 40; // ms per char
     private long timeLastDraw;
@@ -142,4 +144,4 @@ public class AnimatedText extends StyledText {
     public @NotNull AnimatedText shadow(@Nullable Boolean shadow) {
         return (AnimatedText) super.shadow(shadow);
     }
-}
+}*/

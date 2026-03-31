@@ -1,20 +1,14 @@
 package brachy.modularui.api.drawable;
 
 import brachy.modularui.api.IJsonSerializable;
-import brachy.modularui.drawable.text.AnimatedText;
-import brachy.modularui.drawable.text.CompoundKey;
-import brachy.modularui.drawable.text.DynamicKey;
+import brachy.modularui.drawable.text.DynamicComponent;
 import brachy.modularui.drawable.text.FormattingState;
 import brachy.modularui.drawable.text.KeyIcon;
-import brachy.modularui.drawable.text.LangKey;
-import brachy.modularui.drawable.text.StringKey;
-import brachy.modularui.drawable.text.StyledText;
+import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
-import brachy.modularui.utils.serialization.json.JsonHelper;
-import brachy.modularui.widgets.TextWidget;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -72,18 +66,8 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param key translation key
      * @return text key
      */
-    static IKey lang(@NotNull String key) {
-        return new LangKey(key);
-    }
-
-    /**
-     * Creates a translated text.
-     *
-     * @param component translation component
-     * @return text key
-     */
-    static IKey lang(@NotNull Component component) {
-        return new LangKey(component);
+    static ModularComponent lang(@NotNull String key) {
+        return ModularComponent.translatable(key);
     }
 
     /**
@@ -93,40 +77,8 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param args translation arguments
      * @return text key
      */
-    static IKey lang(@NotNull String key, @Nullable Object... args) {
-        return new LangKey(key, args);
-    }
-
-    /**
-     * Creates a translated text with arguments supplier.
-     *
-     * @param key          translation key
-     * @param argsSupplier translation arguments supplier
-     * @return text key
-     */
-    static IKey lang(@NotNull String key, @NotNull Supplier<Object[]> argsSupplier) {
-        return new LangKey(key, argsSupplier);
-    }
-
-    /**
-     * Creates a translated text.
-     *
-     * @param keySupplier translation key supplier
-     * @return text key
-     */
-    static IKey lang(@NotNull Supplier<String> keySupplier) {
-        return new LangKey(keySupplier);
-    }
-
-    /**
-     * Creates a translated text with arguments supplier.
-     *
-     * @param keySupplier  translation key supplier
-     * @param argsSupplier translation arguments supplier
-     * @return text key
-     */
-    static IKey lang(@NotNull Supplier<String> keySupplier, @NotNull Supplier<Object[]> argsSupplier) {
-        return new LangKey(keySupplier, argsSupplier);
+    static ModularComponent lang(@NotNull String key, @Nullable Object... args) {
+        return ModularComponent.translatable(key, args);
     }
 
     /**
@@ -135,8 +87,8 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param key string
      * @return text key
      */
-    static IKey str(@NotNull String key) {
-        return new StringKey(key);
+    static ModularComponent str(@NotNull String key) {
+        return ModularComponent.literal(key);
     }
 
     /**
@@ -147,8 +99,8 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param args arguments
      * @return text key
      */
-    static IKey str(@NotNull String key, @Nullable Object... args) {
-        return new StringKey(key, args);
+    static ModularComponent str(@NotNull String key, @Nullable Object... args) {
+        return ModularComponent.translatableWithFallback(key, key, args);
     }
 
     /**
@@ -157,8 +109,20 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param keys text keys
      * @return composed text key.
      */
-    static IKey comp(@NotNull IKey... keys) {
-        return new CompoundKey(keys);
+    static ModularComponent comp(@NotNull Component... keys) {
+        if (keys.length == 0) {
+            return ModularComponent.empty();
+        }
+        MutableComponent main;
+        if (keys[0] instanceof MutableComponent mutableComponent) {
+            main = mutableComponent;
+        } else {
+            main = ModularComponent.empty().append(keys[0]);
+        }
+        for (int i = 1; i < keys.length; i++) {
+            main.append(keys[i]);
+        }
+        return main.asModular();
     }
 
     /**
@@ -167,29 +131,14 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param supp string supplier
      * @return dynamic text key
      */
-    static IKey dynamic(@NotNull Supplier<@NotNull Component> supp) {
-        // DO NOT PULL OUT INTO A LOCAL VAR IT WILL BREAK THE SUPPLIER
-        if (supp.get() instanceof MutableComponent) {
-            return dynamicKey(() -> IKey.lang(supp.get()));
-        } else {
-            return dynamicKey(() -> IKey.lang(supp.get().copy()));
-        }
-    }
-
-    /**
-     * Creates a dynamic text key.
-     *
-     * @param supp key supplier
-     * @return dynamic text key
-     */
-    static IKey dynamicKey(@NotNull Supplier<@NotNull IKey> supp) {
-        return new DynamicKey(supp);
+    static DynamicComponent dynamic(@NotNull Supplier<@NotNull Component> supp) {
+        return new DynamicComponent(supp);
     }
 
     /**
      * @return the current unformatted string
      */
-    MutableComponent get();
+    ModularComponent get();
 
     /**
      * @param parentFormatting formatting of the parent in case of composite keys
@@ -213,8 +162,7 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    default void drawAligned(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme,
-                             Alignment alignment) {
+    default void drawAligned(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme, Alignment alignment) {
         renderer.setColor(widgetTheme.getTextColor());
         renderer.setShadow(widgetTheme.isTextShadow());
         renderer.setAlignment(alignment, width, height);
@@ -254,18 +202,11 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
         return 1f;
     }
 
-    @Override
-    default TextWidget<?> asWidget() {
-        return new TextWidget<>(this);
-    }
+    ModularComponent withStyle();
 
-    default StyledText withStyle() {
-        return new StyledText(this);
-    }
-
-    default AnimatedText withAnimation() {
+    /*default AnimatedText withAnimation() {
         return new AnimatedText(this);
-    }
+    }*/
 
     /**
      * @return a formatting state of this key
@@ -283,36 +224,36 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param formatting a formatting rule
      * @return this
      */
-    IKey style(@Nullable ChatFormatting formatting);
+    ModularComponent style(@Nullable ChatFormatting formatting);
 
-    default IKey style(ChatFormatting... formatting) {
+    default ModularComponent style(ChatFormatting... formatting) {
         for (ChatFormatting cf : formatting) style(cf);
-        return this;
+        return get();
     }
 
-    default IKey removeFormatColor() {
+    default ModularComponent removeFormatColor() {
         return style((ChatFormatting) null);
     }
 
     IKey removeStyle();
 
-    default StyledText alignment(Alignment alignment) {
+    default ModularComponent alignment(Alignment alignment) {
         return withStyle().alignment(alignment);
     }
 
-    default @NotNull StyledText color(int color) {
+    default @NotNull ModularComponent color(int color) {
         return color(() -> color);
     }
 
-    default StyledText color(@Nullable IntSupplier color) {
+    default ModularComponent color(@Nullable IntSupplier color) {
         return withStyle().color(color);
     }
 
-    default StyledText scale(float scale) {
+    default ModularComponent scale(float scale) {
         return withStyle().scale(scale);
     }
 
-    default StyledText shadow(@Nullable Boolean shadow) {
+    default ModularComponent shadow(@Nullable Boolean shadow) {
         return withStyle().shadow(shadow);
     }
 
@@ -324,14 +265,14 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     default void loadFromJson(JsonObject json) {
         if (json.has("color") || json.has("shadow") || json.has("align") || json.has("alignment") ||
                 json.has("scale")) {
-            StyledText styledText = this instanceof StyledText styledText1 ? styledText1 : withStyle();
+            /*StyledText styledText = this instanceof StyledText styledText1 ? styledText1 : withStyle();
             if (json.has("color")) {
                 styledText.color(JsonHelper.getInt(json, 0, "color"));
             }
             styledText.shadow(JsonHelper.getBoolean(json, false, "shadow"));
             styledText.alignment(
                     JsonHelper.deserialize(json, Alignment.class, styledText.alignment(), "align", "alignment"));
-            styledText.scale(JsonHelper.getFloat(json, 1, "scale"));
+            styledText.scale(JsonHelper.getFloat(json, 1, "scale"));*/
         }
     }
 }

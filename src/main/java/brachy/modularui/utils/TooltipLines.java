@@ -50,8 +50,6 @@ public class TooltipLines extends AbstractList<FormattedText> {
                 s = txt;
             } else if (o instanceof String str) {
                 s = FormattedText.of(str);
-            } else if (o instanceof IKey key) {
-                s = key.get();
             } else if (o instanceof TextIcon ti) {
                 s = ti.getText();
             }

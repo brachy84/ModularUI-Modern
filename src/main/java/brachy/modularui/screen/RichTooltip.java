@@ -378,11 +378,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     public RichTooltip addFromItem(ItemStack item) {
         List<Component> lines = MCHelper.getItemToolTip(item);
-        add(lines.get(0));
+        add((FormattedText) lines.get(0));
         if (lines.size() > 1) {
             spaceLine();
             for (int i = 1, n = lines.size(); i < n; i++) {
-                add(lines.get(i)).newLine();
+                add((FormattedText) lines.get(i)).newLine();
             }
         }
         return this;

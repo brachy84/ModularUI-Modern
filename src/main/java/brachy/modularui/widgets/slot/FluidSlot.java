@@ -64,7 +64,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         IFluidTank fluidTank = getFluidTank();
         FluidStack fluid = this.syncHandler.getValue();
         if (fluid != null && !fluid.isEmpty()) {
-            tooltip.addLine(IKey.lang(fluid.getDisplayName())).spaceLine(2);
+            tooltip.addLine(fluid.getDisplayName()).spaceLine(2);
         }
         if (this.syncHandler.phantom()) {
             if (fluid != null) {
@@ -90,7 +90,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
                 tooltip.addLine(IKey.lang("gtceu.fluid.empty"));
             }
             if (this.syncHandler.canFillSlot() || this.syncHandler.canDrainSlot()) {
-                tooltip.addLine(IKey.EMPTY); // Add an empty line to separate from the bottom material tooltips
+                tooltip.addDrawableLine(IKey.EMPTY); // Add an empty line to separate from the bottom material tooltips
                 if (Interactable.hasShiftDown()) {
                     if (this.syncHandler.canFillSlot() && this.syncHandler.canDrainSlot()) {
                         tooltip.addLine(IKey.lang("gtceu.fluid.click_combined"));

@@ -56,7 +56,6 @@ import brachy.modularui.widgets.menu.DropdownWidget;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -316,13 +315,13 @@ public class TestGuis extends CustomModularScreen {
                         .sizeRel(1f).margin(7)
                         .autoUpdate(true)
                         .textBuilder(text -> text.add("Hello ")
-                                .add(new ItemDrawable(new ItemStack(Blocks.GRASS))
+                                .addDrawable(new ItemDrawable(new ItemStack(Blocks.GRASS))
                                         .asIcon()
                                         .asHoverable()
                                         .tooltip(richTooltip -> richTooltip.addFromItem(new ItemStack(Blocks.GRASS))
                                                 .add(IKey.GRAY + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.")))
                                 .add(", nice to ")
-                                .add(new ItemDrawable(new ItemStack(Items.PORKCHOP))
+                                .addDrawable(new ItemDrawable(new ItemStack(Items.PORKCHOP))
                                         .asIcon()
                                         .asInteractable()
                                         .onMousePressed((x, y, button) -> {
@@ -331,7 +330,7 @@ public class TestGuis extends CustomModularScreen {
                                         }))
                                 .add(" you. ")
                                 .add(IKey.GREEN + "This is a long ")
-                                .add(IKey.str("string").style(IKey.DARK_PURPLE)
+                                .addDrawable(IKey.str("string").style(IKey.DARK_PURPLE)
                                         .asTextIcon()
                                         .asHoverable()
                                         .addTooltipLine("Text Tooltip"))
@@ -349,7 +348,7 @@ public class TestGuis extends CustomModularScreen {
                                                 IKey.str(". Still underlined, "))
                                         .style(IKey.UNDERLINE), IKey.str("but not anymore.")))
                                 .newLine()
-                                .add(IKey.str("Green, %s, %s and green again",
+                                .addDrawable(IKey.str("Green, %s, %s and green again",
                                         IKey.str("red").style(IKey.RED),
                                         IKey.str("underline").style(null, IKey.UNDERLINE)
                                 ).style(IKey.GREEN))
@@ -358,7 +357,7 @@ public class TestGuis extends CustomModularScreen {
                                 .newLine()
                                 .add("A long line which should wrap around")
                                 .newLine()
-                                .addLine(IKey.comp(IKey.str("Dynamic ").style(IKey.GOLD), IKey.dynamicKey(() -> {
+                                .addLine(IKey.comp(IKey.str("Dynamic ").style(IKey.GOLD), IKey.dynamic(() -> {
                                     int i = integer.getIntValue() + 1;
                                     integer.setIntValue(i);
                                     return IKey.str("key [%s]", IKey.str("arg")

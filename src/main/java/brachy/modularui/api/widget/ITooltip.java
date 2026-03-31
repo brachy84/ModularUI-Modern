@@ -3,7 +3,6 @@ package brachy.modularui.api.widget;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.api.drawable.ITextLine;
-import brachy.modularui.drawable.text.StyledText;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.utils.Alignment;
 
@@ -224,7 +223,7 @@ public interface ITooltip<W extends ITooltip<W>> {
     }
 
     default W addTooltipElement(IDrawable drawable) {
-        tooltip().add(drawable);
+        tooltip().addDrawable(drawable);
         return getThis();
     }
 
@@ -240,7 +239,7 @@ public interface ITooltip<W extends ITooltip<W>> {
      * @return this
      */
     default W addTooltipLine(IDrawable drawable) {
-        tooltip().add(drawable).newLine();
+        tooltip().addDrawable(drawable).newLine();
         return getThis();
     }
 

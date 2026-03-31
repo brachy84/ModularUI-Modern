@@ -5,6 +5,7 @@ import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
@@ -155,7 +156,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         }
         String type = JsonHelper.getString(json, "empty", "type");
         if ("text".equals(type)) {
-            IKey key = parseText(json);
+            ModularComponent key = parseText(json);
             key.loadFromJson(json);
             return key;
         }
@@ -208,13 +209,10 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         return json;
     }
 
-    private static IKey parseText(JsonObject json) throws JsonParseException {
+    private static ModularComponent parseText(JsonObject json) throws JsonParseException {
         JsonParseException exception = new JsonParseException("Could not parse IKey from %s".formatted(json));
         try {
-            MutableComponent component = Component.Serializer.fromJson(json);
-            if (component != null) {
-                return unpackSiblings(component);
-            }
+            return Component.Serializer.fromJson(json).asModular();
         } catch (JsonSyntaxException e) {
             exception = e;
         }
@@ -228,7 +226,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
             }
             return JsonHelper.getBoolean(json, false, "lang", "translate") ? IKey.lang(s) : IKey.str(s);
         } else if (element.isJsonArray()) {
-            ObjectList<IKey> strings = ObjectList.create();
+            ObjectList<Component> strings = ObjectList.create();
             for (JsonElement element1 : element.getAsJsonArray()) {
                 strings.add(parseText(element1));
             }
@@ -238,12 +236,12 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         throw exception;
     }
 
-    private static IKey parseText(JsonElement element) throws JsonParseException {
+    private static Component parseText(JsonElement element) throws JsonParseException {
         JsonParseException exception = new JsonParseException("Could not parse IKey from %s".formatted(element));
         try {
             MutableComponent component = Component.Serializer.fromJson(element);
             if (component != null) {
-                return IKey.lang(component);
+                return component.asModular();
             }
         } catch (JsonSyntaxException e) {
             exception = e;
@@ -263,17 +261,5 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
 
     private static IKey parseKeyFromJson(JsonObject json, Function<String, IKey> keyFunction) {
         return keyFunction.apply(JsonHelper.getString(json, "No text found!", "text", "string", "key"));
-    }
-
-    private static IKey unpackSiblings(Component component) {
-        if (component.getSiblings().isEmpty()) {
-            return IKey.lang(component);
-        }
-        ObjectArrayList<IKey> siblings = new ObjectArrayList<>();
-        for (Component sibling : component.getSiblings()) {
-            siblings.add(unpackSiblings(sibling));
-        }
-        siblings.trim();
-        return IKey.comp(siblings.elements());
     }
 }

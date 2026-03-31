@@ -241,13 +241,13 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                                     tooltip.showUpTimer(10);
                                                                     tooltip.addLine(IKey.str("Test Line g"));
                                                                     tooltip.addLine(IKey.str("An image inside of a tooltip:"));
-                                                                    tooltip.addLine(GuiTextures.MUI_LOGO.asIcon().size(50).alignment(Alignment.TopCenter));
+                                                                    tooltip.addDrawableLine(GuiTextures.MUI_LOGO.asIcon().size(50).alignment(Alignment.TopCenter));
                                                                     tooltip.addLine(IKey.str("And here a circle:"));
-                                                                    tooltip.addLine(new Circle()
+                                                                    tooltip.addDrawableLine(new Circle()
                                                                                     .setColor(Color.RED.darker(2), Color.RED.brighter(2))
                                                                                     .asIcon()
                                                                                     .size(20))
-                                                                            .addLine(new ItemDrawable(new ItemStack(Items.DIAMOND)).asIcon())
+                                                                            .addDrawableLine(new ItemDrawable(new ItemStack(Items.DIAMOND)).asIcon())
                                                                             .pos(RichTooltip.Pos.LEFT);
                                                                 })
                                                                 .onMousePressed((x, y, mouseButton) -> {
