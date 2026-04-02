@@ -2,7 +2,6 @@ package brachy.modularui.api.drawable;
 
 import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.drawable.text.DynamicComponent;
-import brachy.modularui.drawable.text.FormattingState;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.drawable.text.TextRenderer;
@@ -113,14 +112,9 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
         if (keys.length == 0) {
             return ModularComponent.empty();
         }
-        MutableComponent main;
-        if (keys[0] instanceof MutableComponent mutableComponent) {
-            main = mutableComponent;
-        } else {
-            main = ModularComponent.empty().append(keys[0]);
-        }
-        for (int i = 1; i < keys.length; i++) {
-            main.append(keys[i]);
+        MutableComponent main = ModularComponent.empty();
+        for (Component key : keys) {
+            main.append(key);
         }
         return main.asModular();
     }
@@ -141,18 +135,10 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     ModularComponent get();
 
     /**
-     * @param parentFormatting formatting of the parent in case of composite keys
-     * @return the current formatted string
-     */
-    default MutableComponent getFormatted(@Nullable FormattingState parentFormatting) {
-        return get();
-    }
-
-    /**
      * @return the current formatted string
      */
     default MutableComponent getFormatted() {
-        return getFormatted(null);
+        return get();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -209,13 +195,6 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     }*/
 
     /**
-     * @return a formatting state of this key
-     */
-    default @Nullable FormattingState getFormatting() {
-        return null;
-    }
-
-    /**
      * Set text formatting to this key. If {@link IKey#RESET} is used, then that's applied first and then all other
      * formatting of this key.
      * With {@code null}, you can remove a color formatting. No matter the parents color, the default color will be
@@ -237,25 +216,15 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
 
     IKey removeStyle();
 
-    default ModularComponent alignment(Alignment alignment) {
-        return withStyle().alignment(alignment);
-    }
+    ModularComponent alignment(Alignment alignment);
 
-    default @NotNull ModularComponent color(int color) {
-        return color(() -> color);
-    }
+    ModularComponent color(int color);
 
-    default ModularComponent color(@Nullable IntSupplier color) {
-        return withStyle().color(color);
-    }
+    ModularComponent color(@Nullable IntSupplier color);
 
-    default ModularComponent scale(float scale) {
-        return withStyle().scale(scale);
-    }
+    ModularComponent scale(float scale);
 
-    default ModularComponent shadow(@Nullable Boolean shadow) {
-        return withStyle().shadow(shadow);
-    }
+    ModularComponent shadow(@Nullable Boolean shadow);
 
     default KeyIcon asTextIcon() {
         return new KeyIcon(this);

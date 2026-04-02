@@ -1,15 +1,19 @@
 package brachy.modularui.drawable.text;
 
 import brachy.modularui.api.MCHelper;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.core.mixins.client.StringSplitterAccessor;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.FormattedCharSink;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -18,7 +22,6 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,48 +53,19 @@ public class FontRenderHelper {
         return formattingMap[c - min];
     }
 
-    public static void addAfter(ChatFormatting[] state, ChatFormatting formatting, boolean removeAllOnReset) {
-        if (formatting == ChatFormatting.RESET) {
-            if (removeAllOnReset) Arrays.fill(state, null);
-            state[0] = formatting;
-            return;
-        }
-        // remove reset
-        if (removeAllOnReset) state[6] = null;
-        if (formatting.isFormat()) {
-            state[formatting.ordinal() - 15] = formatting;
-            return;
-        }
-        // color
-        state[0] = formatting;
-    }
-
-    public static MutableComponent format(@Nullable FormattingState state, @Nullable FormattingState parentState,
-                                          Component text) {
-        if (state == null) {
-            if (parentState == null) return text.copy();
-            return parentState.prependText(ChatFormatting.RESET, null).append(text);
-        }
-        return state.prependText(ChatFormatting.RESET, parentState).append(text);
-    }
-
-    public static MutableComponent formatArgs(Object[] args, @Nullable FormattingState parentState, String text,
-                                              boolean translate) {
-        if (args == null || args.length == 0) return translate ? Component.translatable(text) : Component.literal(text);
-        args = Arrays.copyOf(args, args.length);
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof IKey key) {
-                // parent format + key format + key text + parent format
-                args[i] = FormattingState.appendFormat(key.getFormatted(parentState)
-                        .withStyle(ChatFormatting.RESET), parentState);
-            }
-        }
-        return translate ? Component.translatable(text, args) : Component.literal(String.format(text, args));
-    }
-
     public static int getDefaultTextHeight() {
         Font fr = MCHelper.getFont();
         return fr != null ? fr.lineHeight : 9;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static float getCharWidth(Font font, int codePoint, Style style) {
+        return getCharWidth(font.getSplitter(), codePoint, style);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static float getCharWidth(StringSplitter splitter, int codePoint, Style style) {
+        return ((StringSplitterAccessor) splitter).getWidthProvider().getWidth(codePoint, style);
     }
 
     /**
@@ -235,7 +209,81 @@ public class FontRenderHelper {
         return length.intValue();
     }
 
+    public static String collectChars(FormattedCharSequence fcs) {
+        StringBuilder str = new StringBuilder();
+        fcs.accept((positionInCurrentSequence, style, codePoint) -> {
+            str.appendCodePoint(codePoint);
+            return true;
+        });
+        return str.toString();
+    }
+
     public static List<Component> asComponents(List<String> lines) {
         return lines.stream().<Component>map(Component::literal).toList();
+    }
+
+    public interface StyleSink {
+
+        boolean accept(int stylePos, int nextPos, Style style);
+    }
+
+    private static boolean feedChar(Style style, FormattedCharSink sink, int position, char character) {
+        return Character.isSurrogate(character) ? sink.accept(position, style, 65533) : sink.accept(position, style, character);
+    }
+
+    /**
+     * Copied and edited from {@link net.minecraft.util.StringDecomposer#iterateFormatted(String, int, Style, Style, FormattedCharSink)}.
+     */
+    public static boolean iterateFormatted(String text, int skip, Style currentStyle, Style defaultStyle,
+                                           FormattedCharSink sink, StyleSink styleSink) {
+        int i = text.length();
+        Style style = currentStyle;
+        int stylePos = skip;
+        boolean styleChanged = false;
+
+        for (int j = skip; j < i; ++j) {
+            char c0 = text.charAt(j);
+            if (c0 == 167) {
+                if (j + 1 >= i) {
+                    break;
+                }
+
+                char c1 = text.charAt(j + 1);
+                ChatFormatting chatformatting = ChatFormatting.getByCode(c1);
+                if (chatformatting != null) {
+                    style = chatformatting == ChatFormatting.RESET ? defaultStyle : style.applyLegacyFormat(chatformatting);
+                    styleChanged = true;
+                }
+
+                ++j;
+                continue;
+            }
+            if (styleChanged) {
+                if (!styleSink.accept(stylePos + 1, j, style)) return false;
+                styleChanged = false;
+            }
+            stylePos = j;
+            if (Character.isHighSurrogate(c0)) {
+                if (j + 1 >= i) {
+                    if (!sink.accept(j, style, 65533)) {
+                        return false;
+                    }
+                    break;
+                }
+
+                char c2 = text.charAt(j + 1);
+                if (Character.isLowSurrogate(c2)) {
+                    if (!sink.accept(j, style, Character.toCodePoint(c0, c2))) {
+                        return false;
+                    }
+                    ++j;
+                } else if (!sink.accept(j, style, 65533)) {
+                    return false;
+                }
+            } else if (!feedChar(style, sink, j, c0)) {
+                return false;
+            }
+        }
+        return !styleChanged || styleSink.accept(stylePos + 1, -1, style);
     }
 }

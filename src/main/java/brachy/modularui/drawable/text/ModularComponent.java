@@ -107,7 +107,7 @@ public class ModularComponent extends MutableComponent implements IKey {
     }
 
     @Override
-    public MutableComponent get() {
+    public ModularComponent get() {
         return this;
     }
 
@@ -119,6 +119,19 @@ public class ModularComponent extends MutableComponent implements IKey {
         renderer.setPos(x, y);
         renderer.setShadow(this.shadow != null ? this.shadow : widgetTheme.isTextShadow());
         renderer.draw(context.getGraphics(), getFormatted());
+    }
+
+    @Override
+    public @NotNull MutableComponent plainCopy() {
+        return ModularComponent.create(getContents());
+    }
+
+    @Override
+    public @NotNull MutableComponent copy() {
+        return new ModularComponent(getContents(), new ArrayList<>(getSiblings()), getStyle())
+                .alignment(this.alignment)
+                .scale(this.scale)
+                .color(this.dynamicColor);
     }
 
     @Override

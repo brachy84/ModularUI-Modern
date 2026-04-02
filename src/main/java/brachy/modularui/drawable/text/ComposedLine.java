@@ -42,17 +42,7 @@ public class ComposedLine implements ITextLine {
         this.lastX = x;
         this.lastY = y;
         for (Object o : this.elements) {
-            if (o instanceof String s) {
-                float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
-                context.getGraphics().drawString(font, s, x, y + drawY, color, shadow);
-                x += font.width(s);
-            } else if (o instanceof FormattedText text) {
-                float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
-                FormattedCharSequence charSequence = text instanceof Component component ?
-                        component.getVisualOrderText() : Language.getInstance().getVisualOrder(text);
-                context.getGraphics().drawString(font, charSequence, x, y + drawY, color, shadow);
-                x += font.width(text);
-            } else if (o instanceof FormattedCharSequence s) {
+            if (o instanceof FormattedCharSequence s) {
                 float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
                 context.getGraphics().drawString(font, s, x, y + drawY, color, shadow);
                 x += font.width(s);
@@ -65,6 +55,8 @@ public class ComposedLine implements ITextLine {
                     hoverable.setRenderedAt((int) x, (int) (y + drawY));
                 }
                 x += w;
+            } else if (o != null) {
+                throw new IllegalArgumentException("ComposedLine objects must either be a FormattedCharSequence or an IIcon, but found a " + o.getClass().getSimpleName() + "!");
             }
         }
     }
@@ -79,13 +71,7 @@ public class ComposedLine implements ITextLine {
         float y0 = y - this.lastY; // origin to 0
         for (Object o : this.elements) {
             float w, h;
-            if (o instanceof String s) {
-                w = font.width(s);
-                h = font.lineHeight;
-            } else if (o instanceof Component c) {
-                w = font.width(c);
-                h = font.lineHeight;
-            } else if (o instanceof FormattedCharSequence s) {
+            if (o instanceof FormattedCharSequence s) {
                 w = font.width(s);
                 h = font.lineHeight;
             } else if (o instanceof IIcon icon) {

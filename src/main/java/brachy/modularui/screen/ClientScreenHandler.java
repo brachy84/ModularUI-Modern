@@ -12,6 +12,7 @@ import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.core.mixins.client.AbstractContainerScreenAccessor;
 import brachy.modularui.core.mixins.client.ScreenAccessor;
 import brachy.modularui.drawable.GuiDraw;
+import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.overlay.OverlayStack;
@@ -34,6 +35,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -667,6 +670,11 @@ public class ClientScreenHandler {
                     locatedHovered.applyMatrix(context);
                     Object hoveredElement = richTextWidget.getHoveredElement();
                     locatedHovered.unapplyMatrix(context);
+                    if (hoveredElement instanceof FormattedCharSequence fcs) {
+                        hoveredElement = FontRenderHelper.collectChars(fcs);
+                    } else if (hoveredElement instanceof Component component) {
+                        hoveredElement = component.getString();
+                    }
                     GuiDraw.drawText(graphics, "Hovered: " + hoveredElement, 5, lineY, scale, textColor, false);
                 }
             }

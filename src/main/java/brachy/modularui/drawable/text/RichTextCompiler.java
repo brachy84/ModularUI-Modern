@@ -9,15 +9,21 @@ import brachy.modularui.drawable.DelegateIcon;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.screen.viewport.GuiContext;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.FormattedCharSink;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class compiles a list of objects into renderable text. The objects can be strings or any drawable.
@@ -28,13 +34,15 @@ public class RichTextCompiler {
 
     public static final RichTextCompiler INSTANCE = new RichTextCompiler();
 
+    private static final FormattedCharSequence SPACE = FormattedCharSequence.codepoint(' ', Style.EMPTY);
+
     private Font fr;
     private int maxWidth;
 
     private List<ITextLine> lines;
     private List<Object> currentLine;
-    private int x, h;
-    private final FormattingState formatting = new FormattingState();
+    private float x, h;
+    private final LineBreakFinder lineBreakFinder = new LineBreakFinder();
 
     public List<ITextLine> compileLines(Font fr, List<Object> raw, int maxWidth, float scale) {
         reset(fr, (int) (maxWidth / scale));
@@ -49,7 +57,6 @@ public class RichTextCompiler {
         this.currentLine = new ArrayList<>();
         this.x = 0;
         this.h = 0;
-        this.formatting.reset();
     }
 
     private void compile(List<Object> raw) {
@@ -59,33 +66,27 @@ public class RichTextCompiler {
                 this.lines.add(line);
                 continue;
             }
-            MutableComponent text = null;
-            if (o instanceof IKey key) {
+            Component text = null;
+            if (o instanceof Component c) {
+                text = c;
+            } else if (o instanceof IKey key) {
                 if (key == IKey.EMPTY) continue;
                 if (key == IKey.SPACE) {
                     MutableComponent mc = key.get();
-                    addLineElement(mc);
+                    addLineElement(SPACE);
                     this.x += this.fr.width(mc);
                     continue;
                 }
                 if (key == IKey.LINE_FEED) {
                     newLine();
-                    this.formatting.reset();
                     continue;
                 }
                 text = key.getFormatted();
-            }
-            if (o instanceof MutableComponent component) {
-                text = component.copy();
             } else if (!(o instanceof IDrawable)) {
                 text = Component.literal(o.toString());
             }
             if (text != null) {
-                if (text.getStyle() != Style.EMPTY) {
-                    addLineElement(text);
-                } else {
-                    compileString(text.getString());
-                }
+                compileText(text);
                 continue;
             }
             if (!(o instanceof IIcon)) {
@@ -101,178 +102,89 @@ public class RichTextCompiler {
                 // if (icon1.getWidth() <= 0) icon1.width(defaultSize);
                 if (icon1.getHeight() <= 0) icon1.height(defaultSize);
             }
-            if (icon.getWidth() > this.maxWidth) {
-                ModularUI.LOGGER.warn("Icon is wider than max width");
-            }
-            checkNewLine(icon.getWidth());
             addLineElement(icon);
-            h = Math.max(h, icon.getHeight());
-            x += icon.getWidth();
         }
         newLine();
     }
 
-    private void compileString(String text) {
-        int l = text.indexOf('\n');
-        int k = 0;
-        do {
-            // essentially splits text at \n and compiles it
-            if (l < 0) l = text.length(); // no line feed, use rest of string
-            String subText = text.substring(k, l);
-            k = l + 1; // start next sub string here
-            while (!subText.isEmpty()) {
-                // how many chars fit
-                int i = this.fr.getSplitter().plainIndexAtWidth(subText, this.maxWidth - this.x, Style.EMPTY);
-                if (i == 0) {
-                    // doesn't fit at the end of the line, try new line
-                    if (this.x > 0) i = fr.getSplitter().plainIndexAtWidth(subText, this.maxWidth, Style.EMPTY);
-                    if (i <= 0) {
-                        i = 1; // force at least one char
-                        if (subText.charAt(0) == '\u00a7' && subText.length() > 1) {
-                            // include format char if it is one
-                            i++;
-                            if (subText.length() > 2) i++;
-                        }
-                    }
+    private boolean iterateFormatted(String content, int skip, Style style) {
+        return FontRenderHelper.iterateFormatted(content, skip, style, Style.EMPTY, this.lineBreakFinder, this.lineBreakFinder);
+    }
+
+    private void compileText(Component component) {
+        component.visit((style, content) -> {
+            Style subStyle = style;
+            int skip = 0;
+            while (this.lineBreakFinder.reset(subStyle) && !iterateFormatted(content, skip, subStyle)) {
+                if (this.lineBreakFinder.nextChar == 0 && this.x > 0) {
+                    // no char fits on this line -> new line and retry
                     newLine();
-                } else if (i < subText.length()) {
-                    // the whole string doesn't fit
-                    char c = subText.charAt(i);
-                    if (c != ' ' && this.x > 0) {
-                        // line was split in the middle of a word, try new line
-                        int j = fr.getSplitter().plainIndexAtWidth(subText, this.maxWidth, Style.EMPTY);
-                        if (j < subText.length()) {
-                            c = subText.charAt(j);
-                            if (j > i && c == ' ') {
-                                // line was split properly on a new line
-                                newLine();
-                            }
-                        } else {
-                            // the end of the line is reached
-                            newLine();
-                        }
-                    }
+                    continue;
                 }
-                // get fitting string
-                String current = subText.length() <= i ? subText : trimRight(subText.substring(0, i));
-                int width = this.fr.width(current);
-                addLineElement(current); // add string
-                this.h = Math.max(this.h, this.fr.lineHeight);
-                this.x += width;
-                if (subText.length() <= i) break; // sub text reached the end
-                newLine(); // string was split -> line is full
-                char c = subText.charAt(i);
-                if (c == ' ') i++; // if was split at space then don't include it in next sub text
-                subText = subText.substring(i); // set sub text to part after split
+                subStyle = this.lineBreakFinder.lineBreakStyle;
+                if (this.lineBreakFinder.count != 0 || !this.lineBreakFinder.styleChanged) {
+                    String sub = content.substring(skip, this.lineBreakFinder.lineBreak);
+                    addLineElement(sub, subStyle, this.lineBreakFinder.width);
+                }
+                skip = this.lineBreakFinder.nextChar;
+                if (skip < 0) break;
+                if (!this.lineBreakFinder.styleChanged) {
+                    newLine();
+                }
             }
-            if (l < text.length() && text.charAt(l) == '\n') {
-                // was split at line feed -> new line
-                newLine();
+            int end = content.length();
+            if (this.lineBreakFinder.isStyleChangedAtEnd()) {
+                end = this.lineBreakFinder.stylePos;
             }
-        } while ((l = text.indexOf('\n', k)) >= 0 || k < text.length());
-        // if no line feed found, check if we are at the end of the text
+            addLineElement(content.substring(skip, end), subStyle, this.lineBreakFinder.width);
+            return Optional.empty();
+        }, Style.EMPTY);
     }
 
     private void newLine() {
         int i = this.currentLine.size() - 1;
-        if (!this.currentLine.isEmpty() && this.currentLine.get(i) instanceof String s) {
-            if (s.equals(" ")) {
-                this.currentLine.remove(i);
-            } else {
-                this.currentLine.set(i, trimRight(s));
-            }
+        if (!this.currentLine.isEmpty() && this.currentLine.get(i) == SPACE) {
+            this.currentLine.remove(i);
+            // TODO trim right whitespace
         }
-        if (this.currentLine.isEmpty()) {
-            // lines.add(null);
-        } else if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof Component c) {
-            this.lines.add(new TextLine(c, this.x));
-            this.currentLine.clear();
-        } else if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s) {
-            this.lines.add(new TextLine(Component.literal(s), this.x));
-            this.currentLine.clear();
-        } else {
-            this.lines.add(new ComposedLine(this.currentLine, this.x, this.h));
-            this.currentLine = new ArrayList<>();
+        if (!this.currentLine.isEmpty()) {
+            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof FormattedCharSequence c) {
+                this.lines.add(new TextLine(c, (int) Math.ceil(this.x)));
+                this.currentLine.clear();
+            } else {
+                this.lines.add(new ComposedLine(this.currentLine, (int) Math.ceil(this.x), (int) Math.ceil(this.h)));
+                this.currentLine = new ArrayList<>();
+            }
         }
         this.x = 0;
         this.h = 0;
     }
 
-    private void addLineElement(Object o) {
-        if (o instanceof Component c2) {
-            int s = this.currentLine.size();
-            if (s > 0 && this.currentLine.get(s - 1) instanceof String s1) {
-                // if the last element in the line is a string, merge them
-                this.currentLine.set(s - 1, s1 + c2);
-                return;
-            }
-            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof Component c1) {
-                // if there is already one string in the line, merge them
-                this.currentLine.set(0, c1.copy().append(c2));
-                return;
-            }
-            o = c2.copy().withStyle(this.formatting::getFormatting);
-        } else if (o instanceof String s2) {
-            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s1) {
-                // if there is already one string in the line, merge them
-                this.currentLine.set(0, s1 + s2);
-                return;
-            }
-            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof Component c1) {
-                // if there is already one string in the line, merge them
-                this.currentLine.set(0, c1.copy().append(s2));
-                return;
-            }
-            if (this.currentLine.isEmpty()) {
-                // if there is currently no string, remove all whitespace from the start,
-                // but don't remove any formatting before
-                int l = FontRenderHelper.getFormatLength(s2, 0);
-                if (l + 1 < s2.length()) {
-                    o = trimAt(s2, l);
-                }
-            }
-            Style style = this.formatting.getFormatting(Style.EMPTY);
-            StringBuilder styleBuilder = new StringBuilder();
-            if (style.getColor() != null) {
-                int colorRGB = style.getColor().getValue();
-                for (ChatFormatting legacyColor : ChatFormatting.values()) {
-                    if (!legacyColor.isColor()) continue;
-                    // noinspection DataFlowIssue
-                    if (colorRGB != legacyColor.getColor()) continue;
-                    styleBuilder.append(legacyColor);
-                    break;
-                }
-            }
-            if (style.isBold()) {
-                styleBuilder.append(ChatFormatting.BOLD);
-            }
-            if (style.isItalic()) {
-                styleBuilder.append(ChatFormatting.ITALIC);
-            }
-            if (style.isUnderlined()) {
-                styleBuilder.append(ChatFormatting.UNDERLINE);
-            }
-            if (style.isStrikethrough()) {
-                styleBuilder.append(ChatFormatting.STRIKETHROUGH);
-            }
-            if (style.isObfuscated()) {
-                styleBuilder.append(ChatFormatting.OBFUSCATED);
-            }
-            o = styleBuilder.toString() + o;
-            this.formatting.parseFrom(s2); // parse formatting from current string
-        }
-        if (o instanceof Component c) {
-            x += fr.width(c.getString());
-            h = Math.max(h, fr.lineHeight);
-        }
-
-        this.currentLine.add(o);
-    }
-
-    private void checkNewLine(int width) {
-        if (this.x > 0 && this.x + width > this.maxWidth) {
+    private void addLineElement(IIcon icon) {
+        if (icon.getWidth() > this.maxWidth) {
+            ModularUI.LOGGER.warn("Icon is wider than max width");
+        } else if (this.x + icon.getWidth() > this.maxWidth) {
             newLine();
         }
+        this.h = Math.max(this.h, icon.getHeight());
+        this.x += icon.getWidth();
+        this.currentLine.add(icon);
+    }
+
+    private void addLineElement(FormattedCharSequence fcs) {
+        if (this.currentLine.isEmpty() && fcs == SPACE) return;
+        this.x += this.fr.width(fcs);
+        this.h = Math.max(this.h, this.fr.lineHeight);
+        this.currentLine.add(fcs);
+    }
+
+    private void addLineElement(String s, Style style, float width) {
+        if (this.currentLine.isEmpty()) s = trimAt(s, 0);
+        if (s.isEmpty()) return;
+        this.h = Math.max(this.h, this.fr.lineHeight);
+        this.x += width;
+        //if (s.length() > 1) s = this.fr.bidirectionalShaping(s); // TODO: this turns ", " into " ," for some reason
+        this.currentLine.add(FormattedCharSequence.forward(s, style));
     }
 
     public static String trimRight(String s) {
@@ -296,5 +208,98 @@ public class RichTextCompiler {
         if (l == 0) return s;
         if (start <= 0) return s.substring(l);
         return s.substring(0, start) + s.substring(start + l);
+    }
+
+    /**
+     * Copied and edited from {@link net.minecraft.client.StringSplitter.LineBreakFinder}.
+     */
+    @OnlyIn(Dist.CLIENT)
+    private class LineBreakFinder implements FormattedCharSink, FontRenderHelper.StyleSink {
+
+        private float width = 0;
+        private Style lastCharStyle = null;
+        private boolean styleChanged = false;
+        private int lineBreak = -1;
+        private Style lineBreakStyle = Style.EMPTY;
+        private int lastSpace = -1;
+        private Style lastSpaceStyle = Style.EMPTY;
+        private int nextChar;
+        private int count;
+        private int stylePos = -1;
+
+        public boolean reset(Style style) {
+            this.width = 0;
+            this.lastCharStyle = style;
+            this.lineBreak = -1;
+            this.lineBreakStyle = Style.EMPTY;
+            this.width = 0;
+            this.lastSpace = -1;
+            this.lastSpaceStyle = Style.EMPTY;
+            this.nextChar = 0;
+            this.count = 0;
+            this.stylePos = -1;
+            return true;
+        }
+
+        @Override
+        public boolean accept(int positionInCurrentSequence, @NotNull Style style, int codePoint) {
+            this.styleChanged = false;
+            int i = positionInCurrentSequence;
+            switch (codePoint) {
+                case '\n':
+                    this.nextChar = i + 1;
+                    return finishIteration(i, style);
+                case ' ':
+                    if (this.lastSpace != i - 1 && i > 0) {
+                        this.lastSpace = i;
+                        this.lastSpaceStyle = style;
+                    }
+                default:
+                    float f = FontRenderHelper.getCharWidth(RichTextCompiler.this.fr, codePoint, style);
+                    this.width += f;
+                    if (RichTextCompiler.this.x + this.width > RichTextCompiler.this.maxWidth) {
+                        // line width goes beyond max width
+                        if (this.nextChar == 0 && RichTextCompiler.this.x > 0) {
+                            // no char fits
+                            return false;
+                        }
+                        if (this.lastSpace < 0) {
+                            // no space found, cut string right here
+                            return finishIteration(i, style);
+                        }
+                        // go back to last space
+                        this.nextChar = this.lastSpace + 1;
+                        return finishIteration(this.lastSpace, this.lastSpaceStyle);
+                    }
+                    this.nextChar = i + Character.charCount(codePoint);
+                    this.count++;
+                    return true;
+            }
+        }
+
+        @Override
+        public boolean accept(int stylePos, int nextPos, Style style) {
+            this.styleChanged = true;
+            this.stylePos = stylePos;
+            this.lastCharStyle = style;
+            this.nextChar = nextPos;
+            this.lineBreak = nextPos;
+            this.lineBreakStyle = style;
+            return nextPos < 0;
+        }
+
+        private boolean finishIteration(int lineBreak, Style lineBreakStyle) {
+            this.lineBreak = lineBreak;
+            this.lineBreakStyle = lineBreakStyle;
+            return false;
+        }
+
+        private boolean lineBreakFound() {
+            return this.lineBreak != -1;
+        }
+
+        public boolean isStyleChangedAtEnd() {
+            return this.styleChanged && this.nextChar < 0;
+        }
     }
 }

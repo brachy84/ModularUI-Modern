@@ -329,7 +329,7 @@ public class TestGuis extends CustomModularScreen {
                                             return true;
                                         }))
                                 .add(" you. ")
-                                .add(IKey.GREEN + "This is a long ")
+                                .add(IKey.str("This is a long ").style(IKey.GREEN))
                                 .addDrawable(IKey.str("string").style(IKey.DARK_PURPLE)
                                         .asTextIcon()
                                         .asHoverable()
