@@ -223,13 +223,13 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     @Override
     public RichText moveCursorToEnd() {
-        this.cursor = this.elements.size() - 1;
+        this.cursor = this.elements.size();
         return this;
     }
 
     @Override
     public RichText moveCursorForward(int by) {
-        this.cursor = Math.min(this.cursor + by, this.elements.size() - 1);
+        this.cursor = Math.min(this.cursor + by, this.elements.size());
         return this;
     }
 
@@ -253,7 +253,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     @Override
     public RichText moveCursorToNextLine() {
-        if (this.cursor < this.elements.size() - 1) {
+        if (this.cursor < this.elements.size()) {
             this.cursor = findNextLine(this.cursor) + 1;
         }
         return this;
