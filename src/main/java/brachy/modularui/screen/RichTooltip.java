@@ -12,22 +12,20 @@ import brachy.modularui.screen.event.RichTooltipEvent;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Rectangle;
+import brachy.modularui.utils.TooltipLines;
 import brachy.modularui.widget.sizer.Area;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Either;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderTooltipEvent;
@@ -37,12 +35,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @Accessors(fluent = true, chain = true)
 public class RichTooltip implements IRichTextBuilder<RichTooltip> {
@@ -121,7 +117,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void draw(GuiContext context, @Nullable ItemStack stack) {
+    public void draw(GuiContext context, ItemStack stack) {
         if (this.autoUpdate) markDirty();
         if (isEmpty()) return;
 
@@ -139,36 +135,28 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         this.maxWidth = Math.min(this.maxWidth, screen.width);
         int mouseX = context.getAbsMouseX(), mouseY = context.getAbsMouseY();
         TextRenderer renderer = TextRenderer.SHARED;
-        // this only turns the text and not any drawables into strings
-        List<Either<FormattedText, TooltipComponent>> textLines = this.text.getAsText().stream()
-                .<Either<FormattedText, TooltipComponent>>map(Either::left)
-                .collect(Collectors.toList());
-
-        var gatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height,
-                textLines, this.maxWidth);
-        if (MinecraftForge.EVENT_BUS.post(gatherEvent)) {
-            // canceled
-            return;
-        }
-
-        this.maxWidth = gatherEvent.getMaxWidth();
-        textLines = gatherEvent.getTooltipElements();
-        List<ClientTooltipComponent> components = textLines.stream()
-                .map(either -> either.map(
-                        text -> ClientTooltipComponent.create(text instanceof Component component ?
-                                component.getVisualOrderText() : Language.getInstance().getVisualOrder(text)),
-                        ClientTooltipComponent::create))
-                .toList();
 
         RichText copy = this.text.copy();
+        // rich event to gather additional tooltip
+        // this does not trigger vanilla event listeners
+        var richGatherEvent = new RichTooltipEvent.Gather(copy, stack, context, mouseX, mouseY, screen.width, screen.height, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(richGatherEvent)) return;
+        this.maxWidth = richGatherEvent.getMaxWidth();
 
+        // vanilla event to gather additional tooltip
+        TooltipLines textLines = copy.getAsText();
+        // noinspection UnstableApiUsage
+        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
+        this.maxWidth = vanillaGatherEvent.getMaxWidth();
+
+        // triggers vanilla event listeners
+        List<ClientTooltipComponent> components = textLines.toClientTooltipComponents();
         RichTooltipEvent.Pre event = new RichTooltipEvent.Pre(stack, context.getGraphics(),
                 mouseX, mouseY, screen.width, screen.height,
                 context.getFont(), components, DefaultTooltipPositioner.INSTANCE, copy);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
-            // canceled
-            return;
-        }
+        if (MinecraftForge.EVENT_BUS.post(event)) return;
+
         // we are supposed to now use the strings of the event, but we can't properly determine where to put them
         mouseX = event.getX();
         mouseY = event.getY();
@@ -188,7 +176,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         context.getGraphics().pose().pushPose();
         context.getGraphics().pose().translate(0, 0, 400);
-        GuiDraw.drawTooltipBackground(context, stack, components, area.x, area.y, area.width, area.height, this);
+        GuiDraw.drawTooltipBackground(context, stack, components, area.x, area.y, area.width, area.height, copy);
 
         // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y,
         // TextRenderer.getFont(), area.width, area.height));
@@ -196,7 +184,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         renderer.setPos(area.x, area.y);
-        this.text.compileAndDraw(renderer, context, false);
+        copy.compileAndDraw(renderer, context, false);
         context.getGraphics().pose().popPose();
 
         context.setOverrideFont(null);

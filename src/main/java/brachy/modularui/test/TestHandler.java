@@ -22,12 +22,14 @@ import brachy.modularui.theme.ThemeBuilder;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,7 +45,7 @@ import java.util.Random;
 @Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TestHandler {
 
-    public static boolean enabledRichTooltipEventTest = false;
+    public static boolean enabledRichTooltipEventTest = true;
     public static final String TEST_THEME = "mui:test_theme";
     private static final ThemeBuilder<?> testTheme = new ThemeBuilder<>(TEST_THEME)
             .defaultColor(Color.BLUE_ACCENT.brighter(0))
@@ -90,9 +92,12 @@ public class TestHandler {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void onRichTooltip(RichTooltipEvent.Pre event) {
+    public static void onRichTooltip(RichTooltipEvent.Gather event) {
         if (enabledRichTooltipEventTest && ModularUI.isDev()) {
+            // adds decoration to every mui tooltip
             event.getTooltip()
+                    .moveCursorToEnd()
+                    .newLine()
                     .add(Text.str("Powered By: ").style(Text.GOLD, Text.ITALIC))
                     .addDrawable(GuiTextures.MUI_LOGO.asIcon().size(18)).newLine()
                     .moveCursorToStart()
@@ -101,6 +106,15 @@ public class TestHandler {
                     // replaces the Minecraft mod name in JEI item tooltips
                     .replace("Minecraft", key -> Text.str("Chicken Jockey").style(Text.BLUE, Text.ITALIC))
                     .moveCursorToEnd();
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void onVanillaTooltip(RenderTooltipEvent.GatherComponents event) {
+        if (enabledRichTooltipEventTest && event.getItemStack().getItem() == Items.DIAMOND) {
+            // adds a tooltip line to diamond even inside mui uis
+            event.getTooltipElements().add(Either.left(Text.str("Hello from ModularUI").style(Text.GOLD)));
         }
     }
 

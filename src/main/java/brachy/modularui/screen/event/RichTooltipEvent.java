@@ -1,6 +1,7 @@
 package brachy.modularui.screen.event;
 
 import brachy.modularui.api.drawable.IRichTextBuilder;
+import brachy.modularui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,8 +10,10 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositione
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -19,6 +22,33 @@ import java.util.List;
 public class RichTooltipEvent {
 
     private RichTooltipEvent() {}
+
+    @Cancelable
+    public static class Gather extends Event {
+
+        @Getter private final IRichTextBuilder<?> tooltip;
+        @Getter protected final ItemStack itemStack;
+        @Getter protected final GuiContext guiContext;
+        @Getter protected int x;
+        @Getter protected int y;
+        @Getter protected int screenWidth;
+        @Getter protected int screenHeight;
+        @Getter
+        @Setter
+        protected int maxWidth;
+
+        public Gather(IRichTextBuilder<?> tooltip, ItemStack stack, GuiContext guiContext,
+                      int x, int y, int screenWidth, int screenHeight, int maxWidth) {
+            this.tooltip = tooltip;
+            this.itemStack = stack;
+            this.guiContext = guiContext;
+            this.x = x;
+            this.y = y;
+            this.screenWidth = screenWidth;
+            this.screenHeight = screenHeight;
+            this.maxWidth = maxWidth;
+        }
+    }
 
     @Cancelable
     public static class Pre extends RenderTooltipEvent.Pre {

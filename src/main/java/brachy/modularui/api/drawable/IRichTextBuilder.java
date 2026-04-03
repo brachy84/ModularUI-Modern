@@ -130,7 +130,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @return this
      */
     default T newLine() {
-        return addDrawable(Text.LINE_FEED);
+        return add(Text.LINE_FEED);
     }
 
     /**
@@ -139,7 +139,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @return this
      */
     default T space() {
-        return addDrawable(Text.SPACE);
+        return add(Text.SPACE);
     }
 
     /**

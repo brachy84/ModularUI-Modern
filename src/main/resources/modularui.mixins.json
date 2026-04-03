@@ -16,7 +16,7 @@
     ],
     "mixins": [
         "common.CombinedInvWrapperAccessor",
-        "common.MutableComponentMixin"
+      "common.ComponentMixin"
     ],
     "injectors": {
         "defaultRequire": 1,

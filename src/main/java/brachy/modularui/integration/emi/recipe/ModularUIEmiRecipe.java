@@ -23,6 +23,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.crafting.Recipe;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -153,10 +154,8 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
             }
             if (widget instanceof ITooltip<?> tooltip && tooltip.hasTooltip()) {
                 if (tooltip.tooltip().getRichText() instanceof RichText richText) {
-                    var textList = richText.getAsText();
-                    for (FormattedText line : textList) {
-                        slotWidget
-                                .appendTooltip(() -> ClientTooltipComponent.create(Language.getInstance().getVisualOrder(line)));
+                    for (ClientTooltipComponent text : richText.getAsText().toClientTooltipComponents()) {
+                        slotWidget.appendTooltip(() -> text);
                     }
                 }
             }

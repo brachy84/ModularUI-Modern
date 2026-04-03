@@ -1,6 +1,7 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.GTRenderTypes;
+import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.client.GuiSpriteManager;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.RichTooltip;
@@ -1042,7 +1043,7 @@ public class GuiDraw {
 
     @SuppressWarnings("UnstableApiUsage")
     public static void drawTooltipBackground(GuiContext context, ItemStack stack, List<ClientTooltipComponent> lines,
-                                             int x, int y, int textWidth, int height, @Nullable RichTooltip tooltip) {
+                                             int x, int y, int textWidth, int height, @Nullable IRichTextBuilder<?> tooltip) {
         GuiGraphics graphics = context.getGraphics();
 
         // TODO theme color

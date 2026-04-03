@@ -1,6 +1,9 @@
 package brachy.modularui.drawable.text;
 
-import brachy.modularui.api.drawable.*;
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.api.drawable.IIcon;
+import brachy.modularui.api.drawable.IRichTextBuilder;
+import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.client.component.DrawableTooltipComponent;
@@ -46,7 +49,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this.elements.isEmpty();
     }
 
-    public List<FormattedText> getAsText() {
+    public TooltipLines getAsText() {
         if (this.componentList == null) {
             this.componentList = new TooltipLines(this.elements);
         }
@@ -196,13 +199,17 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         if (i >= 0) {
             this.cursor = i;
             Object o = this.elements.get(i);
-            Text key = o instanceof Text key1 ? key1 : Text.str((String) o);
-            key = function.apply(key);
-            if (key == null) {
+            Text text;
+            if (o instanceof Text text1) text = text1;
+            else if (o instanceof String s) text = Text.str(s);
+            else if (o instanceof Component component) text = component.asModular();
+            else return this;
+            text = function.apply(text);
+            if (text == null) {
                 this.elements.remove(i);
                 this.cursor--;
             } else {
-                this.elements.set(i, key);
+                this.elements.set(i, text);
             }
         }
         return this;

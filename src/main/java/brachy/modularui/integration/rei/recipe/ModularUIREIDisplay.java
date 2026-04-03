@@ -19,11 +19,13 @@ import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.slot.FluidSlot;
 import brachy.modularui.widgets.slot.ItemSlot;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.crafting.Recipe;
 
 import lombok.Getter;
@@ -137,8 +139,10 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
                 if (tooltip.tooltip().getRichText() instanceof RichText richText) {
                     var textList = richText.getAsText();
                     entryWidget.tooltipProcessor(text -> {
-                        for (FormattedText line : textList) {
-                            text = text.add(MutableComponent.create(new FormattedTextContents(line)));
+                        for (Either<FormattedText, TooltipComponent> line : textList) {
+                            // TODO this is stupid
+                            line.ifLeft(ft -> text.add(MutableComponent.create(new FormattedTextContents(ft))));
+                            line.ifRight(text::add);
                         }
                         return text;
                     });

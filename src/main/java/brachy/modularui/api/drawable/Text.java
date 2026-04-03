@@ -31,9 +31,9 @@ public interface Text extends IDrawable, IJsonSerializable<Text> {
 
     TextRenderer renderer = new TextRenderer();
 
-    Text EMPTY = str("");
-    Text LINE_FEED = str("\n");
-    Text SPACE = str(" ");
+    Component EMPTY = str("");
+    Component LINE_FEED = str("\n");
+    Component SPACE = str(" ");
 
     // Formatting for convenience
     ChatFormatting BLACK = ChatFormatting.BLACK;

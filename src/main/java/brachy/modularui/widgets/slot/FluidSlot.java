@@ -90,7 +90,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
                 tooltip.addLine(Text.lang("gtceu.fluid.empty"));
             }
             if (this.syncHandler.canFillSlot() || this.syncHandler.canDrainSlot()) {
-                tooltip.addDrawableLine(Text.EMPTY); // Add an empty line to separate from the bottom material tooltips
+                tooltip.addLine(Text.EMPTY); // Add an empty line to separate from the bottom material tooltips
                 if (Interactable.hasShiftDown()) {
                     if (this.syncHandler.canFillSlot() && this.syncHandler.canDrainSlot()) {
                         tooltip.addLine(Text.lang("gtceu.fluid.click_combined"));
