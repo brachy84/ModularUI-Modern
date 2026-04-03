@@ -4,6 +4,7 @@ import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widgets.TextWidget;
 
 import net.minecraft.ChatFormatting;
@@ -20,6 +21,7 @@ import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -206,5 +208,25 @@ public class ModularComponent extends MutableComponent implements Text {
     @Override
     public @NotNull ModularComponent withStyle(@NotNull UnaryOperator<Style> modifyFunc) {
         return (ModularComponent) super.withStyle(modifyFunc);
+    }
+
+    @Override
+    public boolean saveToJson(JsonObject json) {
+        json.add("alignment", JsonHelper.serialize(this.alignment));
+        json.addProperty("scale", this.scale);
+        if (this.shadow != null) json.addProperty("shadow", this.shadow);
+        if (this.dynamicColor != null) json.addProperty("color", this.dynamicColor.getAsInt());
+        return true;
+    }
+
+    @Override
+    public void loadFromJson(JsonObject json) {
+        this.alignment = JsonHelper.deserialize(json, Alignment.class, Alignment.CENTER, "alignment");
+        this.scale = JsonHelper.getFloat(json, 1f, "scale");
+        this.shadow = JsonHelper.getBoxedBool(json, null, "shadow");
+        final Integer color = JsonHelper.getBoxedInt(json, null, "color");
+        if (color != null) {
+            this.dynamicColor = () -> color;
+        }
     }
 }

@@ -25,7 +25,6 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -96,9 +95,8 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         return REVERSE_TEXTURES.get(texture);
     }
 
-    public static <
-            T extends IDrawable & IJsonSerializable<T>> void registerDrawableType(String id, Class<T> type,
-                                                                                  Function<@NotNull JsonObject, ? extends @NotNull IDrawable> creator) {
+    public static <T extends IDrawable & IJsonSerializable<T>> void registerDrawableType(String id, Class<T> type,
+                                                                                         Function<JsonObject, ? extends IDrawable> creator) {
         if (DRAWABLE_TYPES.containsKey(id)) {
             throw new IllegalArgumentException("Drawable type '" + id + "' already exists!");
         }
@@ -183,10 +181,9 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         JsonObject json = new JsonObject();
         if (src instanceof Text key) {
             json.addProperty("type", "text");
-            // TODO serialize text properly
             json.addProperty("text", Component.Serializer.toJson(key.getFormatted()));
         } else if (!(src instanceof IJsonSerializable<?> serializable)) {
-            throw new IllegalArgumentException("Can't serialize IDrawable which doesn't implement IJsonSerializable!");
+            throw new IllegalArgumentException("Can't serialize IDrawable of type '" + src.getClass().getSimpleName() + "' which doesn't implement IJsonSerializable!");
         } else {
             Class<?> type = src.getClass();
             String key = REVERSE_DRAWABLE_TYPES.get(type);
@@ -195,21 +192,20 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
                 key = REVERSE_DRAWABLE_TYPES.get(type);
             }
             if (key == null) {
-                ModularUI.LOGGER.error(
-                        "Serialization of drawable {} failed, because a key for the type could not be found!",
+                ModularUI.LOGGER.error("Serialization of drawable of type '{}' failed, because a key for the type could not be found!",
                         src.getClass().getSimpleName());
                 return JsonNull.INSTANCE;
             }
             json.addProperty("type", key);
             if (!serializable.saveToJson(json)) {
-                ModularUI.LOGGER.error("Serialization of drawable {} failed!", src.getClass().getSimpleName());
+                ModularUI.LOGGER.error("Serialization of drawable of type '{}' failed!", src.getClass().getSimpleName());
             }
         }
         return json;
     }
 
     private static ModularComponent parseText(JsonObject json) throws JsonParseException {
-        JsonParseException exception = new JsonParseException("Could not parse IKey from %s".formatted(json));
+        JsonParseException exception;
         try {
             return Component.Serializer.fromJson(json).asModular();
         } catch (JsonSyntaxException e) {
@@ -256,9 +252,5 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
             return parseText(element.getAsJsonObject());
         }
         throw exception;
-    }
-
-    private static Text parseKeyFromJson(JsonObject json, Function<String, Text> keyFunction) {
-        return keyFunction.apply(JsonHelper.getString(json, "No text found!", "text", "string", "key"));
     }
 }

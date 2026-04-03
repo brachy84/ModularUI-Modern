@@ -9,7 +9,7 @@ import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.google.gson.JsonObject;
 
-public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable {
+public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable<Scrollbar> {
 
     public static final Scrollbar DEFAULT = new Scrollbar(false);
     public static final Scrollbar VANILLA = new Scrollbar(true);
