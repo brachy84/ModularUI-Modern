@@ -1,7 +1,12 @@
 package brachy.modularui.drawable.text;
 
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.core.mixins.client.StringSplitterAccessor;
+
+import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.theme.WidgetTheme;
+import brachy.modularui.utils.Alignment;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.StringSplitter;
@@ -56,6 +61,16 @@ public class FontRenderHelper {
     public static int getDefaultTextHeight() {
         Font fr = MCHelper.getFont();
         return fr != null ? fr.lineHeight : 9;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawComponent(Component comp, GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        Text.renderer.setAlignment(Alignment.CENTER, width, height);
+        Text.renderer.setColor(widgetTheme.getTextColor());
+        Text.renderer.setScale(1f);
+        Text.renderer.setPos(x, y);
+        Text.renderer.setShadow(widgetTheme.isTextShadow());
+        Text.renderer.draw(context.getGraphics(), comp);
     }
 
     @OnlyIn(Dist.CLIENT)

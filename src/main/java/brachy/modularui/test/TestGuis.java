@@ -363,7 +363,7 @@ public class TestGuis extends CustomModularScreen {
                                     return Text.str("key [%s]", Text.str("arg")
                                                     .style(Text.UNDERLINE, Text.BLACK))
                                             .style(i % 30 > 5 ? Text.RED : Text.DARK_BLUE);
-                                }).style(Text.BOLD), Text.str(" Test")))
+                                }).fallbackStyle(Text.BOLD), Text.str(" Test")))
                                 .textShadow(false)
                         ));
     }

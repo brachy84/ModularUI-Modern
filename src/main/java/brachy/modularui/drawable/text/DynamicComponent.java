@@ -65,19 +65,34 @@ public class DynamicComponent implements Component, IDrawable {
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         Component comp = getComp();
-        if (comp instanceof ModularComponent modularComponent) {
-            modularComponent.draw(context, x, y, width, height, widgetTheme);
+        if (comp instanceof MutableComponent mutableComponent) {
+            Style currentStyle = mutableComponent.getStyle();
+            mutableComponent.setStyle(currentStyle.applyTo(this.style));
+            if (mutableComponent instanceof ModularComponent modularComponent) {
+                modularComponent.draw(context, x, y, width, height, widgetTheme);
+            } else {
+                FontRenderHelper.drawComponent(comp, context, x, y, width, height, widgetTheme);
+            }
+            mutableComponent.setStyle(currentStyle);
         } else {
-            // TODO
+            FontRenderHelper.drawComponent(comp, context, x, y, width, height, widgetTheme);
         }
     }
 
-    public DynamicComponent style(Style style) {
+    public DynamicComponent fallbackStyle(Style style) {
         this.style = style;
         return this;
     }
 
-    public DynamicComponent style(ChatFormatting style) {
-        return style(this.style.withColor(style));
+    public DynamicComponent fallbackStyle(ChatFormatting style) {
+        return fallbackStyle(this.style.applyFormat(style));
+    }
+
+    public DynamicComponent fallbackStyle(ChatFormatting... style) {
+        return fallbackStyle(this.style.applyFormats(style));
+    }
+
+    public Style getFallbackStyle() {
+        return this.style;
     }
 }
