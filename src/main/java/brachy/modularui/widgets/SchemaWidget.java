@@ -53,7 +53,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double delta) {
         if (this.enableScaling) {
             incrementScale((float) (-delta / 12.0f));
             return true;
@@ -62,12 +62,12 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         return Result.SUCCESS;
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void onMouseDrag(int button, double dragX, double dragY) {
         float dx = (float) dragX;
         float dy = (float) dragY;
         if (button == InputConstants.MOUSE_BUTTON_LEFT && this.enableRotation) {
@@ -146,7 +146,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
             overlay(Text.dynamic(() -> currentLayer > Integer.MIN_VALUE ?
                     Component.literal(Integer.toString(currentLayer)) : Component.literal("ALL"))/*.scale(0.5f)*/); // TODO
 
-            onMousePressed((mouseX, mouseY, button) -> {
+            onMousePressed((context, button) -> {
                 if (button == 0 || button == 1) {
                     if (button == 0) {
                         if (currentLayer == Integer.MIN_VALUE) {

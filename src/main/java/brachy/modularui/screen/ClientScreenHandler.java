@@ -171,7 +171,7 @@ public class ClientScreenHandler {
             return;
         }
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
-                doAction(currentScreen, ms -> ms.onMousePressed(mouseX, mouseY, button))) {
+                doAction(currentScreen, ms -> ms.mousePressed(mouseX, mouseY, button))) {
             RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
         }
@@ -372,7 +372,7 @@ public class ClientScreenHandler {
         }
     }
 
-    public static void dragSlot(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public static void dragSlot(int button, double dragX, double dragY) {
         ModularGuiContext ctx = currentScreen.getContext();
         getMCScreen().mouseDragged(ctx.getMouseX(), ctx.getMouseY(), button, dragX, dragY);
     }

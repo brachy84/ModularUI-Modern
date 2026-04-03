@@ -45,26 +45,26 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         MouseData mouseData = MouseData.create(button);
         this.syncHandler.syncToServer(PhantomItemSlotSyncHandler.SYNC_CLICK, mouseData::writeToPacket);
         return Result.SUCCESS;
     }
 
     @Override
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(int button) {
         return true;
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double delta) {
         MouseData mouseData = MouseData.create((int) delta);
         this.syncHandler.syncToServer(PhantomItemSlotSyncHandler.SYNC_SCROLL, mouseData::writeToPacket);
         return true;
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void onMouseDrag(int button, double dragX, double dragY) {
         // TODO custom drag impl
     }
 

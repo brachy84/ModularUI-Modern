@@ -156,17 +156,17 @@ public abstract class ModularUIRecipeCategory<T extends Recipe<?>, W extends IWi
         }
 
         public ScreenRectangle getArea() {
-            return getModularScreen(this.recipe).getRectangle();
+            return getModularScreen(this.recipe).getMainRectangle();
         }
 
         @Override
         public void mouseMoved(double mouseX, double mouseY) {
-            getModularScreen(this.recipe).mouseMoved(mouseX, mouseY);
+            //getModularScreen(this.recipe).mouseMoved(mouseX, mouseY);
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return getModularScreen(this.recipe).mouseClicked(mouseX, mouseY, button);
+            return getModularScreen(this.recipe).mousePressed(mouseX, mouseY, button);
         }
 
         @Override

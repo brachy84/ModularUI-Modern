@@ -38,7 +38,7 @@ public class PageButton extends Widget<PageButton> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         if (!isActive()) {
             this.controller.setPage(this.index);
             Interactable.playButtonClickSound();

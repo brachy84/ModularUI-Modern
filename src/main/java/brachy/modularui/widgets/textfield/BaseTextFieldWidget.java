@@ -6,7 +6,6 @@ import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.TextFieldTheme;
-import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.widget.AbstractScrollWidget;
@@ -170,8 +169,8 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
-        Result result = super.onMousePressed(mouseX, mouseY, button);
+    public @NotNull Result onMousePressed(int button) {
+        Result result = super.onMousePressed(button);
         if (result != Result.IGNORE) {
             return Result.SUCCESS; // keep focused
         }
@@ -210,8 +209,8 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        super.onMouseDrag(mouseX, mouseY, button, dragX, dragY);
+    public void onMouseDrag(int button, double dragX, double dragY) {
+        super.onMouseDrag(button, dragX, dragY);
         if (isFocused() && !getScrollArea().isDragging()) {
             int x = getContext().getMouseX() + getScrollX();
             int y = getContext().getMouseY() + getScrollY();

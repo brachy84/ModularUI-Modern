@@ -95,7 +95,7 @@ public class Expandable extends Widget<Expandable> implements Interactable, IVie
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         toggle();
         return Result.SUCCESS;
     }

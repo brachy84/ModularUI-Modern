@@ -48,7 +48,7 @@ public class SortButtons extends Widget<SortButtons> {
                     // .overlay(ButtonHandler.BUTTON_SORT)
                     .hoverOverlay(HOVER_SORT_OVERLAY)
                     .disableHoverBackground()
-                    .onMousePressed((x, y, button) -> {
+                    .onMousePressed((context, button) -> {
                         sort();
                         return true;
                     });
@@ -57,7 +57,7 @@ public class SortButtons extends Widget<SortButtons> {
                     // .overlay(ButtonHandler.BUTTON_SETTINGS)
                     .hoverOverlay(HOVER_SETTINGS_OVERLAY)
                     .disableHoverBackground()
-                    .onMousePressed((x, y, button) -> {
+                    .onMousePressed((context, button) -> {
                         // IBogoSortAPI.getInstance().openConfigGui();
                         return true;
                     });

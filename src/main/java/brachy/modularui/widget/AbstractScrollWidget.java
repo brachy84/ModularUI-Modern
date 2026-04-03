@@ -37,7 +37,7 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
         super();
         this.scroll.setScrollX(x);
         this.scroll.setScrollY(y);
-        listenGuiAction((IGuiAction.MouseReleased) (mouseX, mouseY, button) -> {
+        listenGuiAction((IGuiAction.MouseReleased) (context, button) -> {
             this.scroll.mouseReleased(getContext());
             return false;
         });
@@ -99,7 +99,7 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         ModularGuiContext context = getContext();
         if (this.scroll.mouseClicked(context)) {
             return Result.SUCCESS;
@@ -108,18 +108,18 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double delta) {
         return this.scroll.mouseScroll(getContext());
     }
 
     @Override
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(int button) {
         this.scroll.mouseReleased(getContext());
         return false;
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void onMouseDrag(int button, double dragX, double dragY) {
         checkScrollbarActive(false);
         this.scroll.drag(getContext().getMouseX(), getContext().getMouseY());
     }

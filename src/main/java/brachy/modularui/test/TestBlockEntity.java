@@ -250,7 +250,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                                             .addDrawableLine(new ItemDrawable(new ItemStack(Items.DIAMOND)).asIcon())
                                                                             .pos(RichTooltip.Pos.LEFT);
                                                                 })
-                                                                .onMousePressed((x, y, mouseButton) -> {
+                                                                .onMousePressed((context, mouseButton) -> {
                                                                     panelSyncHandler.openPanel();
                                                                     return true;
                                                                 })
@@ -353,7 +353,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                         .size(10).top(14).right(4)
                         .overlay(Text.str("O"))
                         .addTooltipLine("Opens another sub panel")
-                        .onMousePressed((x, y, mouseButton) -> {
+                        .onMousePressed((context, mouseButton) -> {
                             panelSyncHandler.openPanel();
                             return true;
                         }))

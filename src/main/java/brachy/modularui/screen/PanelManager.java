@@ -7,7 +7,6 @@ import brachy.modularui.screen.viewport.LocatedWidget;
 import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.ReverseIterable;
 import brachy.modularui.widget.WidgetTree;
-import brachy.modularui.widget.wrapper.WidgetWrapper;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -37,15 +36,13 @@ public class PanelManager {
     /**
      * List of all open panels from top to bottom.
      */
-    private final ObjectList<ModularPanel> panels = ObjectList.create();
+    private final ObjectList<ModularPanel<?>> panels = ObjectList.create();
     // a clone of the list to avoid CMEs
-    private final List<ModularPanel> panelsClone = new ArrayList<>();
-    private final List<ModularPanel> panelsView = Collections.unmodifiableList(this.panelsClone);
-    private final ReverseIterable<ModularPanel> reversePanels = new ReverseIterable<>(this.panelsView);
-    private final List<WidgetWrapper> panelWrappers = new ArrayList<>();
-    private final List<WidgetWrapper> panelWrappersView = Collections.unmodifiableList(this.panelWrappers);
-    private final ReverseIterable<WidgetWrapper> reversePanelWrappers = new ReverseIterable<>(this.panelWrappersView);
-    private final ObjectList<ModularPanel> disposal = ObjectList.create(DISPOSAL_CAPACITY);
+    private final List<ModularPanel<?>> panelsClone = new ArrayList<>();
+    private final List<ModularPanel<?>> panelsView = Collections.unmodifiableList(this.panelsClone);
+    private final ReverseIterable<ModularPanel<?>> reversePanels = new ReverseIterable<>(this.panelsView);
+
+    private final ObjectList<ModularPanel<?>> disposal = ObjectList.create(DISPOSAL_CAPACITY);
     private final Map<String, IPanelHandler> panelHandlerMap = new Object2ObjectOpenHashMap<>();
     private boolean cantDisposeNow = false;
     private boolean dirty = false;
@@ -87,12 +84,6 @@ public class PanelManager {
         if (this.dirty) {
             this.panelsClone.clear();
             this.panelsClone.addAll(this.panels);
-
-            this.panelWrappers.clear();
-            this.panelsClone.stream()
-                    .map(WidgetWrapper::new)
-                    .forEach(this.panelWrappers::add);
-
             this.dirty = false;
         }
     }
@@ -283,7 +274,6 @@ public class PanelManager {
         this.disposal.clear();
         this.panels.clear();
         this.panelsClone.clear();
-        this.panelWrappers.clear();
         this.dirty = false;
         setState(State.DISPOSED);
     }
@@ -418,30 +408,16 @@ public class PanelManager {
 
     @NotNull
     @UnmodifiableView
-    public List<ModularPanel> getOpenPanels() {
+    public List<ModularPanel<?>> getOpenPanels() {
         checkDirty();
         return this.panelsView;
     }
 
     @NotNull
     @UnmodifiableView
-    public Iterable<ModularPanel> getReverseOpenPanels() {
+    public Iterable<ModularPanel<?>> getReverseOpenPanels() {
         checkDirty();
         return this.reversePanels;
-    }
-
-    @NotNull
-    @UnmodifiableView
-    public List<WidgetWrapper> getOpenPanelsWrappers() {
-        checkDirty();
-        return this.panelWrappersView;
-    }
-
-    @NotNull
-    @UnmodifiableView
-    public Iterable<WidgetWrapper> getReverseOpenPanelsWrappers() {
-        checkDirty();
-        return this.reversePanelWrappers;
     }
 
     private void setState(State state) {

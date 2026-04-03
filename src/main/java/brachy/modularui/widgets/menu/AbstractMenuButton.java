@@ -154,7 +154,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
     }
 
     @Override
-    public @NotNull Result onMousePressed(double x, double y, int mouseButton) {
+    public @NotNull Result onMousePressed(int mouseButton) {
         if (!this.open) {
             forEachSiblingMenuButton(w -> {
                 w.closeMenu(false);

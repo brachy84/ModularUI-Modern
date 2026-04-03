@@ -256,7 +256,7 @@ public class ModularGuiContext extends GuiContext {
     }
 
     @ApiStatus.Internal
-    public boolean onMousePressed(double mouseX, double mouseY, int button) {
+    public boolean onMousePressed(int button) {
         if ((button == 0 || button == 1) && isMouseItemEmpty() && hasDraggable()) {
             dropDraggable(true);
             return true;
@@ -265,7 +265,7 @@ public class ModularGuiContext extends GuiContext {
     }
 
     @ApiStatus.Internal
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(int button) {
         if (button == this.lastButton && isMouseItemEmpty() && hasDraggable()) {
             long time = Util.getMillis();
             dropDraggable((this.dragStartX == getAbsMouseX() && this.dragStartY == getAbsMouseY()) ||
@@ -469,7 +469,7 @@ public class ModularGuiContext extends GuiContext {
         public Iterator<IWidget> iterator() {
             return new AbstractIterator<>() {
 
-                private final Iterator<ModularPanel> panelIt = ModularGuiContext.this.getScreen()
+                private final Iterator<ModularPanel<?>> panelIt = ModularGuiContext.this.getScreen()
                         .getPanelManager().getOpenPanels().iterator();
                 private Iterator<LocatedWidget> widgetIt;
 

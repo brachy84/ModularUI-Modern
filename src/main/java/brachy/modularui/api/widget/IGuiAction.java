@@ -1,6 +1,7 @@
 package brachy.modularui.api.widget;
 
 import brachy.modularui.screen.ModularScreen;
+import brachy.modularui.screen.viewport.GuiContext;
 
 /**
  * Gui action listeners that can be registered in {@link ModularScreen#registerGuiActionListener(IGuiAction)}
@@ -10,42 +11,42 @@ public interface IGuiAction {
     @FunctionalInterface
     interface MousePressed extends IGuiAction {
 
-        boolean press(double mouseX, double mouseY, int button);
+        boolean press(GuiContext context, int button);
     }
 
     @FunctionalInterface
     interface MouseReleased extends IGuiAction {
 
-        boolean release(double mouseX, double mouseY, int button);
+        boolean release(GuiContext context, int button);
     }
 
     @FunctionalInterface
     interface KeyPressed extends IGuiAction {
 
-        boolean press(int keyCode, int scanCode, int modifiers);
+        boolean press(GuiContext context, int modifiers);
     }
 
     @FunctionalInterface
     interface KeyReleased extends IGuiAction {
 
-        boolean release(int keyCode, int scanCode, int modifiers);
+        boolean release(GuiContext context, int keyCode, int scanCode, int modifiers);
     }
 
     @FunctionalInterface
     interface CharTyped extends IGuiAction {
 
-        boolean type(char codePoint, int modifiers);
+        boolean type(GuiContext context, char codePoint, int modifiers);
     }
 
     @FunctionalInterface
     interface MouseScroll extends IGuiAction {
 
-        boolean scroll(double mouseX, double mouseY, double delta);
+        boolean scroll(GuiContext context, double delta);
     }
 
     @FunctionalInterface
     interface MouseDrag extends IGuiAction {
 
-        boolean drag(double mouseX, double mouseY, int button, double dragX, double dragY);
+        boolean drag(GuiContext context, int button, double dragX, double dragY);
     }
 }

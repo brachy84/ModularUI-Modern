@@ -9,6 +9,7 @@ import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.utils.Point;
 import brachy.modularui.utils.Rectangle;
 
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.util.Mth;
 
 import lombok.Getter;
@@ -510,6 +511,10 @@ public class Area extends Rectangle implements IAnimatable<Area> {
         int y0 = MathUtils.min(yTL, yTR, yBL, yBR);
         int y1 = MathUtils.max(yTL, yTR, yBL, yBR);
         setPos(x0, y0, x1, y1);
+    }
+
+    public ScreenRectangle toScreenRectangle() {
+        return new ScreenRectangle(this.x, this.y, this.width, this.height);
     }
 
     /**

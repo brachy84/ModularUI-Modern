@@ -85,7 +85,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
                                 .widthRel(1f)
                                 .coverChildrenHeight()
                                 .child(valueToWidget(v, false))
-                                .onMousePressed((x, y, b) -> {
+                                .onMousePressed((context, b) -> {
                                     setValue(v, true);
                                     closeMenu(false);
                                     return true;

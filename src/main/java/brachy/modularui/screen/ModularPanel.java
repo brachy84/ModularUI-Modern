@@ -354,7 +354,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
                     }
                     // click widget and see how it reacts
                     if (widget.getElement() instanceof Interactable interactable) {
-                        Interactable.Result interactResult = interactable.onMousePressed(mouseX, mouseY, button);
+                        Interactable.Result interactResult = interactable.onMousePressed(button);
                         if (interactResult.accepts) {
                             this.mouse.addAcceptedInteractable(interactable);
                             pressed = widget;
@@ -407,7 +407,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
                 this.currentResizingWidget = null;
                 return true;
             }
-            if (interactFocused(widget -> widget.onMouseReleased(mouseX, mouseY, button), false)) {
+            if (interactFocused(widget -> widget.onMouseReleased(button), false)) {
                 return true;
             }
             boolean lastPressedIsHovered = false;
@@ -448,13 +448,13 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         boolean stop = false;
         widget.applyMatrix(getContext());
         if (tryTap && this.mouse.acceptedInteractions.remove(interactable)) {
-            Interactable.Result tabResult = interactable.onMouseTapped(mouseX, mouseY, button);
+            Interactable.Result tabResult = interactable.onMouseTapped(button);
             if (tabResult.stops) {
                 stop = true;
                 // we will try to trigger onMouseReleased() even after tapping tells to stop
             }
         }
-        if (interactable.onMouseReleased(mouseX, mouseY, button)) {
+        if (interactable.onMouseReleased(button)) {
             stop = true;
         }
         widget.unapplyMatrix(getContext());
@@ -606,7 +606,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
 
     public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         return doSafeBool(() -> {
-            if (interactFocused(widget -> widget.onMouseScrolled(mouseX, mouseY, delta), false)) {
+            if (interactFocused(widget -> widget.onMouseScrolled(delta), false)) {
                 return true;
             }
             if (this.hovering.isEmpty()) return false;
@@ -614,7 +614,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
                 if (widget.getElement() == null || !widget.getElement().isValid()) continue;
                 if (widget.getElement() instanceof Interactable interactable) {
                     widget.applyMatrix(getContext());
-                    boolean result = interactable.onMouseScrolled(mouseX, mouseY, delta);
+                    boolean result = interactable.onMouseScrolled(delta);
                     widget.unapplyMatrix(getContext());
                     if (result) return true;
                 }
@@ -644,7 +644,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
                     this.mouse.lastPressed.getElement() instanceof Interactable interactable &&
                     this.mouse.lastPressed.getElement().isValid()) {
                 this.mouse.lastPressed.applyMatrix(getContext());
-                interactable.onMouseDrag(mouseX, mouseY, button, dragX, dragY);
+                interactable.onMouseDrag(button, dragX, dragY);
                 this.mouse.lastPressed.unapplyMatrix(getContext());
                 return true;
             }

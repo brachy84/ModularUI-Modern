@@ -64,13 +64,13 @@ public class DebugOverlay extends CustomModularScreen {
                                         .widthRel(1f)
                                         .invisible()
                                         .overlay(Text.str("Print widget trees"))
-                                        .onMousePressed((x, y, b) -> this.logWidgetTrees(b)))
+                                        .onMousePressed((context1, b) -> this.logWidgetTrees(b)))
                                 .child(new ButtonWidget<>().name("print_resizer_tree_button")
                                         .height(12)
                                         .widthRel(1f)
                                         .invisible()
                                         .overlay(Text.str("Print resizer tree"))
-                                        .onMousePressed((x, y, b) -> {
+                                        .onMousePressed((context1, b) -> {
                                             TreeUtil.print(parent.screen().getResizeNode());
                                             return true;
                                         }))

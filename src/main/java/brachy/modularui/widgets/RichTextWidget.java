@@ -53,25 +53,25 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
-            return interactable.onMousePressed(mouseX, mouseY, button);
+            return interactable.onMousePressed(button);
         }
         return Result.ACCEPT;
     }
 
     @Override
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
-            return interactable.onMouseReleased(mouseX, mouseY, button);
+            return interactable.onMouseReleased(button);
         }
         return false;
     }
 
     @Override
-    public @NotNull Result onMouseTapped(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMouseTapped(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
-            return interactable.onMouseTapped(mouseX, mouseY, button);
+            return interactable.onMouseTapped(button);
         }
         return Result.IGNORE;
     }
@@ -101,17 +101,17 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double delta) {
         if (getHoveredElement() instanceof Interactable interactable) {
-            return interactable.onMouseScrolled(mouseX, mouseY, delta);
+            return interactable.onMouseScrolled(delta);
         }
         return false;
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void onMouseDrag(int button, double dragX, double dragY) {
         if (getHoveredElement() instanceof Interactable interactable) {
-            interactable.onMouseDrag(mouseX, mouseY, button, dragX, dragY);
+            interactable.onMouseDrag(button, dragX, dragY);
         }
     }
 

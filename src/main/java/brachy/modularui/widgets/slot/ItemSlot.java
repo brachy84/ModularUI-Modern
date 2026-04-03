@@ -8,7 +8,6 @@ import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.core.mixins.client.AbstractContainerScreenAccessor;
 import brachy.modularui.core.mixins.client.ScreenAccessor;
 import brachy.modularui.drawable.GuiDraw;
-import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.screen.ClientScreenHandler;
@@ -138,20 +137,20 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         ClientScreenHandler.clickSlot(getScreen(), getSlot());
         return Result.SUCCESS;
     }
 
     @Override
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(int button) {
         ClientScreenHandler.releaseSlot();
         return true;
     }
 
     @Override
-    public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        ClientScreenHandler.dragSlot(mouseX, mouseY, button, dragX, dragY);
+    public void onMouseDrag(int button, double dragX, double dragY) {
+        ClientScreenHandler.dragSlot(button, dragX, dragY);
     }
 
     public ModularSlot getSlot() {

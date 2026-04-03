@@ -20,36 +20,30 @@ public interface Interactable {
     /**
      * Called when this widget is pressed.
      *
-     * @param mouseX the X coordinate of the mouse.
-     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was pressed.
      * @return result that determines what happens to other widgets
-     * {@link #onMouseTapped(double, double, int)} is only called if this returns {@link Result#ACCEPT} or
+     * {@link #onMouseTapped(int)} is only called if this returns {@link Result#ACCEPT} or
      * {@link Result#SUCCESS}
      */
     @NotNull
-    default Result onMousePressed(double mouseX, double mouseY, int button) {
+    default Result onMousePressed(int button) {
         return Result.ACCEPT;
     }
 
     /**
      * Called when a mouse button was released over this widget.
      *
-     * @param mouseX the X coordinate of the mouse.
-     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was released.
      * @return whether other widgets should get called to. If this returns false,
-     * {@link #onMouseTapped(double, double, int)} will NOT be called.
+     * {@link #onMouseTapped(int)} will NOT be called.
      */
-    default boolean onMouseReleased(double mouseX, double mouseY, int button) {
+    default boolean onMouseReleased(int button) {
         return false;
     }
 
     /**
      * Called when this widget was pressed and then released within a certain time frame.
      *
-     * @param mouseX the X coordinate of the mouse.
-     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was pressed.
      * @return result that determines if other widgets should get tapped to
      * {@link Result#IGNORE IGNORE} and {@link Result#ACCEPT ACCEPT} will both "ignore" the result and
@@ -57,7 +51,7 @@ public interface Interactable {
      * from getting tapped.
      */
     @NotNull
-    default Result onMouseTapped(double mouseX, double mouseY, int button) {
+    default Result onMouseTapped(int button) {
         return Result.IGNORE;
     }
 
@@ -124,26 +118,22 @@ public interface Interactable {
      * If this scroll view scrolled to the end and this returns false, the scroll will get passed through another scroll
      * view below this.
      *
-     * @param mouseX the X coordinate of the mouse.
-     * @param mouseY the Y coordinate of the mouse.
-     * @param delta  amount scrolled by (usually irrelevant)
+     * @param delta amount scrolled by (usually irrelevant)
      * @return true if this widget can be scrolled at all
      */
-    default boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+    default boolean onMouseScrolled(double delta) {
         return false;
     }
 
     /**
      * Called when this widget was clicked and mouse is now dragging.
      *
-     * @param mouseX current mouse X coordinate relative to the screen
-     * @param mouseY current mouse Y coordinate relative to the screen
      * @param button mouse button that is held down
      *               (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
      * @param dragX  amount of drag on the X axis (e.g. the distance that has been dragged)
      * @param dragY  amount of drag on the Y axis (e.g. the distance that has been dragged)
      */
-    default void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {}
+    default void onMouseDrag(int button, double dragX, double dragY) {}
 
     /**
      * @return if left or right ctrl/cmd is pressed

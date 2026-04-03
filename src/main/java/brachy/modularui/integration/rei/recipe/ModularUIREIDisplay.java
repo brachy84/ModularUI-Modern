@@ -187,12 +187,12 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
 
         @Override
         public void mouseMoved(double mouseX, double mouseY) {
-            screen.get().mouseMoved(mouseX, mouseY);
+            //screen.get().mouseMoved(mouseX, mouseY);
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return screen.get().mouseClicked(mouseX, mouseY, button);
+            return screen.get().mousePressed(mouseX, mouseY, button);
         }
 
         @Override

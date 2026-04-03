@@ -4,6 +4,9 @@ import brachy.modularui.api.drawable.IIcon;
 import brachy.modularui.api.widget.IGuiAction;
 import brachy.modularui.api.widget.Interactable;
 
+import brachy.modularui.screen.viewport.GuiContext;
+
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -11,22 +14,18 @@ import org.jetbrains.annotations.NotNull;
 @Accessors(fluent = true, chain = true)
 public class InteractableIcon extends DelegateIcon implements Interactable {
 
-    @Setter
-    private IGuiAction.MousePressed onMousePressed;
-    @Setter
-    private IGuiAction.MouseReleased onMouseReleased;
-    @Setter
-    private IGuiAction.MousePressed onMouseTapped;
-    @Setter
-    private IGuiAction.MouseScroll onMouseScrolled;
-    @Setter
-    private IGuiAction.KeyPressed onKeyPressed;
-    @Setter
-    private IGuiAction.KeyReleased onKeyReleased;
-    @Setter
-    private IGuiAction.KeyPressed onKeyTapped;
+    private IGuiAction.MousePressed mousePressed;
+    private IGuiAction.MouseReleased mouseReleased;
+    private IGuiAction.MousePressed mouseTapped;
+    private IGuiAction.MouseScroll mouseScroll;
+    private IGuiAction.KeyPressed keyPressed;
+    private IGuiAction.KeyReleased keyReleased;
+    private IGuiAction.KeyPressed keyTapped;
     @Setter
     public boolean playClickSound = true;
+
+    @Getter @Setter
+    private GuiContext context;
 
     public InteractableIcon(IIcon icon) {
         super(icon);
@@ -38,9 +37,13 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
         }
     }
 
+    public GuiContext getContext() {
+        return context;
+    }
+
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
-        if (this.onMousePressed != null && this.onMousePressed.press(mouseX, mouseY, button)) {
+    public @NotNull Result onMousePressed(int button) {
+        if (this.mousePressed != null && this.mousePressed.press(getContext(), button)) {
             playClickSound();
             return Result.SUCCESS;
         }
@@ -48,14 +51,14 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
     }
 
     @Override
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
-        return this.onMouseReleased != null && this.onMouseReleased.release(mouseX, mouseY, button);
+    public boolean onMouseReleased(int button) {
+        return this.mouseReleased != null && this.mouseReleased.release(getContext(), button);
     }
 
     @NotNull
     @Override
-    public Result onMouseTapped(double mouseX, double mouseY, int button) {
-        if (this.onMouseTapped != null && this.onMouseTapped.press(mouseX, mouseY, button)) {
+    public Result onMouseTapped(int button) {
+        if (this.mouseTapped != null && this.mouseTapped.press(getContext(), button)) {
             playClickSound();
             return Result.SUCCESS;
         }
@@ -64,7 +67,7 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
 
     @Override
     public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.onKeyPressed != null && this.onKeyPressed.press(keyCode, scanCode, modifiers)) {
+        if (this.keyPressed != null && this.keyPressed.press(getContext(), modifiers)) {
             return Result.SUCCESS;
         }
         return Result.ACCEPT;
@@ -72,20 +75,55 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
 
     @Override
     public boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
-        return this.onKeyReleased != null && this.onKeyReleased.release(keyCode, scanCode, modifiers);
+        return this.keyReleased != null && this.keyReleased.release(getContext(), keyCode, scanCode, modifiers);
     }
 
     @NotNull
     @Override
     public Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
-        if (this.onKeyTapped != null && this.onKeyTapped.press(keyCode, scanCode, modifiers)) {
+        if (this.keyTapped != null && this.keyTapped.press(getContext(), modifiers)) {
             return Result.SUCCESS;
         }
         return Result.IGNORE;
     }
 
     @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
-        return this.onMouseScrolled != null && this.onMouseScrolled.scroll(mouseX, mouseY, delta);
+    public boolean onMouseScrolled(double delta) {
+        return this.mouseScroll != null && this.mouseScroll.scroll(getContext(), delta);
+    }
+
+    public InteractableIcon onMousePressed(IGuiAction.MousePressed mousePressed) {
+        this.mousePressed = mousePressed;
+        return this;
+    }
+
+    public InteractableIcon onMouseReleased(IGuiAction.MouseReleased mouseReleased) {
+        this.mouseReleased = mouseReleased;
+        return this;
+    }
+
+    public InteractableIcon onMouseTapped(IGuiAction.MousePressed mouseTapped) {
+        this.mouseTapped = mouseTapped;
+        return this;
+    }
+
+    public InteractableIcon onMouseScrolled(IGuiAction.MouseScroll mouseScroll) {
+        this.mouseScroll = mouseScroll;
+        return this;
+    }
+
+    public InteractableIcon onKeyPressed(IGuiAction.KeyPressed keyPressed) {
+        this.keyPressed = keyPressed;
+        return this;
+    }
+
+    public InteractableIcon onKeyReleased(IGuiAction.KeyReleased keyReleased) {
+        this.keyReleased = keyReleased;
+        return this;
+    }
+
+    public InteractableIcon onKeyTapped(IGuiAction.KeyPressed keyTapped) {
+        this.keyTapped = keyTapped;
+        return this;
     }
 }

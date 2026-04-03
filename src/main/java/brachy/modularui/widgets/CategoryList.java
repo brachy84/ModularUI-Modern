@@ -67,7 +67,7 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     }
 
     @Override
-    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+    public @NotNull Result onMousePressed(int button) {
         if (button == 0 || button == 1) {
             setExpanded(!this.expanded);
             return Result.SUCCESS;

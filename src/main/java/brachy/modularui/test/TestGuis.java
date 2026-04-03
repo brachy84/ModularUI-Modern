@@ -132,7 +132,7 @@ public class TestGuis extends CustomModularScreen {
                                     String codeTextureName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
                                     name = name.replaceAll("([a-z])([A-Z])", "$1 $2");
                                     return button(name)
-                                            .onMousePressed((x, y, button) -> {
+                                            .onMousePressed((context1, button) -> {
                                                 try {
                                                     ModularPanel<?> panel = (ModularPanel) m.invoke(null);
                                                     if (TestGuis.withCode) {
@@ -162,7 +162,7 @@ public class TestGuis extends CustomModularScreen {
                                             return true;
                                         }))*/
                                 .child(button("Test self")
-                                        .onMousePressed((x, y, button) -> {
+                                        .onMousePressed((context1, button) -> {
                                             ClientGUI.open(this);
                                             return true;
                                         }))));
@@ -324,7 +324,7 @@ public class TestGuis extends CustomModularScreen {
                                 .addDrawable(new ItemDrawable(new ItemStack(Items.PORKCHOP))
                                         .asIcon()
                                         .asInteractable()
-                                        .onMousePressed((x, y, button) -> {
+                                        .onMousePressed((context, button) -> {
                                             ModularUI.LOGGER.info("Pressed Pork");
                                             return true;
                                         }))
@@ -534,7 +534,7 @@ public class TestGuis extends CustomModularScreen {
                                         .name("color picker button 1")
                                         .background(color1)
                                         .disableHoverBackground()
-                                        .onMousePressed((x, y, mouseButton) -> {
+                                        .onMousePressed((context, mouseButton) -> {
                                             colorPicker1.openPanel();
                                             return true;
                                         }))
@@ -543,7 +543,7 @@ public class TestGuis extends CustomModularScreen {
                                         .name("color picker button 2")
                                         .background(color2)
                                         .disableHoverBackground()
-                                        .onMousePressed((x, y, mouseButton) -> {
+                                        .onMousePressed((context, mouseButton) -> {
                                             colorPicker2.openPanel();
                                             return true;
                                         })))

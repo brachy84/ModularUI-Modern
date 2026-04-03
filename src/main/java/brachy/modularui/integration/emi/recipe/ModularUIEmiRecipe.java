@@ -195,7 +195,7 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
 
         @Override
         public boolean mouseClicked(int mouseX, int mouseY, int button) {
-            return screen.get().onMousePressed(mouseX, mouseY, button);
+            return screen.get().mousePressed(mouseX, mouseY, button);
         }
 
         @Override
