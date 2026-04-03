@@ -139,9 +139,9 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         RichText copy = this.text.copy();
         // rich event to gather additional tooltip
         // this does not trigger vanilla event listeners
-        var richGatherEvent = new RichTooltipEvent.Gather(copy, stack, context, mouseX, mouseY, screen.width, screen.height, this.maxWidth);
-        if (MinecraftForge.EVENT_BUS.post(richGatherEvent)) return;
-        this.maxWidth = richGatherEvent.getMaxWidth();
+        var richGatherEventPre = new RichTooltipEvent.Gather.Pre(copy, stack, context, mouseX, mouseY, screen.width, screen.height, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(richGatherEventPre)) return;
+        this.maxWidth = richGatherEventPre.getMaxWidth();
 
         // vanilla event to gather additional tooltip
         TooltipLines textLines = copy.getAsText();
@@ -149,6 +149,12 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
         this.maxWidth = vanillaGatherEvent.getMaxWidth();
+
+        // rich event to gather additional tooltip
+        // this does not trigger vanilla event listeners
+        var richGatherEventPost = new RichTooltipEvent.Gather.Post(copy, stack, context, mouseX, mouseY, screen.width, screen.height, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(richGatherEventPost)) return;
+        this.maxWidth = richGatherEventPost.getMaxWidth();
 
         // triggers vanilla event listeners
         List<ClientTooltipComponent> components = textLines.toClientTooltipComponents();

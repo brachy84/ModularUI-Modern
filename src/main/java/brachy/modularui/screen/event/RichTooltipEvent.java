@@ -23,6 +23,12 @@ public class RichTooltipEvent {
 
     private RichTooltipEvent() {}
 
+    /**
+     * A rich tooltip event that is mean ONLY for rich tooltips.
+     * {@link Gather.Pre} is invoked before the vanilla event.
+     * {@link Gather.Post} is invoked after the vanilla event.
+     * Both can be canceled and edited.
+     */
     @Cancelable
     public static class Gather extends Event {
 
@@ -37,8 +43,8 @@ public class RichTooltipEvent {
         @Setter
         protected int maxWidth;
 
-        public Gather(IRichTextBuilder<?> tooltip, ItemStack stack, GuiContext guiContext,
-                      int x, int y, int screenWidth, int screenHeight, int maxWidth) {
+        protected Gather(IRichTextBuilder<?> tooltip, ItemStack stack, GuiContext guiContext,
+                         int x, int y, int screenWidth, int screenHeight, int maxWidth) {
             this.tooltip = tooltip;
             this.itemStack = stack;
             this.guiContext = guiContext;
@@ -47,6 +53,24 @@ public class RichTooltipEvent {
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
             this.maxWidth = maxWidth;
+        }
+
+        @Cancelable
+        public static class Pre extends Gather {
+
+            public Pre(IRichTextBuilder<?> tooltip, ItemStack stack, GuiContext guiContext,
+                       int x, int y, int screenWidth, int screenHeight, int maxWidth) {
+                super(tooltip, stack, guiContext, x, y, screenWidth, screenHeight, maxWidth);
+            }
+        }
+
+        @Cancelable
+        public static class Post extends Gather {
+
+            public Post(IRichTextBuilder<?> tooltip, ItemStack stack, GuiContext guiContext,
+                        int x, int y, int screenWidth, int screenHeight, int maxWidth) {
+                super(tooltip, stack, guiContext, x, y, screenWidth, screenHeight, maxWidth);
+            }
         }
     }
 

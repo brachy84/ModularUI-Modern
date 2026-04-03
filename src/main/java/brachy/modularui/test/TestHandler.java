@@ -92,7 +92,7 @@ public class TestHandler {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void onRichTooltip(RichTooltipEvent.Gather event) {
+    public static void onRichTooltip(RichTooltipEvent.Gather.Post event) {
         if (enabledRichTooltipEventTest && ModularUI.isDev()) {
             // adds decoration to every mui tooltip
             event.getTooltip()
