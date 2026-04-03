@@ -4,7 +4,6 @@ import brachy.modularui.animation.Animator;
 import brachy.modularui.animation.IAnimator;
 import brachy.modularui.animation.SequentialAnimator;
 import brachy.modularui.animation.Wait;
-import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;

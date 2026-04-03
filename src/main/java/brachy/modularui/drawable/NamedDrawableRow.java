@@ -2,7 +2,7 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class NamedDrawableRow implements IDrawable {
 
     @Getter
-    private IKey name;
+    private Text name;
     @Getter
     private IIcon drawable;
 
@@ -21,7 +21,7 @@ public class NamedDrawableRow implements IDrawable {
         this(null, null);
     }
 
-    public NamedDrawableRow(@Nullable IKey name, @Nullable IIcon drawable) {
+    public NamedDrawableRow(@Nullable Text name, @Nullable IIcon drawable) {
         this.name = name;
         this.drawable = drawable;
     }
@@ -54,7 +54,7 @@ public class NamedDrawableRow implements IDrawable {
         return h;
     }
 
-    public NamedDrawableRow name(@Nullable IKey key) {
+    public NamedDrawableRow name(@Nullable Text key) {
         this.name = key;
         return this;
     }

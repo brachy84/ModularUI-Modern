@@ -5,7 +5,7 @@ import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.factory.ClientGUI;
@@ -93,13 +93,13 @@ public class TestHandler {
     public static void onRichTooltip(RichTooltipEvent.Pre event) {
         if (enabledRichTooltipEventTest && ModularUI.isDev()) {
             event.getTooltip()
-                    .add(IKey.str("Powered By: ").style(IKey.GOLD, IKey.ITALIC))
+                    .add(Text.str("Powered By: ").style(Text.GOLD, Text.ITALIC))
                     .addDrawable(GuiTextures.MUI_LOGO.asIcon().size(18)).newLine()
                     .moveCursorToStart()
                     .moveCursorToNextLine()
                     .addDrawableLine(tooltipLine)
                     // replaces the Minecraft mod name in JEI item tooltips
-                    .replace("Minecraft", key -> IKey.str("Chicken Jockey").style(IKey.BLUE, IKey.ITALIC))
+                    .replace("Minecraft", key -> Text.str("Chicken Jockey").style(Text.BLUE, Text.ITALIC))
                     .moveCursorToEnd();
         }
     }

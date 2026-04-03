@@ -4,7 +4,7 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.serialization.json.JsonHelper;
@@ -24,7 +24,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -182,7 +181,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
             return jsonArray;
         }
         JsonObject json = new JsonObject();
-        if (src instanceof IKey key) {
+        if (src instanceof Text key) {
             json.addProperty("type", "text");
             // TODO serialize text properly
             json.addProperty("text", Component.Serializer.toJson(key.getFormatted()));
@@ -218,20 +217,20 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         }
         JsonElement element = JsonHelper.getJsonElement(json, "text", "string", "key");
         if (element == null || element.isJsonNull()) {
-            return IKey.str("No text found!");
+            return Text.str("No text found!");
         } else if (element.isJsonPrimitive()) {
             String s = element.getAsString();
             if (s.startsWith("translate:")) {
-                return IKey.lang(s.substring(10));
+                return Text.lang(s.substring(10));
             }
-            return JsonHelper.getBoolean(json, false, "lang", "translate") ? IKey.lang(s) : IKey.str(s);
+            return JsonHelper.getBoolean(json, false, "lang", "translate") ? Text.lang(s) : Text.str(s);
         } else if (element.isJsonArray()) {
             ObjectList<Component> strings = ObjectList.create();
             for (JsonElement element1 : element.getAsJsonArray()) {
                 strings.add(parseText(element1));
             }
             strings.trim();
-            return IKey.comp(strings.elements());
+            return Text.comp(strings.elements());
         }
         throw exception;
     }
@@ -249,9 +248,9 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         if (element.isJsonPrimitive()) {
             String s = element.getAsString();
             if (s.startsWith("translate:")) {
-                return IKey.lang(s.substring(10));
+                return Text.lang(s.substring(10));
             }
-            return IKey.str(s);
+            return Text.str(s);
         }
         if (element.isJsonObject()) {
             return parseText(element.getAsJsonObject());
@@ -259,7 +258,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         throw exception;
     }
 
-    private static IKey parseKeyFromJson(JsonObject json, Function<String, IKey> keyFunction) {
+    private static Text parseKeyFromJson(JsonObject json, Function<String, Text> keyFunction) {
         return keyFunction.apply(JsonHelper.getString(json, "No text found!", "text", "string", "key"));
     }
 }

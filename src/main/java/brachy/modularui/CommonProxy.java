@@ -1,6 +1,6 @@
 package brachy.modularui;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.UIFactories;
 import brachy.modularui.factory.inventory.InventoryTypes;
 import brachy.modularui.network.NetworkHandler;
@@ -66,7 +66,7 @@ public class CommonProxy {
                         .executes(ctx -> {
                             ThemeManager.reload();
                             // TODO translations for this
-                            ctx.getSource().sendSuccess(() -> Component.literal("ModularUI Themes reloaded").withStyle(IKey.GREEN), true);
+                            ctx.getSource().sendSuccess(() -> Component.literal("ModularUI Themes reloaded").withStyle(Text.GREEN), true);
                             return Command.SINGLE_SUCCESS;
                         }));
         event.getDispatcher().register(command);

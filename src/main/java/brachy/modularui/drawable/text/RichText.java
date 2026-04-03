@@ -1,10 +1,7 @@
 package brachy.modularui.drawable.text;
 
-import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
-import brachy.modularui.api.drawable.IRichTextBuilder;
-import brachy.modularui.api.drawable.ITextLine;
+import brachy.modularui.api.drawable.*;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.client.component.DrawableTooltipComponent;
 import brachy.modularui.client.component.TooltipComponentIcon;
@@ -120,7 +117,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     @Override
     public RichText addDrawable(IDrawable drawable) {
         Object o = drawable;
-        if (!(o instanceof IKey) && !(o instanceof IIcon)) o = drawable.asIcon();
+        if (!(o instanceof Text) && !(o instanceof IIcon)) o = drawable.asIcon();
         addElement(o);
         clearComponents();
         return this;
@@ -194,12 +191,12 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     }
 
     @Override
-    public RichText replace(Pattern regex, UnaryOperator<IKey> function) {
+    public RichText replace(Pattern regex, UnaryOperator<Text> function) {
         int i = findNextText(this.cursor, true, s -> regex.matcher(s).find());
         if (i >= 0) {
             this.cursor = i;
             Object o = this.elements.get(i);
-            IKey key = o instanceof IKey key1 ? key1 : IKey.str((String) o);
+            Text key = o instanceof Text key1 ? key1 : Text.str((String) o);
             key = function.apply(key);
             if (key == null) {
                 this.elements.remove(i);
@@ -258,7 +255,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     private int findNextLine(int current) {
         for (int i = current; i < this.elements.size(); i++) {
             Object o = this.elements.get(i);
-            if (o == IKey.LINE_FEED) return i;
+            if (o == Text.LINE_FEED) return i;
             if (o instanceof Component key && key.getString().trim().endsWith("\n")) return i;
             if (o instanceof String string && string.trim().endsWith("\n")) return i;
             if (o instanceof ITextLine) return i;
@@ -286,7 +283,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         List<Object> objects = this.elements;
         for (int i = 0; i < objects.size(); i++) {
             Object o = objects.get(i);
-            if (o == IKey.LINE_FEED) {
+            if (o == Text.LINE_FEED) {
                 if (i == objects.size() - 1) return this;
                 if (objects.get(i + 1) instanceof Spacer spacer) {
                     if (spacer.getSpace() == margin) return this;

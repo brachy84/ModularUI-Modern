@@ -1,7 +1,7 @@
 package brachy.modularui.api.widget;
 
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.utils.Alignment;
@@ -250,7 +250,7 @@ public interface ITooltip<W extends ITooltip<W>> {
      * @return this
      */
     default W addTooltipLine(String line) {
-        return addTooltipLine(IKey.str(line));
+        return addTooltipLine(Text.str(line));
     }
 
     /**

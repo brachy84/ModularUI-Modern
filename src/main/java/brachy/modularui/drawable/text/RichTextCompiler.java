@@ -3,7 +3,7 @@ package brachy.modularui.drawable.text;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.drawable.DelegateIcon;
 import brachy.modularui.drawable.Icon;
@@ -69,15 +69,15 @@ public class RichTextCompiler {
             Component text = null;
             if (o instanceof Component c) {
                 text = c;
-            } else if (o instanceof IKey key) {
-                if (key == IKey.EMPTY) continue;
-                if (key == IKey.SPACE) {
+            } else if (o instanceof Text key) {
+                if (key == Text.EMPTY) continue;
+                if (key == Text.SPACE) {
                     MutableComponent mc = key.get();
                     addLineElement(SPACE);
                     this.x += this.fr.width(mc);
                     continue;
                 }
-                if (key == IKey.LINE_FEED) {
+                if (key == Text.LINE_FEED) {
                     newLine();
                     continue;
                 }

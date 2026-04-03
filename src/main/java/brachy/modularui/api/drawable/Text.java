@@ -25,15 +25,15 @@ import java.util.function.Supplier;
 /**
  * This represents a piece of text in a GUI.
  */
-public interface IKey extends IDrawable, IJsonSerializable<IKey> {
+public interface Text extends IDrawable, IJsonSerializable<Text> {
 
     int TEXT_COLOR = 0xFF404040;
 
     TextRenderer renderer = new TextRenderer();
 
-    IKey EMPTY = str("");
-    IKey LINE_FEED = str("\n");
-    IKey SPACE = str(" ");
+    Text EMPTY = str("");
+    Text LINE_FEED = str("\n");
+    Text SPACE = str(" ");
 
     // Formatting for convenience
     ChatFormatting BLACK = ChatFormatting.BLACK;
@@ -195,7 +195,7 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     }*/
 
     /**
-     * Set text formatting to this key. If {@link IKey#RESET} is used, then that's applied first and then all other
+     * Set text formatting to this key. If {@link Text#RESET} is used, then that's applied first and then all other
      * formatting of this key.
      * With {@code null}, you can remove a color formatting. No matter the parents color, the default color will be
      * used.
@@ -214,7 +214,7 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
         return style((ChatFormatting) null);
     }
 
-    IKey removeStyle();
+    Text removeStyle();
 
     ModularComponent alignment(Alignment alignment);
 

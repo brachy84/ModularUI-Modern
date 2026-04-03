@@ -130,7 +130,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @return this
      */
     default T newLine() {
-        return addDrawable(IKey.LINE_FEED);
+        return addDrawable(Text.LINE_FEED);
     }
 
     /**
@@ -139,7 +139,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @return this
      */
     default T space() {
-        return addDrawable(IKey.SPACE);
+        return addDrawable(Text.SPACE);
     }
 
     /**
@@ -250,7 +250,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @param function function to modify the found element
      * @return this
      */
-    default T replace(String regex, UnaryOperator<IKey> function) {
+    default T replace(String regex, UnaryOperator<Text> function) {
         return replace(Pattern.compile(regex), function);
     }
 
@@ -265,7 +265,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @param function function to modify the found element
      * @return this
      */
-    default T replace(Pattern regex, UnaryOperator<IKey> function) {
+    default T replace(Pattern regex, UnaryOperator<Text> function) {
         getRichText().replace(regex, function);
         return getThis();
     }

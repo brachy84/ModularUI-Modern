@@ -8,7 +8,7 @@ import brachy.modularui.animation.Wait;
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiDraw;
@@ -122,7 +122,7 @@ public class TestGuis extends CustomModularScreen {
         return new ModularPanel<>("client_tests").height(200).width(170)
                 .padding(7)
                 .child(Flow.column()
-                        .child(IKey.str("Client Test UIs").asWidget().margin(1))
+                        .child(Text.str("Client Test UIs").asWidget().margin(1))
                         .child(new ListWidget<>().widthRel(1f).expanded()
                                 .children(uiMethods.size(), i -> {
                                     Method m = uiMethods.get(i);
@@ -171,7 +171,7 @@ public class TestGuis extends CustomModularScreen {
     private static ButtonWidget<?> button(String text) {
         return new ButtonWidget<>()
                 .height(16).widthRel(1f).margin(0, 1)
-                .overlay(IKey.str(text));
+                .overlay(Text.str(text));
     }
 
     public static @NotNull ModularPanel<?> buildToggleGridListUI() {
@@ -242,13 +242,13 @@ public class TestGuis extends CustomModularScreen {
                         .coverChildren()
                         .child(Flow.row()
                                 .coverChildren()
-                                .child(IKey.str("Post ").asWidget()
+                                .child(Text.str("Post ").asWidget()
                                         .transform((widget, stack) -> stack.translate(post.getValue(), 0)))
-                                .child(IKey.str("the ").asWidget()
+                                .child(Text.str("the ").asWidget()
                                         .transform((widget, stack) -> stack.translate(0, the.getValue())))
-                                .child(IKey.str("fucking ").style(IKey.OBFUSCATED).asWidget()
+                                .child(Text.str("fucking ").style(Text.OBFUSCATED).asWidget()
                                         .transform((widget, stack) -> stack.translate(extraordinary.getValue(), 0))))
-                        .child(IKey.str("LOOOOGG!!!!").asWidget()
+                        .child(Text.str("LOOOOGG!!!!").asWidget()
                                 .paddingTop(4)
                                 .transform((widget, stack) -> {
                                     float logVal = log.getValue();
@@ -319,7 +319,7 @@ public class TestGuis extends CustomModularScreen {
                                         .asIcon()
                                         .asHoverable()
                                         .tooltip(richTooltip -> richTooltip.addFromItem(new ItemStack(Blocks.GRASS))
-                                                .add(IKey.GRAY + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.")))
+                                                .add(Text.GRAY + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.")))
                                 .add(", nice to ")
                                 .addDrawable(new ItemDrawable(new ItemStack(Items.PORKCHOP))
                                         .asIcon()
@@ -329,41 +329,41 @@ public class TestGuis extends CustomModularScreen {
                                             return true;
                                         }))
                                 .add(" you. ")
-                                .add(IKey.str("This is a long ").style(IKey.GREEN))
-                                .addDrawable(IKey.str("string").style(IKey.DARK_PURPLE)
+                                .add(Text.str("This is a long ").style(Text.GREEN))
+                                .addDrawable(Text.str("string").style(Text.DARK_PURPLE)
                                         .asTextIcon()
                                         .asHoverable()
                                         .addTooltipLine("Text Tooltip"))
-                                .add(" of characters" + IKey.RESET)
+                                .add(" of characters" + Text.RESET)
                                 .add(" and not numbers as some might think...")
                                 .newLine()
                                 .newLine()
-                                .add(IKey.comp(IKey.comp(
-                                                IKey.str("Underline all: "),
-                                                IKey.comp(
-                                                                IKey.str("Green Text, "),
-                                                                IKey.str("this is red").style(IKey.RED),
-                                                                IKey.str(" and this should be green again"))
-                                                        .style(IKey.GREEN),
-                                                IKey.str(". Still underlined, "))
-                                        .style(IKey.UNDERLINE), IKey.str("but not anymore.")))
+                                .add(Text.comp(Text.comp(
+                                                Text.str("Underline all: "),
+                                                Text.comp(
+                                                                Text.str("Green Text, "),
+                                                                Text.str("this is red").style(Text.RED),
+                                                                Text.str(" and this should be green again"))
+                                                        .style(Text.GREEN),
+                                                Text.str(". Still underlined, "))
+                                        .style(Text.UNDERLINE), Text.str("but not anymore.")))
                                 .newLine()
-                                .addDrawable(IKey.str("Green, %s, %s and green again",
-                                        IKey.str("red").style(IKey.RED),
-                                        IKey.str("underline").style(null, IKey.UNDERLINE)
-                                ).style(IKey.GREEN))
+                                .addDrawable(Text.str("Green, %s, %s and green again",
+                                        Text.str("red").style(Text.RED),
+                                        Text.str("underline").style(null, Text.UNDERLINE)
+                                ).style(Text.GREEN))
                                 .newLine()
-                                .add(IKey.RESET + "" + IKey.UNDERLINE + "Underlined" + IKey.RESET)
+                                .add(Text.RESET + "" + Text.UNDERLINE + "Underlined" + Text.RESET)
                                 .newLine()
                                 .add("A long line which should wrap around")
                                 .newLine()
-                                .addLine(IKey.comp(IKey.str("Dynamic ").style(IKey.GOLD), IKey.dynamic(() -> {
+                                .addLine(Text.comp(Text.str("Dynamic ").style(Text.GOLD), Text.dynamic(() -> {
                                     int i = integer.getIntValue() + 1;
                                     integer.setIntValue(i);
-                                    return IKey.str("key [%s]", IKey.str("arg")
-                                                    .style(IKey.UNDERLINE, IKey.BLACK))
-                                            .style(i % 30 > 5 ? IKey.RED : IKey.DARK_BLUE);
-                                }).style(IKey.BOLD), IKey.str(" Test")))
+                                    return Text.str("key [%s]", Text.str("arg")
+                                                    .style(Text.UNDERLINE, Text.BLACK))
+                                            .style(i % 30 > 5 ? Text.RED : Text.DARK_BLUE);
+                                }).style(Text.BOLD), Text.str(" Test")))
                                 .textShadow(false)
                         ));
     }
@@ -426,7 +426,7 @@ public class TestGuis extends CustomModularScreen {
                                 .widthRel(1f)
                                 .height(16)
                                 .widgetTheme(IThemeApi.BUTTON)
-                                .overlay(IKey.str(String.valueOf(i + 1)))
+                                .overlay(Text.str(String.valueOf(i + 1)))
                                 .onUpdateListener(w -> {
                                     if (rnd.nextDouble() < 0.05) {
                                         w.setEnabled(!w.isEnabled());
@@ -459,7 +459,7 @@ public class TestGuis extends CustomModularScreen {
                                             .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
                                             .setEnabledIf(w -> text.toLowerCase().contains(searchValue.getStringValue()))
                                             .child(new ItemDrawable(stack).asWidget())
-                                            .child(new ScrollingTextWidget(IKey.str(text))
+                                            .child(new ScrollingTextWidget(Text.str(text))
                                                     .widgetTheme(IThemeApi.BUTTON)
                                                     .textAlign(Alignment.CENTER)
                                                     .expanded()
@@ -524,9 +524,9 @@ public class TestGuis extends CustomModularScreen {
         return panel
                 .child(Flow.column()
                         .coverChildrenHeight()
-                        .child(IKey.str("Colors sorted by luminance").asWidget().margin(1))
+                        .child(Text.str("Colors sorted by luminance").asWidget().margin(1))
                         .child(luminanceSortedColors.asWidget().widthRel(1f).height(10))
-                        .child(IKey.str("Blending color").asWidget().margin(1).marginTop(2))
+                        .child(Text.str("Blending color").asWidget().margin(1).marginTop(2))
                         .child(Flow.row()
                                 .coverChildrenHeight()
                                 .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
@@ -538,7 +538,7 @@ public class TestGuis extends CustomModularScreen {
                                             colorPicker1.openPanel();
                                             return true;
                                         }))
-                                .child(IKey.str("<--  Select colors  -->").asWidget())
+                                .child(Text.str("<--  Select colors  -->").asWidget())
                                 .child(new ButtonWidget<>()
                                         .name("color picker button 2")
                                         .background(color2)
@@ -547,9 +547,9 @@ public class TestGuis extends CustomModularScreen {
                                             colorPicker2.openPanel();
                                             return true;
                                         })))
-                        .child(IKey.str("OpenGL color gradient").asWidget().margin(1))
+                        .child(Text.str("OpenGL color gradient").asWidget().margin(1))
                         .child(gradient.asWidget().widthRel(1f).height(10))
-                        .child(IKey.str("Gamma corrected gradient").asWidget().margin(1))
+                        .child(Text.str("Gamma corrected gradient").asWidget().margin(1))
                         .child(correctedGradient.asWidget().widthRel(1f).height(10)));
     }
 
@@ -573,19 +573,19 @@ public class TestGuis extends CustomModularScreen {
                         .width(100)
                         .horizontalCenter()
                         .height(16)
-                        .overlay(IKey.str("Menu"))
+                        .overlay(Text.str("Menu"))
                         .menuList(l -> l
                                 .maxSize(80)
-                                .children(options1, s -> IKey.str(s).asWidget())
+                                .children(options1, s -> Text.str(s).asWidget())
                                 .child(new ContextMenuButton<>("sub_menu")
                                         .widthRel(1f)
                                         .height(12)
-                                        .overlay(IKey.str("Sub Menu"))
+                                        .overlay(Text.str("Sub Menu"))
                                         .openRightDown()
                                         .menuList(l1 -> l1
                                                 //.width(90)
                                                 .maxSize(80)
-                                                .children(options2, s -> IKey.str(s).asWidget())))))
+                                                .children(options2, s -> Text.str(s).asWidget())))))
                 .child(new DropdownWidget<>("test_dropdown", ItemStack.class)
                         .top(45)
                         .width(100)
@@ -603,7 +603,7 @@ public class TestGuis extends CustomModularScreen {
                                 .padding(4, 1)
                                 .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
                                 .child(new ItemDrawable(item).asWidget())
-                                .child(IKey.str(item.getDisplayName().getString()).asWidget()
+                                .child(Text.str(item.getDisplayName().getString()).asWidget()
                                         .widgetTheme(IThemeApi.BUTTON)
                                         .invisible()))
                 );
@@ -631,15 +631,15 @@ public class TestGuis extends CustomModularScreen {
                         .child(new Rectangle().color(Color.BLUE_ACCENT.main)
                                 .asIcon().aspectRatio(4f / 3)
                                 .asWidget().size(80)
-                                .overlay(IKey.str("4:3 Free")))
+                                .overlay(Text.str("4:3 Free")))
                         .child(new Rectangle().color(Color.RED_ACCENT.main)
                                 .asIcon().aspectRatio(4f / 3).width(70)
                                 .asWidget().size(80)
-                                .overlay(IKey.str("4:3 | width = 70")))
+                                .overlay(Text.str("4:3 | width = 70")))
                         .child(new Rectangle().color(Color.LIGHT_GREEN.main)
                                 .asIcon().aspectRatio(4f / 3).height(45).alignment(Alignment.BottomRight)
                                 .asWidget().size(80)
-                                .overlay(IKey.str("4:3 | height = 45\nBottom Right"))))
+                                .overlay(Text.str("4:3 | height = 45\nBottom Right"))))
                 .overlay();
     }
 
@@ -716,7 +716,7 @@ public class TestGuis extends CustomModularScreen {
                         .background(GuiTextures.MC_BACKGROUND.getSubArea(0, 0, 1, 0.5f))
                         .horizontalCenter()
                         .anchorTop(1)
-                        .child(IKey.str("Machine Name").asWidget())
+                        .child(Text.str("Machine Name").asWidget())
                         .name("title"))
                 .child(new ParentWidget<>()
                         .coverChildren()

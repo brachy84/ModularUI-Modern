@@ -1,7 +1,7 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.api.ITheme;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.drawable.GuiDraw;
@@ -69,38 +69,38 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         if (this.syncHandler.phantom()) {
             if (fluid != null) {
                 if (this.syncHandler.controlsAmount()) {
-                    tooltip.addLine(IKey.lang("modularui.fluid.phantom.amount",
+                    tooltip.addLine(Text.lang("modularui.fluid.phantom.amount",
                             formatFluidTooltipAmount(fluid.getAmount()), getUnit()));
                 }
             } else {
-                tooltip.addLine(IKey.lang("gtceu.fluid.empty"));
+                tooltip.addLine(Text.lang("gtceu.fluid.empty"));
                 tooltip.addLine(
-                        IKey.lang("gtceu.fluid_pipe.capacity", formatFluidTooltipAmount(fluidTank.getCapacity()),
+                        Text.lang("gtceu.fluid_pipe.capacity", formatFluidTooltipAmount(fluidTank.getCapacity()),
                                 getUnit()));
             }
             if (this.syncHandler.controlsAmount()) {
-                tooltip.addLine(IKey.lang("modularui.fluid.phantom.control"));
+                tooltip.addLine(Text.lang("modularui.fluid.phantom.control"));
             }
         } else {
             if (fluid != null) {
-                tooltip.addLine(IKey.lang("gtceu.fluid.amount", formatFluidTooltipAmount(fluid.getAmount()),
+                tooltip.addLine(Text.lang("gtceu.fluid.amount", formatFluidTooltipAmount(fluid.getAmount()),
                         formatFluidTooltipAmount(fluidTank.getCapacity()), getUnit()));
                 addAdditionalFluidInfo(tooltip, fluid);
             } else {
-                tooltip.addLine(IKey.lang("gtceu.fluid.empty"));
+                tooltip.addLine(Text.lang("gtceu.fluid.empty"));
             }
             if (this.syncHandler.canFillSlot() || this.syncHandler.canDrainSlot()) {
-                tooltip.addDrawableLine(IKey.EMPTY); // Add an empty line to separate from the bottom material tooltips
+                tooltip.addDrawableLine(Text.EMPTY); // Add an empty line to separate from the bottom material tooltips
                 if (Interactable.hasShiftDown()) {
                     if (this.syncHandler.canFillSlot() && this.syncHandler.canDrainSlot()) {
-                        tooltip.addLine(IKey.lang("gtceu.fluid.click_combined"));
+                        tooltip.addLine(Text.lang("gtceu.fluid.click_combined"));
                     } else if (this.syncHandler.canDrainSlot()) {
-                        tooltip.addLine(IKey.lang("gtceu.fluid.click_to_fill"));
+                        tooltip.addLine(Text.lang("gtceu.fluid.click_to_fill"));
                     } else if (this.syncHandler.canFillSlot()) {
-                        tooltip.addLine(IKey.lang("gtceu.fluid.click_to_empty"));
+                        tooltip.addLine(Text.lang("gtceu.fluid.click_to_empty"));
                     }
                 } else {
-                    tooltip.addLine(IKey.lang("gtceu.tooltip.hold_shift"));
+                    tooltip.addLine(Text.lang("gtceu.tooltip.hold_shift"));
                 }
             }
         }

@@ -3,7 +3,7 @@ package brachy.modularui.test;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.IUIHolder;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.Circle;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.ItemDrawable;
@@ -157,7 +157,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                             .widthRel(1f)
                             .coverChildrenHeight()
                             .mainAxisAlignment(Alignment.MainAxis.SPACE_AROUND)
-                            .children(vals.size(), i -> IKey.str(String.valueOf(vals.get(i))).asWidget().padding(2))
+                            .children(vals.size(), i -> Text.str(String.valueOf(vals.get(i))).asWidget().padding(2))
                             .name("synced number col");
                 });
 
@@ -193,7 +193,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                 .name("crafting tab")
                                 .coverChildren()
                                 .child(new ItemDrawable(Blocks.CRAFTING_TABLE).asIcon().asWidget().size(20).pos(0, 0))
-                                .child(IKey.str("Expandable & Crafting Demo").asWidget().scale(0.7f).pos(20, 7))
+                                .child(Text.str("Expandable & Crafting Demo").asWidget().scale(0.7f).pos(20, 7))
                                 .child(SlotGroupWidget.builder()
                                         .row("III  D")
                                         .row("III  O")
@@ -227,7 +227,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                         .name("buttons_and_values_col")
                                                         .widthRel(0.5f)
                                                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
-                                                        .child(IKey.str("Storage slots").asWidget().scale(0.7f).padding(1))
+                                                        .child(Text.str("Storage slots").asWidget().scale(0.7f).padding(1))
                                                         .child(SlotGroupWidget.builder()
                                                                 .matrix("III", "III")
                                                                 .key('I', i -> new ItemSlot().slot(new ModularSlot(this.storage, i)))
@@ -239,10 +239,10 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                                 .width(3 * 18)
                                                                 .tooltip(tooltip -> {
                                                                     tooltip.showUpTimer(10);
-                                                                    tooltip.addLine(IKey.str("Test Line g"));
-                                                                    tooltip.addLine(IKey.str("An image inside of a tooltip:"));
+                                                                    tooltip.addLine(Text.str("Test Line g"));
+                                                                    tooltip.addLine(Text.str("An image inside of a tooltip:"));
                                                                     tooltip.addDrawableLine(GuiTextures.MUI_LOGO.asIcon().size(50).alignment(Alignment.TopCenter));
-                                                                    tooltip.addLine(IKey.str("And here a circle:"));
+                                                                    tooltip.addLine(Text.str("And here a circle:"));
                                                                     tooltip.addDrawableLine(new Circle()
                                                                                     .setColor(Color.RED.darker(2), Color.RED.brighter(2))
                                                                                     .asIcon()
@@ -254,7 +254,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                                     panelSyncHandler.openPanel();
                                                                     return true;
                                                                 })
-                                                                .overlay(IKey.str("Open Sub Panel").scale(0.75f)))
+                                                                .overlay(Text.str("Open Sub Panel").scale(0.75f)))
                                                         .child(Flow.row()
                                                                 .name("cycle_button_row")
                                                                 .coverChildrenWidth().height(18)
@@ -286,22 +286,22 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                         .widthRel(0.5f)
                                                         .heightRelOffset(1f, -6) // space for player sort buttons
                                                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
-                                                        .child(IKey.str("Oversized slots").asWidget().scale(0.7f).padding(1))
+                                                        .child(Text.str("Oversized slots").asWidget().scale(0.7f).padding(1))
                                                         .child(SlotGroupWidget.builder()
                                                                 .matrix("III")
                                                                 .key('I', i -> new ItemSlot().slot(new ModularSlot(this.oversizedStorage, i).ignoreMaxStackSize(true)))
                                                                 .build())
-                                                        .child(IKey.str("Phantom slots").asWidget().scale(0.7f).padding(1))
+                                                        .child(Text.str("Phantom slots").asWidget().scale(0.7f).padding(1))
                                                         .child(SlotGroupWidget.builder()
                                                                 .matrix("III")
                                                                 .key('I', i -> new PhantomItemSlot().slot(new ModularSlot(this.phantomStorage, i).ignoreMaxStackSize(true)))
                                                                 .build())
-                                                        .child(IKey.str("Fluid slots").asWidget().scale(0.7f).padding(1))
+                                                        .child(Text.str("Fluid slots").asWidget().scale(0.7f).padding(1))
                                                         .child(SlotGroupWidget.builder()
                                                                 .matrix("FFF")
                                                                 .key('F', i -> new FluidSlot().syncHandler(new FluidSlotSyncHandler(this.fluidStorage, i)))
                                                                 .build())
-                                                        .child(IKey.str("Phantom Fluid slots").asWidget().scale(0.7f).padding(1))
+                                                        .child(Text.str("Phantom Fluid slots").asWidget().scale(0.7f).padding(1))
                                                         .child(SlotGroupWidget.builder()
                                                                 .matrix("FFF")
                                                                 .key('F', i -> new FluidSlot().syncHandler(new FluidSlotSyncHandler(this.phantomFluidStorage, i).phantom(true)))
@@ -312,7 +312,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                         .sizeRel(1f)
                                         .child(Flow.col()
                                                 .name("page 4 col, dynamic widgets")
-                                                .child(IKey.str("Dynamic synced widget demo. Items act as keys to a unique storage with different amount of slots.").asWidget().scale(0.7f))
+                                                .child(Text.str("Dynamic synced widget demo. Items act as keys to a unique storage with different amount of slots.").asWidget().scale(0.7f))
                                                 .child(new ItemSlot()
                                                         .slot(new ModularSlot(this.storageInventory0, 0)
                                                                 .changeListener(((newItem, onlyAmountChanged, client, init) -> {
@@ -323,7 +323,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                                                 .child(new DynamicSyncedWidget<>()
                                                         .widthRel(1f)
                                                         .syncHandler(dynamicSyncHandler))
-                                                .child(IKey.str("Dynamic linked sync handler demo.").asWidget().scale(0.7f).marginTop(6))
+                                                .child(Text.str("Dynamic linked sync handler demo.").asWidget().scale(0.7f).marginTop(6))
                                                 .child(new DynamicSyncedWidget<>()
                                                         .widthRel(1f)
                                                         .coverChildrenHeight()
@@ -351,13 +351,13 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         panel.child(ButtonWidget.panelCloseButton())
                 .child(new ButtonWidget<>()
                         .size(10).top(14).right(4)
-                        .overlay(IKey.str("O"))
+                        .overlay(Text.str("O"))
                         .addTooltipLine("Opens another sub panel")
                         .onMousePressed((x, y, mouseButton) -> {
                             panelSyncHandler.openPanel();
                             return true;
                         }))
-                .child(IKey.str("2nd Panel")
+                .child(Text.str("2nd Panel")
                         .asWidget()
                         .pos(5, 5))
                 .child(SlotGroupWidget.builder()
@@ -369,10 +369,10 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                 .child(new CycleButtonWidget()
                         .size(16).pos(5, 5 + 11)
                         .value(num)
-                        .stateOverlay(0, IKey.str("1"))
-                        .stateOverlay(1, IKey.str("2"))
-                        .stateOverlay(2, IKey.str("3"))
-                        .addTooltipLine(IKey.str("Hyper Visor test")));
+                        .stateOverlay(0, Text.str("1"))
+                        .stateOverlay(1, Text.str("2"))
+                        .stateOverlay(2, Text.str("3"))
+                        .addTooltipLine(Text.str("Hyper Visor test")));
         return panel;
     }
 
@@ -383,7 +383,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
                 .draggable(true)
                 .size(50, 50);
         panel.child(ButtonWidget.panelCloseButton())
-                .child(IKey.str("3rd Panel: " + integer.get())
+                .child(Text.str("3rd Panel: " + integer.get())
                         .asWidget()
                         .pos(5, 17));
         return panel;

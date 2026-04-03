@@ -2,7 +2,7 @@ package brachy.modularui.drawable.text;
 
 import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.widget.sizer.Box;
@@ -12,18 +12,18 @@ import net.minecraft.client.gui.Font;
 import lombok.Getter;
 
 /**
- * An icon which represents a {@link IKey} object.
+ * An icon which represents a {@link Text} object.
  * Note: This class assumes the string will be a single line!
  */
 public class KeyIcon implements IIcon {
 
     @Getter
-    private final IKey key;
+    private final Text key;
     private Font overrideFont;
     private final Box margin = new Box();
     private boolean expandWidth, expandHeight;
 
-    public KeyIcon(IKey key) {
+    public KeyIcon(Text key) {
         this.key = key;
     }
 
@@ -65,7 +65,7 @@ public class KeyIcon implements IIcon {
     }
 
     @Override
-    public IKey getWrappedDrawable() {
+    public Text getWrappedDrawable() {
         return key;
     }
 

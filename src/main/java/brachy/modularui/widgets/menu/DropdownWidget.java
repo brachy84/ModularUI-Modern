@@ -1,6 +1,6 @@
 package brachy.modularui.widgets.menu;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.IWidget;
@@ -58,7 +58,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
         if (this.toWidget != null) {
             return this.toWidget.apply(v, forSelectedDisplay);
         }
-        return IKey.str(String.valueOf(v)).asWidget();
+        return Text.str(String.valueOf(v)).asWidget();
     }
 
     protected void setValue(T value, boolean updateValue) {

@@ -2,7 +2,7 @@ package brachy.modularui.widgets.menu;
 
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.ITheme;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
@@ -120,7 +120,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
             this.menu = createMenu();
             if (this.menu == null) {
                 this.menu = new Menu<>()
-                        .child(IKey.str("No Menu supplied")
+                        .child(Text.str("No Menu supplied")
                                 .style(ChatFormatting.RED)
                                 .asWidget()
                                 .center())

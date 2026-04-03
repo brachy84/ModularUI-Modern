@@ -1,6 +1,6 @@
 package brachy.modularui.utils;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.drawable.text.TextIcon;
 
@@ -40,7 +40,7 @@ public class TooltipLines extends AbstractList<FormattedText> {
         for (int i = this.lastElementIndex; i < this.elements.size(); i++) {
             Object o = elements.get(i);
             currentLength++;
-            if (o == IKey.LINE_FEED) {
+            if (o == Text.LINE_FEED) {
                 Line line = new Line(currentLine, this.lastElementIndex, currentLength);
                 this.lastElementIndex += currentLength;
                 return line;

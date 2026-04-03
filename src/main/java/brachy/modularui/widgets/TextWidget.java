@@ -1,6 +1,6 @@
 package brachy.modularui.widgets;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
@@ -35,7 +35,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     public TextWidget(String key) {
-        this(IKey.str(key));
+        this(Text.str(key));
     }
 
     @Override

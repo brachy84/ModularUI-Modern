@@ -3,7 +3,7 @@ package brachy.modularui.widgets;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.value.IBoolValue;
 import brachy.modularui.api.value.IEnumValue;
@@ -342,7 +342,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
      * Adds a line to the tooltip
      */
     protected W addTooltip(int state, String tooltip) {
-        return addTooltip(state, IKey.str(tooltip));
+        return addTooltip(state, Text.str(tooltip));
     }
 
     /**

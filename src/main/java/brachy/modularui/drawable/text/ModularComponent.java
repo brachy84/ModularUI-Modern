@@ -1,6 +1,6 @@
 package brachy.modularui.drawable.text;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.function.UnaryOperator;
 
-public class ModularComponent extends MutableComponent implements IKey {
+public class ModularComponent extends MutableComponent implements Text {
 
     public static ModularComponent literal(String text) {
         return ModularComponent.create(new LiteralContents(text));

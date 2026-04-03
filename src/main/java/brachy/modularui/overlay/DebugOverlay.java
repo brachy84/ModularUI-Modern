@@ -4,7 +4,7 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.IBoolValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiTextures;
@@ -53,7 +53,7 @@ public class DebugOverlay extends CustomModularScreen {
                                 .color(Color.withAlpha(ModularUIConfig.Dev.outlineColor(), 0.4f))
                                 .cornerRadius(4))
                         .disableHoverBackground()
-                        .overlay(IKey.str("Debug Options"))
+                        .overlay(Text.str("Debug Options"))
                         .openUp()
                         .menuList(l1 -> l1
                                 .name("menu_list")
@@ -63,13 +63,13 @@ public class DebugOverlay extends CustomModularScreen {
                                         .height(12)
                                         .widthRel(1f)
                                         .invisible()
-                                        .overlay(IKey.str("Print widget trees"))
+                                        .overlay(Text.str("Print widget trees"))
                                         .onMousePressed((x, y, b) -> this.logWidgetTrees(b)))
                                 .child(new ButtonWidget<>().name("print_resizer_tree_button")
                                         .height(12)
                                         .widthRel(1f)
                                         .invisible()
-                                        .overlay(IKey.str("Print resizer tree"))
+                                        .overlay(Text.str("Print resizer tree"))
                                         .onMousePressed((x, y, b) -> {
                                             TreeUtil.print(parent.screen().getResizeNode());
                                             return true;
@@ -77,7 +77,7 @@ public class DebugOverlay extends CustomModularScreen {
                                 .child(new ContextMenuButton<>("menu_hover_info")
                                         .height(10)
                                         .widthRel(1f)
-                                        .overlay(IKey.str("Widget hover info"))
+                                        .overlay(Text.str("Widget hover info"))
                                         .openRightUp()
                                         .menu(new Menu<>()
                                                 .width(100)
@@ -96,7 +96,7 @@ public class DebugOverlay extends CustomModularScreen {
                                         .name("menu_button_parent_hover_info")
                                         .height(10)
                                         .widthRel(1f)
-                                        .overlay(IKey.str("Parent widget hover info"))
+                                        .overlay(Text.str("Parent widget hover info"))
                                         .openRightUp()
                                         .menu(new Menu<>()
                                                 .width(100)
@@ -128,10 +128,10 @@ public class DebugOverlay extends CustomModularScreen {
                 .height(12)
                 .value(val)
                 .overlay(true, new NamedDrawableRow()
-                        .name(IKey.str(name))
+                        .name(Text.str(name))
                         .drawable(CHECKMARK))
                 .overlay(false, new NamedDrawableRow()
-                        .name(IKey.str(name)));
+                        .name(Text.str(name)));
     }
 
     private boolean logWidgetTrees(int b) {

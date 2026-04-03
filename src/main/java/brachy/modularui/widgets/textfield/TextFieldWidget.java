@@ -2,11 +2,10 @@ package brachy.modularui.widgets.textfield;
 
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.value.IStringValue;
 import brachy.modularui.api.value.ISyncOrValue;
-import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
@@ -21,7 +20,6 @@ import net.minecraft.util.Mth;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -80,7 +78,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
         }
         setText(this.stringValue.getStringValue());
         if (!hasTooltip() && !tooltipOverride) {
-            tooltipBuilder(tooltip -> tooltip.addLine(IKey.str(getText())));
+            tooltipBuilder(tooltip -> tooltip.addLine(Text.str(getText())));
             // set back to false so this won't get triggered
             tooltipOverride = false;
         }

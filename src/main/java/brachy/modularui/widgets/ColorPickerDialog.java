@@ -3,7 +3,7 @@ package brachy.modularui.widgets;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.HueBar;
@@ -55,12 +55,12 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                         .left(5).right(5).height(14)
                         .child(new PageButton(0, controller)
                                 .sizeRel(0.5f, 1f)
-                                .overlay(IKey.str("RGB")))
+                                .overlay(Text.str("RGB")))
                         .child(new PageButton(1, controller)
                                 .sizeRel(0.5f, 1f)
-                                .overlay(IKey.str("HSV"))))
+                                .overlay(Text.str("HSV"))))
                 .child(Flow.row().widthRel(1f).height(12).marginTop(4)
-                        .child(IKey.str("Hex: ").asWidget().heightRel(1f))
+                        .child(Text.str("Hex: ").asWidget().heightRel(1f))
                         .child(new TextFieldWidget()
                                 .height(12)
                                 .expanded()
@@ -89,14 +89,14 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
                         .child(new ButtonWidget<>()
                                 .heightRel(1f).width(50)
-                                .overlay(IKey.str("Cancel"))
+                                .overlay(Text.str("Cancel"))
                                 .onMousePressed((mouseX, mouseY, button) -> {
                                     closeIfOpen();
                                     return true;
                                 }))
                         .child(new ButtonWidget<>()
                                 .heightRel(1f).width(50)
-                                .overlay(IKey.str("Confirm"))
+                                .overlay(Text.str("Confirm"))
                                 .onMousePressed((mouseX, mouseY, button) -> {
                                     closeWith(this.color);
                                     return true;
@@ -108,21 +108,21 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                 .sizeRel(1f, 1f)
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("R: ").asWidget().heightRel(1f))
+                        .child(Text.str("R: ").asWidget().heightRel(1f))
                         .child(createSlider(this.sliderBackgroundR)
                                 .name("red")
                                 .bounds(0, 255)
                                 .value(new DoubleValue.Dynamic(() -> this.red, this::updateRed))))
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("G: ").asWidget().heightRel(1f))
+                        .child(Text.str("G: ").asWidget().heightRel(1f))
                         .child(createSlider(this.sliderBackgroundG)
                                 .name("green")
                                 .bounds(0, 255)
                                 .value(new DoubleValue.Dynamic(() -> this.green, this::updateGreen))))
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("B: ").asWidget().heightRel(1f))
+                        .child(Text.str("B: ").asWidget().heightRel(1f))
                         .child(createSlider(this.sliderBackgroundB)
                                 .name("blue")
                                 .bounds(0, 255)
@@ -135,21 +135,21 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                 .sizeRel(1f, 1f)
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("H: ").asWidget().heightRel(1f))
+                        .child(Text.str("H: ").asWidget().heightRel(1f))
                         .child(createSlider(new HueBar(GuiAxis.X))
                                 .name("hue")
                                 .bounds(0, 360)
                                 .value(new DoubleValue.Dynamic(() -> this.hue, this::updateHue))))
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("S: ").asWidget().heightRel(1f))
+                        .child(Text.str("S: ").asWidget().heightRel(1f))
                         .child(createSlider(this.sliderBackgroundS)
                                 .name("saturation")
                                 .bounds(0, 1)
                                 .value(new DoubleValue.Dynamic(() -> this.saturation, this::updateSaturation))))
                 .child(Flow.row()
                         .widthRel(1f).height(12)
-                        .child(IKey.str("V: ").asWidget().heightRel(1f))
+                        .child(Text.str("V: ").asWidget().heightRel(1f))
                         .child(createSlider(this.sliderBackgroundV)
                                 .name("value")
                                 .bounds(0, 1)
@@ -169,7 +169,7 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
     private IWidget createAlphaSlider(String s) {
         return controlAlpha ? Flow.row()
                 .widthRel(1f).height(12)
-                .child(IKey.str("A: ").asWidget().heightRel(1f))
+                .child(Text.str("A: ").asWidget().heightRel(1f))
                 .child(createSlider(this.sliderBackgroundA)
                         .name("alpha " + s)
                         .bounds(0, 255)
