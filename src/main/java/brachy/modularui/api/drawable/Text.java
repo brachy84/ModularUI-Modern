@@ -59,6 +59,10 @@ public interface Text extends IDrawable, IJsonSerializable<Text> {
     ChatFormatting ITALIC = ChatFormatting.ITALIC;
     ChatFormatting RESET = ChatFormatting.RESET;
 
+    static ModularComponent of(Component component) {
+        return ModularComponent.of(component);
+    }
+
     /**
      * Creates a translated text.
      *

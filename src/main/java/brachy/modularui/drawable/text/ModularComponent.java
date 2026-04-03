@@ -76,12 +76,16 @@ public class ModularComponent extends MutableComponent implements Text {
         return new ModularComponent(contents, new ArrayList<>(), Style.EMPTY);
     }
 
+    public static ModularComponent of(Component component) {
+        return new ModularComponent(component.getContents(), component.getSiblings(), component.getStyle());
+    }
+
     @Getter private Alignment alignment = Alignment.CENTER;
     @Getter private float scale = 1f;
     @Getter private Boolean shadow;
     @Getter private IntSupplier dynamicColor;
 
-    public ModularComponent(ComponentContents contents, List<Component> siblings, Style style) {
+    protected ModularComponent(ComponentContents contents, List<Component> siblings, Style style) {
         super(contents, siblings, style);
     }
 

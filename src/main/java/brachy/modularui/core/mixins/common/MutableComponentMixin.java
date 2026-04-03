@@ -12,7 +12,6 @@ public abstract class MutableComponentMixin implements ToModularComponent {
 
     @Override
     public ModularComponent asModular() {
-        MutableComponent self = (MutableComponent) (Object) this;
-        return new ModularComponent(self.getContents(), self.getSiblings(), self.getStyle());
+        return ModularComponent.of((MutableComponent) (Object) this);
     }
 }
