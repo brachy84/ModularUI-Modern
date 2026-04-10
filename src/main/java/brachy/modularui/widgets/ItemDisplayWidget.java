@@ -23,7 +23,7 @@ public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements Ingr
 
     @Getter private IValue<ItemStack> value;
     @Getter private boolean displayAmount = false;
-    @Getter private RecipeSlotRole recipeRole;
+    @Getter private RecipeSlotRole recipeRole = RecipeSlotRole.RENDER_ONLY;
 
     public ItemDisplayWidget() {
         size(18);

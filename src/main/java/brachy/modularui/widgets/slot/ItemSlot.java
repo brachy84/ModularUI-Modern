@@ -43,7 +43,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
 
     public static final int SIZE = 18;
 
-    @Getter private RecipeSlotRole recipeRole;
+    @Getter private RecipeSlotRole recipeRole = RecipeSlotRole.RENDER_ONLY;
 
     public static ItemSlot create(boolean phantom) {
         return phantom ? new PhantomItemSlot() : new ItemSlot();
