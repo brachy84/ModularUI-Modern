@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class ModularUIEmiRecipe<W extends IWidget> implements EmiRecipe {
+public abstract class ModularUIEmiRecipe implements EmiRecipe {
 
     protected final MemoizedSupplier<ModularScreen> screen;
 
@@ -58,20 +58,20 @@ public abstract class ModularUIEmiRecipe<W extends IWidget> implements EmiRecipe
 
     public boolean allowRecipeTree = true;
 
-    public ModularUIEmiRecipe(ResourceLocation recipeId, Supplier<W> widgetSupplier) {
+    public ModularUIEmiRecipe(ResourceLocation recipeId, Supplier<IWidget> widgetSupplier) {
 
         this.recipeId = recipeId;
         this.inputs = new ArrayList<>();
         this.outputs = new ArrayList<>();
         this.catalysts = new ArrayList<>();
 
-        W recipeWidget = widgetSupplier.get();
+        IWidget recipeWidget = widgetSupplier.get();
         this.displayWidth = recipeWidget.getArea().width;
         this.displayHeight = recipeWidget.getArea().height;
         this.bounds = new Bounds(0, 0, this.displayWidth, this.displayHeight);
 
         this.screen = Memoizer.memoize(() -> {
-            W widget = widgetSupplier.get();
+            IWidget widget = widgetSupplier.get();
             ModularPanel<?> panel = ModularPanel.defaultPanel(recipeId.toString(), widget.getArea().w(), widget.getArea().h());
             panel.child(widget);
             return new ModularScreen(recipeId.getNamespace(), panel);

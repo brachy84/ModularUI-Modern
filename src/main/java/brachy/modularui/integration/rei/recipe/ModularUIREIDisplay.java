@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ModularUIREIDisplay<W extends IWidget> implements Display {
+public class ModularUIREIDisplay implements Display {
 
     private final ResourceLocation recipeId;
     protected final MemoizedSupplier<ModularScreen> screen;
@@ -58,7 +58,7 @@ public class ModularUIREIDisplay<W extends IWidget> implements Display {
     @Getter
     protected final CategoryIdentifier<?> categoryIdentifier;
 
-    public ModularUIREIDisplay(ResourceLocation recipeId, Supplier<W> widgetSupplier, CategoryIdentifier<?> category) {
+    public ModularUIREIDisplay(ResourceLocation recipeId, Supplier<IWidget> widgetSupplier, CategoryIdentifier<?> category) {
         this.recipeId = recipeId;
 
         this.inputEntries = new ArrayList<>();
@@ -67,7 +67,7 @@ public class ModularUIREIDisplay<W extends IWidget> implements Display {
         this.categoryIdentifier = category;
 
         this.screen = Memoizer.memoize(() -> {
-            W widget = widgetSupplier.get();
+            IWidget widget = widgetSupplier.get();
             ModularPanel<?> panel = ModularPanel.defaultPanel(recipeId.toString(), widget.getArea().w(), widget.getArea().h());
             panel.child(widget);
             return new ModularScreen(recipeId.getNamespace(), panel);

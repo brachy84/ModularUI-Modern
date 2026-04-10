@@ -39,11 +39,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public abstract class ModularUIRecipeCategory<T, W extends IWidget> implements IRecipeCategory<T> {
+public abstract class ModularUIRecipeCategory<T> implements IRecipeCategory<T> {
 
     private final LoadingCache<T, ModularScreen> modularScreenCache;
 
-    protected ModularUIRecipeCategory(Function<T, W> wrapperFunction, Function<T, ResourceLocation> recipeIdGetter) {
+    protected ModularUIRecipeCategory(Function<T, IWidget> wrapperFunction, Function<T, ResourceLocation> recipeIdGetter) {
         this.modularScreenCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.SECONDS)
                 .maximumSize(10)
@@ -51,7 +51,7 @@ public abstract class ModularUIRecipeCategory<T, W extends IWidget> implements I
 
                     @Override
                     public ModularScreen load(T recipe) {
-                        W widget = wrapperFunction.apply(recipe);
+                        IWidget widget = wrapperFunction.apply(recipe);
                         ResourceLocation recipeId = recipeIdGetter.apply(recipe);
 
                         ModularPanel<?> panel = ModularPanel.defaultPanel(recipeId.toString(),
