@@ -4,6 +4,7 @@ import brachy.modularui.api.ITheme;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.value.IValue;
 import brachy.modularui.drawable.GuiDraw;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
@@ -22,6 +23,9 @@ public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements Ingr
 
     @Getter private IValue<ItemStack> value;
     @Getter private boolean displayAmount = false;
+
+    @Getter
+    private RecipeSlotRole recipeRole;
 
     public ItemDisplayWidget() {
         size(18);
@@ -71,6 +75,11 @@ public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements Ingr
     @Override
     public EntryList<ItemStack> getIngredients() {
         return ItemStackList.of(value.getValue());
+    }
+
+    public ItemDisplayWidget recipeSlotRole(RecipeSlotRole recipeRole) {
+        this.recipeRole = recipeRole;
+        return this;
     }
 
     @Override

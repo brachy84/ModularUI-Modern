@@ -8,6 +8,7 @@ import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.core.mixins.client.AbstractContainerScreenAccessor;
 import brachy.modularui.core.mixins.client.ScreenAccessor;
 import brachy.modularui.drawable.GuiDraw;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.screen.ClientScreenHandler;
@@ -17,6 +18,8 @@ import brachy.modularui.theme.SlotTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.sync.ItemSlotSyncHandler;
 import brachy.modularui.widget.Widget;
+
+import lombok.Getter;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -39,6 +42,9 @@ import java.util.function.UnaryOperator;
 public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interactable, IngredientProvider<ItemStack> {
 
     public static final int SIZE = 18;
+
+    @Getter
+    private RecipeSlotRole recipeRole;
 
     public static ItemSlot create(boolean phantom) {
         return phantom ? new PhantomItemSlot() : new ItemSlot();
@@ -300,6 +306,11 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     @Override
     public @NotNull Class<ItemStack> ingredientClass() {
         return ItemStack.class;
+    }
+
+    public ItemSlot recipeRole(RecipeSlotRole recipeRole) {
+        this.recipeRole = recipeRole;
+        return this;
     }
 
     @Override

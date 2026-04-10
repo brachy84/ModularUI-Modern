@@ -112,7 +112,7 @@ public abstract class ModularUIRecipeCategory<T> implements IRecipeCategory<T> {
             if (!(widget instanceof IngredientProvider<?> provider)) {
                 return true;
             }
-            RecipeIngredientRole role = mapToRole(provider.recipeRole());
+            RecipeIngredientRole role = mapToRole(provider.getRecipeRole());
             addJEISlot(builder, provider, role, i.getAndIncrement());
             return true;
         }, true);

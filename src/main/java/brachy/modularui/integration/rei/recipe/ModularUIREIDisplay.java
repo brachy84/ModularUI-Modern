@@ -76,7 +76,7 @@ public class ModularUIREIDisplay implements Display {
         WidgetTree.foreachChildBFS(widgetSupplier.get(), widget -> {
             if (!(widget instanceof IngredientProvider<?> provider)) return true;
 
-            RecipeSlotRole role = provider.recipeRole();
+            RecipeSlotRole role = provider.getRecipeRole();
             if (role == RecipeSlotRole.RENDER_ONLY) return true;
 
             REIStackConverter.Converter<?> converter = REIStackConverter.getForNullable(provider.ingredientClass());
@@ -106,7 +106,7 @@ public class ModularUIREIDisplay implements Display {
         WidgetTree.foreachChildBFS(this.screen.get().getMainPanel(), widget -> {
             if (!(widget instanceof IngredientProvider<?> provider)) return true;
 
-            RecipeSlotRole role = provider.recipeRole();
+            RecipeSlotRole role = provider.getRecipeRole();
             if (role == RecipeSlotRole.RENDER_ONLY) return true;
 
             REIStackConverter.Converter<?> converter = REIStackConverter.getForNullable(provider.ingredientClass());

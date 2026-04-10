@@ -81,7 +81,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
             if (!(widget instanceof IngredientProvider<?> provider)) {
                 return true;
             }
-            RecipeSlotRole role = provider.recipeRole();
+            RecipeSlotRole role = provider.getRecipeRole();
             if (role == RecipeSlotRole.RENDER_ONLY) {
                 return true;
             }
@@ -113,7 +113,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         WidgetTree.foreachChildBFS(this.screen.get().getMainPanel(), widget -> {
             if (!(widget instanceof IngredientProvider<?> provider)) return true;
 
-            RecipeSlotRole role = provider.recipeRole();
+            RecipeSlotRole role = provider.getRecipeRole();
             if (role == RecipeSlotRole.RENDER_ONLY) return true;
 
             EmiStackConverter.Converter<?> converter = EmiStackConverter.getForNullable(provider.ingredientClass());

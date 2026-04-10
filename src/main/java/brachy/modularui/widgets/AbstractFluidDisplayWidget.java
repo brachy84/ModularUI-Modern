@@ -2,6 +2,7 @@ package brachy.modularui.widgets;
 
 import brachy.modularui.api.ITheme;
 import brachy.modularui.drawable.GuiDraw;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
@@ -29,6 +30,10 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     private String unit = UNIT_BUCKET;
     @Getter private SIPrefix baseUnitPrefix = SIPrefix.Milli;
     @Getter private boolean flipLighterThanAir = true;
+
+    @Getter
+    private RecipeSlotRole recipeRole;
+
 
     protected AbstractFluidDisplayWidget() {
         size(18);
@@ -139,6 +144,11 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     public W fluidUnit(String baseUnitSymbol, SIPrefix baseUnitPrefix) {
         this.unit = baseUnitSymbol;
         this.baseUnitPrefix = baseUnitPrefix;
+        return getThis();
+    }
+
+    public W recipeSlotRole(RecipeSlotRole recipeRole) {
+        this.recipeRole = recipeRole;
         return getThis();
     }
 

@@ -43,7 +43,7 @@ public interface IngredientProvider<I> extends IWidget {
     }
 
     @NotNull
-    default RecipeSlotRole recipeRole() {
+    default RecipeSlotRole getRecipeRole() {
         return RecipeSlotRole.RENDER_ONLY;
     }
 }
