@@ -30,9 +30,7 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     private String unit = UNIT_BUCKET;
     @Getter private SIPrefix baseUnitPrefix = SIPrefix.Milli;
     @Getter private boolean flipLighterThanAir = true;
-
-    @Getter
-    private RecipeSlotRole recipeRole;
+    @Getter private RecipeSlotRole recipeRole;
 
 
     protected AbstractFluidDisplayWidget() {
