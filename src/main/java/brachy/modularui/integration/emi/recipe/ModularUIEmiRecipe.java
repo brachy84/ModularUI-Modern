@@ -20,11 +20,7 @@ import brachy.modularui.widgets.slot.ItemSlot;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.crafting.Recipe;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -42,11 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget> implements EmiRecipe {
+public abstract class ModularUIEmiRecipe<W extends IWidget> implements EmiRecipe {
 
-    @Getter
-    protected final T recipe;
     protected final MemoizedSupplier<ModularScreen> screen;
+
+    private final ResourceLocation recipeId;
 
     @Getter
     public final List<EmiIngredient> inputs;
@@ -62,9 +58,9 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
 
     public boolean allowRecipeTree = true;
 
-    public ModularUIEmiRecipe(T recipe, Supplier<W> widgetSupplier) {
-        this.recipe = recipe;
+    public ModularUIEmiRecipe(ResourceLocation recipeId, Supplier<W> widgetSupplier) {
 
+        this.recipeId = recipeId;
         this.inputs = new ArrayList<>();
         this.outputs = new ArrayList<>();
         this.catalysts = new ArrayList<>();
@@ -76,9 +72,9 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
 
         this.screen = Memoizer.memoize(() -> {
             W widget = widgetSupplier.get();
-            ModularPanel<?> panel = ModularPanel.defaultPanel(recipe.getId().toString(), widget.getArea().w(), widget.getArea().h());
+            ModularPanel<?> panel = ModularPanel.defaultPanel(recipeId.toString(), widget.getArea().w(), widget.getArea().h());
             panel.child(widget);
-            return new ModularScreen(recipe.getId().getNamespace(), panel);
+            return new ModularScreen(recipeId.getNamespace(), panel);
         }, Duration.ofSeconds(10));
 
         WidgetTree.foreachChildBFS(recipeWidget, widget -> {
@@ -167,7 +163,7 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
 
     @Override
     public @Nullable ResourceLocation getId() {
-        return this.recipe.getId();
+        return recipeId;
     }
 
     @Override

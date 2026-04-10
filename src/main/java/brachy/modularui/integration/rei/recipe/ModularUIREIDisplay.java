@@ -26,7 +26,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.crafting.Recipe;
 
 import lombok.Getter;
 import me.shedaniel.math.Rectangle;
@@ -46,10 +45,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> implements Display {
+public class ModularUIREIDisplay<W extends IWidget> implements Display {
 
-    @Getter
-    protected final T recipe;
+    private final ResourceLocation recipeId;
     protected final MemoizedSupplier<ModularScreen> screen;
 
     @Getter
@@ -60,8 +58,8 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
     @Getter
     protected final CategoryIdentifier<?> categoryIdentifier;
 
-    public ModularUIREIDisplay(T recipe, Supplier<W> widgetSupplier, CategoryIdentifier<?> category) {
-        this.recipe = recipe;
+    public ModularUIREIDisplay(ResourceLocation recipeId, Supplier<W> widgetSupplier, CategoryIdentifier<?> category) {
+        this.recipeId = recipeId;
 
         this.inputEntries = new ArrayList<>();
         this.outputEntries = new ArrayList<>();
@@ -70,9 +68,9 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
 
         this.screen = Memoizer.memoize(() -> {
             W widget = widgetSupplier.get();
-            ModularPanel<?> panel = ModularPanel.defaultPanel(recipe.getId().toString(), widget.getArea().w(), widget.getArea().h());
+            ModularPanel<?> panel = ModularPanel.defaultPanel(recipeId.toString(), widget.getArea().w(), widget.getArea().h());
             panel.child(widget);
-            return new ModularScreen(recipe.getId().getNamespace(), panel);
+            return new ModularScreen(recipeId.getNamespace(), panel);
         }, Duration.ofSeconds(10));
 
         WidgetTree.foreachChildBFS(widgetSupplier.get(), widget -> {
@@ -98,7 +96,7 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
 
     @Override
     public Optional<ResourceLocation> getDisplayLocation() {
-        return Optional.of(this.recipe.getId());
+        return Optional.of(recipeId);
     }
 
     public List<Widget> createWidgets(Rectangle bounds) {

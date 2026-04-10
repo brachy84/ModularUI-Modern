@@ -17,7 +17,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.crafting.Recipe;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public abstract class ModularUIRecipeCategory<T extends Recipe<?>, W extends IWidget> implements IRecipeCategory<T> {
+public abstract class ModularUIRecipeCategory<T, W extends IWidget> implements IRecipeCategory<T> {
 
     private final LoadingCache<T, ModularScreen> modularScreenCache;
 
