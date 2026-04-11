@@ -71,7 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Various test and demos for synced widgets, slots and JEI interactions. Anything that doesn't fall into any of those categories goes into
  * {@link TestGuis}.
  */
-public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData> {
+public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<PosGuiData> {
 
     private static final Object2IntMap<Item> handlerSizeMap = new Object2IntOpenHashMap<>() {{
         put(Items.DIAMOND, 9);
@@ -395,6 +395,7 @@ public class TestBlockEntity extends BlockEntity implements IUIHolder<PosGuiData
         return panel;
     }
 
+    @Override
     public void update() {
         if (!getLevel().isClientSide) {
             if (this.time++ % 20 == 0) {

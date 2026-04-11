@@ -17,15 +17,20 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiFunction;
+
 public class TestBlock extends BaseEntityBlock {
 
-    public TestBlock() {
+    private final BiFunction<BlockPos, BlockState, BlockEntity> blockEntityCreator;
+
+    public TestBlock(BiFunction<BlockPos, BlockState, BlockEntity> blockEntityCreator) {
         super(Properties.of());
+        this.blockEntityCreator = blockEntityCreator;
     }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new TestBlockEntity(pos, state);
+        return this.blockEntityCreator.apply(pos, state);
     }
 
     @Override
@@ -38,6 +43,6 @@ public class TestBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return (level1, pos, state1, blockEntity) -> ((TestBlockEntity) blockEntity).update();
+        return (level1, pos, state1, blockEntity) -> ((AbstractBlockEntity) blockEntity).update();
     }
 }

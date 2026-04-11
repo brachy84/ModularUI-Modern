@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "minecraft:command_block"
+      "model": "minecraft:block/command_block"
     }
   }
 }

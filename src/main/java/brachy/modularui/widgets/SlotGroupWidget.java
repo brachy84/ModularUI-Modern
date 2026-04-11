@@ -64,6 +64,18 @@ public class SlotGroupWidget extends ParentWidget<SlotGroupWidget> {
         return slotGroupWidget;
     }
 
+    public static SlotGroupWidget rect(int w, int h, IntFunction<IWidget> slotCreator) {
+        SlotGroupWidget slots = new SlotGroupWidget();
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                IWidget widget = slotCreator.apply(i * w + j);
+                widget.resizer().left(j * 18).top(i * 18);
+                slots.child(widget);
+            }
+        }
+        return slots.size(w * 18, h * 18);
+    }
+
     @Getter private String slotGroupName;
     @Getter private SlotGroup slotGroup;
     private boolean sortButtonsAdded = false;
