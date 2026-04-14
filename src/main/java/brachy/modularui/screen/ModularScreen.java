@@ -61,8 +61,8 @@ import java.util.function.Function;
 @OnlyIn(Dist.CLIENT)
 public class ModularScreen implements Renderable {
 
-    public static final double UPDATE_INTERVAL = 1 / 20.0;
-    public static final double FRAME_UPDATE_INTERVAL = 1 / 60.0;
+    public static final double UPDATE_INTERVAL = 1000 / 20.0;
+    public static final double FRAME_UPDATE_INTERVAL = 1000 / 60.0;
 
     public static boolean isScreen(@Nullable Screen guiScreen, String owner, String name) {
         if (guiScreen instanceof IMuiScreen screenWrapper) {
