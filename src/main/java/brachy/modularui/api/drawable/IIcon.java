@@ -6,12 +6,14 @@ import brachy.modularui.drawable.InteractableIcon;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.widget.sizer.Box;
 
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@link IDrawable} with a fixed size.
  */
-public interface IIcon extends IDrawable {
+public interface IIcon extends IDrawable, TooltipComponent {
 
     /**
      * @return the drawable this icon wraps or null if it doesn't wrap anything

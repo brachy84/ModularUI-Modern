@@ -1,6 +1,7 @@
 package brachy.modularui.utils;
 
 import brachy.modularui.api.drawable.Text;
+import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.drawable.text.TextIcon;
 
@@ -49,6 +50,10 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
             Object o = elements.get(i);
             currentLength++;
             if (o == Text.LINE_FEED) {
+                if (currentLength == 1 && i > 0 && this.elements.get(i - 1) != Text.LINE_FEED) {
+                    this.lastElementIndex++;
+                    continue;
+                }
                 Line line = new Line(currentLine, this.lastElementIndex, currentLength);
                 this.lastElementIndex += currentLength;
                 return line;
@@ -60,6 +65,16 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
                 s = FormattedText.of(str);
             } else if (o instanceof TextIcon ti) {
                 s = ti.getText();
+            } else if (o instanceof TooltipComponent tc) {
+                if (FontRenderHelper.isEmpty(currentLine)) {
+                    Line line = new Line(tc, this.lastElementIndex, currentLength);
+                    this.lastElementIndex += currentLength;
+                    return line;
+                } else {
+                    Line line = new Line(currentLine, this.lastElementIndex, currentLength);
+                    this.lastElementIndex += currentLength - 1;
+                    return line;
+                }
             }
             if (s != null) {
                 currentLine = FontRenderHelper.isEmpty(currentLine) ? s : FormattedText.composite(currentLine, s);
@@ -147,6 +162,7 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
     }
 
     public List<ClientTooltipComponent> toClientTooltipComponents() {
+        buildUntil(Integer.MAX_VALUE);
         return stream()
                 .map(either -> either.map(TooltipLines::textToCTC, TooltipLines::tooltipComponentToCTC))
                 .toList();
@@ -162,6 +178,7 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
 
     public static ClientTooltipComponent tooltipComponentToCTC(TooltipComponent comp) {
         if (comp instanceof ClientTooltipComponent ctc) return ctc;
+        if (comp instanceof ClientTooltipComponentIcon icon) return icon.getClientTooltipComponent();
         return ClientTooltipComponent.create(comp);
     }
 
