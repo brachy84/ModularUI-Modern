@@ -425,6 +425,23 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         area.set(Area.ZERO);
     }
 
+    public RichTooltip copy() {
+        RichTooltip tooltip = new RichTooltip();
+        tooltip.text.copyPropertiesOf(this.text);
+        tooltip.parent = this.parent;
+        tooltip.pos = this.pos;
+        tooltip.tooltipBuilder = this.tooltipBuilder;
+        tooltip.showUpTimer = this.showUpTimer;
+        tooltip.autoUpdate = this.autoUpdate;
+        tooltip.titleMargin = this.titleMargin;
+        tooltip.appliedMargin = this.appliedMargin;
+        tooltip.x = this.x;
+        tooltip.y = this.y;
+        tooltip.maxWidth = this.maxWidth;
+        tooltip.dirty = this.dirty;
+        return tooltip;
+    }
+
     public enum Pos {
 
         ABOVE(GuiAxis.Y),

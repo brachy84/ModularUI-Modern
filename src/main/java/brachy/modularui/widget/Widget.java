@@ -54,8 +54,7 @@ import java.util.function.Predicate;
 public class Widget<W extends Widget<W>> extends AbstractWidget implements IPositioned<W>, ITooltip<W>, ISynced<W> {
 
     // other
-    @Getter
-    private boolean excludeAreaInRecipeViewer = false;
+    @Getter private boolean excludeAreaInRecipeViewer = false;
     // sizing
     private BiConsumer<W, IViewportStack> transform;
     // syncing
@@ -762,6 +761,41 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             return IDragResizeable.getDragResizeCorner(dragResizeable, getArea(), viewportStack, mouseX, mouseY);
         }
         return null;
+    }
+
+    public W copySyncAndValueOf(IWidget w) {
+        if (w instanceof Widget<?> widget) {
+            this.value = widget.value;
+            this.syncHandler = widget.syncHandler;
+            this.syncKey = widget.syncKey;
+        }
+        return getThis();
+    }
+
+    public W copyVisualsOf(IWidget w) {
+        if (w instanceof Widget<?> widget) {
+            this.shadow = widget.shadow;
+            this.background = widget.background;
+            this.overlay = widget.overlay;
+            this.hoverBackground = widget.hoverBackground;
+            this.hoverOverlay = widget.hoverOverlay;
+            this.disableThemeBackground = widget.disableThemeBackground;
+            this.disableHoverThemeBackground = widget.disableHoverThemeBackground;
+            this.widgetThemeOverride = widget.widgetThemeOverride;
+        }
+        return getThis();
+    }
+
+    public W copyResizerOf(IWidget widget) {
+        resizer(widget.resizer().copy(this));
+        return getThis();
+    }
+
+    public W copyTooltipOf(IWidget widget) {
+        if (widget instanceof ITooltip<?> tooltip) {
+            return tooltip(tooltip.tooltip().copy().parent(this));
+        }
+        return getThis();
     }
 
     /**

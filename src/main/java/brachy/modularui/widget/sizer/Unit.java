@@ -31,18 +31,14 @@ public class Unit {
     }
 
     @Getter
-    @Setter
-    private boolean autoAnchor = true;
+    @Setter private boolean autoAnchor = true;
     private float value = 0f;
     private DoubleSupplier valueSupplier = null;
     @Getter
-    @Setter
-    private Measure measure = Measure.PIXEL;
-    @Setter
-    private float anchor = 0f;
+    @Setter private Measure measure = Measure.PIXEL;
+    @Setter private float anchor = 0f;
     @Getter
-    @Setter
-    private int offset = 0;
+    @Setter private int offset = 0;
 
     public State state = State.UNUSED;
 
@@ -58,7 +54,8 @@ public class Unit {
         this.offset = 0;
     }
 
-    public void setFrom(Unit other) {
+    public void copyPropertiesOf(Unit other) {
+        this.state = other.state;
         this.autoAnchor = other.autoAnchor;
         this.value = other.value;
         this.valueSupplier = other.valueSupplier;

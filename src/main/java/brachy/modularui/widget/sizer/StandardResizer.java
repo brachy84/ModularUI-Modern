@@ -26,15 +26,12 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
 
     private final DimensionSizer x;
     private final DimensionSizer y;
-    @Getter
-    private boolean expanded = false;
+    @Getter private boolean expanded = false;
+    @Getter private boolean decoration = false;
 
     private boolean childrenResized = false;
     private boolean layoutResized = false;
     private boolean relativeToScreen = false;
-
-    @Getter
-    private boolean decoration = false;
 
     public StandardResizer(IWidget widget) {
         super(widget);
@@ -75,6 +72,24 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
     public void resetPosition() {
         this.x.resetPosition();
         this.y.resetPosition();
+    }
+
+    @Override
+    public StandardResizer copy() {
+        return copy(getWidget());
+    }
+
+    public StandardResizer copy(IWidget widget) {
+        StandardResizer r = new StandardResizer(widget);
+        r.copyPropertiesOf(this);
+        return r;
+    }
+
+    public void copyPropertiesOf(StandardResizer resizer) {
+        this.expanded = resizer.expanded;
+        this.decoration = resizer.decoration;
+        this.x.copyPropertiesOf(resizer.x);
+        this.y.copyPropertiesOf(resizer.y);
     }
 
     public void detectConflictingConfiguration() {

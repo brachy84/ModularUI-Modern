@@ -14,6 +14,18 @@ public class ExpanderResizer extends StandardResizer implements IExpander {
     }
 
     @Override
+    public ExpanderResizer copy() {
+        return copy(getWidget());
+    }
+
+    @Override
+    public ExpanderResizer copy(IWidget widget) {
+        ExpanderResizer resizer = new ExpanderResizer(widget, this.axis);
+        resizer.copyPropertiesOf(this);
+        return resizer;
+    }
+
+    @Override
     public GuiAxis getExpandAxis() {
         return axis;
     }

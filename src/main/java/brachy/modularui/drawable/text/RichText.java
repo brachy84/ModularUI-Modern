@@ -372,11 +372,15 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     public RichText copy() {
         RichText copy = new RichText();
-        copy.elements.addAll(this.elements);
-        copy.alignment = this.alignment;
-        copy.scale = this.scale;
-        copy.color = this.color;
-        copy.shadow = this.shadow;
+        copy.copyPropertiesOf(this);
         return copy;
+    }
+
+    public void copyPropertiesOf(RichText richText) {
+        this.elements.addAll(richText.elements);
+        this.alignment = richText.alignment;
+        this.scale = richText.scale;
+        this.color = richText.color;
+        this.shadow = richText.shadow;
     }
 }

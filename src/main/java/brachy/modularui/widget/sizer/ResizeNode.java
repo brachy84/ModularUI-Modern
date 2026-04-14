@@ -266,6 +266,8 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 
     public abstract String getDebugDisplayName();
 
+    public abstract ResizeNode copy();
+
     @Override
     public abstract String toString();
 }

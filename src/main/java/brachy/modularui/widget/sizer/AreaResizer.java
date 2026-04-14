@@ -19,6 +19,11 @@ public class AreaResizer extends StaticResizer {
     }
 
     @Override
+    public AreaResizer copy() {
+        return new AreaResizer(this.area);
+    }
+
+    @Override
     public String toString() {
         return "AreaResizer(" + this.area + ")";
     }

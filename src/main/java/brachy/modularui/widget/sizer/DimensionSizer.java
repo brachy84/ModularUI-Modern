@@ -89,9 +89,9 @@ public class DimensionSizer {
 
     public void setUnit(Unit unit, Unit.State pos) {
         switch (pos) {
-            case START -> getStart(null).setFrom(unit);
-            case END -> getEnd(null).setFrom(unit);
-            case SIZE -> getSize(null).setFrom(unit);
+            case START -> getStart(null).copyPropertiesOf(unit);
+            case END -> getEnd(null).copyPropertiesOf(unit);
+            case SIZE -> getSize(null).copyPropertiesOf(unit);
         }
     }
 
@@ -432,5 +432,14 @@ public class DimensionSizer {
             this.size = getNext(widget, Unit.State.SIZE);
         }
         return this.size;
+    }
+
+    public void copyPropertiesOf(DimensionSizer sizer) {
+        reset();
+        if (sizer.start != null) getStart(null).copyPropertiesOf(sizer.start);
+        if (sizer.end != null) getEnd(null).copyPropertiesOf(sizer.end);
+        if (sizer.size != null) getSize(null).copyPropertiesOf(sizer.size);
+        this.coverChildrenMinSize = sizer.coverChildrenMinSize;
+        this.cancelAutoMovement = sizer.cancelAutoMovement;
     }
 }

@@ -3,18 +3,17 @@ package brachy.modularui.widget.sizer;
 import brachy.modularui.api.layout.ILayoutWidget;
 import brachy.modularui.api.widget.IWidget;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 public abstract class WidgetResizeNode extends ResizeNode {
 
+    @Getter
     private final IWidget widget;
 
     protected WidgetResizeNode(IWidget widget) {
         this.widget = Objects.requireNonNull(widget);
-    }
-
-    public IWidget getWidget() {
-        return widget;
     }
 
     @Override
