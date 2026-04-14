@@ -326,7 +326,7 @@ public class ModularGuiContext extends GuiContext {
     public void drawDraggable(GuiGraphics graphics) {
         if (hasDraggable()) {
             this.draggable.applyMatrix(this);
-            this.draggable.getElement().drawMovingState(graphics, this, getPartialTicks());
+            this.draggable.getElement().drawMovingState(graphics, this, getRenderPartialTicks());
             this.draggable.unapplyMatrix(this);
         }
     }

@@ -105,7 +105,7 @@ public class ClientScreenHandler {
 
     @SubscribeEvent
     public static void onScreenKeyPressedHigh(ScreenEvent.KeyPressed.Pre event) {
-        defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+        defaultContext.updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
         // TODO: early needs to be before recipe viewers, but emi does mixin into KeyboardHandler so it is before everything
         if (keyPressedEvent(event, InputPhase.EARLY)) {
             keyPressedEvent(event, InputPhase.LATE);
@@ -114,7 +114,7 @@ public class ClientScreenHandler {
 
     private static boolean keyPressedEvent(ScreenEvent.KeyPressed.Pre event, InputPhase phase) {
         if (validateGui(event.getScreen())) {
-            currentScreen.getContext().updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            currentScreen.getContext().updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
         }
         if (handleKeyboardInput(currentScreen, event.getScreen(), true, phase,
                 event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
@@ -126,7 +126,7 @@ public class ClientScreenHandler {
 
     @SubscribeEvent
     public static void onScreenKeyReleasedHigh(ScreenEvent.KeyReleased.Pre event) {
-        defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+        defaultContext.updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), false);
         // TODO also needs to be before recipe viewers
         // dont need late for release event
         keyReleasedEvent(event, InputPhase.EARLY);
@@ -134,7 +134,7 @@ public class ClientScreenHandler {
 
     private static boolean keyReleasedEvent(ScreenEvent.KeyReleased.Pre event, InputPhase phase) {
         if (validateGui(event.getScreen())) {
-            currentScreen.getContext().updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            currentScreen.getContext().updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), false);
         }
         if (handleKeyboardInput(currentScreen, event.getScreen(), false, phase,
                 event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
@@ -147,13 +147,13 @@ public class ClientScreenHandler {
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenCharTyped(ScreenEvent.CharacterTyped.Pre event) {
-        int codePoint = event.getCodePoint();
+        char codePoint = event.getCodePoint();
         int modifiers = event.getModifiers();
-        defaultContext.updateLatestTypedChar(codePoint, modifiers);
-        if (validateGui(event.getScreen())) currentScreen.getContext().updateLatestTypedChar(codePoint, modifiers);
+        defaultContext.updateTypedChar(codePoint, modifiers);
+        if (validateGui(event.getScreen())) currentScreen.getContext().updateTypedChar(codePoint, modifiers);
 
         // vanilla also casts to char here
-        if (doAction(currentScreen, ms -> ms.charTyped((char) codePoint, modifiers))) {
+        if (doAction(currentScreen, ms -> ms.charTyped(codePoint, modifiers))) {
             event.setCanceled(true);
         }
     }
@@ -162,16 +162,14 @@ public class ClientScreenHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenMousePressed(ScreenEvent.MouseButtonPressed.Pre event) {
         int button = event.getButton();
-        double mouseX = event.getMouseX();
-        double mouseY = event.getMouseY();
-        defaultContext.updateMouseButton(button);
-        if (validateGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button);
+        defaultContext.updateMouseButton(button, true);
+        if (validateGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button, true);
 
         if (button == -1) {
             return;
         }
-        if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
-                doAction(currentScreen, ms -> ms.mousePressed(mouseX, mouseY, button))) {
+        if (currentScreen != null && currentScreen.handleDraggableInput(button, true) ||
+                doAction(currentScreen, ms -> ms.mousePressed(button))) {
             RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
         }
@@ -181,13 +179,11 @@ public class ClientScreenHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenMouseReleased(ScreenEvent.MouseButtonReleased.Pre event) {
         int button = event.getButton();
-        double mouseX = event.getMouseX();
-        double mouseY = event.getMouseY();
-        defaultContext.updateMouseButton(button);
-        if (validateGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button);
+        defaultContext.updateMouseButton(button, false);
+        if (validateGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button, false);
 
-        if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, false) ||
-                doAction(currentScreen, ms -> ms.mouseReleased(mouseX, mouseY, button))) {
+        if (currentScreen != null && currentScreen.handleDraggableInput(button, false) ||
+                doAction(currentScreen, ms -> ms.mouseReleased(button))) {
             RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
         }
@@ -201,7 +197,7 @@ public class ClientScreenHandler {
         defaultContext.updateMouseWheel(w);
         if (validateGui(event.getScreen())) currentScreen.getContext().updateMouseWheel(w);
 
-        if (doAction(currentScreen, ms -> ms.mouseScrolled(event.getMouseX(), event.getMouseY(), w))) {
+        if (doAction(currentScreen, ms -> ms.mouseScrolled(w))) {
             event.setCanceled(true);
         }
     }
@@ -209,7 +205,7 @@ public class ClientScreenHandler {
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenMouseDragged(ScreenEvent.MouseDragged.Pre event) {
-        if (doAction(currentScreen, ms -> ms.mouseDragged(event.getMouseX(), event.getMouseY(),
+        if (doAction(currentScreen, ms -> ms.mouseDragged(
                 event.getMouseButton(), event.getDragX(), event.getDragY()))) {
             event.setCanceled(true);
         }
@@ -388,7 +384,7 @@ public class ClientScreenHandler {
                 acc.setChildren(Collections.emptyList());
                 // set clicked slot to make sure the container clicks the desired slot
                 clickableScreen.gtceu$setClickedSlot(slot);
-                screen.mouseClicked(ctx.getMouseX(), ctx.getMouseY(), ctx.getMouseButton());
+                screen.mouseClicked(ctx.getMouseX(), ctx.getMouseY(), ctx.getLastMouseButton());
             } finally {
                 // undo modifications
                 clickableScreen.gtceu$setClickedSlot(null);
@@ -400,7 +396,7 @@ public class ClientScreenHandler {
     public static void releaseSlot() {
         if (hasScreen() && getMCScreen() != null) {
             ModularGuiContext ctx = currentScreen.getContext();
-            getMCScreen().mouseReleased(ctx.getMouseX(), ctx.getMouseY(), ctx.getMouseButton());
+            getMCScreen().mouseReleased(ctx.getMouseX(), ctx.getMouseY(), ctx.getLastMouseButton());
         }
     }
 
@@ -441,7 +437,7 @@ public class ClientScreenHandler {
         drawVanillaElements(graphics, mcScreen, mouseX, mouseY, partialTicks);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Lighting.setupForFlatItems();
-        muiScreen.drawForeground(graphics, partialTicks);
+        muiScreen.drawForeground(graphics);
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
         muiScreen.getContext().getStencil().pop();
@@ -514,7 +510,7 @@ public class ClientScreenHandler {
             drawFloatingItemStack(mcScreen, graphics, acc.getSnapbackItem(), snapBackX, snapBackY, null);
         }
 
-        muiScreen.drawForeground(graphics, partialTicks);
+        muiScreen.drawForeground(graphics);
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();

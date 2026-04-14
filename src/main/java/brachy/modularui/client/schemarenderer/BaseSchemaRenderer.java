@@ -196,7 +196,7 @@ public class BaseSchemaRenderer implements IDrawable {
 
         onSetupCamera();
         setupCamera(width, height);
-        renderWorld(context.getGraphics().bufferSource(), context.getPartialTicks());
+        renderWorld(context.getGraphics().bufferSource(), context.getRenderPartialTicks());
 
         if (doRayTrace()) {
             BlockHitResult result = null;

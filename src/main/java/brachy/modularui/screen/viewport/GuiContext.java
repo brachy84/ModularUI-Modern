@@ -2,6 +2,7 @@ package brachy.modularui.screen.viewport;
 
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.UIType;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.ClientScreenHandler;
@@ -35,6 +36,9 @@ public class GuiContext extends GuiViewportStack {
     }
 
     @Getter
+    private final UIType UItype;
+
+    @Getter
     private final Area screenArea = new Area();
     @Getter
     @Setter(onMethod_ = @ApiStatus.Internal)
@@ -46,28 +50,25 @@ public class GuiContext extends GuiViewportStack {
     /* Mouse states */
     private int mouseX;
     private int mouseY;
-    @Getter
-    private int mouseButton;
-    @Getter
-    private double mouseScrollDelta;
+    @Getter private int lastMouseButton;
+    @Getter private boolean lastButtonPress; // button pressed = true, button released = false
+    @Getter private double lastMouseScrollDelta;
 
     /* Keyboard states */
-    @Getter
-    private int keyCode;
-    @Getter
-    private int scanCode;
-    @Getter
-    private int modifiers;
-    @Getter
-    private int codePoint;
+    @Getter private int lastKeyCode;
+    @Getter private int lastScanCode;
+    @Getter private int lastKeyModifiers;
+    @Getter private char lastCodePoint;
+    @Getter private boolean lastKeyPress; // key pressed = true, key released = false
 
     /* Render states */
-    @Getter
-    private float partialTicks;
-    @Getter
-    private long tick = 0;
-    @Getter
-    private int currentDrawingZ = 0;
+    @Getter private float renderPartialTicks;
+    @Getter private long tick = 0;
+    @Getter private int currentDrawingZ = 0;
+
+    public GuiContext(UIType UItype) {
+        this.UItype = UItype;
+    }
 
     public boolean isAbove(IWidget widget) {
         return isMouseAbove(widget.getArea());
@@ -91,30 +92,32 @@ public class GuiContext extends GuiViewportStack {
     public void updateState(int mouseX, int mouseY, float partialTicks) {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
-        this.partialTicks = partialTicks;
+        this.renderPartialTicks = partialTicks;
     }
 
     @ApiStatus.Internal
-    public void updateMouseButton(int button) {
-        this.mouseButton = button;
+    public void updateMouseButton(int button, boolean pressed) {
+        this.lastMouseButton = button;
+        this.lastButtonPress = pressed;
     }
 
     @ApiStatus.Internal
     public void updateMouseWheel(double scrollDelta) {
-        this.mouseScrollDelta = scrollDelta;
+        this.lastMouseScrollDelta = scrollDelta;
     }
 
     @ApiStatus.Internal
-    public void updateLatestKey(int keyCode, int scanCode, int modifiers) {
-        this.keyCode = keyCode;
-        this.scanCode = scanCode;
-        this.modifiers = modifiers;
+    public void updateKey(int keyCode, int scanCode, int modifiers, boolean pressed) {
+        this.lastKeyCode = keyCode;
+        this.lastScanCode = scanCode;
+        this.lastKeyModifiers = modifiers;
+        this.lastKeyPress = pressed;
     }
 
     @ApiStatus.Internal
-    public void updateLatestTypedChar(int codePoint, int modifiers) {
-        this.codePoint = codePoint;
-        this.modifiers = modifiers;
+    public void updateTypedChar(char codePoint, int modifiers) {
+        this.lastCodePoint = codePoint;
+        this.lastKeyModifiers = modifiers;
     }
 
     @ApiStatus.Internal

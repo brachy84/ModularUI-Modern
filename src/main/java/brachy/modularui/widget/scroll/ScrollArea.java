@@ -89,7 +89,7 @@ public class ScrollArea extends Area {
 
     @OnlyIn(Dist.CLIENT)
     public boolean mouseScroll(GuiContext context) {
-        return this.mouseScroll(context.getMouseX(), context.getMouseY(), context.getMouseScrollDelta(),
+        return this.mouseScroll(context.getMouseX(), context.getMouseY(), context.getLastMouseScrollDelta(),
                 Screen.hasShiftDown());
     }
 

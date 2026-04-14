@@ -8,7 +8,6 @@ import brachy.modularui.factory.inventory.InventoryTypes;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
-import brachy.modularui.utils.Alignment;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.value.sync.SyncHandlers;
 import brachy.modularui.widget.ParentWidget;

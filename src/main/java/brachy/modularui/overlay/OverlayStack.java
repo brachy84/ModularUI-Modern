@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -68,7 +67,7 @@ public class OverlayStack {
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             screen.render(graphics, mouseX, mouseY, partialTicks);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            screen.drawForeground(graphics, partialTicks);
+            screen.drawForeground(graphics);
             if (screen.getContext().isHovered()) hovered = screen;
             fallback = screen;
         }

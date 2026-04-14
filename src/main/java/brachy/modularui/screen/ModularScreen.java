@@ -341,7 +341,8 @@ public class ModularScreen implements Renderable {
      * <p>
      * Do not call, only override!
      */
-    public void drawForeground(GuiGraphics guiGraphics, float partialTicks) {
+    public void drawForeground(GuiGraphics graphics) {
+        this.context.setGraphics(graphics);
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
 
@@ -353,14 +354,14 @@ public class ModularScreen implements Renderable {
                 WidgetTree.drawTreeForeground(panel, this.context);
             }
         }
-        this.context.drawDraggable(guiGraphics);
+        this.context.drawDraggable(graphics);
         this.context.popViewport(null);
     }
 
     /**
      * Called when a mouse button is pressed or released. Used to handle dropping of currently dragged elements.
      */
-    public boolean handleDraggableInput(double mouseX, double mouseY, int button, boolean pressed) {
+    public boolean handleDraggableInput(int button, boolean pressed) {
         if (this.context.hasDraggable()) {
             if (pressed) {
                 this.context.onMousePressed(button);
@@ -380,12 +381,11 @@ public class ModularScreen implements Renderable {
      * Focused widgets will be interacted with first in other interaction methods (mouse scroll, release and drag, key
      * press and release).
      *
-     * @param mouseX mouse x-coordinate
-     * @param mouseY mouse y-coordinate
      * @param button mouse button (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
      * @return true if the action was consumed and further processing should be canceled
      */
-    public boolean mousePressed(double mouseX, double mouseY, int button) {
+    public boolean mousePressed(int button) {
+        this.context.updateMouseButton(button, true);
         // call all action listeners
         for (IGuiAction.MousePressed action : getGuiActionListeners(IGuiAction.MousePressed.class)) {
             action.press(this.context, button);
@@ -402,7 +402,7 @@ public class ModularScreen implements Renderable {
         }
         // finally click hovered widgets
         for (ModularPanel<?> panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMousePressed(mouseX, mouseY, button)) {
+            if (panel.onMousePressed(button)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -418,12 +418,11 @@ public class ModularScreen implements Renderable {
      * Interactable#onMouseRelease(int)} on every widget under
      * the mouse after gui action listeners have been called.
      *
-     * @param mouseX mouse x-coordinate
-     * @param mouseY mouse y-coordinate
      * @param button mouse button (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
      * @return true if the action was consumed and further processing should be canceled
      */
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(int button) {
+        this.context.updateMouseButton(button, false);
         for (IGuiAction.MouseReleased action : getGuiActionListeners(IGuiAction.MouseReleased.class)) {
             action.release(this.context, button);
         }
@@ -431,7 +430,7 @@ public class ModularScreen implements Renderable {
             return true;
         }
         for (ModularPanel<?> panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseReleased(mouseX, mouseY, button)) {
+            if (panel.onMouseReleased(button)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -524,17 +523,16 @@ public class ModularScreen implements Renderable {
      * Interactable#onMouseScrolled(double, double, double)} on every widget under
      * the mouse after gui action listeners have been called.
      *
-     * @param mouseX current mouse X coordinate relative to the screen
-     * @param mouseY current mouse Y coordinate relative to the screen
-     * @param delta  the direction and speed of the scroll
+     * @param delta the direction and speed of the scroll
      * @return true if the action was consumed and further processing should be canceled
      */
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double delta) {
+        this.context.updateMouseWheel(delta);
         for (IGuiAction.MouseScroll action : getGuiActionListeners(IGuiAction.MouseScroll.class)) {
             action.scroll(getContext(), delta);
         }
         for (ModularPanel<?> panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseScrolled(mouseX, mouseY, delta)) {
+            if (panel.onMouseScrolled(delta)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -558,12 +556,12 @@ public class ModularScreen implements Renderable {
      * @param dragY  the Y distance of the drag
      * @return true if the action was consumed and further processing should be canceled
      */
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(int button, double dragX, double dragY) {
         for (IGuiAction.MouseDrag action : getGuiActionListeners(IGuiAction.MouseDrag.class)) {
             action.drag(getContext(), button, dragX, dragY);
         }
         for (ModularPanel<?> panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseDrag(mouseX, mouseY, button, dragX, dragY)) {
+            if (panel.onMouseDrag(button, dragX, dragY)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
