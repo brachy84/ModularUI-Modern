@@ -8,6 +8,7 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.FormattingUtil;
+import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.Stencil;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
  * A widget in a GUI.
@@ -302,6 +304,19 @@ public interface IWidget extends ITreeNode<IWidget> {
     @Override
     default boolean hasChildren() {
         return !getChildren().isEmpty();
+    }
+
+    default void visitTransformChildren(UnaryOperator<IWidget> op) {}
+
+    default void visitTransformAllChildren(UnaryOperator<IWidget> op) {
+        ObjectList<IWidget> parents = ObjectList.create();
+        parents.add(this);
+        while (!parents.isEmpty()) {
+            parents.removeFirst().visitTransformChildren(child -> {
+                if (child.hasChildren()) parents.addLast(child);
+                return op.apply(child);
+            });
+        }
     }
 
     void scheduleResize();

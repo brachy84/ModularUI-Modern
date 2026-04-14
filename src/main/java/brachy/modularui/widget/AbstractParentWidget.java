@@ -11,6 +11,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * A widget which can hold any amount of children.
@@ -51,6 +52,23 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
     @UnmodifiableView
     public List<I> getTypeChildren() {
         return children;
+    }
+
+    @Override
+    public void visitTransformChildren(UnaryOperator<IWidget> op) {
+        visitTransformTypedChildren(child -> (I) op.apply(child));
+    }
+
+    public void visitTransformTypedChildren(UnaryOperator<I> op) {
+        List<I> children = getTypeChildren();
+        for (int i = 0; i < children.size(); i++) {
+            I current = children.get(i);
+            I transformed = op.apply(children.get(i));
+            if (transformed != current) {
+                remove(i);
+                addChild(transformed, i);
+            }
+        }
     }
 
     @Override
@@ -113,7 +131,7 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
             index = getChildren().size() + index + 1;
         }
         I child = this.children.remove(index);
-        if (this.isChildValid(child)) {
+        if (isValid()) {
             child.dispose();
         }
         onChildRemove(child);

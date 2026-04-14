@@ -253,7 +253,7 @@ public class WidgetTree extends TreeUtil {
 
     @ApiStatus.Internal
     public static void resizeInternal(ResizeNode parent, boolean onOpen) {
-        if (!ModularUI.isClientThread()) return;
+        if (!ModularUI.isClientSide()) return;
 
         long time = Util.getNanos();
 

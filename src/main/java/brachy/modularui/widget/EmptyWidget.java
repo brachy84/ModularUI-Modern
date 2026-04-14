@@ -5,7 +5,6 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.viewport.ModularGuiContext;
-import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
@@ -13,6 +12,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 public class EmptyWidget implements IWidget {
 
@@ -49,23 +50,13 @@ public class EmptyWidget implements IWidget {
     }
 
     @Override
-    public void drawBackground(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {}
-
-    @Override
-    public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {}
-
-    @Override
-    public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {}
-
-    @Override
-    public void drawForeground(ModularGuiContext context) {}
-
-    @Override
-    public void onUpdate() {}
-
-    @Override
     public @NotNull ModularPanel<?> getPanel() {
         return this.parent.getPanel();
+    }
+
+    @Override
+    public boolean visitChildren(Predicate<IWidget> visitor) {
+        return true;
     }
 
     @Override

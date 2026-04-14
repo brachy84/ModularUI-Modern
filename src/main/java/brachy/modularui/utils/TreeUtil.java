@@ -86,20 +86,9 @@ public class TreeUtil {
      * @param includeSelf true if the consumer should also consume the parent
      * @return true if the iteration was not terminated by the consumer
      */
-    public static <T extends ITreeNode<T>> boolean foreachChildBFS(T parent, Predicate<T> consumer,
-                                                                   boolean includeSelf) {
+    public static <T extends ITreeNode<T>> boolean foreachChildBFS(T parent, Predicate<T> consumer, boolean includeSelf) {
         if (includeSelf && !consumer.test(parent)) return false;
-        ObjectList<T> parents = ObjectList.create();
-        parents.add(parent);
-        while (!parents.isEmpty()) {
-            for (T child : parents.removeFirst().getChildren()) {
-                if (child.hasChildren()) {
-                    parents.addLast(child);
-                }
-                if (!consumer.test(child)) return false;
-            }
-        }
-        return true;
+        return parent.visitAllChildrenBFS(consumer);
     }
 
     /**
@@ -121,14 +110,7 @@ public class TreeUtil {
      */
     public static <T extends ITreeNode<T>> boolean foreachChild(T parent, Predicate<T> consumer, boolean includeSelf) {
         if (includeSelf && !consumer.test(parent)) return false;
-        if (!parent.hasChildren()) return true;
-        for (T widget : parent.getChildren()) {
-            if (!consumer.test(widget)) return false;
-            if (widget.hasChildren() && !foreachChild(widget, consumer, false)) {
-                return false;
-            }
-        }
-        return true;
+        return parent.visitAllChildrenDFS(consumer);
     }
 
     /**
@@ -144,8 +126,7 @@ public class TreeUtil {
      * @param includeSelf true if the consumer should also consume the parent
      * @return the first resulting value of the consumer or null of it always returned null
      */
-    public static <T extends ITreeNode<T>, V> @Nullable V foreachChildWithResult(T parent, Function<T, V> consumer,
-                                                                                 boolean includeSelf) {
+    public static <T extends ITreeNode<T>, V> @Nullable V foreachChildWithResult(T parent, Function<T, V> consumer, boolean includeSelf) {
         if (includeSelf) {
             V t = consumer.apply(parent);
             if (t != null) return t;
