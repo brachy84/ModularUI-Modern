@@ -6,6 +6,7 @@ import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.UIType;
 import brachy.modularui.api.widget.IVanillaSlot;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.Interactable;
@@ -72,7 +73,7 @@ import java.util.function.Predicate;
 public class ClientScreenHandler {
 
     @Getter
-    private static final GuiContext defaultContext = new GuiContext();
+    private static final GuiContext defaultContext = new GuiContext(UIType.NONE);
     private static final FpsCounter fpsCounter = new FpsCounter();
     private static ModularScreen currentScreen = null;
     @Getter

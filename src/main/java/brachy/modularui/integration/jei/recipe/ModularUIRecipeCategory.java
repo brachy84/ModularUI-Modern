@@ -165,22 +165,22 @@ public abstract class ModularUIRecipeCategory<T> implements IRecipeCategory<T> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return getModularScreen(this.recipe).mousePressed(mouseX, mouseY, button);
+            return getModularScreen(this.recipe).mousePressed(button);
         }
 
         @Override
         public boolean mouseReleased(double mouseX, double mouseY, int button) {
-            return getModularScreen(this.recipe).mouseReleased(mouseX, mouseY, button);
+            return getModularScreen(this.recipe).mouseReleased(button);
         }
 
         @Override
         public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-            return getModularScreen(this.recipe).mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return getModularScreen(this.recipe).mouseDragged(button, dragX, dragY);
         }
 
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-            return getModularScreen(this.recipe).mouseScrolled(mouseX, mouseY, scrollDelta);
+            return getModularScreen(this.recipe).mouseScrolled(scrollDelta);
         }
 
         @Override

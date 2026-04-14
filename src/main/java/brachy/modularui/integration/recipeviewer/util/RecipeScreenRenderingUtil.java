@@ -2,7 +2,6 @@ package brachy.modularui.integration.recipeviewer.util;
 
 import brachy.modularui.screen.ClientScreenHandler;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.utils.Stencil;
 
 import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Lighting;
@@ -27,11 +26,12 @@ public class RecipeScreenRenderingUtil {
         screen.getContext().setGraphics(guiGraphics);
         screen.getContext().updateState(mouseX, mouseY, partialTick);
         screen.getContext().graphicsPose().pushPose();
+        RenderSystem.applyModelViewMatrix();
 
         // copied from ClientScreenHandler#drawScreenInternal to
         // let us draw foreground elements separately after everything else.
-        Stencil.reset();
-        screen.getContext().getStencil().push(screen.getScreenArea());
+        //Stencil.reset();
+        //screen.getContext().getStencil().push(screen.getScreenArea());
 
         screen.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -43,8 +43,9 @@ public class RecipeScreenRenderingUtil {
         RenderSystem.enableDepthTest();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        screen.getContext().getStencil().pop();
+        //screen.getContext().getStencil().pop();
         screen.getContext().graphicsPose().popPose();
+        RenderSystem.applyModelViewMatrix();
     }
 
     @ApiStatus.Internal
@@ -52,21 +53,21 @@ public class RecipeScreenRenderingUtil {
                                             int mouseX, int mouseY, float partialTick) {
         screen.getContext().setGraphics(guiGraphics);
         screen.getContext().updateState(mouseX, mouseY, partialTick);
-        screen.getContext().graphicsPose().pushPose();
+        //screen.getContext().graphicsPose().pushPose();
 
         // copied from ClientScreenHandler#drawScreenInternal to
         // let us draw foreground elements separately after everything else.
-        screen.getContext().getStencil().push(screen.getScreenArea());
+        //screen.getContext().getStencil().push(screen.getScreenArea());
         RenderSystem.disableDepthTest();
         Lighting.setupForFlatItems();
 
-        screen.drawForeground(guiGraphics, partialTick);
+        screen.drawForeground(guiGraphics);
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        screen.getContext().getStencil().pop();
-        screen.getContext().graphicsPose().popPose();
+        //screen.getContext().getStencil().pop();
+        //screen.getContext().graphicsPose().popPose();
     }
 }

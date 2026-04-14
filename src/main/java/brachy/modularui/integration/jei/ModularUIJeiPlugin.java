@@ -27,6 +27,10 @@ public class ModularUIJeiPlugin implements IModPlugin {
     @Getter
     private static IJeiRuntime runtime = null;
 
+    public static boolean hasRuntime() {
+        return runtime != null;
+    }
+
     @Override
     public ResourceLocation getPluginUid() {
         return ModularUI.id("jei_plugin");

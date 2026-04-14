@@ -225,7 +225,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     @Override
-    protected int getCapacity() {
+    public int getCapacity() {
         return this.alwaysShowFull ? 0 : getFluidTank().getCapacity();
     }
 

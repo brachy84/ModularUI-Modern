@@ -190,22 +190,22 @@ public class ModularUIREIDisplay implements Display {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return screen.get().mousePressed(mouseX, mouseY, button);
+            return screen.get().mousePressed(button);
         }
 
         @Override
         public boolean mouseReleased(double mouseX, double mouseY, int button) {
-            return screen.get().mouseReleased(mouseX, mouseY, button);
+            return screen.get().mouseReleased(button);
         }
 
         @Override
         public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-            return screen.get().mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return screen.get().mouseDragged(button, dragX, dragY);
         }
 
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-            return screen.get().mouseScrolled(mouseX, mouseY, scrollDelta);
+            return screen.get().mouseScrolled(scrollDelta);
         }
 
         @Override

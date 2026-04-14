@@ -2,6 +2,7 @@ package brachy.modularui.screen.viewport;
 
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.UIType;
 import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IVanillaSlot;
@@ -86,7 +87,8 @@ public class ModularGuiContext extends GuiContext {
         }
     };
 
-    public ModularGuiContext(ModularScreen screen) {
+    public ModularGuiContext(UIType uiType, ModularScreen screen) {
+        super(uiType);
         this.screen = screen;
         this.hoveredWidgets = new HoveredIterable();
     }

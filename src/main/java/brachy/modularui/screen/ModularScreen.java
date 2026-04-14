@@ -4,6 +4,7 @@ import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.UIType;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IGuiAction;
 import brachy.modularui.api.widget.IWidget;
@@ -19,6 +20,7 @@ import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.ScreenResizeNode;
 import brachy.modularui.widgets.menu.MenuPanel;
 
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -28,6 +30,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -58,6 +61,9 @@ import java.util.function.Function;
 @OnlyIn(Dist.CLIENT)
 public class ModularScreen implements Renderable {
 
+    public static final double UPDATE_INTERVAL = 1 / 20.0;
+    public static final double FRAME_UPDATE_INTERVAL = 1 / 60.0;
+
     public static boolean isScreen(@Nullable Screen guiScreen, String owner, String name) {
         if (guiScreen instanceof IMuiScreen screenWrapper) {
             ModularScreen screen = screenWrapper.screen();
@@ -78,11 +84,23 @@ public class ModularScreen implements Renderable {
         return null;
     }
 
+    public static ModularScreen createEmbed(String owner, ModularPanel<?> panel) {
+        Window window = Minecraft.getInstance().getWindow();
+        return createEmbed(owner, panel, window.getGuiScaledWidth(), window.getGuiScaledHeight());
+    }
+
+    public static ModularScreen createEmbed(String owner, ModularPanel<?> panel, int width, int height) {
+        ModularScreen screen = new ModularScreen(UIType.EMBED, owner, c -> panel.pos(0, 0), false);
+        screen.construct(new EmbedHandler.EmbedWrapper(screen));
+        screen.getContext().setSettings(new UISettings());
+        screen.onResize(width, height);
+        return screen;
+    }
+
     /**
      * The owner of this screen. Usually a modid. This is mainly used to find theme overrides.
      */
-    @Getter
-    private final String owner;
+    @Getter private final String owner;
     /**
      * The name of this screen, which is also the name of the panel. Every UI under one owner should have a different
      * name.
@@ -90,32 +108,26 @@ public class ModularScreen implements Renderable {
      * name for the main panel.
      * This is mainly used to find theme overrides.
      */
-    @Getter
-    private final String name;
-    @Getter
-    private final PanelManager panelManager;
-    @Getter
-    private final ModularGuiContext context = new ModularGuiContext(this);
+    @Getter private final String name;
+    @Getter private final PanelManager panelManager;
+    @Getter private final ModularGuiContext context;
     private final Map<Class<?>, List<IGuiAction>> guiActionListeners = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectArrayMap<IWidget, Runnable> frameUpdates = new Object2ObjectArrayMap<>();
-    @Getter
-    private final ScreenResizeNode resizeNode = new ScreenResizeNode(this);
-    @Getter
-    private boolean pauseScreen = false;
-    @Getter
-    private boolean openParentOnClose = false;
+    @Getter private final ScreenResizeNode resizeNode = new ScreenResizeNode(this);
+    @Getter private boolean pauseScreen = false;
+    @Getter private boolean openParentOnClose = false;
 
     @Getter
     @Nullable
     private String themeOverride;
     private ITheme currentTheme;
-    @Getter
-    private IMuiScreen screenWrapper;
+    @Getter private IMuiScreen screenWrapper;
     /**
      * true if this is an overlay for another screen
      */
-    @Getter
-    private boolean overlay = false;
+    @Getter private boolean overlay = false;
+
+    private double lastUpdate = -1, lastFrameUpdate = -1;
 
     /**
      * Creates a new screen with a given owner and {@link ModularPanel}.
@@ -133,16 +145,15 @@ public class ModularScreen implements Renderable {
      * @param owner            owner of this screen (usually a mod id)
      * @param mainPanelCreator function which creates the main panel of this screen
      */
-    public ModularScreen(@NotNull String owner, @NotNull Function<ModularGuiContext, ModularPanel> mainPanelCreator) {
-        this(owner, Objects.requireNonNull(mainPanelCreator, "The main panel function must not be null!"), false);
+    public ModularScreen(String owner, @NotNull Function<ModularGuiContext, ModularPanel<?>> mainPanelCreator) {
+        this(UIType.MODULAR_SCREEN, owner, Objects.requireNonNull(mainPanelCreator, "The main panel function must not be null!"), false);
     }
 
-    private ModularScreen(@NotNull String owner, @Nullable Function<ModularGuiContext, ModularPanel> mainPanelCreator,
-                          boolean ignored) {
+    private ModularScreen(UIType uiType, String owner, @Nullable Function<ModularGuiContext, ModularPanel<?>> mainPanelCreator, boolean __) {
+        this.context = new ModularGuiContext(Objects.requireNonNull(uiType, "UIType must not be null"), this);
         Objects.requireNonNull(owner, "The owner must not be null!");
         this.owner = owner;
-        ModularPanel<?> mainPanel = mainPanelCreator != null ? mainPanelCreator.apply(this.context) :
-                buildUI(this.context);
+        ModularPanel<?> mainPanel = mainPanelCreator != null ? mainPanelCreator.apply(this.context) : buildUI(this.context);
         Objects.requireNonNull(mainPanel, "The main panel must not be null!");
         this.name = mainPanel.getName();
         this.panelManager = new PanelManager(this, mainPanel);
@@ -152,7 +163,7 @@ public class ModularScreen implements Renderable {
      * Intended for use in {@link CustomModularScreen}
      */
     ModularScreen(@NotNull String owner) {
-        this(owner, null, false);
+        this(UIType.MODULAR_SCREEN, owner, null, false);
     }
 
     /**
@@ -308,6 +319,23 @@ public class ModularScreen implements Renderable {
         this.context.onFrameUpdate();
     }
 
+    private void checkManualUpdate() {
+        long time = Util.getMillis();
+        if (this.lastFrameUpdate < 0 || this.lastUpdate < 0) {
+            this.lastUpdate = time;
+            this.lastFrameUpdate = time;
+            return;
+        }
+        while (time - this.lastFrameUpdate > FRAME_UPDATE_INTERVAL) {
+            onFrameUpdate();
+            this.lastFrameUpdate += FRAME_UPDATE_INTERVAL;
+        }
+        while (time - this.lastUpdate > UPDATE_INTERVAL) {
+            onUpdate();
+            this.lastUpdate += UPDATE_INTERVAL;
+        }
+    }
+
     /**
      * Draws this screen and all open panels with their whole widget tree.
      * <p>
@@ -315,6 +343,11 @@ public class ModularScreen implements Renderable {
      */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (!this.context.getUItype().isScreen) {
+            checkManualUpdate(); // embeds can't trigger frame updates the proper way
+        }
+        this.context.setGraphics(graphics);
+        this.context.updateState(mouseX, mouseY, partialTick);
         Lighting.setupForFlatItems();
 
         this.context.reset();
@@ -452,6 +485,7 @@ public class ModularScreen implements Renderable {
      * @return true if the action was consumed and further processing should be canceled
      */
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        this.context.updateKey(keyCode, scanCode, modifiers, true);
         for (IGuiAction.KeyPressed action : getGuiActionListeners(IGuiAction.KeyPressed.class)) {
             action.press(context, modifiers);
         }
@@ -478,6 +512,7 @@ public class ModularScreen implements Renderable {
      * @return true if the action was consumed and further processing should be canceled
      */
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        this.context.updateKey(keyCode, scanCode, modifiers, false);
         for (IGuiAction.KeyReleased action : getGuiActionListeners(IGuiAction.KeyReleased.class)) {
             action.release(getContext(), keyCode, scanCode, modifiers);
         }
@@ -503,6 +538,7 @@ public class ModularScreen implements Renderable {
      * @return true if the action was consumed and further processing should be canceled
      */
     public boolean charTyped(char codePoint, int modifiers) {
+        this.context.updateTypedChar(codePoint, modifiers);
         for (IGuiAction.CharTyped action : getGuiActionListeners(IGuiAction.CharTyped.class)) {
             action.type(getContext(), codePoint, modifiers);
         }
@@ -548,10 +584,7 @@ public class ModularScreen implements Renderable {
      * Interactable#onMouseDrag(double, double, int, double, double)} on every widget
      * under the mouse after gui action listeners have been called.
      *
-     * @param mouseX current mouse X coordinate relative to the screen
-     * @param mouseY current mouse Y coordinate relative to the screen
-     * @param button mouse button that is held down
-     *               (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
+     * @param button mouse button that is held down (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
      * @param dragX  the X distance of the drag
      * @param dragY  the Y distance of the drag
      * @return true if the action was consumed and further processing should be canceled

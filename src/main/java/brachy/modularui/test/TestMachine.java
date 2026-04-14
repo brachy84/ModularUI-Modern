@@ -4,13 +4,16 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.IUIHolder;
 import brachy.modularui.api.drawable.Text;
+import brachy.modularui.api.value.IDoubleValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
+import brachy.modularui.value.DoubleValue;
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
@@ -23,8 +26,19 @@ import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 
+import dev.emi.emi.api.EmiRegistry;
+
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
+
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+
+import lombok.Getter;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,13 +51,23 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
+import net.minecraftforge.items.wrapper.EmptyHandler;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class TestMachine {
+
+    private static final IItemHandler EMPTY_INFINITE_ITEM_HANDLER = new EmptyHandler() {
+        @Override
+        public int getSlots() {
+            return Integer.MAX_VALUE; // pls don't iterate UwU
+        }
+    };
 
     public static class BE extends AbstractBlockEntity implements IUIHolder<PosGuiData> {
 
@@ -85,7 +109,7 @@ public class TestMachine {
                                     .coverChildren(176, 30)
                                     .padding(7)
                                     .widgetTheme(IThemeApi.PANEL)
-                                    .child(buildMachineUI(syncManager))
+                                    .child(Recipes.buildMachineUI(this.input, this.output, new DoubleSyncValue(this::getProgress)))
                                     .child(new ParentWidget<>()
                                             .coverChildren()
                                             .decoration()
@@ -114,23 +138,6 @@ public class TestMachine {
                                     .padding(7)
                                     .widgetTheme(IThemeApi.PANEL)
                                     .child(SlotGroupWidget.playerInventory(false))));
-        }
-
-        public IWidget buildMachineUI(PanelSyncManager syncManager) {
-            return Flow.row().name("slots")
-                    .coverChildren()
-                    .center()
-                    .childPadding(8)
-                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
-                            .slot(new ModularSlot(this.input, i))
-                            .recipeRole(RecipeSlotRole.INPUT)))
-                    .child(new ProgressWidget()
-                            .value(new DoubleSyncValue(this::getProgress))
-                            .size(20)
-                            .texture(GuiTextures.PROGRESS_ARROW, 20))
-                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
-                            .slot(new ModularSlot(this.output, i).canPut(false))
-                            .recipeRole(RecipeSlotRole.OUTPUT)));
         }
 
         @Override
@@ -167,17 +174,38 @@ public class TestMachine {
 
     public static class Recipe {
 
+        private final ResourceLocation resloc;
         private final List<ItemStack> in = new ArrayList<>(), out = new ArrayList<>();
         private int ticks = 80;
+
+        public Recipe(String resloc) {
+            this.resloc = ModularUI.id(resloc);
+        }
 
         public Recipe in(ItemStack stack) {
             this.in.add(stack);
             return this;
         }
 
+        public Recipe in(Item item, int count) {
+            return in(new ItemStack(item, count));
+        }
+
+        public Recipe in(Item item) {
+            return in(item, 1);
+        }
+
         public Recipe out(ItemStack stack) {
             this.out.add(stack);
             return this;
+        }
+
+        public Recipe out(Item item, int count) {
+            return out(new ItemStack(item, count));
+        }
+
+        public Recipe out(Item item) {
+            return out(item, 1);
         }
 
         public Recipe ticks(int ticks) {
@@ -206,11 +234,11 @@ public class TestMachine {
         public static final List<Recipe> list = new ArrayList<>();
 
         static {
-            list.add(new Recipe()
-                    .in(new ItemStack(Items.DIAMOND))
-                    .in(new ItemStack(Items.EMERALD))
-                    .in(new ItemStack(Items.GOLD_INGOT, 4))
-                    .out(new ItemStack(Items.NETHER_STAR)));
+            list.add(new Recipe("/stuff_to_nether_star")
+                    .in(Items.DIAMOND)
+                    .in(Items.EMERALD)
+                    .in(Items.GOLD_INGOT, 4)
+                    .out(Items.NETHER_STAR));
         }
 
         public static Recipe findRecipe(IItemHandler input, @Nullable Recipe lastRecipe) {
@@ -241,6 +269,52 @@ public class TestMachine {
             return false;
         }
 
+        public static IWidget buildMachineUI(IItemHandler in, IItemHandler out, IDoubleValue<?> progress) {
+            return Flow.row().name("slots")
+                    .coverChildren()
+                    .center()
+                    .childPadding(8)
+                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
+                            .slot(new ModularSlot(in, i))
+                            .recipeRole(RecipeSlotRole.INPUT)))
+                    .child(new ProgressWidget()
+                            .value(progress)
+                            .size(20)
+                            .texture(GuiTextures.PROGRESS_ARROW, 20))
+                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
+                            .slot(new ModularSlot(out, i).canPut(false))
+                            .recipeRole(RecipeSlotRole.OUTPUT)));
+        }
     }
 
+    public static class EMI {
+
+        public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ModularUI.id("machine"), EmiStack.of(TestRegistration.TEST_MACHINE_BLOCK_ITEM.get()));
+
+        public static void register(EmiRegistry registry) {
+            registry.addCategory(CATEGORY);
+            Recipes.list.stream()
+                    .map(r -> new RecipeDisplay(() -> Recipes.buildMachineUI(EMPTY_INFINITE_ITEM_HANDLER, EMPTY_INFINITE_ITEM_HANDLER, DoubleValue.simulateProgress(5000)), r))
+                    .forEach(registry::addRecipe);
+        }
+
+        public static class RecipeDisplay extends ModularUIEmiRecipe {
+
+            private final Recipe recipe;
+            @Getter private final List<EmiIngredient> inputs;
+            @Getter private final List<EmiStack> outputs;
+
+            public RecipeDisplay(Supplier<IWidget> widgetSupplier, Recipe recipe) {
+                super(recipe.resloc, widgetSupplier);
+                this.recipe = recipe;
+                this.inputs = recipe.in.stream().map(EmiStack::of).map(s -> (EmiIngredient) s).toList();
+                this.outputs = recipe.out.stream().map(EmiStack::of).toList();
+            }
+
+            @Override
+            public EmiRecipeCategory getCategory() {
+                return CATEGORY;
+            }
+        }
+    }
 }
