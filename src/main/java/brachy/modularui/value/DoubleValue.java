@@ -19,6 +19,10 @@ public class DoubleValue implements IDoubleValue<Double>, IFloatValue<Double>, I
         return new Dynamic(val::get, val::set);
     }
 
+    public static ProgressValue simulateProgress(int durationInMillies) {
+        return new ProgressValue(durationInMillies);
+    }
+
     private double value;
 
     public DoubleValue(double value) {
