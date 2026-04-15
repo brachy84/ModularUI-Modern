@@ -162,8 +162,7 @@ public interface IThemeApi {
      * @param defaultTheme default theme if no theme was found
      * @return the registered theme for the given screen or the given default theme or {@link #getDefaultTheme()}
      */
-    default ITheme getThemeForScreen(String owner, String name, @Nullable String defaultTheme,
-                                     @Nullable String fallbackTheme) {
+    default ITheme getThemeForScreen(String owner, String name, @Nullable String defaultTheme, @Nullable String fallbackTheme) {
         return getThemeForScreen(owner, name, null, defaultTheme, fallbackTheme);
     }
 
@@ -176,8 +175,7 @@ public interface IThemeApi {
      * @param defaultTheme default theme if no theme was found
      * @return the registered theme for the given screen or the given default theme or {@link #getDefaultTheme()}
      */
-    ITheme getThemeForScreen(String owner, String name, @Nullable String panel, @Nullable String defaultTheme,
-                             @Nullable String fallbackTheme);
+    ITheme getThemeForScreen(String owner, String name, @Nullable String panel, @Nullable String defaultTheme, @Nullable String fallbackTheme);
 
     /**
      * Gets the appropriate theme for a specific panel.
@@ -188,8 +186,7 @@ public interface IThemeApi {
      */
     default ITheme getThemeForScreen(ModularPanel<?> panel, @Nullable String defaultTheme) {
         ModularScreen screen = panel.getScreen();
-        return getThemeForScreen(screen.getOwner(), screen.getName(), panel.getName(), defaultTheme,
-                screen.getThemeOverride());
+        return getThemeForScreen(screen.getOwner(), screen.getName(), panel.getName(), defaultTheme, screen.getThemeOverride());
     }
 
     /**

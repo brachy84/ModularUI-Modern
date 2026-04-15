@@ -61,8 +61,7 @@ public class ThemeAPI implements IThemeApi {
     }
 
     @Override
-    public ITheme getThemeForScreen(String owner, String name, @Nullable String panel, @Nullable String defaultTheme,
-                                    @Nullable String fallbackTheme) {
+    public ITheme getThemeForScreen(String owner, String name, @Nullable String panel, @Nullable String defaultTheme, @Nullable String fallbackTheme) {
         String theme = getThemeIdForScreen(owner, name, panel);
         if (theme != null) return getTheme(theme);
         if (defaultTheme != null) return getTheme(defaultTheme);

@@ -3,29 +3,32 @@ package brachy.modularui;
 import brachy.modularui.animation.AnimatorManager;
 import brachy.modularui.client.CursorHandler;
 import brachy.modularui.drawable.DrawableSerialization;
-
 import brachy.modularui.network.ModularNetwork;
+import brachy.modularui.theme.ThemeManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import lombok.Getter;
-
-import net.minecraft.client.telemetry.events.WorldUnloadEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 
 public class ClientProxy extends CommonProxy {
 
     @Getter
     private static final Timer timer60Fps = new Timer(60f, 0);
 
-    public ClientProxy() {
-        MinecraftForge.EVENT_BUS.addListener(this::onUnloadWorld);
+    ClientProxy() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.addListener(this::onRegisterAssetReloadListeners);
+        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        forgeBus.addListener(this::onUnloadWorld);
+        forgeBus.addListener(this::onRegisterAssetReloadListeners);
         if (!ModularUI.isDataGen()) {
             CursorHandler.init();
             AnimatorManager.init();
@@ -34,12 +37,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void preInit(FMLConstructModEvent event) {
-        super.preInit(event);
+    protected void onConstruct(FMLConstructModEvent event) {
+        super.onConstruct(event);
         if (!ModularUI.isDataGen()) {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
+    }
+
+    private void onRegisterAssetReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new ThemeManager());
     }
 
     private void onUnloadWorld(LevelEvent.Unload event) {
