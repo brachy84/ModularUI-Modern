@@ -7,6 +7,8 @@ import brachy.modularui.api.UIFactory;
 import brachy.modularui.factory.GuiData;
 import brachy.modularui.factory.PosGuiData;
 
+import lombok.experimental.Accessors;
+
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +38,7 @@ public class UISettings {
     @Getter private final RecipeViewerSettings recipeViewerSettings;
     @Getter
     @Setter
+    @Accessors(fluent = true)
     private boolean drawTooltipExternally;
 
     public UISettings() {

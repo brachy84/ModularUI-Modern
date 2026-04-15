@@ -114,7 +114,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
     @Override
     public void drawForeground(ModularGuiContext context) {
-        if (hasTooltip() && !context.getUISettings().isDrawTooltipExternally() &&
+        if (hasTooltip() && !context.getUISettings().drawTooltipExternally() &&
                 (tooltipOverride || getScrollData().isScrollBarActive(getScrollArea())) && isHoveringFor(getTooltip().showUpTimer())) {
             getTooltip().draw(getContext());
         }

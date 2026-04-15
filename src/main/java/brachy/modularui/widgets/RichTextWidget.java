@@ -43,7 +43,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     @Override
     public void drawForeground(ModularGuiContext context) {
         super.drawForeground(context);
-        if (!context.getUISettings().isDrawTooltipExternally() && getHoveredElement(context) instanceof IHoverable hoverable) {
+        if (!context.getUISettings().drawTooltipExternally() && getHoveredElement(context) instanceof IHoverable hoverable) {
             hoverable.onHover();
             RichTooltip tooltip = hoverable.getTooltip();
             if (tooltip != null) {

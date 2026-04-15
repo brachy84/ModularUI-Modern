@@ -262,7 +262,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Override
     public void drawForeground(ModularGuiContext context) {
         RichTooltip tooltip = getTooltip();
-        if (tooltip != null && !context.getUISettings().isDrawTooltipExternally() && isHoveringFor(tooltip.showUpTimer())) {
+        if (tooltip != null && !context.getUISettings().drawTooltipExternally() && isHoveringFor(tooltip.showUpTimer())) {
             tooltip.draw(context);
         }
     }

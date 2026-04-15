@@ -106,7 +106,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                     .child(recipeUI);
         }
         ModularScreen screen = ModularScreen.createEmbed(owner, transform(panel));
-        screen.getContext().getUISettings().setDrawTooltipExternally(true);
+        screen.getContext().getUISettings().drawTooltipExternally(true);
         return screen;
     }
 
@@ -190,7 +190,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         @Override
         public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
             ModularScreen screen = SCREEN_CACHE.getUnchecked(this.recipe);
-            if (!screen.getContext().getUISettings().isDrawTooltipExternally()) {
+            if (!screen.getContext().getUISettings().drawTooltipExternally()) {
                 return super.getTooltip(mouseX, mouseY);
             }
             IWidget hovered = screen.getContext().getTopHovered();
