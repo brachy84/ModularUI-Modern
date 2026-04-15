@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.IntFunction;
@@ -31,10 +32,11 @@ public class UISettings {
     @OnlyIn(Dist.CLIENT)
     private GuiCreator guiSupplier;
     private Predicate<Player> canInteractWith;
+    @Getter private String theme;
+    @Getter private final RecipeViewerSettings recipeViewerSettings;
     @Getter
-    private String theme;
-    @Getter
-    private final RecipeViewerSettings recipeViewerSettings;
+    @Setter
+    private boolean drawTooltipExternally;
 
     public UISettings() {
         this(new RecipeViewerSettingsImpl());

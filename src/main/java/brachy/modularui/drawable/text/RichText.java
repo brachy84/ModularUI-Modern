@@ -1,5 +1,6 @@
 package brachy.modularui.drawable.text;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IIcon;
 import brachy.modularui.api.drawable.IRichTextBuilder;
@@ -13,7 +14,10 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.TooltipLines;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -22,6 +26,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
@@ -32,18 +37,16 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     private final List<Object> elements = new ArrayList<>();
     private TooltipLines componentList;
-    @Getter
-    private Alignment alignment = Alignment.CenterLeft;
-    @Getter
-    private float scale = 1f;
-    @Getter
-    private Integer color = null;
-    @Getter
-    private Boolean shadow = null;
+    @Getter private Alignment alignment = Alignment.CenterLeft;
+    @Getter private float scale = 1f;
+    @Getter private Integer color = null;
+    @Getter private Boolean shadow = null;
 
     private int cursor = 0;
     private boolean cursorLocked = false;
     private List<ITextLine> cachedText;
+
+    private boolean verified = false;
 
     public boolean isEmpty() {
         return this.elements.isEmpty();
@@ -112,7 +115,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     @Override
     public RichText add(String s) {
-        addElement(s);
+        addElement(Text.str(s));
         clearComponents();
         return this;
     }
@@ -124,16 +127,6 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         addElement(o);
         clearComponents();
         return this;
-    }
-
-    @Override
-    public RichText add(TooltipComponent tooltipComponent) {
-        if (tooltipComponent instanceof DrawableTooltipComponent drawable) {
-            return addDrawable(drawable.drawable());
-        } else {
-            TooltipComponentIcon tci = new TooltipComponentIcon(tooltipComponent);
-            return addDrawable(tci);
-        }
     }
 
     @Override
@@ -314,8 +307,11 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         draw(renderer, context, x, y, width, height, color, shadow);
     }
 
-    public void draw(TextRenderer renderer, GuiContext context, int x, int y, int width, int height, int color,
-                     boolean shadow) {
+    public void draw(TextRenderer renderer, GuiContext context, int x, int y, int width, int height, int color, boolean shadow) {
+        if (ModularUI.isDev() && !this.verified) {
+            verifyListElements(this.elements);
+            this.verified = true;
+        }
         renderer.setSimulate(false);
         setupRenderer(renderer, x, y, width, height, color, shadow);
         this.cachedText = renderer.compileAndDraw(context, this.elements);
@@ -329,8 +325,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return (int) renderer.getLastHeight();
     }
 
-    public void setupRenderer(TextRenderer renderer, int x, int y, float width, float height, int color,
-                              boolean shadow) {
+    public void setupRenderer(TextRenderer renderer, int x, int y, float width, float height, int color, boolean shadow) {
         renderer.setPos(x, y);
         renderer.setScale(this.scale);
         renderer.setColor(this.color != null ? this.color : color);
@@ -382,5 +377,40 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         this.scale = richText.scale;
         this.color = richText.color;
         this.shadow = richText.shadow;
+    }
+
+    public static void verifyListElements(List<Object> elements) {
+        List<String> errors = new ArrayList<>();
+        Set<Class<?>> errored = new ObjectOpenHashSet<>();
+        for (Object o : elements) {
+            if (o == null) {
+                if (!errored.contains(null)) {
+                    errors.add("Null elements are not allowed");
+                    errored.add(null);
+                }
+                continue;
+            }
+            if (o instanceof FormattedText) continue;
+            if (o instanceof IIcon) continue;
+            if (o instanceof ITextLine) continue;
+
+            if (o instanceof ClientTooltipComponent && !errored.contains(ClientTooltipComponent.class)) {
+                errors.add("ClientTooltipComponent must be wrapped in ClientTooltipComponentIcon");
+                errored.add(ClientTooltipComponent.class);
+                continue;
+            }
+            if (!errored.contains(o.getClass())) {
+                errors.add("Element of type '" + o.getClass() + "' is not valid for RichText. Elements must implement one of these interfaces: [FormattedText, IIcon, ITextLine]");
+                errored.add(o.getClass());
+            }
+        }
+        if (!errors.isEmpty()) {
+            String msg = "Found " + errored.size() + " invalid types in raw RichText.";
+            ModularUI.LOGGER.error(" {} Invalid Types:", msg);
+            for (String e : errors) {
+                ModularUI.LOGGER.error("  - {}", e);
+            }
+            throw new IllegalArgumentException(msg);
+        }
     }
 }

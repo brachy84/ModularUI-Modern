@@ -2,6 +2,7 @@ package brachy.modularui.screen.viewport;
 
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.RecipeViewerSettings;
 import brachy.modularui.api.UIType;
 import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.api.widget.IFocusedWidget;
@@ -12,7 +13,6 @@ import brachy.modularui.client.CursorHandler;
 import brachy.modularui.screen.DraggablePanelWrapper;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.screen.RecipeViewerSettingsImpl;
 import brachy.modularui.screen.UISettings;
 
 import net.minecraft.Util;
@@ -442,11 +442,8 @@ public class ModularGuiContext extends GuiContext {
         return this.settings;
     }
 
-    public RecipeViewerSettingsImpl getRecipeViewerSettings() {
-        if (this.screen.isOverlay()) {
-            throw new IllegalStateException("Overlays don't have JEI settings!");
-        }
-        return (RecipeViewerSettingsImpl) getUISettings().getRecipeViewerSettings();
+    public RecipeViewerSettings getRecipeViewerSettings() {
+        return getUISettings().getRecipeViewerSettings();
     }
 
     @ApiStatus.Internal

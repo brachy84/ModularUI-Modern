@@ -10,8 +10,7 @@ public interface ITextLine {
 
     int getHeight(Font font);
 
-    void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow,
-              int availableWidth, int availableHeight);
+    void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow, int availableWidth, int availableHeight);
 
     Object getHoveringElement(Font font, int x, int y);
 }

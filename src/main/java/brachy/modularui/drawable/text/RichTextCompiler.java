@@ -142,22 +142,34 @@ public class RichTextCompiler {
     }
 
     private void newLine() {
-        int i = this.currentLine.size() - 1;
-        if (!this.currentLine.isEmpty() && this.currentLine.get(i) == SPACE) {
-            this.currentLine.remove(i);
-            // TODO trim right whitespace
+        while (!this.currentLine.isEmpty() && this.currentLine.get(this.currentLine.size() - 1) == SPACE) {
+            this.currentLine.remove(this.currentLine.size() - 1); // trims right space
+            // TODO trim all left & right space
         }
-        if (!this.currentLine.isEmpty()) {
-            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof FormattedCharSequence c) {
-                this.lines.add(new TextLine(c, (int) Math.ceil(this.x)));
-                this.currentLine.clear();
-            } else {
-                this.lines.add(new ComposedLine(this.currentLine, (int) Math.ceil(this.x), (int) Math.ceil(this.h)));
-                this.currentLine = new ArrayList<>();
-            }
-        }
+        int x = (int) Math.ceil(this.x), h = (int) Math.ceil(this.h);
         this.x = 0;
         this.h = 0;
+        if (!this.currentLine.isEmpty()) {
+            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof FormattedCharSequence fcs) {
+                // simplest case: one text element
+                this.lines.add(new TextLine(fcs, x));
+                this.currentLine.clear();
+                return;
+            }
+            // if all elements are text, merge them into one text element, otherwise use a composed line
+            List<FormattedCharSequence> fcsList = new ArrayList<>();
+            for (Object o : this.currentLine) {
+                if (o instanceof FormattedCharSequence fcs) {
+                    fcsList.add(fcs);
+                } else  {
+                    this.lines.add(new ComposedLine(this.currentLine, x, h));
+                    this.currentLine = new ArrayList<>();
+                    return;
+                }
+            }
+            this.lines.add(new TextLine(FormattedCharSequence.fromList(fcsList), x));
+            this.currentLine.clear();
+        }
     }
 
     private void addLineElement(IIcon icon) {

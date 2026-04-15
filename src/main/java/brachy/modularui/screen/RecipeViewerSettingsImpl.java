@@ -62,7 +62,7 @@ public class RecipeViewerSettingsImpl implements RecipeViewerSettings {
      */
     @Override
     public boolean isEnabled(ModularScreen screen) {
-        return this.recipeViewerState.test(screen);
+        return !screen.isOverlay() && this.recipeViewerState.test(screen);
     }
 
     /**

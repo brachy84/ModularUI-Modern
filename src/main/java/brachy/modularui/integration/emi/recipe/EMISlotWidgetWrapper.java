@@ -11,12 +11,12 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.SlotWidget;
 
-public class SlotWidgetWrapper<W extends SlotWidgetWrapper<W>> extends Widget<W> implements Interactable {
+public class EMISlotWidgetWrapper<W extends EMISlotWidgetWrapper<W>> extends Widget<W> implements Interactable {
 
     private final SlotWidget slotWidget;
     private final int x, y;
 
-    public SlotWidgetWrapper(SlotWidget slotWidget) {
+    public EMISlotWidgetWrapper(SlotWidget slotWidget) {
         this.slotWidget = slotWidget;
         Bounds bounds = this.slotWidget.getBounds();
         size(bounds.width(), bounds.height());
@@ -33,10 +33,6 @@ public class SlotWidgetWrapper<W extends SlotWidgetWrapper<W>> extends Widget<W>
 
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
-        tooltip().clearText();
-        for (ClientTooltipComponent ctc : this.slotWidget.getTooltip(getContext().getAbsMouseX(), getContext().getAbsMouseY())) {
-            tooltip().addDrawableLine(new ClientTooltipComponentIcon(ctc));
-        }
         super.draw(context, widgetTheme);
         context.getGraphics().pose().translate(-this.x, -this.y, 0);
         this.slotWidget.render(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());

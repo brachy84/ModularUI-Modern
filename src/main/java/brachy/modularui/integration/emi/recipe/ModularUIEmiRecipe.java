@@ -105,57 +105,54 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                     .invisible()
                     .child(recipeUI);
         }
-        return ModularScreen.createEmbed(owner, transform(panel));
+        ModularScreen screen = ModularScreen.createEmbed(owner, transform(panel));
+        screen.getContext().getUISettings().setDrawTooltipExternally(true);
+        return screen;
     }
 
     public ModularPanel<?> transform(ModularPanel<?> panel) {
         Iterator<EmiIngredient> in = getInputs().iterator();
         Iterator<EmiStack> out = getOutputs().iterator();
-        panel.visitTransformAllChildren(widget -> {
-            if (!(widget instanceof IngredientProvider<?> provider)) return widget;
-
-            RecipeSlotRole role = provider.getRecipeRole();
-            if (role == RecipeSlotRole.RENDER_ONLY) return widget;
-
-            EmiIngredient ingr = EmiStack.EMPTY;
-            if (role == RecipeSlotRole.INPUT && in.hasNext()) {
-                ingr = in.next();
-            } else if (role == RecipeSlotRole.OUTPUT && out.hasNext()) {
-                ingr = out.next();
-            }
-
-            SlotWidget emiSlot = null;
-            WidgetThemeKey<?> widgetThemeKey = null;
-            if (widget instanceof FluidSlot slot) {
-                if (!slot.isAlwaysShowFull()) {
-                    emiSlot = new TankWidget(ingr, 0, 0, slot.getArea().width, slot.getArea().height, slot.getCapacity());
-                }
-                widgetThemeKey = IThemeApi.FLUID_SLOT;
-            }
-            if (emiSlot == null) emiSlot = new SlotWidget(ingr, 0, 0);
-            if (widgetThemeKey == null) widgetThemeKey = IThemeApi.ITEM_SLOT;
-
-            emiSlot.drawBack(false);
-
-            if (role == RecipeSlotRole.CATALYST) {
-                emiSlot.catalyst(true);
-            } else if (role == RecipeSlotRole.OUTPUT) {
-                emiSlot.recipeContext(this);
-            }
-            /*if (widget instanceof ITooltip<?> tooltip && tooltip.hasTooltip()) {
-                if (tooltip.tooltip().getRichText() instanceof RichText richText) {
-                    for (ClientTooltipComponent text : richText.getAsText().toClientTooltipComponents()) {
-                        slotWidget.appendTooltip(() -> text);
-                    }
-                }
-            }*/
-
-            return new SlotWidgetWrapper<>(emiSlot)
-                    .copyResizerOf(widget)
-                    .copyVisualsOf(widget)
-                    .widgetTheme(widgetThemeKey);
-        });
+        panel.visitTransformAllChildren(widget -> transformWidget(widget, in, out));
         return panel;
+    }
+
+    public IWidget transformWidget(IWidget widget, Iterator<EmiIngredient> in, Iterator<EmiStack> out) {
+        if (!(widget instanceof IngredientProvider<?> provider)) return widget;
+
+        RecipeSlotRole role = provider.getRecipeRole();
+        if (role == RecipeSlotRole.RENDER_ONLY) return widget;
+
+        EmiIngredient ingr = EmiStack.EMPTY;
+        if (role == RecipeSlotRole.INPUT && in.hasNext()) {
+            ingr = in.next();
+        } else if (role == RecipeSlotRole.OUTPUT && out.hasNext()) {
+            ingr = out.next();
+        }
+
+        SlotWidget emiSlot = null;
+        WidgetThemeKey<?> widgetThemeKey = null;
+        if (widget instanceof FluidSlot slot) {
+            if (!slot.isAlwaysShowFull()) {
+                emiSlot = new TankWidget(ingr, 0, 0, slot.getArea().width, slot.getArea().height, slot.getCapacity());
+            }
+            widgetThemeKey = IThemeApi.FLUID_SLOT;
+        }
+        if (emiSlot == null) emiSlot = new SlotWidget(ingr, 0, 0);
+        if (widgetThemeKey == null) widgetThemeKey = IThemeApi.ITEM_SLOT;
+
+        emiSlot.drawBack(false);
+
+        if (role == RecipeSlotRole.CATALYST) {
+            emiSlot.catalyst(true);
+        } else if (role == RecipeSlotRole.OUTPUT) {
+            emiSlot.recipeContext(this);
+        }
+
+        return new EMISlotWidgetWrapper<>(emiSlot)
+                .copyResizerOf(widget)
+                .copyVisualsOf(widget)
+                .widgetTheme(widgetThemeKey);
     }
 
     @Override
@@ -163,7 +160,6 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         // emi complains when it cant find an output slot
         widgets.add(new SlotWidget(EmiStack.EMPTY, -1000, -1000).drawBack(false).recipeContext(this));
         widgets.add(new UIWrapperWidget(this));
-        //widgets.add(new UIForegroundRenderWidget(this));
     }
 
     @Override
@@ -188,16 +184,19 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
             ModularScreen screen = SCREEN_CACHE.getUnchecked(this.recipe);
             EmbedHandler.drawEmbed(screen, guiGraphics, mouseX, mouseY, partialTick);
-            // TODO Fix layering issues, consider drawing tooltip much later via mixin
-            //EmbedHandler.drawEmbedForeground(screen, guiGraphics);
+            EmbedHandler.drawEmbedForeground(screen, guiGraphics);
         }
 
         @Override
         public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
             ModularScreen screen = SCREEN_CACHE.getUnchecked(this.recipe);
+            if (!screen.getContext().getUISettings().isDrawTooltipExternally()) {
+                return super.getTooltip(mouseX, mouseY);
+            }
             IWidget hovered = screen.getContext().getTopHovered();
             if (hovered instanceof ITooltip<?> tooltip && tooltip.getTooltip() != null) {
                 RichTooltip richTooltip = tooltip.getTooltip();
+                richTooltip.isEmpty(); // causes the tooltip to rebuild if necessary
                 IRichTextBuilder<?> richTextBuilder = richTooltip.getRichText();
                 if (richTextBuilder instanceof RichText richText) {
                     // scuffed conversion, but it works mostly
@@ -205,7 +204,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                 }
                 return List.of();
             }
-            return super.getTooltip(mouseX, mouseY);
+            return List.of();
         }
 
         @Override

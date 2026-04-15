@@ -114,7 +114,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     @Override
     public void drawForeground(ModularGuiContext context) {
         RichTooltip tooltip = getTooltip();
-        if (tooltip != null && isHoveringFor(tooltip.showUpTimer())) {
+        if (tooltip != null && !context.getUISettings().isDrawTooltipExternally() && isHoveringFor(tooltip.showUpTimer())) {
             tooltip.draw(context, getSlot().getItem());
         }
     }
