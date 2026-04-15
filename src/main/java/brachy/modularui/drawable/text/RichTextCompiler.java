@@ -121,11 +121,11 @@ public class RichTextCompiler {
                     newLine();
                     continue;
                 }
-                subStyle = this.lineBreakFinder.lineBreakStyle;
-                if (this.lineBreakFinder.count != 0 || !this.lineBreakFinder.styleChanged) {
+                if (this.lineBreakFinder.count != 0) {
                     String sub = content.substring(skip, this.lineBreakFinder.lineBreak);
                     addLineElement(sub, subStyle, this.lineBreakFinder.lineBreakWidth);
                 }
+                subStyle = this.lineBreakFinder.lineBreakStyle;
                 skip = this.lineBreakFinder.nextChar;
                 if (skip < 0) break;
                 if (!this.lineBreakFinder.styleChanged) {
@@ -285,8 +285,9 @@ public class RichTextCompiler {
             this.styleChanged = true;
             this.stylePos = stylePos;
             this.nextChar = nextPos;
-            this.lineBreak = nextPos;
+            this.lineBreak = stylePos;
             this.lineBreakStyle = style;
+            this.lineBreakWidth = this.width;
             return nextPos < 0;
         }
 

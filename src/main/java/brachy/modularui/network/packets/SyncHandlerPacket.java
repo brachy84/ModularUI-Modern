@@ -1,9 +1,11 @@
 package brachy.modularui.network.packets;
 
+import brachy.modularui.api.MCHelper;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.network.NetworkHandler;
 import brachy.modularui.utils.NetworkUtils;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -43,9 +45,9 @@ public class SyncHandlerPacket implements NetworkHandler.INetPacket {
     @Override
     public void execute(NetworkEvent.Context handler) {
         if (handler.getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-            ModularNetwork.CLIENT.receivePacket(this);
+            ModularNetwork.CLIENT.receivePacket(MCHelper.getPlayer(), this);
         } else {
-            ModularNetwork.SERVER.receivePacket(this);
+            ModularNetwork.SERVER.receivePacket(handler.getSender(), this);
         }
     }
 }

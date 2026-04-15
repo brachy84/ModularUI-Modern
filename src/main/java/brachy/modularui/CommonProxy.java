@@ -3,10 +3,13 @@ package brachy.modularui;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.UIFactories;
 import brachy.modularui.factory.inventory.InventoryTypes;
+import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.network.NetworkHandler;
 import brachy.modularui.screen.ModularContainerMenu;
 import brachy.modularui.test.TestRegistration;
 import brachy.modularui.theme.ThemeManager;
+
+import brachy.modularui.utils.NetworkUtils;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -15,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -28,8 +32,9 @@ public class CommonProxy {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
-        MinecraftForge.EVENT_BUS.addListener(this::onTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
+        MinecraftForge.EVENT_BUS.addListener(this::onTick);
+        MinecraftForge.EVENT_BUS.addListener(this::onPlayerLeave);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ModularUIConfig.CONFIG, ModularUI.MOD_ID + ".toml");
 
@@ -47,20 +52,26 @@ public class CommonProxy {
     @SubscribeEvent
     public void preInit(FMLConstructModEvent event) {}
 
-    public void onTick(TickEvent.PlayerTickEvent event) {
+    private void onTick(TickEvent.PlayerTickEvent event) {
         if (event.player.containerMenu instanceof ModularContainerMenu containerMenu) {
             containerMenu.onUpdate();
         }
     }
 
-    public void registerReloadListeners(AddReloadListenerEvent event) {
+    private void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (!ModularUI.isClientSide()) {
+            ModularNetwork.SERVER.onPlayerLeave(event.getEntity());
+        }
+    }
+
+    private void registerReloadListeners(AddReloadListenerEvent event) {
         ModularUI.updateFrozenRegistry(event.getRegistryAccess());
         if (ModularUI.isClientThread()) {
             event.addListener(new ThemeManager());
         }
     }
 
-    public void registerCommand(RegisterCommandsEvent event) {
+    private void registerCommand(RegisterCommandsEvent event) {
         var command = Commands.literal("mui")
                 .then(Commands.literal("reload_themes")
                         .executes(ctx -> {

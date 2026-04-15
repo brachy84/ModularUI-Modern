@@ -23,10 +23,9 @@ public class AdaptableUITexture extends UITexture {
     /**
      * Use {@link UITexture#builder()} with {@link Builder#adaptable(int, int)}
      */
-    AdaptableUITexture(ResourceLocation location, float u0, float v0, float u1, float v1, ColorType colorType,
-                       boolean nonOpaque, int imageWidth, int imageHeight, int bl, int bt, int br, int bb,
-                       boolean tiled) {
-        super(location, u0, v0, u1, v1, colorType, nonOpaque);
+    AdaptableUITexture(ResourceLocation location, float u0, float v0, float u1, float v1, ColorType colorType, boolean nonOpaque,
+                       int colorOverride, int imageWidth, int imageHeight, int bl, int bt, int br, int bb, boolean tiled) {
+        super(location, u0, v0, u1, v1, colorType, nonOpaque, colorOverride);
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         this.bl = bl;
@@ -44,7 +43,7 @@ public class AdaptableUITexture extends UITexture {
     @Override
     public AdaptableUITexture getSubArea(float uStart, float vStart, float uEnd, float vEnd) {
         return new AdaptableUITexture(this.location, lerpU(uStart), lerpV(vStart), lerpU(uEnd), lerpV(vEnd),
-                this.colorType, this.nonOpaque, this.imageWidth, this.imageHeight, this.bl, this.bt, this.br, this.bb,
+                this.colorType, this.nonOpaque, this.colorOverride, this.imageWidth, this.imageHeight, this.bl, this.bt, this.br, this.bb,
                 this.tiled);
     }
 
@@ -218,7 +217,8 @@ public class AdaptableUITexture extends UITexture {
 
     @Override
     protected AdaptableUITexture copy() {
-        return new AdaptableUITexture(location, u0, v0, u1, v1, colorType, nonOpaque, imageWidth, imageHeight, bl, bt, br, bb, tiled);
+        return new AdaptableUITexture(location, u0, v0, u1, v1, colorType, nonOpaque,
+                colorOverride, imageWidth, imageHeight, bl, bt, br, bb, tiled);
     }
 
     @Override

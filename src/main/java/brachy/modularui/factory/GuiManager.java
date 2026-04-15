@@ -95,7 +95,7 @@ public class GuiManager {
         // sync to client
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         factory.writeGuiData(guiData, buffer);
-        int nid = ModularNetwork.SERVER.activate(msm);
+        int nid = ModularNetwork.SERVER.activate(player, msm);
         NetworkHandler.sendToPlayer(player, new OpenGuiPacket<>(windowId, nid, factory, buffer));
         // open the menu // this mimics forge behaviour
         player.initMenu(menu);

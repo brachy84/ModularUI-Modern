@@ -189,7 +189,7 @@ public class TestGuis extends CustomModularScreen {
                         .children(4, i -> new Grid()
                                 .left(0)
                                 .coverChildren()
-                                .mapTo(4, 16, j -> {
+                                .gridOfWidthHeight(4, 4, (x, y, j) -> {
                                     return new ToggleButton()
                                             .overlay(GuiTextures.BOOKMARK)
                                             .value(new BoolValue.Dynamic(() -> states[i][j], val -> states[i][j] = val))
@@ -310,7 +310,7 @@ public class TestGuis extends CustomModularScreen {
     public static @NotNull ModularPanel<?> buildRichTextUI() {
         IntValue integer = new IntValue(0);
         return new ModularPanel<>("main")
-                .size(176, 166)
+                .size(176, 190)
                 .child(new RichTextWidget()
                         .sizeRel(1f).margin(7)
                         .autoUpdate(true)
@@ -355,7 +355,7 @@ public class TestGuis extends CustomModularScreen {
                                 .newLine()
                                 .add(Text.RESET + "" + Text.UNDERLINE + "Underlined" + Text.RESET)
                                 .newLine()
-                                .add("A long line which should wrap around")
+                                .add("A long line which should wrap around. You just need §5I§dm§4a§cg§ei§an§ba§3t§7i§1o§5n§7§r to read this.")
                                 .newLine()
                                 .addLine(Text.comp(Text.str("Dynamic ").style(Text.GOLD), Text.dynamic(() -> {
                                     int i = integer.getIntValue() + 1;

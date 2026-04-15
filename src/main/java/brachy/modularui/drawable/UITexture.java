@@ -57,7 +57,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     public final ColorType colorType;
     public final boolean nonOpaque;
 
-    private int colorOverride = 0;
+    protected int colorOverride = 0;
 
     /**
      * Creates a drawable texture
@@ -70,7 +70,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
      * @param colorType a function to get which color from a widget theme should be used to color this texture.
      */
     public UITexture(ResourceLocation location, float u0, float v0, float u1, float v1, @Nullable ColorType colorType) {
-        this(location, u0, v0, u1, v1, colorType, false);
+        this(location, u0, v0, u1, v1, colorType, false, 0);
     }
 
     /**
@@ -84,8 +84,23 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
      * @param colorType a function to get which color from a widget theme should be used to color this texture.
      * @param nonOpaque whether the texture should draw with blend (if true) or not (if false)
      */
-    public UITexture(ResourceLocation location, float u0, float v0, float u1, float v1, @Nullable ColorType colorType,
-                     boolean nonOpaque) {
+    public UITexture(ResourceLocation location, float u0, float v0, float u1, float v1, @Nullable ColorType colorType, boolean nonOpaque) {
+        this(location, u0, v0, u1, v1, colorType, nonOpaque, 0);
+    }
+
+    /**
+     * Creates a drawable texture
+     *
+     * @param location      location of the texture
+     * @param u0            x offset of the image (0-1)
+     * @param v0            y offset of the image (0-1)
+     * @param u1            x end offset of the image (0-1)
+     * @param v1            y end offset of the image (0-1)
+     * @param colorType     a function to get which color from a widget theme should be used to color this texture. Can be null.
+     * @param nonOpaque     whether the texture should draw with blend (if true) or not (if false).
+     * @param colorOverride color override for the texture in ARGB format. 0 means no override
+     */
+    public UITexture(ResourceLocation location, float u0, float v0, float u1, float v1, @Nullable ColorType colorType, boolean nonOpaque, int colorOverride) {
         this.colorType = colorType;
         boolean png = !location.getPath().endsWith(".png");
         boolean textures = !location.getPath().startsWith("textures/");
@@ -100,6 +115,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         this.u1 = u1;
         this.v1 = v1;
         this.nonOpaque = nonOpaque;
+        this.colorOverride = colorOverride;
     }
 
     public static Builder builder() {
@@ -242,6 +258,9 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         } else if (JsonHelper.getBoolean(json, false, "canApplyTheme")) {
             builder.canApplyTheme();
         }
+        if (JsonHelper.getBoolean(json, false, "nonOpaque")) {
+            builder.nonOpaque();
+        }
         UITexture uiTexture = builder.build();
         uiTexture.colorOverride = JsonHelper.getColor(json, 0, "colorOverride");
         return uiTexture;
@@ -265,6 +284,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         json.addProperty("u1", this.u1);
         json.addProperty("v1", this.v1);
         if (this.colorType != null) json.addProperty("colorType", this.colorType.getName());
+        json.addProperty("nonOpaque", this.nonOpaque);
         json.addProperty("colorOverride", this.colorOverride);
     }
 
@@ -285,7 +305,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     }
 
     protected UITexture copy() {
-        return new UITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType);
+        return new UITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType, this.nonOpaque, this.colorOverride);
     }
 
     public UITexture withColorOverride(int color) {
@@ -585,11 +605,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     throw new IllegalArgumentException("UV values must be 0 - 1");
                 if (this.bl > 0 || this.bt > 0 || this.br > 0 || this.bb > 0) {
                     return new AdaptableUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType,
-                            this.nonOpaque, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled);
+                            this.nonOpaque, 0, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled);
                 }
                 if (this.tiled) {
-                    return new TiledUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.iw, this.ih,
-                            this.colorType, this.nonOpaque);
+                    return new TiledUITexture(this.location, this.u0, this.v0, this.u1, this.v1,
+                            this.colorType, this.nonOpaque, 0, this.iw, this.ih);
                 }
                 return new UITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType, this.nonOpaque);
             }
