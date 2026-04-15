@@ -4,6 +4,7 @@ import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.RecipeViewerSettings;
 import brachy.modularui.api.UIType;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IGuiAction;
@@ -199,6 +200,9 @@ public class ModularScreen implements Renderable {
         if (screen == null) throw new NullPointerException("ScreenWrapper must not be null!");
         this.screenWrapper = new OverlayScreenWrapper(screen, this);
         this.overlay = true;
+        if (!this.context.hasSettings()) {
+            this.context.setSettings(new UISettings(RecipeViewerSettings.DUMMY));
+        }
     }
 
     /**

@@ -6,6 +6,9 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.utils.Rectangle;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.List;
 
 /**
  * Keeps track of everything related to recipe viewers in a Modular GUI.
@@ -85,6 +88,18 @@ public interface RecipeViewerSettings {
      */
     <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot);
 
+    @UnmodifiableView
+    List<Rectangle> getExclusionAreas();
+
+    @UnmodifiableView
+    List<IWidget> getExclusionWidgets();
+
+    @UnmodifiableView
+    List<GhostIngredientSlot<?>> getGhostIngredientSlots();
+
+    @ApiStatus.Internal
+    List<Rectangle> getAllExclusionAreas();
+
     RecipeViewerSettings DUMMY = new RecipeViewerSettings() {
 
         @Override
@@ -118,5 +133,25 @@ public interface RecipeViewerSettings {
 
         @Override
         public <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot) {}
+
+        @Override
+        public @UnmodifiableView List<Rectangle> getExclusionAreas() {
+            return List.of();
+        }
+
+        @Override
+        public @UnmodifiableView List<IWidget> getExclusionWidgets() {
+            return List.of();
+        }
+
+        @Override
+        public @UnmodifiableView List<GhostIngredientSlot<?>> getGhostIngredientSlots() {
+            return List.of();
+        }
+
+        @Override
+        public List<Rectangle> getAllExclusionAreas() {
+            return List.of();
+        }
     };
 }
