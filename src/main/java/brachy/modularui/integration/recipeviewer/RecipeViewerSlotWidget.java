@@ -4,7 +4,9 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.widget.Widget;
 
 import net.minecraft.world.item.ItemStack;
@@ -18,8 +20,14 @@ public abstract class RecipeViewerSlotWidget<T extends RecipeViewerSlotWidget<T>
 
     public abstract T value(FluidEntryList fluidEntryList);
     public abstract T value(ItemEntryList itemEntryList);
-    public abstract T value(ItemStack stack);
-    public abstract T value(FluidStack stack);
+
+    public T value(ItemStack stack) {
+        return value(ItemStackList.of(stack));
+    }
+
+    public T value(FluidStack stack) {
+        return value(FluidStackList.of(stack));
+    }
 
     public abstract T chance(float chance);
 

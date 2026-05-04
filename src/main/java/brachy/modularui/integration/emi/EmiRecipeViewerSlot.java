@@ -1,6 +1,7 @@
 package brachy.modularui.integration.emi;
 
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
@@ -72,6 +73,7 @@ public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerS
     public EmiRecipeViewerSlot value(FluidEntryList fluidEntryList) {
         value = fluidEntryList;
         rebuildEmiSlot();
+        background(GuiTextures.SLOT_FLUID);
         return getThis();
     }
 
@@ -79,20 +81,7 @@ public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerS
     public EmiRecipeViewerSlot value(ItemEntryList itemEntryList) {
         value = itemEntryList;
         rebuildEmiSlot();
-        return getThis();
-    }
-
-    @Override
-    public EmiRecipeViewerSlot value(ItemStack stack) {
-        value = ItemStackList.of(stack);
-        rebuildEmiSlot();
-        return getThis();
-    }
-
-    @Override
-    public EmiRecipeViewerSlot value(FluidStack stack) {
-        value = FluidStackList.of(stack);
-        rebuildEmiSlot();
+        background(GuiTextures.SLOT_ITEM);
         return getThis();
     }
 
@@ -108,6 +97,7 @@ public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerS
         } else {
             slotWidget = new TankWidget(EmiIngredientHandler.toEmiIngredient((FluidEntryList)value, chance), 0, 0, 18, 18, 1);
         }
+        slotWidget.drawBack(false);
     }
 
     @Override
