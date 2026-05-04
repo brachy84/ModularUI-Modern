@@ -35,7 +35,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     public TextWidget(@NotNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
-        key = Component.empty();
+        key = keySupplier.get();
     }
 
     public TextWidget(Component key) {
