@@ -14,6 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -22,23 +23,24 @@ import java.util.function.Supplier;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
-    @Getter private final Supplier<Component> keySupplier;
+    @Getter private Component key;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private IntSupplier color = null;
     @Getter private Boolean textShadow = null;
     @Getter private float scale = 1f;
     @Getter private int maxWidth = -1;
 
-    private Component currentKey;
-
     private String lastText;
+    private final @Nullable Supplier<Component> keySupplier;
 
-    public TextWidget(Supplier<Component> keySupplier) {
+    public TextWidget(@NotNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
+        key = Component.empty();
     }
 
     public TextWidget(Component key) {
-        this(() -> key);
+        this.key = key;
+        keySupplier = null;
     }
 
     public TextWidget(String key) {
@@ -60,14 +62,17 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     protected Component checkComponentUpdated() {
-        var component = keySupplier.get();
-        String text = component.getString();
-        if (!Objects.equals(currentKey, component) || !Objects.equals(lastText, currentKey.getString())) {
-            onTextChanged(component);
-            currentKey = component;
-            this.lastText = text;
+        if (keySupplier != null) {
+            var newKey = keySupplier.get();
+            if (!Objects.equals(newKey, key)) {
+                key = newKey;
+            }
         }
-        return component;
+        if (!Objects.equals(lastText, key.getString())) {
+            onTextChanged(key);
+            this.lastText = key.getString();
+        }
+        return key;
     }
 
     protected void onTextChanged(Component newText) {
@@ -82,7 +87,8 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setPos(padding.left(), padding.top());
         renderer.setScale(this.scale);
         renderer.setSimulate(true);
-        renderer.draw(null, checkComponentUpdated());
+        // Don't update the key here, otherwise an infinite loop of checkComponentUpdated -> simulate -> checkComponentUpdated occurs
+        renderer.draw(null, key);
         renderer.setSimulate(false);
         return renderer;
     }
