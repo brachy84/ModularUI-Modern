@@ -18,20 +18,27 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
-    @Getter private final Component key;
+    @Getter private final Supplier<Component> keySupplier;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private IntSupplier color = null;
     @Getter private Boolean textShadow = null;
     @Getter private float scale = 1f;
     @Getter private int maxWidth = -1;
 
+    private Component currentKey;
+
     private String lastText;
 
+    public TextWidget(Supplier<Component> keySupplier) {
+        this.keySupplier = keySupplier;
+    }
+
     public TextWidget(Component key) {
-        this.key = key;
+        this(() -> key);
     }
 
     public TextWidget(String key) {
@@ -41,7 +48,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         TextRenderer renderer = TextRenderer.SHARED;
-        Component text = checkString();
+        Component text = checkComponentUpdated();
         WidgetTheme theme = getActiveWidgetTheme(widgetTheme, isHovering());
         renderer.setColor(this.color != null ? this.color.getAsInt() : theme.getTextColor());
         renderer.setAlignment(this.alignment, getArea().paddedWidth() + this.scale, getArea().paddedHeight());
@@ -52,13 +59,15 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.draw(context.getGraphics(), text);
     }
 
-    protected Component checkString() {
-        String text = this.key.getString();
-        if (!Objects.equals(this.lastText, text)) {
-            onTextChanged(this.key);
+    protected Component checkComponentUpdated() {
+        var component = keySupplier.get();
+        String text = component.getString();
+        if (!Objects.equals(currentKey, component) || !Objects.equals(lastText, currentKey.getString())) {
+            onTextChanged(component);
+            currentKey = component;
             this.lastText = text;
         }
-        return this.key;
+        return component;
     }
 
     protected void onTextChanged(Component newText) {
@@ -73,7 +82,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setPos(padding.left(), padding.top());
         renderer.setScale(this.scale);
         renderer.setSimulate(true);
-        renderer.draw(null, this.key);
+        renderer.draw(null, checkComponentUpdated());
         renderer.setSimulate(false);
         return renderer;
     }
