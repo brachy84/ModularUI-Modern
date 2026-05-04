@@ -33,7 +33,6 @@ public class EMISlotWidgetWrapper<W extends EMISlotWidgetWrapper<W>> extends Wid
 
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
-        super.draw(context, widgetTheme);
         context.getGraphics().pose().translate(-this.x, -this.y, 0);
         this.slotWidget.render(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
         context.getGraphics().pose().translate(this.x, this.y, 0);
