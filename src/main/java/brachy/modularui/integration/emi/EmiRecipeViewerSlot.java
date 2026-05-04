@@ -54,6 +54,8 @@ public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerS
         slotWidget = new SlotWidget(EmiIngredient.of(Ingredient.EMPTY), 0, 0);
         recipeSlotRole = RecipeSlotRole.RENDER_ONLY;
 
+        size(18, 18);
+
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
             for (ClientTooltipComponent ctc : this.slotWidget.getTooltip(getContext().getAbsMouseX(), getContext().getAbsMouseY())) {
