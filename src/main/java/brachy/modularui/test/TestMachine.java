@@ -10,6 +10,8 @@ import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
@@ -42,9 +44,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -285,6 +289,31 @@ public class TestMachine {
                             .slot(new ModularSlot(out, i).canPut(false))
                             .recipeRole(RecipeSlotRole.OUTPUT)));
         }
+
+        public static IWidget buildViewerUI(Recipe recipe) {
+            return Flow.row().name("slots")
+                    .coverChildren()
+                    .center()
+                    .childPadding(8)
+                    .child(SlotGroupWidget.rect(2, 2, i -> {
+                        var in = i >= recipe.in.size() ? ItemStack.EMPTY : recipe.in.get(i);
+                        if (in == null) in = ItemStack.EMPTY;
+                        return RecipeViewerSlotWidget.create()
+                                .recipeSlotRole(RecipeSlotRole.INPUT)
+                                .value(FluidStackList.of(List.of(new FluidStack(Fluids.LAVA, 1000), new FluidStack(Fluids.WATER, 100))));
+                    }))
+                    .child(new ProgressWidget()
+                            .value(DoubleValue.simulateProgress(5000))
+                            .size(20)
+                            .texture(GuiTextures.PROGRESS_ARROW, 20))
+                    .child(SlotGroupWidget.rect(2, 2, i -> {
+                        var out = i >= recipe.out.size() ? ItemStack.EMPTY : recipe.out.get(i);
+                        if (out == null) out = ItemStack.EMPTY;
+                        return RecipeViewerSlotWidget.create()
+                                .recipeSlotRole(RecipeSlotRole.OUTPUT)
+                                .value(out);
+                    }));
+        }
     }
 
     public static class EMI {
@@ -294,7 +323,7 @@ public class TestMachine {
         public static void register(EmiRegistry registry) {
             registry.addCategory(CATEGORY);
             Recipes.list.stream()
-                    .map(r -> new RecipeDisplay(() -> Recipes.buildMachineUI(EMPTY_INFINITE_ITEM_HANDLER, EMPTY_INFINITE_ITEM_HANDLER, DoubleValue.simulateProgress(5000)), r))
+                    .map(r -> new RecipeDisplay(() -> Recipes.buildViewerUI(r), r))
                     .forEach(registry::addRecipe);
         }
 

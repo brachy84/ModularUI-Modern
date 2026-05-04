@@ -1,5 +1,6 @@
 package brachy.modularui.integration.emi;
 
+import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
@@ -10,111 +11,161 @@ import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 
+import brachy.modularui.screen.viewport.ModularGuiContext;
+import brachy.modularui.theme.WidgetThemeEntry;
+
 import dev.emi.emi.api.forge.ForgeEmiStack;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.SlotWidget;
 
+import dev.emi.emi.api.widget.TankWidget;
+
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Collections;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerSlot> {
 
-    private SlotWidget slot;
+    @ApiStatus.Internal
+    @Getter
+    private SlotWidget slotWidget;
     private int x, y;
 
+    @Accessors(fluent = true)
+    @Getter
     private RecipeSlotRole recipeSlotRole;
     private EntryList<?> value;
+    private float chance = 1f;
 
     public EmiRecipeViewerSlot() {
         super();
+        slotWidget = new SlotWidget(EmiIngredient.of(Ingredient.EMPTY), 0, 0);
         recipeSlotRole = RecipeSlotRole.RENDER_ONLY;
+
+        tooltipAutoUpdate(true);
+        tooltipDynamic(tooltip -> {
+            for (ClientTooltipComponent ctc : this.slotWidget.getTooltip(getContext().getAbsMouseX(), getContext().getAbsMouseY())) {
+                tooltip.addDrawableLine(new ClientTooltipComponentIcon(ctc));
+            }
+        });
     }
 
     @Override
     public EmiRecipeViewerSlot recipeSlotRole(RecipeSlotRole recipeSlotRole) {
         this.recipeSlotRole = recipeSlotRole;
+        slotWidget.catalyst(recipeSlotRole == RecipeSlotRole.CATALYST);
         return getThis();
     }
 
     @Override
     public EmiRecipeViewerSlot value(FluidEntryList fluidEntryList) {
         value = fluidEntryList;
+        rebuildEmiSlot();
         return getThis();
     }
 
     @Override
     public EmiRecipeViewerSlot value(ItemEntryList itemEntryList) {
         value = itemEntryList;
+        rebuildEmiSlot();
         return getThis();
     }
 
     @Override
     public EmiRecipeViewerSlot value(ItemStack stack) {
         value = ItemStackList.of(stack);
+        rebuildEmiSlot();
         return getThis();
     }
 
     @Override
     public EmiRecipeViewerSlot value(FluidStack stack) {
         value = FluidStackList.of(stack);
+        rebuildEmiSlot();
         return getThis();
     }
 
     @Override
     public EmiRecipeViewerSlot chance(float chance) {
+        this.chance = chance;
         return getThis();
     }
 
-    private void rebuildEmiSlot() {}
+    private void rebuildEmiSlot() {
+        if (value instanceof ItemEntryList itemEntryList) {
+            slotWidget = new SlotWidget(EmiIngredientHandler.toEmiIngredient(itemEntryList, chance, UnaryOperator.identity()), 0, 0);
+        } else {
+            slotWidget = new TankWidget(EmiIngredientHandler.toEmiIngredient((FluidEntryList)value, chance), 0, 0, 18, 18, 1);
+        }
+    }
 
+    @Override
+    public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        context.getGraphics().pose().translate(-this.x, -this.y, 0);
+        this.slotWidget.render(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
+        context.getGraphics().pose().translate(this.x, this.y, 0);
+    }
+
+    @Override
+    public Result onMousePressed(int button) {
+        this.slotWidget.mouseClicked(getContext().getMouseX(), getContext().getAbsMouseY(), button);
+        return Result.SUCCESS;
+    }
+
+    @Override
+    public Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return this.slotWidget.keyPressed(keyCode, scanCode, modifiers) ? Result.SUCCESS : Result.ACCEPT;
+    }
 
     public static class EmiIngredientHandler {
 
-        public static List<EmiIngredient> toEmiIngredient(ItemEntryList list, float xeiChance,
+        public static EmiIngredient toEmiIngredient(ItemEntryList list, float xeiChance,
                                                    UnaryOperator<ItemStack> realStack) {
+            List<EmiIngredient> ingredients = new ArrayList<>();
             if (list instanceof ItemTagList tagList) {
-                return tagList.getEntries().stream()
+                ingredients.addAll(tagList.getEntries().stream()
                         .map(ItemTagList.ItemTagEntry::stacks)
-                        .map(stream -> toEmiIngredient(stream, realStack).setChance(xeiChance))
-                        .collect(Collectors.toList());
+                        .map(stream -> EmiIngredient.of(stream.map(realStack).map(EmiStack::of).toList()).setChance(xeiChance)).toList());
             }
             if (list instanceof ItemStackList stackList) {
-                return List.of(toEmiIngredient(stackList.stream(), realStack).setChance(xeiChance));
-
+                ingredients.add(EmiIngredient.of(stackList.stream().map(realStack).map(EmiStack::of).toList()).setChance(xeiChance));
             }
-            return Collections.emptyList();
+
+            if (ingredients.isEmpty()) return EmiIngredient.of(Ingredient.EMPTY);
+            if (ingredients.size() == 1) return ingredients.get(0);
+            return EmiIngredient.of(ingredients);
         }
 
-        public static List<EmiIngredient> toEmiIngredient(FluidEntryList list, float xeiChance) {
+        public static EmiIngredient toEmiIngredient(FluidEntryList list, float xeiChance) {
+
+            List<EmiIngredient> ingredients = new ArrayList<>();
+
             if (list instanceof FluidTagList tagList) {
-                return tagList.getEntries().stream()
+                ingredients.addAll(tagList.getEntries().stream()
                         .map(FluidTagList.FluidTagEntry::stacks)
-                        .map(stream -> toEMIIngredient(stream).setChance(xeiChance))
-                        .collect(Collectors.toList());
+                        .map(stream -> EmiIngredient.of(stream.map(ForgeEmiStack::of).toList()).setChance(xeiChance))
+                        .toList()
+                );
             }
 
             if (list instanceof FluidStackList stackList) {
-                return List.of(toEMIIngredient(stackList.stream()).setChance(xeiChance));
+                ingredients.add(EmiIngredient.of(stackList.stream().map(ForgeEmiStack::of).toList()).setChance(xeiChance));
             }
 
-            return Collections.emptyList();
+            if (ingredients.isEmpty()) return EmiIngredient.of(Ingredient.EMPTY);
+            if (ingredients.size() == 1) return ingredients.get(0);
+            return EmiIngredient.of(ingredients);
         }
-
-        private static EmiIngredient toEmiIngredient(Stream<ItemStack> stream, UnaryOperator<ItemStack> realStack) {
-            return EmiIngredient.of(stream.map(realStack).map(EmiStack::of).toList());
-        }
-
-
-        private static EmiIngredient toEMIIngredient(Stream<FluidStack> stream) {
-            return EmiIngredient.of(stream.map(ForgeEmiStack::of).toList());
-        }
-
     }
 }

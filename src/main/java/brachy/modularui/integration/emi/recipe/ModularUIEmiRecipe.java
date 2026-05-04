@@ -1,19 +1,16 @@
 package brachy.modularui.integration.emi.recipe;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.text.RichText;
+import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.screen.EmbedHandler;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.RichTooltip;
-import brachy.modularui.theme.WidgetThemeKey;
-import brachy.modularui.widgets.slot.FluidSlot;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -27,7 +24,6 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.SlotWidget;
-import dev.emi.emi.api.widget.TankWidget;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import org.jetbrains.annotations.Nullable;
@@ -118,41 +114,14 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
     }
 
     public IWidget transformWidget(IWidget widget, Iterator<EmiIngredient> in, Iterator<EmiStack> out) {
-        if (!(widget instanceof IngredientProvider<?> provider)) return widget;
 
-        RecipeSlotRole role = provider.getRecipeRole();
-        if (role == RecipeSlotRole.RENDER_ONLY) return widget;
+        if (!(widget instanceof EmiRecipeViewerSlot recipeViewerSlot)) return widget;
 
-        EmiIngredient ingr = EmiStack.EMPTY;
-        if (role == RecipeSlotRole.INPUT && in.hasNext()) {
-            ingr = in.next();
-        } else if (role == RecipeSlotRole.OUTPUT && out.hasNext()) {
-            ingr = out.next();
+        if (recipeViewerSlot.recipeSlotRole() == RecipeSlotRole.OUTPUT) {
+            recipeViewerSlot.getSlotWidget().recipeContext(this);
         }
 
-        SlotWidget emiSlot = null;
-        WidgetThemeKey<?> widgetThemeKey = null;
-        if (widget instanceof FluidSlot slot) {
-            if (!slot.isAlwaysShowFull()) {
-                emiSlot = new TankWidget(ingr, 0, 0, slot.getArea().width, slot.getArea().height, slot.getCapacity());
-            }
-            widgetThemeKey = IThemeApi.FLUID_SLOT;
-        }
-        if (emiSlot == null) emiSlot = new SlotWidget(ingr, 0, 0);
-        if (widgetThemeKey == null) widgetThemeKey = IThemeApi.ITEM_SLOT;
-
-        emiSlot.drawBack(false);
-
-        if (role == RecipeSlotRole.CATALYST) {
-            emiSlot.catalyst(true);
-        } else if (role == RecipeSlotRole.OUTPUT) {
-            emiSlot.recipeContext(this);
-        }
-
-        return new EMISlotWidgetWrapper<>(emiSlot)
-                .copyResizerOf(widget)
-                .copyVisualsOf(widget)
-                .widgetTheme(widgetThemeKey);
+        return recipeViewerSlot;
     }
 
     @Override
