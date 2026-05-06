@@ -31,7 +31,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     @Getter private int maxWidth = -1;
 
     private String lastText;
-    private final @Nullable Supplier<Component> keySupplier;
+    private @Nullable Supplier<Component> keySupplier;
 
     public TextWidget(@NotNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
@@ -59,6 +59,21 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setScale(this.scale);
         renderer.setSimulate(false);
         renderer.draw(context.getGraphics(), text);
+    }
+
+    public W value(Supplier<Component> textSupplier) {
+        keySupplier = textSupplier;
+        return getThis();
+    }
+
+    public W value(Component text) {
+        key = text;
+        keySupplier = null;
+        return getThis();
+    }
+
+    public W value(String str) {
+        return value(Text.str(str));
     }
 
     protected Component checkComponentUpdated() {
