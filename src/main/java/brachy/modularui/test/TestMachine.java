@@ -292,7 +292,6 @@ public class TestMachine {
 
         public static IWidget buildViewerUI(Recipe recipe) {
             return Flow.row().name("slots")
-                    .coverChildren()
                     .center()
                     .childPadding(8)
                     .child(SlotGroupWidget.rect(2, 2, i -> {
@@ -300,7 +299,7 @@ public class TestMachine {
                         if (in == null) in = ItemStack.EMPTY;
                         return RecipeViewerSlotWidget.create()
                                 .recipeSlotRole(RecipeSlotRole.INPUT)
-                                .value(FluidStackList.of(List.of(new FluidStack(Fluids.LAVA, 1000), new FluidStack(Fluids.WATER, 100))));
+                                .value(in);
                     }))
                     .child(new ProgressWidget()
                             .value(DoubleValue.simulateProgress(5000))
