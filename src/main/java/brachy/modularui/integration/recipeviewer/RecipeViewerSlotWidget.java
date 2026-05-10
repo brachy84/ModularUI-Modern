@@ -3,10 +3,12 @@ package brachy.modularui.integration.recipeviewer;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
+import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.rei.ReiRecipeViewerSlot;
 import brachy.modularui.widget.Widget;
 
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +38,10 @@ public abstract class RecipeViewerSlotWidget<T extends RecipeViewerSlotWidget<T>
 
         if (ModularUI.Mods.EMI.isLoaded()) {
             return new EmiRecipeViewerSlot();
-        } //else if (ModularUI.Mods.JEI.isLoaded()) {
-        //  return new JeiRecipeViewerSlot();
-        //}/else {
-        //  return new ReiRecipeViewerSlot();
-        //}
-        throw new NotImplementedException();
+        } else if (ModularUI.Mods.JEI.isLoaded()) {
+          return new JeiRecipeViewerSlot();
+        } else {
+          return new ReiRecipeViewerSlot();
+        }
     }
 }

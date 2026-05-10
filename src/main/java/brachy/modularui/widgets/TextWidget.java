@@ -35,12 +35,12 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     public TextWidget(@NotNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
-        key = keySupplier.get();
+        this.key = keySupplier.get();
     }
 
     public TextWidget(Component key) {
         this.key = key;
-        keySupplier = null;
+        this.keySupplier = null;
     }
 
     public TextWidget(String key) {
@@ -62,13 +62,13 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     public W value(Supplier<Component> textSupplier) {
-        keySupplier = textSupplier;
+        this.keySupplier = textSupplier;
         return getThis();
     }
 
     public W value(Component text) {
-        key = text;
-        keySupplier = null;
+        this.key = text;
+        this.keySupplier = null;
         return getThis();
     }
 
@@ -77,17 +77,17 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     }
 
     protected Component checkComponentUpdated() {
-        if (keySupplier != null) {
-            var newKey = keySupplier.get();
-            if (!Objects.equals(newKey, key)) {
-                key = newKey;
+        if (this.keySupplier != null) {
+            var newKey = this.keySupplier.get();
+            if (!Objects.equals(newKey, this.key)) {
+                this.key = newKey;
             }
         }
-        if (!Objects.equals(lastText, key.getString())) {
-            onTextChanged(key);
-            this.lastText = key.getString();
+        if (!Objects.equals(lastText, this.key.getString())) {
+            onTextChanged(this.key);
+            this.lastText = this.key.getString();
         }
-        return key;
+        return this.key;
     }
 
     protected void onTextChanged(Component newText) {

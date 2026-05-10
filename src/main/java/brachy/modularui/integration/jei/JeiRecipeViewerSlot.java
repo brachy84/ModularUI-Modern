@@ -1,5 +1,7 @@
 package brachy.modularui.integration.jei;
 
+import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
 
@@ -14,6 +16,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -22,61 +25,29 @@ import java.util.stream.Collectors;
 
 import static brachy.modularui.integration.jei.ModularUIJeiPlugin.jeiHelpers;
 
-public class JeiRecipeViewerSlot {
+public class JeiRecipeViewerSlot extends RecipeViewerSlotWidget<JeiRecipeViewerSlot> {
 
-    public static class JeiIngredientHandler {
+    public JeiRecipeViewerSlot() {
+        throw new NotImplementedException();
+    }
 
-        public static List<Object> toJeiIngredient(FluidEntryList list) {
-            return list.getStacks()
-                    .stream()
-                    .filter(stack -> !stack.isEmpty())
-                    .map(JeiIngredientHandler::getJEIFluid)
-                    .toList();
-        }
+    @Override
+    public JeiRecipeViewerSlot recipeSlotRole(RecipeSlotRole recipeSlotRole) {
+        return getThis();
+    }
 
-        public static List<Object> toJeiIngredientClickable(FluidEntryList list, int x, int y, int w, int h) {
-            return list.getStacks()
-                    .stream()
-                    .filter(stack -> !stack.isEmpty())
-                    .map(stack -> getJEIFluidClickable(stack, x, y, w, h))
-                    .toList();
-        }
+    @Override
+    public JeiRecipeViewerSlot value(FluidEntryList fluidEntryList) {
+        return getThis();
+    }
 
-        public static Object getJEIFluid(FluidStack fluidStack) {
-            return jeiHelpers.getPlatformFluidHelper().create(fluidStack.getFluid(), fluidStack.getAmount(), fluidStack.getTag());
-        }
+    @Override
+    public JeiRecipeViewerSlot value(ItemEntryList itemEntryList) {
+        return getThis();
+    }
 
-        public static @Nullable Object getJEIFluidClickable(FluidStack fluidStack, int x, int y, int w, int h) {
-            var ingredient = jeiHelpers.getPlatformFluidHelper().create(fluidStack.getFluid(), fluidStack.getAmount(), fluidStack.getTag());
-            return jeiHelpers.getIngredientManager().createTypedIngredient(ingredient)
-                    .map(typedIngredient -> new ClickableIngredient<>(typedIngredient, new ImmutableRect2i(x, y, w, h)))
-                    .orElse(null);
-        }
-
-        public static @Nullable Object getJEIStackClickable(ItemStack stack, int x, int y, int w, int h) {
-            IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
-            return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, stack)
-                    .map(typedIngredient -> new ClickableIngredient<>(typedIngredient, new ImmutableRect2i(x, y, w, h)))
-                    .orElse(null);
-        }
-
-        public static List<Object> toJeiIngredient(ItemEntryList list, UnaryOperator<ItemStack> realStack) {
-            return list.getStacks()
-                    .stream()
-                    .filter(stack -> !stack.isEmpty())
-                    .map(realStack)
-                    .collect(Collectors.toList());
-        }
-
-        public static List<Object> toJeiIngredientClickable(ItemEntryList list, int x, int y, int w, int h,
-                                                              UnaryOperator<ItemStack> realStack) {
-            return list.getStacks()
-                    .stream()
-                    .filter(stack -> !stack.isEmpty())
-                    .map(realStack)
-                    .map(stack -> getJEIStackClickable(stack, x, y, w, h))
-                    .collect(Collectors.toList());
-        }
-
+    @Override
+    public JeiRecipeViewerSlot chance(float chance) {
+        return getThis();
     }
 }
