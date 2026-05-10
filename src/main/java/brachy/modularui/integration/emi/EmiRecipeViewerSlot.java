@@ -78,12 +78,12 @@ public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerS
         background(GuiTextures.SLOT_ITEM);
         return getThis();
     }
-    
+
     private void rebuildEmiSlot() {
         if (value instanceof ItemEntryList itemEntryList) {
-            slotWidget = new SlotWidget(EmiIngredientHandler.toEmiIngredient(itemEntryList, chance), 0, 0);
+            slotWidget = new SlotWidget(EmiStackConverter.ITEM.convertTo(itemEntryList, chance), 0, 0);
         } else if (value instanceof FluidEntryList fluidEntryList) {
-            slotWidget = new TankWidget(EmiIngredientHandler.toEmiIngredient(fluidEntryList, chance), 0, 0, 18, 18, 1);
+            slotWidget = new TankWidget(EmiStackConverter.FLUID.convertTo(fluidEntryList, chance), 0, 0, 18, 18, 1);
         }
         slotWidget.drawBack(false);
     }
