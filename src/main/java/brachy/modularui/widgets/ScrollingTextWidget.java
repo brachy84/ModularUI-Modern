@@ -62,9 +62,9 @@ public class ScrollingTextWidget extends TextWidget<ScrollingTextWidget> {
             animator(new Animator().curve(Interpolation.SINE_INOUT));
         }
         if (this.line == null) {
-            updateLine(getKey());
+            updateLine(checkComponentUpdated());
         }
-        checkString();
+        checkComponentUpdated();
         WidgetTheme theme = getActiveWidgetTheme(widgetTheme, isHovering());
         TextRenderer renderer = TextRenderer.SHARED;
         renderer.setColor(getColor() != null ? getColor().getAsInt() : theme.getTextColor());

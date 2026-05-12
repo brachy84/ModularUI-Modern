@@ -5,6 +5,8 @@ import brachy.modularui.screen.ClientScreenHandler;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 
+import brachy.modularui.widgets.TextWidget;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -60,6 +62,11 @@ public class DynamicComponent implements Component, IDrawable {
     @Override
     public @NotNull FormattedCharSequence getVisualOrderText() {
         return getComp().getVisualOrderText();
+    }
+
+    @Override
+    public TextWidget<?> asWidget() {
+        return new TextWidget<>(this::getComp);
     }
 
     @Override

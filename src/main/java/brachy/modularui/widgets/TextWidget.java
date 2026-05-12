@@ -14,14 +14,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
-    @Getter private final Component key;
+    @Getter private Component key;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private IntSupplier color = null;
     @Getter private Boolean textShadow = null;
@@ -29,9 +31,16 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     @Getter private int maxWidth = -1;
 
     private String lastText;
+    private @Nullable Supplier<Component> keySupplier;
+
+    public TextWidget(@NotNull Supplier<Component> keySupplier) {
+        this.keySupplier = keySupplier;
+        this.key = keySupplier.get();
+    }
 
     public TextWidget(Component key) {
         this.key = key;
+        this.keySupplier = null;
     }
 
     public TextWidget(String key) {
@@ -41,7 +50,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         TextRenderer renderer = TextRenderer.SHARED;
-        Component text = checkString();
+        Component text = checkComponentUpdated();
         WidgetTheme theme = getActiveWidgetTheme(widgetTheme, isHovering());
         renderer.setColor(this.color != null ? this.color.getAsInt() : theme.getTextColor());
         renderer.setAlignment(this.alignment, getArea().paddedWidth() + this.scale, getArea().paddedHeight());
@@ -52,11 +61,31 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.draw(context.getGraphics(), text);
     }
 
-    protected Component checkString() {
-        String text = this.key.getString();
-        if (!Objects.equals(this.lastText, text)) {
+    public W value(Supplier<Component> textSupplier) {
+        this.keySupplier = textSupplier;
+        return getThis();
+    }
+
+    public W value(Component text) {
+        this.key = text;
+        this.keySupplier = null;
+        return getThis();
+    }
+
+    public W value(String str) {
+        return value(Text.str(str));
+    }
+
+    protected Component checkComponentUpdated() {
+        if (this.keySupplier != null) {
+            var newKey = this.keySupplier.get();
+            if (!Objects.equals(newKey, this.key)) {
+                this.key = newKey;
+            }
+        }
+        if (!Objects.equals(lastText, this.key.getString())) {
             onTextChanged(this.key);
-            this.lastText = text;
+            this.lastText = this.key.getString();
         }
         return this.key;
     }
@@ -73,6 +102,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setPos(padding.left(), padding.top());
         renderer.setScale(this.scale);
         renderer.setSimulate(true);
+        // Don't update the key here, otherwise an infinite loop of checkComponentUpdated -> simulate -> checkComponentUpdated occurs
         renderer.draw(null, this.key);
         renderer.setSimulate(false);
         return renderer;

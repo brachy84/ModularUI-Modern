@@ -7,6 +7,10 @@ import brachy.modularui.screen.ContainerScreenWrapper;
 import brachy.modularui.screen.ModularContainerMenu;
 import brachy.modularui.screen.ScreenWrapper;
 
+import mezz.jei.api.helpers.IJeiHelpers;
+
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
 
@@ -26,6 +30,7 @@ public class ModularUIJeiPlugin implements IModPlugin {
 
     @Getter
     private static IJeiRuntime runtime = null;
+    public static IJeiHelpers jeiHelpers;
 
     public static boolean hasRuntime() {
         return runtime != null;
@@ -39,6 +44,11 @@ public class ModularUIJeiPlugin implements IModPlugin {
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         runtime = jeiRuntime;
+    }
+
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration) {
+        jeiHelpers = registration.getJeiHelpers();
     }
 
     @Override
