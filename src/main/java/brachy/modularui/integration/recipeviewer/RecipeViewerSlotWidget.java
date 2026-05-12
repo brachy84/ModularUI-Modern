@@ -38,10 +38,11 @@ public abstract class RecipeViewerSlotWidget<T extends RecipeViewerSlotWidget<T>
 
         if (ModularUI.Mods.EMI.isLoaded()) {
             return new EmiRecipeViewerSlot();
+        } else if (ModularUI.Mods.REI.isLoaded()) {
+            return new ReiRecipeViewerSlot();
         } else if (ModularUI.Mods.JEI.isLoaded()) {
-          return new JeiRecipeViewerSlot();
-        } else {
-          return new ReiRecipeViewerSlot();
+            return new JeiRecipeViewerSlot();
         }
+        throw new UnsupportedOperationException("Cannot create recipe viewer slot without EMI, REI, or JEI being loaded.");
     }
 }

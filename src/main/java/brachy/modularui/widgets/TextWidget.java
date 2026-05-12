@@ -103,7 +103,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         renderer.setScale(this.scale);
         renderer.setSimulate(true);
         // Don't update the key here, otherwise an infinite loop of checkComponentUpdated -> simulate -> checkComponentUpdated occurs
-        renderer.draw(null, key);
+        renderer.draw(null, this.key);
         renderer.setSimulate(false);
         return renderer;
     }
