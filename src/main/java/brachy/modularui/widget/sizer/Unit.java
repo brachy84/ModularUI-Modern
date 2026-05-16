@@ -1,6 +1,8 @@
 package brachy.modularui.widget.sizer;
 
 import brachy.modularui.api.GuiAxis;
+import brachy.modularui.utils.serialization.json.JsonCoder;
+import brachy.modularui.utils.serialization.json.MutableObjectCoder;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,17 +30,32 @@ public class Unit {
         public String getText(GuiAxis axis) {
             return axis.isHorizontal() ? this.xText : this.yText;
         }
+
+        public static final JsonCoder<State> CODER = JsonCoder.ofEnum(State.class);
     }
 
+    public static final MutableObjectCoder<Unit> CODER = new MutableObjectCoder.Builder<Unit>()
+            .add("autoAnchor", JsonCoder.BOOL, (holder, value) -> holder.autoAnchor = value, holder -> holder.autoAnchor)
+            .add("value", JsonCoder.FLOAT, (holder, value) -> holder.value = value, holder -> holder.value)
+            .add("measure", Measure.CODER, (holder, value) -> holder.measure = value, holder -> holder.measure)
+            .add("anchor", JsonCoder.FLOAT, (holder, value) -> holder.anchor = value, holder -> holder.anchor)
+            .add("offset", JsonCoder.INT, (holder, value) -> holder.offset = value, holder -> holder.offset)
+            .add("state", State.CODER, (holder, value) -> holder.state = value, holder -> holder.state)
+            .addUncodable("valueSupplier", holder -> holder.valueSupplier)
+            .build();
+
     @Getter
-    @Setter private boolean autoAnchor = true;
+    @Setter
+    private boolean autoAnchor = true;
     private float value = 0f;
     private DoubleSupplier valueSupplier = null;
     @Getter
-    @Setter private Measure measure = Measure.PIXEL;
+    @Setter
+    private Measure measure = Measure.PIXEL;
     @Setter private float anchor = 0f;
     @Getter
-    @Setter private int offset = 0;
+    @Setter
+    private int offset = 0;
 
     public State state = State.UNUSED;
 
@@ -103,6 +120,8 @@ public class Unit {
 
     public enum Measure {
         PIXEL,
-        RELATIVE
+        RELATIVE;
+
+        public static final JsonCoder<Measure> CODER = JsonCoder.ofEnum(Measure.class);
     }
 }
