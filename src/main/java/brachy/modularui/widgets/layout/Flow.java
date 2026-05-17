@@ -390,7 +390,7 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
     }
 
     @Override
-    protected String getTypeName() {
+    public String getTypeName() {
         return this.axis.isHorizontal() ? "Row" : "Column";
     }
 }

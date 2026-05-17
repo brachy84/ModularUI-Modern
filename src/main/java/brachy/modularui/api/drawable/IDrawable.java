@@ -9,13 +9,18 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Color;
+import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
 
 /**
  * An object which can be drawn at any size. This is mainly used for backgrounds and overlays in
@@ -33,6 +38,9 @@ public interface IDrawable {
             return new DrawableStack(drawables);
         }
     }
+
+    CodecRegistry<IDrawable> CODECS = new CodecRegistry<>();
+    Codec<IDrawable> CODEC_DISPATCH = Codec.STRING.dispatch(IDrawable::getTypeName, CODECS::getNullable);
 
     /**
      * Draws this drawable at the given position with the given size. It's the implementors responsibility to properly
@@ -162,6 +170,10 @@ public interface IDrawable {
 
     default IDrawable getSubArea(float u0, float v0, float u1, float v1) {
         return new SubAreaDrawable(this).uv(u0, v0, u1, v1);
+    }
+
+    default String getTypeName() {
+        return getClass().getSimpleName();
     }
 
     /**

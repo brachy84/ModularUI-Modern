@@ -338,7 +338,7 @@ public abstract class AbstractWidget implements IWidget {
      *
      * @return the simple class name or other fitting name
      */
-    protected String getTypeName() {
+    public String getTypeName() {
         return getClass().getSimpleName();
     }
 

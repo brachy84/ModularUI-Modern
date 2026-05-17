@@ -1,5 +1,11 @@
 package brachy.modularui.utils.serialization.codec;
 
+import brachy.modularui.api.drawable.IDrawable;
+
+import brachy.modularui.api.widget.IWidget;
+
+import com.google.common.base.CaseFormat;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -47,6 +53,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
     }
 
     public T copy(T from) {
+        if (from == null) return null;
         if (this.baseCopy == null) {
             throw new IllegalStateException("Can't copy instance since no base copy function is supplied.");
         }
@@ -130,8 +137,8 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         return new Builder<T>().instance(instance);
     }
 
-    public record Field<T, V>(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder, Codec<V> codec,
-                              Supplier<V> defaultSupplier, Predicate<V> emptyTester) {
+    public record Field<T, V>(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
+                              Supplier<V> defaultSupplier, Predicate<V> emptyTester, String[] altNames) {
 
         public boolean hasDefault() {
             return this.defaultSupplier != null;
@@ -146,7 +153,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         }
 
         private <J> @Nullable String encode(T holder, DynamicOps<J> ops, Stream.Builder<Pair<J, J>> map) {
-            V value = this.fieldDecoder.decodeField(holder);
+            V value = this.fieldReader.readField(holder);
             if (isUnencodable()) {
                 if (!isEmpty(value)) {
                     return String.format("Field '%s' is unencodeable, but the value is not empty", this.name);
@@ -162,6 +169,12 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
 
         private <J> @Nullable String decode(T holder, DynamicOps<J> ops, MapLike<J> map) {
             J element = map.get(this.name);
+            if (element == null && this.altNames != null) {
+                for (String alt : this.altNames) {
+                    element = map.get(alt);
+                    if (element != null) break;
+                }
+            }
             V value;
             if (element == null) {
                 if (!hasDefault()) {
@@ -171,7 +184,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             } else if (isUnencodable()) {
                 return String.format("Field '%s' is unencodable, but data still contains value", this.name);
             } else if (this.codec instanceof MutableCodec<V> mutableCodec) {
-                value = this.fieldDecoder.decodeField(holder);
+                value = this.fieldReader.readField(holder);
                 if (value == null) {
                     if (mutableCodec.canDecodeInstance()) {
                         var d = mutableCodec.parseInstance(ops, element);
@@ -194,17 +207,21 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
                 if (res.isEmpty()) return d.error().orElseThrow().message();
                 value = res.get();
             }
-            this.fieldEncoder.encodeField(holder, value);
+            this.fieldWriter.writeField(holder, value);
             return null;
         }
 
         public void copy(T from, T to) {
-            this.fieldEncoder.encodeField(to, this.fieldDecoder.decodeField(from));
+            V value = this.fieldReader.readField(from);
+            if (this.codec instanceof MutableObjectCodec<V> mutableObjectCodec) {
+                value = mutableObjectCodec.copy(value);
+            }
+            this.fieldWriter.writeField(to, value);
         }
 
         public void applyDefault(T instance) {
             if (hasDefault()) {
-                this.fieldEncoder.encodeField(instance, getDefault());
+                this.fieldWriter.writeField(instance, getDefault());
             }
         }
 
@@ -218,6 +235,8 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         private final Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields = new Object2ReferenceLinkedOpenHashMap<>();
         private InstanceDecoder<T> instanceDecoder;
         private UnaryOperator<T> baseCopy;
+        private CodecRegistry<T> registry;
+        private String[] names;
 
         /**
          * Sets the instance decoder. This is needed when parsing from JSON. The decoder should create a new instance
@@ -263,47 +282,76 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             return this;
         }
 
-        public <V> Builder<T> add(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder, Codec<V> codec) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, codec, null);
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null);
+        }
+
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null, altNames);
+        }
+
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                  Codec<V> codec, @Nullable Predicate<V> emptyTester) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null, emptyTester);
         }
 
         /**
          * Adds a new non-optional, mutable property.
          *
-         * @see #addDynOpt(String, FieldEncoder, FieldDecoder, Codec, Supplier, Predicate)
+         * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier, Predicate)
          */
-        public <V> Builder<T> add(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
-                                  Codec<V> codec, @Nullable Predicate<V> emptyTester) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, codec, null, emptyTester);
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                  Codec<V> codec, @Nullable Predicate<V> emptyTester, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null, emptyTester, altNames);
         }
 
-        public <V> Builder<T> addOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                      Codec<V> codec, @Nullable V defValue) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, codec, () -> defValue);
+            return addDynOpt(name, fieldWriter, fieldReader, codec, () -> defValue);
+        }
+
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                     Codec<V> codec, @Nullable V defValue, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, () -> defValue, altNames);
+        }
+
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                     Codec<V> codec, @Nullable V defValue, @Nullable Predicate<V> emptyTester) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, () -> defValue, emptyTester, (String[]) null);
         }
 
         /**
          * Adds a new optional, mutable property with a const default value.
          *
          * @param defValue default value, if this is null, the default value is null and this property is still considered optional
-         * @see #addDynOpt(String, FieldEncoder, FieldDecoder, Codec, Supplier, Predicate)
+         * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier, Predicate)
          */
-        public <V> Builder<T> addOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
-                                     Codec<V> codec, @Nullable V defValue, @Nullable Predicate<V> emptyTester) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, codec, () -> defValue, emptyTester);
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                     Codec<V> codec, @Nullable V defValue, @Nullable Predicate<V> emptyTester, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, () -> defValue, emptyTester, altNames);
         }
 
-        public <V> Builder<T> addDynOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                         Codec<V> codec, @Nullable Supplier<V> defaultSupplier) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, codec, defaultSupplier, null);
+            return addDynOpt(name, fieldWriter, fieldReader, codec, defaultSupplier, null, (String[]) null);
+        }
+
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                        Codec<V> codec, @Nullable Supplier<V> defaultSupplier, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, defaultSupplier, null, altNames);
+        }
+
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
+                                        @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTester) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, defaultSupplier, emptyTester, (String[]) null);
         }
 
         /**
          * Adds a new optional, mutable property with a dynamic default value.
          *
          * @param name            name of the property, mostly used for en-/decoding
-         * @param fieldEncoder    writes a value to the field
-         * @param fieldDecoder    reads a value from the field
+         * @param fieldWriter    writes a value to the field
+         * @param fieldReader    reads a value from the field
          * @param codec           handles en-/decoding of a value
          * @param defaultSupplier supplier for a default value, if this is non-null, this property is marked as optional
          * @param emptyTester     a test function to test whether a value is empty, this is currently only used for unencodable values
@@ -311,37 +359,66 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
          * @return this
          * @throws NullPointerException if name, fieldEncoder or fieldDecoder is null
          */
-        public <V> Builder<T> addDynOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder, Codec<V> codec,
-                                        @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTester) {
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
+                                        @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTester, String @Nullable ... altNames) {
             Objects.requireNonNull(name, "Name of field must not be null!");
-            Objects.requireNonNull(fieldEncoder, "Field encoder must not be null!");
-            Objects.requireNonNull(fieldDecoder, "Field decoder must not be null!");
-            this.fields.put(name, new Field<>(name, fieldEncoder, fieldDecoder, codec, defaultSupplier, emptyTester));
+            Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
+            Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
+            this.fields.put(name, new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier, emptyTester, altNames));
             return this;
         }
 
-        public <V> Builder<T> addUnencodable(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder) {
-            return addUnencodableDynOpt(name, fieldEncoder, fieldDecoder, null, null);
+        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, null, (String[]) null);
         }
 
-        public <V> Builder<T> addUnencodable(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, String @Nullable ... altNames) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, null, altNames);
+        }
+
+        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                              @Nullable Predicate<V> emptyTest) {
-            return addUnencodableDynOpt(name, fieldEncoder, fieldDecoder, null, emptyTest);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, emptyTest);
         }
 
-        public <V> Builder<T> addUnencodableOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                             @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, emptyTest, altNames);
+        }
+
+        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                                 @Nullable V defaultValue) {
-            return addUnencodableDynOpt(name, fieldEncoder, fieldDecoder, () -> defaultValue, null);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, null, (String[]) null);
         }
 
-        public <V> Builder<T> addUnencodableOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                                @Nullable V defaultValue, String @Nullable ... altNames) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, null, altNames);
+        }
+
+        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                                 @Nullable V defaultValue, @Nullable Predicate<V> emptyTest) {
-            return addUnencodableDynOpt(name, fieldEncoder, fieldDecoder, () -> defaultValue, emptyTest);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, emptyTest);
         }
 
-        public <V> Builder<T> addUnencodableDynOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
+        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                                @Nullable V defaultValue, @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, emptyTest, altNames);
+        }
+
+        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                                    @Nullable Supplier<V> defaultSupplier) {
-            return addUnencodableDynOpt(name, fieldEncoder, fieldDecoder, defaultSupplier, null);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, defaultSupplier, null, (String[]) null);
+        }
+
+        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                                   @Nullable Supplier<V> defaultSupplier, String @Nullable ... altNames) {
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, defaultSupplier, null, altNames);
+        }
+
+        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest) {
+            return addDynOpt(name, fieldWriter, fieldReader, null, defaultSupplier, emptyTest);
         }
 
         /**
@@ -349,15 +426,57 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
          * Unencodable means it cannot be converted to a data format like JSON. This is the case for functions.
          * These unencodable values are still important for copying and applying default values.
          *
-         * @see #addDynOpt(String, FieldEncoder, FieldDecoder, Codec, Supplier, Predicate)
+         * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier, Predicate)
          */
-        public <V> Builder<T> addUnencodableDynOpt(String name, FieldEncoder<T, V> fieldEncoder, FieldDecoder<T, V> fieldDecoder,
-                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest) {
-            return addDynOpt(name, fieldEncoder, fieldDecoder, null, defaultSupplier, emptyTest);
+        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
+            return addDynOpt(name, fieldWriter, fieldReader, null, defaultSupplier, emptyTest, altNames);
+        }
+
+        public Builder<T> registry(CodecRegistry<T> registry, String... names) {
+            this.registry = registry;
+            this.names = names;
+            return this;
+        }
+
+        public Builder<T> registryTypeName(CodecRegistry<T> registry, String typeName) {
+            return registry(registry, typeName, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, typeName));
+        }
+
+        public Builder<T> registryTypeName(CodecRegistry<T> registry, Class<T> typeName) {
+            return registryTypeName(registry, typeName.getSimpleName());
+        }
+
+        public Builder<T> drawableRegistry(Class<T> type) {
+            return drawableRegistry(type, type.getSimpleName());
+        }
+
+        @SuppressWarnings("unchecked")
+        public Builder<T> drawableRegistry(Class<T> type, String typeName) {
+            if (!IDrawable.class.isAssignableFrom(type)) {
+                throw new IllegalArgumentException("Type '" + typeName + "' is not an IDrawable!");
+            }
+            return registryTypeName((CodecRegistry<T>) IDrawable.CODECS, typeName);
+        }
+
+        public Builder<T> widgetRegistry(Class<T> type) {
+            return widgetRegistry(type, type.getSimpleName());
+        }
+
+        @SuppressWarnings("unchecked")
+        public Builder<T> widgetRegistry(Class<T> type, String typeName) {
+            if (!IWidget.class.isAssignableFrom(type)) {
+                throw new IllegalArgumentException("Type '" + typeName + "' is not an IWidget!");
+            }
+            return registryTypeName((CodecRegistry<T>) IWidget.CODECS, typeName);
         }
 
         public MutableObjectCodec<T> build() {
-            return new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy);
+            var c = new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy);
+            if (this.registry != null) {
+                this.registry.register(c, this.names);
+            }
+            return c;
         }
     }
 }

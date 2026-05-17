@@ -10,10 +10,15 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.FormattingUtil;
 import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.Stencil;
+import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.CharMatcher;
+
+import com.mojang.serialization.Codec;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +31,9 @@ import java.util.function.UnaryOperator;
  * A widget in a GUI.
  */
 public interface IWidget extends ITreeNode<IWidget> {
+
+    CodecRegistry<IWidget> CODECS = new CodecRegistry<>();
+    Codec<IWidget> CODEC = Codec.STRING.dispatch("widget", IWidget::getTypeName, CODECS::getNullable);
 
     String WIDGET_TRANSLATION_KEY_FORMAT = "widget.%s.name";
     /**
@@ -376,6 +384,15 @@ public interface IWidget extends ITreeNode<IWidget> {
 
     @Nullable
     String getName();
+
+    /**
+     * The type name of this widget. This is used for codecs.
+     *
+     * @return the simple class name or other fitting name
+     */
+    default String getTypeName() {
+        return getClass().getSimpleName();
+    }
 
     default boolean isName(String name) {
         return name.equals(getName());

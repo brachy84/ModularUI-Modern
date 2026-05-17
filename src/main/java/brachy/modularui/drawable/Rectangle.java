@@ -9,9 +9,11 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolations;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,9 +29,28 @@ import java.util.function.IntConsumer;
 @Accessors(fluent = true, chain = true)
 public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnimatable<Rectangle> {
 
-    private int cornerRadius, colorTL, colorTR, colorBL, colorBR;
+    public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.builder(Rectangle::new)
+            .addOpt("colorTopLeft", Rectangle::colorTL, Rectangle::colorTL, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorLeft", "colorTL")
+            .addOpt("colorTopRight", Rectangle::colorTR, Rectangle::colorTR, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorRight", "colorTR")
+            .addOpt("colorBottomLeft", Rectangle::colorBL, Rectangle::colorBL, Color.CODEC, Color.WHITE.main, "color", "colorBottom", "colorLeft", "colorBL")
+            .addOpt("colorBottomRight", Rectangle::colorBR, Rectangle::colorBR, Color.CODEC, Color.WHITE.main, "color", "colorBottom", "colorRight", "colorBR")
+            .addOpt("cornerRadius", Rectangle::cornerRadius, Rectangle::cornerRadius, Codec.INT, 0)
+            .addOpt("cornerSegments", Rectangle::cornerSegments, Rectangle::cornerSegments, Codec.INT, 8)
+            .addOpt("borderThickness", Rectangle::borderThickness, Rectangle::borderThickness, Codec.FLOAT, 0f)
+            .addOpt("canApplyTheme", Rectangle::canApplyTheme, Rectangle::canApplyTheme, Codec.BOOL, false)
+            .drawableRegistry(Rectangle.class)
+            .build();
+
+    @Getter
+    @Setter
+    private int colorTL, colorTR, colorBL, colorBR;
+    @Getter
+    private int cornerRadius;
+    @Getter
     @Setter
     private int cornerSegments;
+    @Getter
+    @Setter
     private float borderThickness;
     @Getter
     @Setter

@@ -2,8 +2,12 @@ package brachy.modularui.utils;
 
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IInterpolation;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Mth;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.api.distmarker.Dist;
@@ -893,8 +897,45 @@ public class Color {
         return s;
     }
 
-    public static int parseString(String colorString) {
-        return parseString(colorString, WHITE.main, false);
+    public static final Codec<Integer> CODEC_STRING = Codec.STRING.comapFlatMap(Color::parseString, c -> "#" + argbToFullHexString(c));
+
+    public static final Codec<Integer> CODEC_ARGB = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("r").forGetter(Color::getRedF),
+            Codec.FLOAT.fieldOf("g").forGetter(Color::getGreenF),
+            Codec.FLOAT.fieldOf("b").forGetter(Color::getBlueF),
+            Codec.FLOAT.optionalFieldOf("a", 1f).forGetter(Color::getAlphaF)
+    ).apply(instance, Color::argb));
+
+    public static final Codec<Integer> CODEC_HSV = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("h").forGetter(Color::getHue),
+            Codec.FLOAT.fieldOf("s").forGetter(Color::getHSVSaturation),
+            Codec.FLOAT.fieldOf("v").forGetter(Color::getValue),
+            Codec.FLOAT.optionalFieldOf("a", 1f).forGetter(Color::getAlphaF)
+    ).apply(instance, Color::ofHSV));
+
+    public static final Codec<Integer> CODEC_HSL = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("h").forGetter(Color::getHue),
+            Codec.FLOAT.fieldOf("s").forGetter(Color::getHSLSaturation),
+            Codec.FLOAT.fieldOf("l").forGetter(Color::getLightness),
+            Codec.FLOAT.optionalFieldOf("a", 1f).forGetter(Color::getAlphaF)
+    ).apply(instance, Color::ofHSL));
+
+    public static final Codec<Integer> CODEC_CMYK = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("c").forGetter(Color::getCyan),
+            Codec.FLOAT.fieldOf("m").forGetter(Color::getMagenta),
+            Codec.FLOAT.fieldOf("y").forGetter(Color::getYellow),
+            Codec.FLOAT.fieldOf("k").forGetter(Color::getBlack),
+            Codec.FLOAT.optionalFieldOf("a", 1f).forGetter(Color::getAlphaF)
+    ).apply(instance, Color::ofCMYK));
+
+    /**
+     * Encodes into hex string and decodes, hex string, arg obj, hsv obj, hsl obj and then cmyk obj.
+     */
+    public static final Codec<Integer> CODEC = Codec.of(CODEC_STRING,
+            CodecUtil.chainedDecoder(CODEC_STRING, CODEC_ARGB, CODEC_HSV, CODEC_HSL, CODEC_CMYK), "Codec[Generic color to ARGB]");
+
+    public static DataResult<Integer> parseString(String colorString) {
+        return parseString(colorString, WHITE.main);
     }
 
     /**
@@ -913,33 +954,34 @@ public class Color {
      * @param fallback    the returned color value when the string is invalid
      * @return the parsed color ARGB.
      */
-    public static int parseString(String colorString, int fallback, boolean silent) {
-        if (colorString.isEmpty()) return fallback;
+    public static DataResult<Integer> parseString(String colorString, int fallback) {
+        if (colorString.isEmpty()) return DataResult.success(fallback);
         char c = colorString.charAt(0);
         // a normal int string
         if (Character.isDigit(c) || c == '-' || c == '#') {
             try {
                 int color = (int) (long) Long.decode(colorString); // bruh
                 if (color != 0 && getAlpha(color) == 0) {
-                    return withAlpha(color, 255);
+                    return DataResult.success(withAlpha(color, 255));
                 }
-                return color;
+                return DataResult.success(color);
             } catch (NumberFormatException e) {
-                ModularUI.LOGGER.error("Failed to decode color of string '{}'. Exception: ", colorString);
-                ModularUI.LOGGER.catching(e);
-                return fallback;
+                String finalColorString = colorString;
+                return DataResult.error(() -> String.format("Failed to decode color of string '%s'.", finalColorString), fallback);
             }
         }
 
         if ("invisible".equals(colorString)) {
-            return withAlpha(WHITE.main, 0);
+            return DataResult.success(withAlpha(WHITE.main, 0));
         }
         int i = colorString.indexOf(':');
         int index = 0;
+        String fail = null;
         if (i > 0) {
             try {
                 index = Integer.parseInt(colorString.substring(i + 1));
             } catch (NumberFormatException e) {
+                fail = colorString.substring(i + 1);
                 ModularUI.LOGGER.error("[THEME] If the color is a word then after teh : must come a negative or " +
                         "positive integer, but got '{}'", colorString.substring(i + 1));
             }
@@ -947,12 +989,16 @@ public class Color {
         }
         ColorShade colorShade = ColorShade.getFromName(colorString);
         if (colorShade != null) {
-            if (index == 0) return colorShade.main;
-            if (index > 0) return colorShade.brighterSafe(index - 1);
-            return colorShade.darkerSafe(-index - 1);
+            if (fail != null) {
+                String finalFail = fail;
+                return DataResult.error(() -> String.format("If the color is a word then after teh : must come a negative or positive integer, but got '%s'.", finalFail), colorShade.main);
+            }
+            if (index == 0) return DataResult.success(colorShade.main);
+            if (index > 0) return DataResult.success(colorShade.brighterSafe(index - 1));
+            return DataResult.success(colorShade.darkerSafe(-index - 1));
         }
-        ModularUI.LOGGER.error("[THEME] No color shade for name '{}' was found", colorString);
-        return fallback;
+        String finalColorString1 = colorString;
+        return DataResult.error(() -> String.format("No color shade for name '%s' was found", finalColorString1), fallback);
     }
 
     /**
@@ -962,9 +1008,10 @@ public class Color {
      * @return ARGB color
      * @throws JsonParseException if color could not be parsed
      */
+    @Deprecated
     public static int ofJson(JsonElement jsonElement) {
         if (jsonElement.isJsonPrimitive()) {
-            return parseString(jsonElement.getAsString());
+            return parseString(jsonElement.getAsString()).resultOrPartial(s -> {}).orElse(WHITE.main);
         }
         if (jsonElement.isJsonObject()) {
             JsonObject json = jsonElement.getAsJsonObject();

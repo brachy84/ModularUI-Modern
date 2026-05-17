@@ -1,5 +1,6 @@
 package brachy.modularui.utils;
 
+import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.google.common.base.CaseFormat;
@@ -10,16 +11,30 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import com.mojang.serialization.Codec;
+
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.AccessLevel;
+import lombok.Getter;
+
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 import java.util.Map;
 
 public class Alignment {
 
     private static final Map<String, Alignment> ALIGNMENT_MAP = new Object2ObjectOpenHashMap<>();
 
-    public final float x, y;
+    @Getter public final float x, y;
+    @Getter(AccessLevel.PRIVATE) private final String name;
 
     public static final Alignment TopLeft = new Alignment(0, 0, "TopLeft");
     public static final Alignment TopCenter = new Alignment(0.5f, 0, "TopCenter");
@@ -53,6 +68,7 @@ public class Alignment {
     private Alignment(float x, float y, String name) {
         this.x = x;
         this.y = y;
+        this.name = name;
         if (name != null) {
             ALIGNMENT_MAP.put(name, this);
             ALIGNMENT_MAP.put(CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name), this);
@@ -66,7 +82,7 @@ public class Alignment {
      * Defines how elements should be aligned on the main axis.
      * In a row this would mean the x coordinates.
      */
-    public enum MainAxis {
+    public enum MainAxis implements StringRepresentable {
 
         /**
          * All children will be put at the start of the Flow next to each other.
@@ -95,14 +111,27 @@ public class Alignment {
          * flow has exactly one
          * child, then this behaves the same as {@link #CENTER}.
          */
-        SPACE_AROUND
+        SPACE_AROUND;
+
+        public static final Codec<MainAxis> CODEC = StringRepresentable.fromEnum(MainAxis::values);
+
+        public final String name;
+
+        MainAxis() {
+            this.name = name().toLowerCase(Locale.ENGLISH);
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
+        }
     }
 
     /**
      * Defines how elements should be aligned on the cross axis.
      * In a row this would mean the y coordinates.
      */
-    public enum CrossAxis {
+    public enum CrossAxis implements StringRepresentable {
 
         /**
          * All children will be put at the start of the Flow next to each other.
@@ -115,9 +144,32 @@ public class Alignment {
         /**
          * All children will be put at the end of the Flow next to each other (this does not reverse children order).
          */
-        END
+        END;
+
+        public static final Codec<CrossAxis> CODEC = StringRepresentable.fromEnum(CrossAxis::values);
+
+        public final String name;
+
+        CrossAxis() {
+            this.name = name().toLowerCase(Locale.ENGLISH);
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
+        }
     }
 
+    private static final Codec<Alignment> CODEC_OF_INSTANCE = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("x").forGetter(Alignment::getX),
+            Codec.FLOAT.fieldOf("y").forGetter(Alignment::getY)
+    ).apply(instance, Alignment::new));
+
+    private static final Codec<Alignment> CODEC_OF_NAME = ExtraCodecs.stringResolverCodec(Alignment::getName, ALIGNMENT_MAP::get);
+
+    public static final Codec<Alignment> CODEC = CodecUtil.chainedCodec(CODEC_OF_NAME, CODEC_OF_INSTANCE);
+
+    @Deprecated
     public static class Json implements JsonDeserializer<Alignment>, JsonSerializer<Alignment> {
 
         @Override
