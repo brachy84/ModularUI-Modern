@@ -10,9 +10,14 @@ import brachy.modularui.api.widget.IVanillaSlot;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.core.mixins.client.SlotAccessor;
 import brachy.modularui.utils.TreeUtil;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widgets.layout.IExpander;
 
+import com.mojang.serialization.Codec;
+
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +29,16 @@ import java.util.function.DoubleSupplier;
  */
 public class StandardResizer extends WidgetResizeNode implements IPositioned<StandardResizer> {
 
-    private final DimensionSizer x;
-    private final DimensionSizer y;
+    public static final MutableObjectCodec<StandardResizer> CODEC = MutableObjectCodec.builder(StandardResizer.class)
+            .baseCopy(resizer -> new StandardResizer(resizer.getWidget()))
+            .addOpt("expanded", StandardResizer::expanded, StandardResizer::isExpanded, Codec.BOOL, false)
+            .addOpt("decoration", StandardResizer::decoration, StandardResizer::isDecoration, Codec.BOOL, false)
+            .add("x", StandardResizer::setX, StandardResizer::getX, DimensionSizer.CODEC)
+            .add("y", StandardResizer::setY, StandardResizer::getY, DimensionSizer.CODEC)
+            .build();
+
+    @Getter(AccessLevel.PRIVATE) private final DimensionSizer x;
+    @Getter(AccessLevel.PRIVATE) private final DimensionSizer y;
     @Getter private boolean expanded = false;
     @Getter private boolean decoration = false;
 
@@ -41,6 +54,14 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
 
     protected DimensionSizer createDimensionSizer(GuiAxis axis) {
         return new DimensionSizer(this, axis);
+    }
+
+    private void setX(DimensionSizer ds) {
+        if (ds != this.x) this.x.copyPropertiesOf(ds);
+    }
+
+    private void setY(DimensionSizer ds) {
+        if (ds != this.y) this.y.copyPropertiesOf(ds);
     }
 
     @Override

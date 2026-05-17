@@ -1,17 +1,25 @@
 package brachy.modularui.utils.serialization.json;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 
+import brachy.modularui.utils.serialization.codec.MutableCodec;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +52,6 @@ public class JsonHelper {
             return GSON.toJsonTree(o, type);
         }
     };
-
 
     public static JsonElement serialize(Object object) {
         return GSON.toJsonTree(object);
@@ -231,5 +238,27 @@ public class JsonHelper {
         JsonObject json = new JsonObject();
         writer.accept(json);
         return json;
+    }
+
+    public static <T> JsonElement toJson(Codec<T> codec, T input) {
+        var d = codec.encodeStart(JsonOps.INSTANCE, input);
+        if (d.error().isPresent()) ModularUI.LOGGER.error("Error encoding '{}' to json: {}", input, d.error().get());
+        return d.result().orElse(JsonNull.INSTANCE);
+    }
+
+    public static <T> String toJsonString(Codec<T> codec, T input) {
+        return GSON.toJson(toJson(codec, input));
+    }
+
+    public static <T> T fromJsonString(MutableCodec<T> codec, String json, T instance) {
+        var d = codec.parse(JsonOps.INSTANCE, JsonParser.parseString(json), instance);
+        if (d.error().isPresent()) ModularUI.LOGGER.error("Error decoding from json: {}", d.error().get());
+        return instance;
+    }
+
+    public static <T> T fromJsonString(Codec<T> codec, String json) {
+        var d = codec.parse(JsonOps.INSTANCE, JsonParser.parseString(json));
+        if (d.error().isPresent()) ModularUI.LOGGER.error("Error decoding from json: {}", d.error().get());
+        return d.result().orElseThrow();
     }
 }

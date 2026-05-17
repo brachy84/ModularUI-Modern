@@ -4,11 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapLike;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +24,7 @@ import java.util.stream.Stream;
  *
  * @param <T> type of property
  */
-public class MutableObjectCodec<T> {
+public class MutableObjectCodec<T> implements MutableCodec<T> {
 
     private final Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields;
     private final InstanceDecoder<T> instanceDecoder;
@@ -43,65 +40,6 @@ public class MutableObjectCodec<T> {
     public void forEachField(Consumer<Field<T, ?>> consumer) {
         this.fields.values().forEach(consumer);
     }
-
-    public final MutableCodec<T> codec = new MutableCodec<T>() {
-
-        @Override
-        public <J> DataResult<Pair<T, J>> decodeInstance(DynamicOps<J> ops, J input) {
-            if (MutableObjectCodec.this.instanceDecoder == null) {
-                return DataResult.error(() -> "Instance can not be created since no instance decoder was provided.");
-            }
-            return MutableObjectCodec.this.instanceDecoder.decodeInstance(ops, input);
-        }
-
-        @Override
-        public <J> DataResult<Pair<T, J>> decode(DynamicOps<J> ops, J input, T instance) {
-            var d = ops.getMap(input);
-            var map = d.result();
-            if (map.isEmpty()) return DataResult.error(() -> d.error().orElseThrow().message());
-            List<String> errors = new ArrayList<>();
-            forEachField(f -> {
-                var error = f.decode(instance, ops, map.get());
-                if (error != null) errors.add(error);
-            });
-            if (!errors.isEmpty()) {
-                return DataResult.error(() ->
-                        String.format("Errors while decoding object of type '%s': %s", instance.getClass().getSimpleName(), errors));
-            }
-            return DataResult.success(new Pair<>(instance, input));
-        }
-
-        public DataResult<Pair<T, JsonElement>> decodeJson(JsonObject json) {
-            return decode(JsonOps.INSTANCE, json);
-        }
-
-        public DataResult<T> parseJson(JsonObject json) {
-            return parse(JsonOps.INSTANCE, json);
-        }
-
-        public DataResult<Pair<T, JsonElement>> decodeJson(JsonObject json, T instance) {
-            return decode(JsonOps.INSTANCE, json, instance);
-        }
-
-        public DataResult<T> parseJson(JsonObject json, T instance) {
-            return parse(JsonOps.INSTANCE, json, instance);
-        }
-
-        @Override
-        public <J> DataResult<J> encode(T input, DynamicOps<J> ops, J prefix) {
-            var builder = Stream.<Pair<J, J>>builder();
-            List<String> errors = new ArrayList<>();
-            forEachField(f -> {
-                var error = f.encode(input, ops, builder);
-                if (error != null) errors.add(error);
-            });
-            if (!errors.isEmpty()) {
-                return DataResult.error(() ->
-                        String.format("Errors while encoding object of type '%s': %s", input.getClass().getSimpleName(), errors));
-            }
-            return DataResult.success(ops.createMap(builder.build()));
-        }
-    };
 
     @SuppressWarnings("unchecked")
     private <V> Field<T, V> getField(String name) {
@@ -123,6 +61,57 @@ public class MutableObjectCodec<T> {
 
     public void applyDefaults(T instance) {
         forEachField(f -> f.applyDefault(instance));
+    }
+
+    @Override
+    public <J> DataResult<Pair<T, J>> decodeInstance(DynamicOps<J> ops, J input) {
+        if (MutableObjectCodec.this.instanceDecoder == null) {
+            return DataResult.error(() -> "Instance can not be created since no instance decoder was provided.");
+        }
+        return MutableObjectCodec.this.instanceDecoder.decodeInstance(ops, input);
+    }
+
+    @Override
+    public boolean canDecodeInstance() {
+        return this.instanceDecoder != null;
+    }
+
+    @Override
+    public <J> DataResult<Pair<T, J>> decode(DynamicOps<J> ops, J input, T instance) {
+        if (Objects.equals(input, ops.empty())) {
+            return DataResult.success(new Pair<>(null, ops.empty()));
+        }
+        var d = ops.getMap(input);
+        var map = d.result();
+        if (map.isEmpty()) return DataResult.error(() -> d.error().orElseThrow().message());
+        List<String> errors = new ArrayList<>();
+        forEachField(f -> {
+            var error = f.decode(instance, ops, map.get());
+            if (error != null) errors.add(error);
+        });
+        if (!errors.isEmpty()) {
+            return DataResult.error(() ->
+                    String.format("Errors while decoding object of type '%s': %s", instance.getClass().getSimpleName(), errors));
+        }
+        return DataResult.success(new Pair<>(instance, input));
+    }
+
+    @Override
+    public <J> DataResult<J> encode(T input, DynamicOps<J> ops, J prefix) {
+        if (input == null) {
+            return DataResult.success(ops.empty());
+        }
+        var builder = Stream.<Pair<J, J>>builder();
+        List<String> errors = new ArrayList<>();
+        forEachField(f -> {
+            var error = f.encode(input, ops, builder);
+            if (error != null) errors.add(error);
+        });
+        if (!errors.isEmpty()) {
+            return DataResult.error(() ->
+                    String.format("Errors while encoding object of type '%s': %s", input.getClass().getSimpleName(), errors));
+        }
+        return DataResult.success(ops.createMap(builder.build()));
     }
 
     public static <T> Builder<T> builder() {
@@ -175,14 +164,31 @@ public class MutableObjectCodec<T> {
             J element = map.get(this.name);
             V value;
             if (element == null) {
-                if (this.defaultSupplier == null) {
+                if (!hasDefault()) {
                     return String.format("Field '%s' has no value and is not optional", this.name);
                 }
-                value = this.defaultSupplier.get();
-            } else {
-                if (isUnencodable()) {
-                    return String.format("Field '%s' is unencodable, but data still contains value", this.name);
+                value = getDefault();
+            } else if (isUnencodable()) {
+                return String.format("Field '%s' is unencodable, but data still contains value", this.name);
+            } else if (this.codec instanceof MutableCodec<V> mutableCodec) {
+                value = this.fieldDecoder.decodeField(holder);
+                if (value == null) {
+                    if (mutableCodec.canDecodeInstance()) {
+                        var d = mutableCodec.parseInstance(ops, element);
+                        var res = d.result();
+                        if (res.isEmpty()) return d.error().orElseThrow().message();
+                        value = res.get();
+                    }
+                    if (value == null && hasDefault()) value = getDefault();
+                    if (value == null) {
+                        return String.format("Field '%s' is unable to decode instance and the holder has no default value and this property has no default value", this.name);
+                    }
                 }
+                var d = mutableCodec.parse(ops, element, value);
+                var res = d.result();
+                if (res.isEmpty()) return d.error().orElseThrow().message();
+                value = res.get();
+            } else {
                 var d = this.codec.parse(ops, element);
                 var res = d.result();
                 if (res.isEmpty()) return d.error().orElseThrow().message();

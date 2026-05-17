@@ -3,14 +3,12 @@ package brachy.modularui.widget.sizer;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import net.minecraft.util.StringRepresentable;
 import com.mojang.serialization.Codec;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-
-import net.minecraft.util.StringRepresentable;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,35 +18,7 @@ import java.util.function.DoubleSupplier;
 @ApiStatus.Internal
 public class Unit {
 
-    public enum State implements StringRepresentable {
-
-        UNUSED("", ""),
-        START("LEFT", "TOP"),
-        END("RIGHT", "BOTTOM"),
-        SIZE("WIDTH", "HEIGHT");
-
-        public static final Codec<State> CODEC = StringRepresentable.fromEnum(State::values);
-
-        public final String name, xText, yText;
-
-        State(String xText, String yText) {
-            this.name = name().toLowerCase(Locale.ENGLISH);
-            this.xText = xText;
-            this.yText = yText;
-        }
-
-        public String getText(GuiAxis axis) {
-            return axis.isHorizontal() ? this.xText : this.yText;
-        }
-
-
-        @Override
-        public @NotNull String getSerializedName() {
-            return this.name;
-        }
-    }
-
-    public static final MutableObjectCodec<Unit> CODER = MutableObjectCodec.builder(Unit::new)
+    public static final MutableObjectCodec<Unit> CODEC = MutableObjectCodec.builder(Unit::new)
             .addOpt("autoAnchor", Unit::setAutoAnchor, Unit::isAutoAnchor, Codec.BOOL, true)
             .addOpt("value", Unit::setValue, Unit::getValue, Codec.FLOAT, 0f)
             .addOpt("measure", Unit::setMeasure, Unit::getMeasure, Measure.CODEC, Measure.PIXEL)
@@ -60,22 +30,25 @@ public class Unit {
 
     @Getter
     @Setter
-    private boolean autoAnchor = true;
-    private float value = 0f;
+    private boolean autoAnchor;
+    private float value;
     @Getter(AccessLevel.PRIVATE)
-    private DoubleSupplier valueSupplier = null;
+    private DoubleSupplier valueSupplier;
     @Getter
     @Setter
-    private Measure measure = Measure.PIXEL;
-    @Setter private float anchor = 0f;
+    private Measure measure;
+    @Setter
+    private float anchor;
     @Getter
     @Setter
-    private int offset = 0;
+    private int offset;
     @Getter
     @Setter(AccessLevel.PRIVATE)
-    public State state = State.UNUSED;
+    public State state;
 
-    public Unit() {}
+    public Unit() {
+        reset();
+    }
 
     public void reset() {
         this.state = State.UNUSED;
@@ -135,6 +108,7 @@ public class Unit {
     }
 
     public enum Measure implements StringRepresentable {
+
         PIXEL,
         RELATIVE;
 
@@ -145,6 +119,34 @@ public class Unit {
         Measure() {
             this.name = name().toLowerCase(Locale.ENGLISH);
         }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
+        }
+    }
+
+    public enum State implements StringRepresentable {
+
+        UNUSED("", ""),
+        START("LEFT", "TOP"),
+        END("RIGHT", "BOTTOM"),
+        SIZE("WIDTH", "HEIGHT");
+
+        public static final Codec<State> CODEC = StringRepresentable.fromEnum(State::values);
+
+        public final String name, xText, yText;
+
+        State(String xText, String yText) {
+            this.name = name().toLowerCase(Locale.ENGLISH);
+            this.xText = xText;
+            this.yText = yText;
+        }
+
+        public String getText(GuiAxis axis) {
+            return axis.isHorizontal() ? this.xText : this.yText;
+        }
+
 
         @Override
         public @NotNull String getSerializedName() {
