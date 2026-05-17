@@ -1,28 +1,38 @@
 package brachy.modularui.widget.sizer;
 
 import brachy.modularui.api.GuiAxis;
-import brachy.modularui.utils.serialization.json.JsonCoder;
-import brachy.modularui.utils.serialization.json.MutableObjectCoder;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import com.mojang.serialization.Codec;
+
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.ApiStatus;
 
+import net.minecraft.util.StringRepresentable;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
 import java.util.function.DoubleSupplier;
 
 @ApiStatus.Internal
 public class Unit {
 
-    public enum State {
+    public enum State implements StringRepresentable {
 
         UNUSED("", ""),
         START("LEFT", "TOP"),
         END("RIGHT", "BOTTOM"),
         SIZE("WIDTH", "HEIGHT");
 
-        public final String xText, yText;
+        public static final Codec<State> CODEC = StringRepresentable.fromEnum(State::values);
+
+        public final String name, xText, yText;
 
         State(String xText, String yText) {
+            this.name = name().toLowerCase(Locale.ENGLISH);
             this.xText = xText;
             this.yText = yText;
         }
@@ -31,23 +41,28 @@ public class Unit {
             return axis.isHorizontal() ? this.xText : this.yText;
         }
 
-        public static final JsonCoder<State> CODER = JsonCoder.ofEnum(State.class);
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
+        }
     }
 
-    public static final MutableObjectCoder<Unit> CODER = new MutableObjectCoder.Builder<Unit>()
-            .add("autoAnchor", JsonCoder.BOOL, (holder, value) -> holder.autoAnchor = value, holder -> holder.autoAnchor)
-            .add("value", JsonCoder.FLOAT, (holder, value) -> holder.value = value, holder -> holder.value)
-            .add("measure", Measure.CODER, (holder, value) -> holder.measure = value, holder -> holder.measure)
-            .add("anchor", JsonCoder.FLOAT, (holder, value) -> holder.anchor = value, holder -> holder.anchor)
-            .add("offset", JsonCoder.INT, (holder, value) -> holder.offset = value, holder -> holder.offset)
-            .add("state", State.CODER, (holder, value) -> holder.state = value, holder -> holder.state)
-            .addUncodable("valueSupplier", holder -> holder.valueSupplier)
+    public static final MutableObjectCodec<Unit> CODER = MutableObjectCodec.builder(Unit::new)
+            .addOpt("autoAnchor", Unit::setAutoAnchor, Unit::isAutoAnchor, Codec.BOOL, true)
+            .addOpt("value", Unit::setValue, Unit::getValue, Codec.FLOAT, 0f)
+            .addOpt("measure", Unit::setMeasure, Unit::getMeasure, Measure.CODEC, Measure.PIXEL)
+            .addOpt("anchor", Unit::setAnchor, Unit::getAnchor, Codec.FLOAT, 0f)
+            .addOpt("offset", Unit::setOffset, Unit::getOffset, Codec.INT, 0)
+            .addOpt("state", Unit::setState, Unit::getState, State.CODEC, State.UNUSED)
+            .addUncodable("valueSupplier", Unit::getValueSupplier)
             .build();
 
     @Getter
     @Setter
     private boolean autoAnchor = true;
     private float value = 0f;
+    @Getter(AccessLevel.PRIVATE)
     private DoubleSupplier valueSupplier = null;
     @Getter
     @Setter
@@ -56,7 +71,8 @@ public class Unit {
     @Getter
     @Setter
     private int offset = 0;
-
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
     public State state = State.UNUSED;
 
     public Unit() {}
@@ -118,10 +134,21 @@ public class Unit {
         return this.state == State.UNUSED;
     }
 
-    public enum Measure {
+    public enum Measure implements StringRepresentable {
         PIXEL,
         RELATIVE;
 
-        public static final JsonCoder<Measure> CODER = JsonCoder.ofEnum(Measure.class);
+        public static final Codec<Measure> CODEC = StringRepresentable.fromEnum(Measure::values);
+
+        public final String name;
+
+        Measure() {
+            this.name = name().toLowerCase(Locale.ENGLISH);
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
+        }
     }
 }

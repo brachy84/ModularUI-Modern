@@ -1,4 +1,4 @@
-package brachy.modularui.utils.serialization.json;
+package brachy.modularui.utils.serialization.codec;
 
 public interface FieldDecoder<T, V> {
 
