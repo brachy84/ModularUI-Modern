@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Encoder;
 
 public class CodecUtil {
 
@@ -43,7 +44,7 @@ public class CodecUtil {
     public static <A> Decoder<A> chainedDecoder(Decoder<A>... decoder) {
         if (decoder == null || decoder.length == 0) throw new NullPointerException();
         if (decoder.length == 1) return decoder[0];
-        return new Decoder<A>() {
+        return new Decoder<>() {
             @Override
             public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
                 StringBuilder message = new StringBuilder();
@@ -56,5 +57,10 @@ public class CodecUtil {
                 return last.mapError(s -> message.substring(0, message.length() - 2));
             }
         };
+    }
+
+    @SafeVarargs
+    public static <A> Codec<A> codecOf(Encoder<A> encoder, Decoder<A>... decoder) {
+        return Codec.of(encoder, chainedDecoder(decoder));
     }
 }

@@ -5,11 +5,11 @@ import brachy.modularui.api.drawable.IInterpolation;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import net.minecraft.util.Mth;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Mth;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -931,8 +931,7 @@ public class Color {
     /**
      * Encodes into hex string and decodes, hex string, arg obj, hsv obj, hsl obj and then cmyk obj.
      */
-    public static final Codec<Integer> CODEC = Codec.of(CODEC_STRING,
-            CodecUtil.chainedDecoder(CODEC_STRING, CODEC_ARGB, CODEC_HSV, CODEC_HSL, CODEC_CMYK), "Codec[Generic color to ARGB]");
+    public static final Codec<Integer> CODEC = CodecUtil.codecOf(CODEC_STRING, CODEC_STRING, CODEC_ARGB, CODEC_HSV, CODEC_HSL, CODEC_CMYK);
 
     public static DataResult<Integer> parseString(String colorString) {
         return parseString(colorString, WHITE.main);

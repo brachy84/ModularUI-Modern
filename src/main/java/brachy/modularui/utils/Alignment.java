@@ -3,6 +3,11 @@ package brachy.modularui.utils;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.StringRepresentable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import com.google.common.base.CaseFormat;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -11,18 +16,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import com.mojang.serialization.Codec;
-
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
-
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.StringRepresentable;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;

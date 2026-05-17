@@ -1,10 +1,7 @@
 package brachy.modularui.utils.serialization.codec;
 
 import brachy.modularui.api.drawable.IDrawable;
-
 import brachy.modularui.api.widget.IWidget;
-
-import com.google.common.base.CaseFormat;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -12,6 +9,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 
+import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,6 +133,70 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
 
     public static <T> Builder<T> builder(Supplier<T> instance) {
         return new Builder<T>().instance(instance);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(Class<T> type) {
+        return new DrawableBuilder<>(type.getTypeName());
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(String typeName) {
+        return new DrawableBuilder<>(typeName);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(Class<T> type, String typeName) {
+        return new DrawableBuilder<>(typeName);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(String typeName, InstanceDecoder<T> instanceDecoder) {
+        return new DrawableBuilder<T>(typeName).instanceDecoder(instanceDecoder);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(String typeName, Supplier<T> instance) {
+        return new DrawableBuilder<T>(typeName).instance(instance);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(Class<T> type, InstanceDecoder<T> instanceDecoder) {
+        return new DrawableBuilder<T>(type.getSimpleName()).instanceDecoder(instanceDecoder);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(Supplier<T> instance) {
+        return drawableBuilder(instance.get().getTypeName(), instance);
+    }
+
+    public static <T extends IDrawable> Builder<T> drawableBuilder(Class<T> type, Supplier<T> instance) {
+        return new DrawableBuilder<T>(type.getSimpleName()).instance(instance);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(Class<T> type) {
+        return new WidgetBuilder<>(type.getTypeName());
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(String typeName) {
+        return new WidgetBuilder<>(typeName);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(Class<T> type, String typeName) {
+        return new WidgetBuilder<>(typeName);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(String typeName, InstanceDecoder<T> instanceDecoder) {
+        return new WidgetBuilder<T>(typeName).instanceDecoder(instanceDecoder);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(String typeName, Supplier<T> instance) {
+        return new WidgetBuilder<T>(typeName).instance(instance);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(Class<T> type, InstanceDecoder<T> instanceDecoder) {
+        return new WidgetBuilder<T>(type.getSimpleName()).instanceDecoder(instanceDecoder);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(Class<T> type, Supplier<T> instance) {
+        return new WidgetBuilder<T>(type.getSimpleName()).instance(instance);
+    }
+
+    public static <T extends IWidget> Builder<T> widgetBuilder(Supplier<T> instance) {
+        return widgetBuilder(instance.get().getTypeName(), instance);
     }
 
     public record Field<T, V>(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
@@ -350,8 +412,8 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
          * Adds a new optional, mutable property with a dynamic default value.
          *
          * @param name            name of the property, mostly used for en-/decoding
-         * @param fieldWriter    writes a value to the field
-         * @param fieldReader    reads a value from the field
+         * @param fieldWriter     writes a value to the field
+         * @param fieldReader     reads a value from the field
          * @param codec           handles en-/decoding of a value
          * @param defaultSupplier supplier for a default value, if this is non-null, this property is marked as optional
          * @param emptyTester     a test function to test whether a value is empty, this is currently only used for unencodable values
@@ -447,36 +509,28 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             return registryTypeName(registry, typeName.getSimpleName());
         }
 
-        public Builder<T> drawableRegistry(Class<T> type) {
-            return drawableRegistry(type, type.getSimpleName());
-        }
-
-        @SuppressWarnings("unchecked")
-        public Builder<T> drawableRegistry(Class<T> type, String typeName) {
-            if (!IDrawable.class.isAssignableFrom(type)) {
-                throw new IllegalArgumentException("Type '" + typeName + "' is not an IDrawable!");
-            }
-            return registryTypeName((CodecRegistry<T>) IDrawable.CODECS, typeName);
-        }
-
-        public Builder<T> widgetRegistry(Class<T> type) {
-            return widgetRegistry(type, type.getSimpleName());
-        }
-
-        @SuppressWarnings("unchecked")
-        public Builder<T> widgetRegistry(Class<T> type, String typeName) {
-            if (!IWidget.class.isAssignableFrom(type)) {
-                throw new IllegalArgumentException("Type '" + typeName + "' is not an IWidget!");
-            }
-            return registryTypeName((CodecRegistry<T>) IWidget.CODECS, typeName);
-        }
-
         public MutableObjectCodec<T> build() {
             var c = new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy);
             if (this.registry != null) {
                 this.registry.register(c, this.names);
             }
             return c;
+        }
+    }
+
+    public static class DrawableBuilder<T extends IDrawable> extends Builder<T> {
+
+        @SuppressWarnings("unchecked")
+        public DrawableBuilder(String typeName) {
+            registryTypeName((CodecRegistry<T>) IDrawable.CODECS, typeName);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class WidgetBuilder<T extends IWidget> extends Builder<T> {
+
+        public WidgetBuilder(String typeName) {
+            registryTypeName((CodecRegistry<T>) IWidget.CODECS, typeName);
         }
     }
 }

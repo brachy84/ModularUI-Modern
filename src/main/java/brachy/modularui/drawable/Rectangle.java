@@ -29,7 +29,7 @@ import java.util.function.IntConsumer;
 @Accessors(fluent = true, chain = true)
 public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnimatable<Rectangle> {
 
-    public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.builder(Rectangle::new)
+    public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.drawableBuilder(Rectangle::new)
             .addOpt("colorTopLeft", Rectangle::colorTL, Rectangle::colorTL, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorLeft", "colorTL")
             .addOpt("colorTopRight", Rectangle::colorTR, Rectangle::colorTR, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorRight", "colorTR")
             .addOpt("colorBottomLeft", Rectangle::colorBL, Rectangle::colorBL, Color.CODEC, Color.WHITE.main, "color", "colorBottom", "colorLeft", "colorBL")
@@ -38,7 +38,6 @@ public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnim
             .addOpt("cornerSegments", Rectangle::cornerSegments, Rectangle::cornerSegments, Codec.INT, 8)
             .addOpt("borderThickness", Rectangle::borderThickness, Rectangle::borderThickness, Codec.FLOAT, 0f)
             .addOpt("canApplyTheme", Rectangle::canApplyTheme, Rectangle::canApplyTheme, Codec.BOOL, false)
-            .drawableRegistry(Rectangle.class)
             .build();
 
     @Getter
