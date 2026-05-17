@@ -55,7 +55,7 @@ public class Unit {
             .addOpt("anchor", Unit::setAnchor, Unit::getAnchor, Codec.FLOAT, 0f)
             .addOpt("offset", Unit::setOffset, Unit::getOffset, Codec.INT, 0)
             .addOpt("state", Unit::setState, Unit::getState, State.CODEC, State.UNUSED)
-            .addUncodable("valueSupplier", Unit::getValueSupplier)
+            .addUnencodableOpt("valueSupplier", Unit::setValue, Unit::getValueSupplier, null)
             .build();
 
     @Getter
