@@ -293,6 +293,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         json.addProperty("colorOverride", this.colorOverride);
     }
 
+    @Override
+    public String getTypeName() {
+        return "texture";
+    }
+
     public Builder toBuilder() {
         return builder()
                 .location(this.location)
@@ -627,7 +632,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     .resultOrPartial(s -> {
                         throw new IllegalArgumentException(s);
                     }).map(texture -> {
-                        DrawableSerialization.registerTexture(this.name, texture);
+                        //DrawableSerialization.registerTexture(this.name, texture);
                         return texture;
                     }).map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
                     .orElseThrow();

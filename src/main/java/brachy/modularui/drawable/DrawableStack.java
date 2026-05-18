@@ -5,8 +5,11 @@ import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import net.minecraft.util.ExtraCodecs;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -16,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,8 +27,23 @@ import java.util.List;
  */
 public record DrawableStack(IDrawable... drawables) implements IDrawable, IJsonSerializable<DrawableStack> {
 
+    public static final Codec<IDrawable> CODEC = ExtraCodecs.lazyInitializedCodec(() ->
+            CodecUtil.checkedEncoder(IDrawable.CODEC.listOf().xmap(DrawableStack::fromList, DrawableStack::toList),
+                    d -> d instanceof DrawableStack));
+
     public static final IDrawable[] EMPTY_BACKGROUND = {};
     public static final DrawableStack EMPTY = new DrawableStack(EMPTY_BACKGROUND);
+
+    public static IDrawable fromList(List<IDrawable> list) {
+        return IDrawable.of(list.toArray(IDrawable[]::new));
+    }
+
+    public static List<IDrawable> toList(IDrawable drawable) {
+        if (drawable instanceof DrawableStack stack) {
+            return List.of(stack.drawables);
+        }
+        return Collections.singletonList(drawable);
+    }
 
     public DrawableStack(IDrawable... drawables) {
         this.drawables = drawables == null || drawables.length == 0 ? EMPTY_BACKGROUND : drawables;

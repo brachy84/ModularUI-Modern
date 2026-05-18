@@ -226,4 +226,9 @@ public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnim
                 .cornerSegments(this.cornerSegments)
                 .canApplyTheme(this.canApplyTheme);
     }
+
+    @Override
+    public String getTypeName() {
+        return "rectangle";
+    }
 }

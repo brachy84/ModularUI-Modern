@@ -246,7 +246,7 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
                                                                     tooltip.addDrawableLine(GuiTextures.MUI_LOGO.asIcon().size(50).alignment(Alignment.TopCenter));
                                                                     tooltip.addLine(Text.str("And here a circle:"));
                                                                     tooltip.addDrawableLine(new Circle()
-                                                                                    .setColor(Color.RED.darker(2), Color.RED.brighter(2))
+                                                                                    .color(Color.RED.darker(2), Color.RED.brighter(2))
                                                                                     .asIcon()
                                                                                     .size(20))
                                                                             .addDrawableLine(new ItemDrawable(new ItemStack(Items.DIAMOND)).asIcon())

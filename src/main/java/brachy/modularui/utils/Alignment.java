@@ -24,10 +24,19 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class Alignment {
 
     private static final Map<String, Alignment> ALIGNMENT_MAP = new Object2ObjectOpenHashMap<>();
+
+    private static final Codec<Alignment> CODEC_OF_INSTANCE = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.fieldOf("x").forGetter(Alignment::getX),
+            Codec.FLOAT.fieldOf("y").forGetter(Alignment::getY)
+    ).apply(instance, Alignment::new));
+    private static final Codec<Alignment> CODEC_OF_NAME = ExtraCodecs.stringResolverCodec(Alignment::getName, ALIGNMENT_MAP::get);
+
+    public static final Codec<Alignment> CODEC = CodecUtil.chainedCodec(CODEC_OF_NAME, CODEC_OF_INSTANCE);
 
     @Getter public final float x, y;
     @Getter(AccessLevel.PRIVATE) private final String name;
@@ -72,6 +81,18 @@ public class Alignment {
             ALIGNMENT_MAP.put(abbrev, this);
             ALIGNMENT_MAP.put(abbrev.toLowerCase(), this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Alignment alignment = (Alignment) o;
+        return Float.compare(x, alignment.x) == 0 && Float.compare(y, alignment.y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     /**
@@ -155,15 +176,6 @@ public class Alignment {
             return this.name;
         }
     }
-
-    private static final Codec<Alignment> CODEC_OF_INSTANCE = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.fieldOf("x").forGetter(Alignment::getX),
-            Codec.FLOAT.fieldOf("y").forGetter(Alignment::getY)
-    ).apply(instance, Alignment::new));
-
-    private static final Codec<Alignment> CODEC_OF_NAME = ExtraCodecs.stringResolverCodec(Alignment::getName, ALIGNMENT_MAP::get);
-
-    public static final Codec<Alignment> CODEC = CodecUtil.chainedCodec(CODEC_OF_NAME, CODEC_OF_INSTANCE);
 
     @Deprecated
     public static class Json implements JsonDeserializer<Alignment>, JsonSerializer<Alignment> {

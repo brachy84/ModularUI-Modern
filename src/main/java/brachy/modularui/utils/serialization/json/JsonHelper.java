@@ -250,15 +250,23 @@ public class JsonHelper {
         return GSON.toJson(toJson(codec, input));
     }
 
-    public static <T> T fromJsonString(MutableCodec<T> codec, String json, T instance) {
-        var d = codec.parse(JsonOps.INSTANCE, JsonParser.parseString(json), instance);
+    public static <T> T fromJson(MutableCodec<T> codec, JsonElement json, T instance) {
+        var d = codec.parse(JsonOps.INSTANCE, json, instance);
         if (d.error().isPresent()) ModularUI.LOGGER.error("Error decoding from json: {}", d.error().get());
         return instance;
     }
 
-    public static <T> T fromJsonString(Codec<T> codec, String json) {
-        var d = codec.parse(JsonOps.INSTANCE, JsonParser.parseString(json));
+    public static <T> T fromJson(Codec<T> codec, JsonElement json) {
+        var d = codec.parse(JsonOps.INSTANCE, json);
         if (d.error().isPresent()) ModularUI.LOGGER.error("Error decoding from json: {}", d.error().get());
         return d.result().orElseThrow();
+    }
+
+    public static <T> T fromJsonString(MutableCodec<T> codec, String json, T instance) {
+        return fromJson(codec, JsonParser.parseString(json), instance);
+    }
+
+    public static <T> T fromJsonString(Codec<T> codec, String json) {
+        return fromJson(codec, JsonParser.parseString(json));
     }
 }

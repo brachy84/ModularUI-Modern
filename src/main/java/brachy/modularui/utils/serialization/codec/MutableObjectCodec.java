@@ -222,6 +222,10 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
                 }
                 return null;
             }
+            if (value == null) {
+                if (hasDefault()) return null;
+                return String.format("Field '%s' is not optional, but is trying to encode a null value", this.name);
+            }
             var d = this.codec.encodeStart(ops, value);
             var res = d.result();
             if (res.isEmpty()) return d.error().orElseThrow().message();

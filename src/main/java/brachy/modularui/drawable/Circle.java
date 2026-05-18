@@ -7,18 +7,28 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolations;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent = true, chain = true)
 public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable<Circle> {
 
+    public static final MutableObjectCodec<Circle> CODEC = MutableObjectCodec.drawableBuilder(Circle::new)
+            .addOpt("colorInner", Circle::colorInner, Circle::colorInner, Codec.INT, 0, "color")
+            .addOpt("colorOuter", Circle::colorOuter, Circle::colorOuter, Codec.INT, 0, "color")
+            .addOpt("segments", Circle::segments, Circle::segments, Codec.INT, 40)
+            .build();
+
+    @Getter
     @Setter
     private int colorInner, colorOuter, segments;
 
@@ -26,22 +36,6 @@ public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable
         this.colorInner = 0;
         this.colorOuter = 0;
         this.segments = 40;
-    }
-
-    public Circle setColorInner(int colorInner) {
-        return colorInner(colorInner);
-    }
-
-    public Circle setColorOuter(int colorOuter) {
-        return colorOuter(colorOuter);
-    }
-
-    public Circle setColor(int inner, int outer) {
-        return color(inner, outer);
-    }
-
-    public Circle setSegments(int segments) {
-        return segments(segments);
     }
 
     public Circle color(int inner, int outer) {
@@ -88,7 +82,12 @@ public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable
     @Override
     public Circle copyOrImmutable() {
         return new Circle()
-                .setColor(this.colorInner, this.colorOuter)
-                .setSegments(this.segments);
+                .color(this.colorInner, this.colorOuter)
+                .segments(this.segments);
+    }
+
+    @Override
+    public String getTypeName() {
+        return "circle";
     }
 }

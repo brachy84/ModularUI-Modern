@@ -10,17 +10,16 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.codec.CodecRegistry;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.ExtraCodecs;
+import com.mojang.serialization.DataResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
 
 /**
  * An object which can be drawn at any size. This is mainly used for backgrounds and overlays in
@@ -39,8 +38,28 @@ public interface IDrawable {
         }
     }
 
+    /**
+     * An empty drawable. Does nothing.
+     */
+    IDrawable EMPTY = (context, x, y, width, height, widgetTheme) -> {};
+
+    /**
+     * An empty drawable used to mark hover textures as "should not be used"!
+     */
+    IDrawable NONE = (context, x, y, width, height, widgetTheme) -> {};
+
     CodecRegistry<IDrawable> CODECS = new CodecRegistry<>();
-    Codec<IDrawable> CODEC_DISPATCH = Codec.STRING.dispatch(IDrawable::getTypeName, CODECS::getNullable);
+    Codec<IDrawable> CODEC_DISPATCH = CodecUtil.dispatchNullable(Codec.STRING, IDrawable::getTypeName, CODECS::getNullable);
+    Codec<IDrawable> CODEC_EMPTY_NONE = Codec.STRING.flatXmap(s -> {
+        if (s == null || s.equals("empty") || s.equals("null")) return DataResult.success(EMPTY);
+        if (s.equals("none")) return DataResult.success(NONE);
+        return DataResult.error(() -> "Only valid options are empty, null and none");
+    }, d -> {
+        if (d == EMPTY) return DataResult.success("empty");
+        if (d == NONE) return DataResult.success("none");
+        return DataResult.error(() -> "Only works for empty and none");
+    });
+    Codec<IDrawable> CODEC = CodecUtil.chainedCodec(CODEC_EMPTY_NONE, DrawableStack.CODEC, CODEC_DISPATCH);
 
     /**
      * Draws this drawable at the given position with the given size. It's the implementors responsibility to properly
@@ -175,16 +194,6 @@ public interface IDrawable {
     default String getTypeName() {
         return getClass().getSimpleName();
     }
-
-    /**
-     * An empty drawable. Does nothing.
-     */
-    IDrawable EMPTY = (context, x, y, width, height, widgetTheme) -> {};
-
-    /**
-     * An empty drawable used to mark hover textures as "should not be used"!
-     */
-    IDrawable NONE = (context, x, y, width, height, widgetTheme) -> {};
 
     static boolean isVisible(@Nullable IDrawable drawable) {
         if (drawable == null || drawable == EMPTY || drawable == NONE) return false;
