@@ -10,6 +10,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 
 import com.google.common.base.CaseFormat;
+import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +46,25 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
 
     public void forEachField(Consumer<Field<T, ?>> consumer) {
         this.fields.values().forEach(consumer);
+    }
+
+    public boolean testEachField(Predicate<Field<T, ?>> test) {
+        for (Field<T, ?> f : this.fields.values()) {
+            if (!test.test(f)) return false;
+        }
+        return true;
+    }
+
+    public boolean hasAnyField(JsonObject json) {
+        return !testEachField(f -> {
+            if (json.has(f.name)) return false;
+            if (f.altNames != null) {
+                for (String alt : f.altNames) {
+                    if (json.has(alt)) return false;
+                }
+            }
+            return true;
+        });
     }
 
     @SuppressWarnings("unchecked")
