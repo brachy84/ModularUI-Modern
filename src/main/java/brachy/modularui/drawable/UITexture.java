@@ -228,8 +228,8 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         }
         Builder builder = builder();
         builder.location(JsonHelper.getString(json, ModularUI.MOD_ID + ":gui/widgets/error", "location"))
-                .imageSize(JsonHelper.getInt(json, defaultImageWidth, "imageWidth", "iw"),
-                        JsonHelper.getInt(json, defaultImageHeight, "imageHeight", "ih"));
+                .imageSize(JsonHelper.getInt(json, -1, "imageWidth", "iw"),
+                        JsonHelper.getInt(json, -1, "imageHeight", "ih"));
         boolean mode1 = json.has("x") || json.has("y") || json.has("w") || json.has("h") || json.has("width") ||
                 json.has("height");
         boolean mode2 = json.has("u0") || json.has("v0") || json.has("u1") || json.has("u1");
@@ -332,13 +332,6 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         return t;
     }
 
-    private static int defaultImageWidth = 16, defaultImageHeight = 16;
-
-    public static void setDefaultImageSize(int w, int h) {
-        defaultImageWidth = w;
-        defaultImageHeight = h;
-    }
-
     /**
      * A builder class to help create image textures.
      */
@@ -347,30 +340,31 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
 
         public static final MutableObjectCodec<Builder> CODEC = MutableObjectCodec.builder(UITexture::builder)
                 .add("location", Builder::location, Builder::getLocation, ResourceLocation.CODEC)
-                .addDynOpt("imageWidth", Builder::setIw, Builder::getIw, Codec.INT, () -> UITexture.defaultImageWidth, "iw")
-                .addDynOpt("imageHeight", Builder::setIh, Builder::getIh, Codec.INT, () -> UITexture.defaultImageHeight, "ih")
+                .addOpt("imageWidth", Builder::setIw, Builder::getIw, Codec.INT, -1).alias("iw")
+                .addOpt("imageHeight", Builder::setIh, Builder::getIh, Codec.INT, -1).alias("ih")
                 .addOpt("x", Builder::setX, Builder::getX, Codec.INT, 0)
                 .addOpt("y", Builder::setY, Builder::getY, Codec.INT, 0)
                 .addOpt("w", Builder::setW, Builder::getW, Codec.INT, 0)
                 .addOpt("h", Builder::setH, Builder::getH, Codec.INT, 0)
-                .addOpt("u0", Builder::setU0, Builder::getU0, Codec.FLOAT, 0f, "uStart")
-                .addOpt("v0", Builder::setV0, Builder::getV0, Codec.FLOAT, 0f, "vStart")
-                .addOpt("u1", Builder::setU1, Builder::getU1, Codec.FLOAT, 1f, "uEnd")
-                .addOpt("v1", Builder::setV1, Builder::getV1, Codec.FLOAT, 1f, "vEnd")
-                .addOpt("bl", Builder::setBl, Builder::getBl, Codec.INT, 0, "borderLeft", "borderX", "border")
-                .addOpt("bt", Builder::setBt, Builder::getBt, Codec.INT, 0, "borderTop", "borderY", "border")
-                .addOpt("br", Builder::setBr, Builder::getBr, Codec.INT, 0, "borderRight", "borderX", "border")
-                .addOpt("bb", Builder::setBb, Builder::getBb, Codec.INT, 0, "borderBottom", "borderY", "border")
+                .addOpt("u0", Builder::setU0, Builder::getU0, Codec.FLOAT, 0f).alias("uStart")
+                .addOpt("v0", Builder::setV0, Builder::getV0, Codec.FLOAT, 0f).alias("vStart")
+                .addOpt("u1", Builder::setU1, Builder::getU1, Codec.FLOAT, 1f).alias("uEnd")
+                .addOpt("v1", Builder::setV1, Builder::getV1, Codec.FLOAT, 1f).alias("vEnd")
+                .addOpt("bl", Builder::setBl, Builder::getBl, Codec.INT, 0).alias("borderLeft", "borderX", "border")
+                .addOpt("bt", Builder::setBt, Builder::getBt, Codec.INT, 0).alias("borderTop", "borderY", "border")
+                .addOpt("br", Builder::setBr, Builder::getBr, Codec.INT, 0).alias("borderRight", "borderX", "border")
+                .addOpt("bb", Builder::setBb, Builder::getBb, Codec.INT, 0).alias("borderBottom", "borderY", "border")
                 .addOpt("name", Builder::name, Builder::getName, Codec.STRING, null)
                 .addOpt("tiled", Builder::tiled, Builder::isTiled, Codec.BOOL, false)
                 .addOpt("colorType", Builder::colorType, Builder::getColorType, ColorType.CODEC, null)
                 .addOpt("nonOpaque", Builder::nonOpaque, Builder::isNonOpaque, Codec.BOOL, false)
+                .addOpt("colorOverride", Builder::colorOverride, Builder::getColorOverride, Codec.INT, 0)
                 .build();
 
         @Getter private ResourceLocation location;
         @Getter
         @Setter
-        private int iw = defaultImageWidth, ih = defaultImageHeight;
+        private int iw = -1, ih = -1;
         @Getter private int x, y, w, h;
         @Getter private float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
         @Getter private Mode mode = Mode.FULL;
@@ -622,6 +616,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
             return this;
         }
 
+        public Builder colorOverride(int colorOverride) {
+            this.colorOverride = colorOverride;
+            return this;
+        }
+
         /**
          * Creates the texture
          *
@@ -650,9 +649,6 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
             if (this.location == null) {
                 return DataResult.error(() -> "Location must not be null");
             }
-            if (this.iw <= 0 || this.ih <= 0) {
-                return DataResult.error(() -> "Image size must be > 0");
-            }
             if (this.mode == Mode.FULL) {
                 this.u0 = 0;
                 this.v0 = 0;
@@ -660,6 +656,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                 this.v1 = 1;
                 this.mode = Mode.RELATIVE;
             } else if (this.mode == Mode.PIXEL) {
+                if (this.iw <= 0 || this.ih <= 0) return DataResult.error(() -> "Image size must be > 0 for sub area via xywh or ltrb");
                 if (this.x < 0 || this.y < 0 || this.w > this.iw || this.h > this.ih) {
                     return DataResult.error(() -> "X and Y must be > 0 and W and H must by smaller than the specified image size");
                 }
@@ -675,10 +672,12 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     return DataResult.error(() -> "UV values must be 0 - 1");
                 }
                 if (this.bl > 0 || this.bt > 0 || this.br > 0 || this.bb > 0) {
+                    if (this.iw <= 0 || this.ih <= 0) return DataResult.error(() -> "Image size must be > 0 for adaptable textures (border > 0)");
                     return DataResult.success(new AdaptableUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType,
                             this.nonOpaque, 0, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled));
                 }
                 if (this.tiled) {
+                    if (this.iw <= 0 || this.ih <= 0) return DataResult.error(() -> "Image size must be > 0 for tiled textures");
                     return DataResult.success(new TiledUITexture(this.location, this.u0, this.v0, this.u1, this.v1,
                             this.colorType, this.nonOpaque, 0, this.iw, this.ih));
                 }

@@ -30,10 +30,14 @@ import java.util.function.IntConsumer;
 public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnimatable<Rectangle> {
 
     public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.drawableBuilder(Rectangle::new)
-            .addOpt("colorTopLeft", Rectangle::colorTL, Rectangle::colorTL, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorLeft", "colorTL")
-            .addOpt("colorTopRight", Rectangle::colorTR, Rectangle::colorTR, Color.CODEC, Color.WHITE.main, "color", "colorTop", "colorRight", "colorTR")
-            .addOpt("colorBottomLeft", Rectangle::colorBL, Rectangle::colorBL, Color.CODEC, Color.WHITE.main, "color", "colorBottom", "colorLeft", "colorBL")
-            .addOpt("colorBottomRight", Rectangle::colorBR, Rectangle::colorBR, Color.CODEC, Color.WHITE.main, "color", "colorBottom", "colorRight", "colorBR")
+            .addOpt("colorTopLeft", Rectangle::colorTL, Rectangle::colorTL, Color.CODEC, Color.WHITE.main)
+            .alias("colorTL", "colorLeft", "colorTop", "color")
+            .addOpt("colorTopRight", Rectangle::colorTR, Rectangle::colorTR, Color.CODEC, Color.WHITE.main)
+            .alias("colorTR", "colorRight", "colorTop", "color")
+            .addOpt("colorBottomLeft", Rectangle::colorBL, Rectangle::colorBL, Color.CODEC, Color.WHITE.main)
+            .alias("colorBL", "colorLeft", "colorBottom", "color")
+            .addOpt("colorBottomRight", Rectangle::colorBR, Rectangle::colorBR, Color.CODEC, Color.WHITE.main)
+            .alias("colorBR", "colorRight", "colorBottom", "color")
             .addOpt("cornerRadius", Rectangle::cornerRadius, Rectangle::cornerRadius, Codec.INT, 0)
             .addOpt("cornerSegments", Rectangle::cornerSegments, Rectangle::cornerSegments, Codec.INT, 8)
             .addOpt("borderThickness", Rectangle::borderThickness, Rectangle::borderThickness, Codec.FLOAT, 0f)

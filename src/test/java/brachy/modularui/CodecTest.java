@@ -15,9 +15,6 @@ import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.StandardResizer;
 
-import net.minecraft.DetectedVersion;
-import net.minecraft.SharedConstants;
-import net.minecraft.server.Bootstrap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
@@ -44,8 +41,7 @@ public class CodecTest {
 
     @Test
     void drawable() {
-        SharedConstants.setVersion(DetectedVersion.BUILT_IN);
-        Bootstrap.bootStrap();
+        TestUtil.bootstrap();
         drawableTest(IDrawable.EMPTY);
         drawableTest(IDrawable.NONE);
         decodeTest(new JsonPrimitive("null"), IDrawable.CODEC, IDrawable.EMPTY);
