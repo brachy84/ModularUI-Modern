@@ -4,6 +4,7 @@ import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widgets.TextWidget;
 
@@ -20,6 +21,8 @@ import net.minecraft.network.chat.contents.NbtContents;
 import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.util.ExtraCodecs;
+import com.mojang.serialization.Codec;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -33,6 +36,15 @@ import java.util.function.IntSupplier;
 import java.util.function.UnaryOperator;
 
 public class ModularComponent extends MutableComponent implements Text {
+
+    // TODO: This currently doesn't not handle nested components correctly. I might have to write a complete custom codec for this.
+    public static final MutableObjectCodec<ModularComponent> CODEC = MutableObjectCodec.drawableBuilder(ModularComponent.class, "Text")
+            .wrapped(ExtraCodecs.COMPONENT.xmap(ModularComponent::of, mc -> mc))
+            .addOpt("alignment", ModularComponent::alignment, ModularComponent::getAlignment, Alignment.CODEC, Alignment.Center)
+            .addOpt("scale", ModularComponent::scale, ModularComponent::getScale, Codec.FLOAT, 1f)
+            .addOpt("shadow", ModularComponent::shadow, ModularComponent::getShadow, Codec.BOOL, null)
+            .addUnencodable("dynamicColor", ModularComponent::color, ModularComponent::getDynamicColor)
+            .build();
 
     public static ModularComponent literal(String text) {
         return ModularComponent.create(new LiteralContents(text));
@@ -79,6 +91,7 @@ public class ModularComponent extends MutableComponent implements Text {
     }
 
     public static ModularComponent of(Component component) {
+        if (component instanceof ModularComponent mc) return mc;
         return new ModularComponent(component.getContents(), component.getSiblings(), component.getStyle());
     }
 
@@ -161,6 +174,10 @@ public class ModularComponent extends MutableComponent implements Text {
     public @NotNull ModularComponent color(int color) {
         withStyle(getStyle().withColor(color));
         return this;
+    }
+
+    public ModularComponent color(Integer color) {
+        return color != null ? color((int) color) : color((IntSupplier) null);
     }
 
     @Override

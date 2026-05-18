@@ -20,7 +20,7 @@ public interface MutableDecoder<A> extends Decoder<A>, InstanceDecoder<A> {
         var d = decodeInstance(ops, input);
         var result = d.result();
         if (result.isEmpty()) return d;
-        return decode(ops, result.get().getSecond(), result.get().getFirst());
+        return decode(ops, input, result.get().getFirst());
     }
 
     default <T> DataResult<A> parse(final DynamicOps<T> ops, final T input, A instance) {

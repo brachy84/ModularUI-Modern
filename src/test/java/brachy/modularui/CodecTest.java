@@ -1,10 +1,12 @@
 package brachy.modularui;
 
 import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.Circle;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.Rectangle;
+import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.codec.MutableCodec;
@@ -48,6 +50,17 @@ public class CodecTest {
         drawableTest(IDrawable.NONE);
         decodeTest(new JsonPrimitive("null"), IDrawable.CODEC, IDrawable.EMPTY);
         drawableTest(IDrawable.of(new Rectangle().color(Color.GREEN.main), GuiTextures.BOOKMARK, new Circle().color(Color.RED.main, Color.BLUE.main)));
+    }
+
+    @Test
+    void text() {
+        // NOTE: integer colors do not work properly when they have an alpha value due to a Minecraft bug.
+        // I fixed this in TextColorMixin, but mixins are not applied in testing.
+        test(ModularComponent.CODEC, Text.str("Hello"), true);
+        test(ModularComponent.CODEC, Text.str("World").style(Text.UNDERLINE).color(Color.withAlpha(Color.GREEN.main, 0)), true);
+        test(ModularComponent.CODEC, Text.comp(
+                Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
+                Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
     }
 
     @Test

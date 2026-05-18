@@ -33,12 +33,14 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
     private final Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields;
     private final InstanceDecoder<T> instanceDecoder;
     private final UnaryOperator<T> baseCopy;
+    private final Codec<T> wrapped;
 
     private MutableObjectCodec(Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields,
-                               InstanceDecoder<T> instanceDecoder, UnaryOperator<T> baseCopy) {
+                               InstanceDecoder<T> instanceDecoder, UnaryOperator<T> baseCopy, Codec<T> wrapped) {
         this.fields = fields;
         this.instanceDecoder = instanceDecoder;
         this.baseCopy = baseCopy;
+        this.wrapped = wrapped;
     }
 
     public void forEachField(Consumer<Field<T, ?>> consumer) {
@@ -70,15 +72,14 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
 
     @Override
     public <J> DataResult<Pair<T, J>> decodeInstance(DynamicOps<J> ops, J input) {
-        if (MutableObjectCodec.this.instanceDecoder == null) {
-            return DataResult.error(() -> "Instance can not be created since no instance decoder was provided.");
-        }
-        return MutableObjectCodec.this.instanceDecoder.decodeInstance(ops, input);
+        if (this.wrapped != null) return this.wrapped.decode(ops, input);
+        if (this.instanceDecoder != null) return this.instanceDecoder.decodeInstance(ops, input);
+        return DataResult.error(() -> "Instance can not be created since no instance decoder or wrapped codec was provided.");
     }
 
     @Override
     public boolean canDecodeInstance() {
-        return this.instanceDecoder != null;
+        return this.instanceDecoder != null || this.wrapped != null;
     }
 
     @Override
@@ -106,17 +107,24 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         if (input == null) {
             return DataResult.success(ops.empty());
         }
-        var builder = Stream.<Pair<J, J>>builder();
+        if (this.wrapped != null) {
+            var d = this.wrapped.encode(input, ops, prefix);
+            var res = d.result();
+            if (res.isEmpty()) return d;
+            prefix = res.get();
+        }
+        var mapValues = CodecUtil.mergePrefixToMapBuilder(ops, prefix);
+        if (mapValues == null) return DataResult.error(() -> "Prefix is not empty and is not a map");
         List<String> errors = new ArrayList<>();
         forEachField(f -> {
-            var error = f.encode(input, ops, builder);
+            var error = f.encode(input, ops, mapValues);
             if (error != null) errors.add(error);
         });
         if (!errors.isEmpty()) {
             return DataResult.error(() ->
                     String.format("Errors while encoding object of type '%s': %s", input.getClass().getSimpleName(), errors));
         }
-        return DataResult.success(ops.createMap(builder.build()));
+        return DataResult.success(ops.createMap(mapValues.build()));
     }
 
     public static <T> Builder<T> builder() {
@@ -244,7 +252,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             V value;
             if (element == null) {
                 if (!hasDefault()) {
-                    return String.format("Field '%s' has no value and is not optional", this.name);
+                    return isUnencodable() ? null : String.format("Field '%s' has no value and is not optional", this.name);
                 }
                 value = getDefault();
             } else if (isUnencodable()) {
@@ -303,14 +311,12 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         private UnaryOperator<T> baseCopy;
         private CodecRegistry<T> registry;
         private String[] names;
+        private Codec<T> wrapped;
 
         /**
          * Sets the instance decoder. This is needed when parsing from JSON. The decoder should create a new instance
          * and decode any necessary data for that. If the object has a no-arg constructor, then {@link #instance(Supplier)} should be used.
          * If this setter is used, then {@link #baseCopy(UnaryOperator)} must also be used.
-         *
-         * @param instanceDecoder instance decoder
-         * @return this
          */
         public Builder<T> instanceDecoder(InstanceDecoder<T> instanceDecoder) {
             this.instanceDecoder = instanceDecoder;
@@ -319,9 +325,6 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
 
         /**
          * Sets the instance supplier. This is needed when parsing from JSON and for copying. This MUST always return a new instance.
-         *
-         * @param instance instance supplier
-         * @return this
          */
         public Builder<T> instance(Supplier<T> instance) {
             return instanceDecoder(new InstanceDecoder<>() {
@@ -335,9 +338,6 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         /**
          * Sets the base copy function. This creates a new instance, but without setting any mutable properties. This MUST always return
          * a new instance. If the object has a no-arg constructor, then {@link #instance(Supplier)} should be used.
-         *
-         * @param baseCopy base copy function
-         * @return this
          */
         public Builder<T> baseCopy(UnaryOperator<T> baseCopy) {
             this.baseCopy = t -> {
@@ -345,6 +345,15 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
                 if (copy == t) throw new IllegalArgumentException("The copy function must return a new object!");
                 return copy;
             };
+            return this;
+        }
+
+        /**
+         * When this object is encoded and decoded this codec will be called first. This is useful when this object is based on another
+         * object which already has a codec. Example: {@link brachy.modularui.drawable.text.ModularComponent#CODEC ModularComponent.CODEC}
+         */
+        public Builder<T> wrapped(Codec<T> codec) {
+            this.wrapped = codec;
             return this;
         }
 
@@ -435,11 +444,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         }
 
         public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, null, (String[]) null);
-        }
-
-        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, String @Nullable ... altNames) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, null, altNames);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, null);
         }
 
         public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
@@ -447,19 +452,9 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, emptyTest);
         }
 
-        public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                             @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, null, emptyTest, altNames);
-        }
-
         public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                                 @Nullable V defaultValue) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, null, (String[]) null);
-        }
-
-        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                                @Nullable V defaultValue, String @Nullable ... altNames) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, null, altNames);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, null);
         }
 
         public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
@@ -467,24 +462,9 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, emptyTest);
         }
 
-        public <V> Builder<T> addUnencodableOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                                @Nullable V defaultValue, @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, () -> defaultValue, emptyTest, altNames);
-        }
-
         public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                                    @Nullable Supplier<V> defaultSupplier) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, defaultSupplier, null, (String[]) null);
-        }
-
-        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                                   @Nullable Supplier<V> defaultSupplier, String @Nullable ... altNames) {
-            return addUnencodableDynOpt(name, fieldWriter, fieldReader, defaultSupplier, null, altNames);
-        }
-
-        public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest) {
-            return addDynOpt(name, fieldWriter, fieldReader, null, defaultSupplier, emptyTest);
+            return addUnencodableDynOpt(name, fieldWriter, fieldReader, defaultSupplier, null);
         }
 
         /**
@@ -495,8 +475,8 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
          * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier, Predicate)
          */
         public <V> Builder<T> addUnencodableDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest, String @Nullable ... altNames) {
-            return addDynOpt(name, fieldWriter, fieldReader, null, defaultSupplier, emptyTest, altNames);
+                                                   @Nullable Supplier<V> defaultSupplier, @Nullable Predicate<V> emptyTest) {
+            return addDynOpt(name, fieldWriter, fieldReader, null, defaultSupplier, emptyTest);
         }
 
         public Builder<T> registry(CodecRegistry<T> registry, String... names) {
@@ -514,7 +494,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         }
 
         public MutableObjectCodec<T> build() {
-            var c = new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy);
+            var c = new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy, this.wrapped);
             if (this.registry != null) {
                 this.registry.register(c, this.names);
             }

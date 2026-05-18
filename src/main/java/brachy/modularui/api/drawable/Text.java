@@ -9,6 +9,7 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -26,6 +27,8 @@ import java.util.function.Supplier;
  * This represents a piece of text in a GUI.
  */
 public interface Text extends IDrawable, IJsonSerializable<Text> {
+
+    Codec<ModularComponent> CODEC = ModularComponent.CODEC;
 
     int TEXT_COLOR = 0xFF404040;
 
@@ -232,6 +235,11 @@ public interface Text extends IDrawable, IJsonSerializable<Text> {
 
     default KeyIcon asTextIcon() {
         return new KeyIcon(this);
+    }
+
+    @Override
+    default String getTypeName() {
+        return "text";
     }
 
     @Override

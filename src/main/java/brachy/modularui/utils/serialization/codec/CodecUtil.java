@@ -7,8 +7,12 @@ import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class CodecUtil {
 
@@ -107,5 +111,22 @@ public class CodecUtil {
                 return super.toString() + "[Checked encoder]";
             }
         };
+    }
+
+    public static <T> @Nullable Stream.Builder<Pair<T, T>> mergePrefixToMapBuilder(DynamicOps<T> ops, @Nullable T prefix) {
+        return mergePrefixToMapBuilder(ops, prefix, null);
+    }
+
+    public static <T> @Nullable Stream.Builder<Pair<T, T>> mergePrefixToMapBuilder(DynamicOps<T> ops, @Nullable T prefix, @Nullable Stream.Builder<Pair<T, T>> mapValues) {
+        if (mapValues == null) mapValues = Stream.builder();
+        if (prefix != null && !Objects.equals(prefix, ops.empty())) {
+            // add values of prefix map
+            // this is more performant than mergeToMap of DynamicOps
+            var prefixMap = ops.getMapValues(prefix);
+            var res = prefixMap.result();
+            if (res.isEmpty()) return null; // prefix is not empty and is not a map
+            res.get().forEach(mapValues);
+        }
+        return mapValues;
     }
 }

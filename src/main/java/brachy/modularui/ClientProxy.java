@@ -16,12 +16,6 @@ import brachy.modularui.drawable.text.TextIcon;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.theme.ThemeManager;
 
-import brachy.modularui.utils.serialization.json.JsonHelper;
-import brachy.modularui.widget.Widget;
-
-import brachy.modularui.widget.sizer.StandardResizer;
-
-import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -36,7 +30,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import lombok.Getter;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public class ClientProxy extends CommonProxy {
@@ -65,25 +58,6 @@ public class ClientProxy extends CommonProxy {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
-
-        // CODEC tests
-        // TODO remove when done
-        Widget<?> w = new Widget<>();
-        w.left(5);
-        w.bottomRel(0.75f, -67, 0.42f);
-        w.size(20);
-        w.decoration();
-        StandardResizer r1 = w.resizer();
-        var s1 = JsonHelper.toJsonString(StandardResizer.CODEC, r1);
-        ModularUI.LOGGER.info("Resizer Json of {}:\n{}", r1, s1);
-
-        Widget<?> w2 = new Widget<>();
-        StandardResizer r2 = JsonHelper.fromJsonString(StandardResizer.CODEC, s1, w2.resizer());
-
-        var s2 = JsonHelper.toJsonString(StandardResizer.CODEC, r2);
-        boolean eq = Objects.equals(s1, s2);
-        ModularUI.LOGGER.info("Resizer Json of {}:\n{}", r2, s2);
-        ModularUI.LOGGER.info("Equals: {}", eq);
     }
 
     private void onRegisterClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
