@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.Locale;
+import java.util.Random;
 import java.util.function.ToIntFunction;
 
 /**
@@ -46,7 +47,7 @@ public class Color {
      * Creates a color int. All values should be 0 - 1
      */
     public static int argb(float red, float green, float blue, float alpha) {
-        return argb((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
+        return argb(Math.round(red * 255), Math.round(green * 255), Math.round(blue * 255), Math.round(alpha * 255));
     }
 
     /**
@@ -60,7 +61,7 @@ public class Color {
      * Creates a color int. All values should be 0 - 1
      */
     public static int rgba(float red, float green, float blue, float alpha) {
-        return rgba((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
+        return rgba(Math.round(red * 255), Math.round(green * 255), Math.round(blue * 255), Math.round(alpha * 255));
     }
 
     /**
@@ -728,7 +729,7 @@ public class Color {
      */
     public static int average(int... colors) {
         float r = 0, g = 0, b = 0;
-        int a = 0;
+        float a = 0;
         for (int color : colors) {
             r += getRedSq(color);
             g += getGreenSq(color);
