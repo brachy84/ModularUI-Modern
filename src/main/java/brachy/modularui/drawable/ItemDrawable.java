@@ -4,69 +4,79 @@ import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
-import brachy.modularui.utils.serialization.json.JsonHelper;
-import brachy.modularui.widget.Widget;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import com.mojang.serialization.JsonOps;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.NoSuchElementException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
+@Accessors(fluent = true, chain = true)
 public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> {
 
+    public static final Codec<ItemDrawable> CODEC = MutableObjectCodec.drawableBuilder(ItemDrawable::new)
+            .add("items", ItemDrawable::items, ItemDrawable::getItemList, CodecUtil.listLike(ItemStack.CODEC)).alias("item")
+            .addOpt("cycleTime", ItemDrawable::cycleTime, ItemDrawable::cycleTime, Codec.INT, 1000)
+            .build();
+
     @Getter
-    private ItemStack item = ItemStack.EMPTY;
+    private ItemStack[] items;
+    @Getter
+    @Setter
+    private int cycleTime = 1000;
 
-    public ItemDrawable() {}
-
-    public ItemDrawable(@NotNull ItemStack item) {
-        setItem(item);
+    private ItemDrawable() {
+        this(new ItemStack[0]);
     }
 
-    public ItemDrawable(@NotNull Item item) {
-        setItem(item);
+    public ItemDrawable(Ingredient ingredient) {
+        this(ingredient.getItems());
     }
 
-    public ItemDrawable(@NotNull Item item, int amount) {
-        setItem(item, amount);
+    public ItemDrawable(ItemStack... items) {
+        items(items);
     }
 
-    public ItemDrawable(@NotNull Item item, int amount, @Nullable CompoundTag nbt) {
-        setItem(item, amount, nbt);
+    public ItemDrawable(ItemStack item) {
+        item(item);
     }
 
-    public ItemDrawable(@NotNull Block item) {
-        setItem(item);
+    public ItemDrawable(ItemLike item) {
+        item(item);
     }
 
-    public ItemDrawable(@NotNull Block item, int amount) {
-        setItem(new ItemStack(item, amount));
+    public ItemDrawable(ItemLike item, int amount) {
+        item(item, amount);
+    }
+
+    public ItemDrawable(ItemLike item, int amount, @Nullable CompoundTag tag) {
+        item(item, amount, tag);
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
-        applyColor(widgetTheme.getColor());
-        GuiDraw.drawItem(context.getGraphics(), this.item, x, y, width, height, context.getCurrentDrawingZ());
-    }
-
-    @Override
-    public int getDefaultWidth() {
-        return 16;
+        if (this.items.length == 0) return;
+        ItemStack item = this.items.length == 1 ? this.items[0] :
+                this.items[(int) (Util.getMillis() % (this.cycleTime * this.items.length)) / this.cycleTime];
+        if (item != null) {
+            GuiDraw.drawItem(context.getGraphics(), item, x, y, width, height, context.getCurrentDrawingZ());
+        }
     }
 
     @Override
@@ -75,66 +85,70 @@ public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> 
     }
 
     @Override
-    public Widget<?> asWidget() {
-        return IDrawable.super.asWidget().size(16);
+    public int getDefaultWidth() {
+        return 16;
     }
 
-    public ItemDrawable setItem(@NotNull ItemStack item) {
-        this.item = item;
+    public void ingredient(Ingredient ingredient) {
+        items(ingredient.getItems());
+    }
+
+    public ItemDrawable items(Collection<ItemStack> items) {
+        return items(items.toArray(ItemStack[]::new));
+    }
+
+    public ItemDrawable items(ItemStack... items) {
+        this.items = items;
         return this;
     }
 
-    public ItemDrawable setItem(@NotNull Item item) {
-        return setItem(item, 1, null);
+    public ItemDrawable item(ItemStack item) {
+        if (this.items.length != 1) {
+            this.items = new ItemStack[1];
+        }
+        this.items[0] = item;
+        return this;
     }
 
-    public ItemDrawable setItem(@NotNull Item item, int amount) {
-        return setItem(item, amount, null);
+    public ItemDrawable item(ItemLike item) {
+        return item(item.asItem(), 1, null);
     }
 
-    public ItemDrawable setItem(@NotNull Item item, int amount, @Nullable CompoundTag nbt) {
+    public ItemDrawable item(ItemLike item, int amount) {
+        return item(item, amount, null);
+    }
+
+    public ItemDrawable item(ItemLike item, int amount, @Nullable CompoundTag tag) {
         ItemStack itemStack = new ItemStack(item, amount);
-        itemStack.setTag(nbt);
-        return setItem(itemStack);
+        itemStack.setTag(tag);
+        return item(itemStack);
     }
 
-    public ItemDrawable setItem(@NotNull Block item) {
-        return setItem(item, 1);
+    public ItemDrawable addItem(ItemStack item) {
+        this.items = ArrayUtils.add(this.items, item);
+        return this;
     }
 
-    public ItemDrawable setItem(@NotNull Block item, int amount) {
-        return setItem(new ItemStack(item, amount));
+    public ItemDrawable addItem(ItemLike item) {
+        return addItem(item.asItem(), 1, null);
     }
 
-    public static ItemDrawable ofJson(JsonObject json) {
-        String itemName = JsonHelper.getString(json, null, "item");
-        if (itemName == null) throw new JsonParseException("Item property not found!");
-        if (itemName.isEmpty()) return new ItemDrawable();
-        ItemStack stack;
-        try {
-            ResourceLocation id = new ResourceLocation(itemName);
-            stack = new ItemStack(BuiltInRegistries.ITEM.get(id));
-        } catch (NoSuchElementException e) {
-            throw new JsonParseException(e);
-        }
-        if (json.has("nbt")) {
-            CompoundTag nbt = (CompoundTag) JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE,
-                    JsonHelper.getObject(json, new JsonObject(), o -> o, "nbt"));
-            stack.setTag(nbt);
-        }
-        return new ItemDrawable(stack);
+    public ItemDrawable addItem(ItemLike item, int amount) {
+        return addItem(item, amount, null);
+    }
+
+    public ItemDrawable addItem(ItemLike item, int amount, @Nullable CompoundTag tag) {
+        ItemStack itemStack = new ItemStack(item, amount);
+        itemStack.setTag(tag);
+        return addItem(itemStack);
+    }
+
+    public List<ItemStack> getItemList() {
+        return Arrays.asList(this.items);
     }
 
     @Override
-    public boolean saveToJson(JsonObject json) {
-        if (this.item == null || this.item.isEmpty()) {
-            json.addProperty("item", "");
-            return true;
-        }
-        json.addProperty("item", this.item.getItemHolder().unwrapKey().get().location().toString());
-        if (this.item.hasTag()) {
-            json.addProperty("nbt", this.item.getTag().toString());
-        }
-        return true;
+    public String getTypeName() {
+        return "item";
     }
 }

@@ -113,7 +113,6 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         registerDrawableType("color", Rectangle.class, json -> new Rectangle());
         registerDrawableType("rectangle", Rectangle.class, json -> new Rectangle());
         registerDrawableType("ellipse", Circle.class, json -> new Circle());
-        registerDrawableType("item", ItemDrawable.class, ItemDrawable::ofJson);
         registerDrawableType("icon", Icon.class, Icon::ofJson);
         registerDrawableType("stack", DrawableStack.class, DrawableStack::parseJson);
         registerDrawableType("scrollbar", Scrollbar.class, Scrollbar::ofJson);

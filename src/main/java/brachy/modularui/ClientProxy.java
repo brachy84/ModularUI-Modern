@@ -2,6 +2,7 @@ package brachy.modularui;
 
 import brachy.modularui.animation.AnimatorManager;
 import brachy.modularui.api.drawable.IIcon;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.client.CursorHandler;
 import brachy.modularui.client.component.DrawableTooltipComponent;
 import brachy.modularui.client.component.TooltipComponentIcon;
@@ -12,14 +13,19 @@ import brachy.modularui.drawable.HoverableIcon;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.InteractableIcon;
 import brachy.modularui.drawable.text.KeyIcon;
+import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.drawable.text.TextIcon;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.theme.ThemeManager;
+import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.Color;
+import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,8 +34,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import com.google.gson.JsonElement;
 import lombok.Getter;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ClientProxy extends CommonProxy {
@@ -58,6 +66,18 @@ public class ClientProxy extends CommonProxy {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
+        test(ModularComponent.CODEC, Text.comp(
+                Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
+                Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
+    }
+
+    private static <A> void test(Codec<A> codec, A obj, boolean checkObjEquals) {
+        JsonElement json1 = JsonHelper.toJson(codec, obj);
+        A obj2 = JsonHelper.fromJson(codec, json1);
+        if (checkObjEquals) ModularUI.LOGGER.info("Equals: {}", Objects.equals(obj, obj2));
+        JsonElement json2 = JsonHelper.toJson(codec, obj2);
+        ModularUI.LOGGER.info("Equals: {}", Objects.equals(json1, json2));
+        ModularUI.LOGGER.info(JsonHelper.GSON.toJson(json1));
     }
 
     private void onRegisterClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {

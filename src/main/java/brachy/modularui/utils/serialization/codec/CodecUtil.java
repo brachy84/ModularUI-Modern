@@ -9,6 +9,8 @@ import com.mojang.serialization.Encoder;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -128,5 +130,15 @@ public class CodecUtil {
             res.get().forEach(mapValues);
         }
         return mapValues;
+    }
+
+    /**
+     * Creates a codec that accepts either a list or a single element and turns it into a list.
+     */
+    public static <A> Codec<List<A>> listLike(Codec<A> codec) {
+        return chainedCodec(codec.flatComapMap(Collections::singletonList, list -> {
+            if (list.size() != 1) return DataResult.error(() -> "List must contain exactly one element");
+            return DataResult.success(list.get(0));
+        }), codec.listOf());
     }
 }
