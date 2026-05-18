@@ -161,6 +161,7 @@ public class CodecTest {
         if (checkObjEquals) assertEquals(obj1, obj2);
         JsonElement json2 = toJson(codec, obj2);
         assertEquals(json1, json2);
+        System.out.println(JsonHelper.GSON.toJson(json1));
     }
 
     private static <A> void test(Codec<A> codec, A obj, boolean checkObjEquals) {

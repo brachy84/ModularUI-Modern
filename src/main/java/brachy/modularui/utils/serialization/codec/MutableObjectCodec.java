@@ -70,6 +70,10 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
         return (Field<T, V>) this.fields.get(name);
     }
 
+    public boolean canCopy() {
+        return this.baseCopy != null;
+    }
+
     public T copy(T from) {
         if (from == null) return null;
         if (this.baseCopy == null) {
@@ -314,7 +318,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
             Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
-            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue);
+            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue, false);
             this.fields.put(name, this.lastField);
             return this;
         }
@@ -336,7 +340,7 @@ public class MutableObjectCodec<T> implements MutableCodec<T> {
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
             Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
-            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier);
+            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier, defaultSupplier != null);
             this.lastField.alwaysEncode(true);
             this.fields.put(name, this.lastField);
             return this;

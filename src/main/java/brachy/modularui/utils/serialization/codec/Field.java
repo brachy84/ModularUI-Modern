@@ -22,6 +22,7 @@ public final class Field<T, V> {
     @Getter private final FieldReader<T, V> fieldReader;
     @Getter private final Codec<V> codec;
     @Getter private final Supplier<V> defaultSupplier;
+    @Getter private final boolean dynamicSupplier;
     @Getter
     @Setter
     private String[] altNames;
@@ -29,20 +30,30 @@ public final class Field<T, V> {
     @Setter
     private boolean alwaysEncode;
 
-    public Field(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec, Supplier<V> defaultSupplier) {
+    Field(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec, Supplier<V> defaultSupplier, boolean dynamicSupplier) {
         this.name = name;
         this.fieldWriter = fieldWriter;
         this.fieldReader = fieldReader;
         this.codec = codec;
         this.defaultSupplier = defaultSupplier;
+        this.dynamicSupplier = dynamicSupplier;
     }
 
     public boolean hasDefault() {
         return this.defaultSupplier != null;
     }
 
-    public V getDefault() {
+    private V getDefault() {
+        // could return a non-dynamic, modifiable instance
         return this.defaultSupplier.get();
+    }
+
+    public V getModifiableDefault() {
+        V v = getDefault();
+        if (!this.dynamicSupplier && this.codec instanceof MutableObjectCodec<V> moc && moc.canCopy()) {
+            v = moc.copy(v);
+        }
+        return v;
     }
 
     public boolean isUnencodable() {
@@ -84,7 +95,7 @@ public final class Field<T, V> {
             if (!hasDefault()) {
                 return isUnencodable() ? null : String.format("Field '%s' has no value and is not optional", this.name);
             }
-            value = getDefault();
+            value = getModifiableDefault();
         } else if (isUnencodable()) {
             return String.format("Field '%s' is unencodable, but data still contains value", this.name);
         } else if (this.codec instanceof MutableCodec<V> mutableCodec) {
@@ -96,7 +107,7 @@ public final class Field<T, V> {
                     if (res.isEmpty()) return d.error().orElseThrow().message();
                     value = res.get();
                 }
-                if (value == null && hasDefault()) value = getDefault();
+                if (value == null && hasDefault()) value = getModifiableDefault();
                 if (value == null) {
                     return String.format("Field '%s' is unable to decode instance and the holder has no default value and this property has no default value", this.name);
                 }
@@ -125,7 +136,7 @@ public final class Field<T, V> {
 
     public void applyDefault(T instance) {
         if (hasDefault()) {
-            this.fieldWriter.writeField(instance, getDefault());
+            this.fieldWriter.writeField(instance, getModifiableDefault());
         }
     }
 

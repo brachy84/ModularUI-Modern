@@ -7,9 +7,11 @@ import brachy.modularui.api.drawable.IIcon;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widget.sizer.Box;
 
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,14 +23,24 @@ import lombok.Getter;
  */
 public class Icon implements IIcon, IJsonSerializable<Icon> {
 
-    private final IDrawable drawable;
-    @Getter
-    private int width = 0, height = 0;
-    private float aspectRatio = 0;
-    @Getter
-    private Alignment alignment = Alignment.Center;
-    @Getter
-    private final Box margin = new Box();
+    public static final MutableObjectCodec<Icon> CODEC = MutableObjectCodec.drawableBuilder(Icon::new)
+            .add("drawable", Icon::drawable, Icon::getDrawable, IDrawable.CODEC)
+            .addOpt("width", Icon::width, Icon::getWidth, Codec.INT, 0)
+            .addOpt("height", Icon::height, Icon::getHeight, Codec.INT, 0)
+            .addOpt("aspectRatio", Icon::aspectRatio, Icon::getAspectRatio, Codec.FLOAT, 0f)
+            .addOpt("alignment", Icon::alignment, Icon::getAlignment, Alignment.CODEC, Alignment.Center)
+            .addOpt("margin", Icon::margin, Icon::getMargin, Box.CODEC, Box.ZERO)
+            .build();
+
+    @Getter private IDrawable drawable;
+    @Getter private int width = 0, height = 0;
+    @Getter private float aspectRatio = 0;
+    @Getter private Alignment alignment = Alignment.Center;
+    @Getter private final Box margin = new Box();
+
+    private Icon() {
+        this.drawable = IDrawable.EMPTY;
+    }
 
     public Icon(IDrawable drawable) {
         this.drawable = drawable;
@@ -83,6 +95,11 @@ public class Icon implements IIcon, IJsonSerializable<Icon> {
     @Override
     public IDrawable getWrappedDrawable() {
         return drawable;
+    }
+
+    public Icon drawable(IDrawable drawable) {
+        this.drawable = drawable;
+        return this;
     }
 
     public Icon expandWidth() {
@@ -157,6 +174,13 @@ public class Icon implements IIcon, IJsonSerializable<Icon> {
 
     public Icon marginBottom(int val) {
         this.margin.bottom(val);
+        return this;
+    }
+
+    public Icon margin(Box box) {
+        if (box != null && box != this.margin) {
+            Box.CODEC.copyFields(box, this.margin);
+        }
         return this;
     }
 

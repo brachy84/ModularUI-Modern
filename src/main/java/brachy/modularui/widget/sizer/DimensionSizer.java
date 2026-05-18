@@ -27,9 +27,9 @@ public class DimensionSizer {
     public static final MutableObjectCodec<DimensionSizer> CODEC = MutableObjectCodec.builder(DimensionSizer.class)
             .baseCopy(sizer -> new DimensionSizer(sizer.resizer, sizer.axis))
             .addOpt("coverChildrenMinSize", DimensionSizer::setCoverChildrenMinSize, DimensionSizer::getCoverChildrenMinSize, Codec.INT, -1)
-            .addDynOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit::new)
-            .addDynOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit::new)
-            .addDynOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit::new)
+            .addOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit.ZERO)
+            .addOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit.ZERO)
+            .addOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit.ZERO)
             .build();
 
     private final ResizeNode resizer;

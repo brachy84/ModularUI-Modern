@@ -28,6 +28,8 @@ public class Unit {
             .addUnencodableOpt("valueSupplier", Unit::setValue, Unit::getValueSupplier, null)
             .build();
 
+    static final Unit ZERO = new Unit();
+
     @Getter
     @Setter
     private boolean autoAnchor;
