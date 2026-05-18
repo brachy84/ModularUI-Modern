@@ -14,6 +14,6 @@ public class TextColorMixin {
      */
     @Redirect(method = "parseColor", at = @At(value = "INVOKE", target = "Ljava/lang/Integer;parseInt(Ljava/lang/String;I)I"))
     private static int fixDecode(String s, int radix) {
-        return (int) Long.parseLong(s, 16);
+        return (int) Long.parseLong(s, radix);
     }
 }
