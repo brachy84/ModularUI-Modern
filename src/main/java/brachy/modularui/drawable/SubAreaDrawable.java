@@ -1,18 +1,33 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.api.drawable.IDrawable;
-
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
-
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.math.MathUtils;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import com.mojang.serialization.Codec;
+
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 public class SubAreaDrawable extends DelegateDrawable {
 
+    public static final Codec<SubAreaDrawable> CODEC = MutableObjectCodec.drawableBuilder(SubAreaDrawable::new)
+            .add("drawable", SubAreaDrawable::drawable, SubAreaDrawable::getWrappedDrawable, IDrawable.CODEC)
+            .addOpt("u0", SubAreaDrawable::u0, SubAreaDrawable::getU0, Codec.FLOAT, 0f).alias("uStart")
+            .addOpt("v0", SubAreaDrawable::v0, SubAreaDrawable::getV0, Codec.FLOAT, 0f).alias("vStart")
+            .addOpt("u1", SubAreaDrawable::u1, SubAreaDrawable::getU1, Codec.FLOAT, 1f).alias("uEnd")
+            .addOpt("v1", SubAreaDrawable::v1, SubAreaDrawable::getV1, Codec.FLOAT, 1f).alias("vEnd")
+            .build();
+
+    @Getter
     private float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+
+    private SubAreaDrawable() {
+        super(IDrawable.EMPTY);
+    }
 
     public SubAreaDrawable(@Nullable IDrawable drawable) {
         super(drawable);
