@@ -838,6 +838,34 @@ public class Color {
         setGlColorOpaque(WHITE.main);
     }
 
+    public static int getLargestDiff(int argb1, int argb2) {
+        return Math.max(Math.abs(getRed(argb1) - getRed(argb2)), Math.max(Math.abs(getGreen(argb1) - getGreen(argb2)), Math.abs(getBlue(argb1) - getBlue(argb2))));
+    }
+
+    public static float getLargestDiffFloat(int argb1, int argb2) {
+        return Math.max(Math.abs(getRedF(argb1) - getRedF(argb2)), Math.max(Math.abs(getGreenF(argb1) - getGreenF(argb2)), Math.abs(getBlueF(argb1) - getBlueF(argb2))));
+    }
+
+    public static boolean areSameColor(int argb1, int argb2) {
+        return areSameColor(argb1, argb2, 0);
+    }
+
+    public static boolean areSameColor(int argb1, int argb2, int tolerance) {
+        return getLargestDiff(argb1, argb2) <= tolerance;
+    }
+
+    public static boolean areSameColor(int argb1, int argb2, float tolerance) {
+        return getLargestDiffFloat(argb1, argb2) <= tolerance;
+    }
+
+    public static int random(Random rnd, int alpha) {
+        return argb(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256), alpha);
+    }
+
+    public static int random(Random rnd) {
+        return rnd.nextInt();
+    }
+
     /**
      * Returns a six digit hex string representation of a color component with upper case letters. Alpha is ignored.
      *

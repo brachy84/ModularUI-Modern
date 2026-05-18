@@ -1,6 +1,10 @@
 dependencies {
     compileOnly(libs.jetbrains.annotations)
 
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     // Math Parser
     jarJar(implementation(libs.evalEx.get()))
     additionalRuntimeClasspath(libs.evalEx.get())
