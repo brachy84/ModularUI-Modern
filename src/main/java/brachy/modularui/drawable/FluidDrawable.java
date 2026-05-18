@@ -3,29 +3,69 @@ package brachy.modularui.drawable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.Widget;
 
+import net.minecraft.Util;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.Fluid;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+@Accessors(fluent = true, chain = true)
 public class FluidDrawable implements IDrawable {
 
-    private FluidStack fluid = null;
+    public static final Codec<FluidDrawable> CODEC = MutableObjectCodec.drawableBuilder(FluidDrawable::new)
+            .add("fluids", FluidDrawable::fluids, FluidDrawable::getFluidList, CodecUtil.listLike(FluidStack.CODEC)).alias("fluid")
+            .addOpt("cycleTime", FluidDrawable::cycleTime, FluidDrawable::cycleTime, Codec.INT, 1000)
+            .build();
 
-    public FluidDrawable() {}
+    @Getter
+    private FluidStack[] fluids;
+    @Getter
+    @Setter
+    private int cycleTime;
 
-    /**
-     * Takes a fluid stack, it can be null but will not draw anything
-     *
-     * @param fluid - fluid stack to draw
-     */
-    public FluidDrawable(@NotNull FluidStack fluid) {
-        setFluid(fluid);
+    public FluidDrawable() {
+        this(new FluidStack[0]);
+    }
+
+    public FluidDrawable(FluidStack... fluid) {
+        fluids(fluid);
+    }
+
+    public FluidDrawable(FluidStack fluid) {
+        fluid(fluid);
+    }
+
+    public FluidDrawable(Fluid fluid) {
+        fluid(fluid);
+    }
+
+    public FluidDrawable(Fluid fluid, int amount) {
+        fluid(fluid, amount);
+    }
+
+    public FluidDrawable(Fluid fluid, int amount, @Nullable CompoundTag tag) {
+        fluid(fluid, amount, tag);
     }
 
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        if (this.fluids.length == 0) return;
+        FluidStack fluid = this.fluids.length == 1 ? this.fluids[0] :
+                this.fluids[(int) (Util.getMillis() % (this.cycleTime * this.fluids.length)) / this.cycleTime];
         GuiDraw.drawFluidTexture(context.getGraphics(), fluid, x, y, width, height, context.getCurrentDrawingZ());
     }
 
@@ -44,8 +84,62 @@ public class FluidDrawable implements IDrawable {
         return IDrawable.super.asWidget().size(16);
     }
 
-    public FluidDrawable setFluid(FluidStack fluid) {
-        this.fluid = fluid;
+    public List<FluidStack> getFluidList() {
+        return Arrays.asList(this.fluids);
+    }
+
+    public FluidDrawable fluids(Collection<FluidStack> fluids) {
+        return fluids(fluids.toArray(FluidStack[]::new));
+    }
+
+    public FluidDrawable fluids(FluidStack... fluids) {
+        this.fluids = fluids;
         return this;
+    }
+
+    public FluidDrawable fluid(FluidStack fluid) {
+        if (this.fluids.length != 1) {
+            this.fluids = new FluidStack[1];
+        }
+        this.fluids[0] = fluid;
+        return this;
+    }
+
+    public FluidDrawable fluid(Fluid fluid) {
+        return fluid(fluid, 1, null);
+    }
+
+    public FluidDrawable fluid(Fluid fluid, int amount) {
+        return fluid(fluid, amount, null);
+    }
+
+    public FluidDrawable fluid(Fluid fluid, int amount, @Nullable CompoundTag tag) {
+        FluidStack fluidStack = new FluidStack(fluid, amount);
+        fluidStack.setTag(tag);
+        return fluid(fluidStack);
+    }
+
+    public FluidDrawable addFluid(FluidStack fluid) {
+        this.fluids = ArrayUtils.add(this.fluids, fluid);
+        return this;
+    }
+
+    public FluidDrawable addFluid(Fluid fluid) {
+        return addFluid(fluid, 1, null);
+    }
+
+    public FluidDrawable addFluid(Fluid fluid, int amount) {
+        return addFluid(fluid, amount, null);
+    }
+
+    public FluidDrawable addFluid(Fluid fluid, int amount, @Nullable CompoundTag tag) {
+        FluidStack fluidStack = new FluidStack(fluid, amount);
+        fluidStack.setTag(tag);
+        return addFluid(fluidStack);
+    }
+
+    @Override
+    public String getTypeName() {
+        return "fluid";
     }
 }

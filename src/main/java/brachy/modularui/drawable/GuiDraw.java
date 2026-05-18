@@ -4,7 +4,6 @@ import brachy.modularui.GTRenderTypes;
 import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.client.GuiSpriteManager;
 import brachy.modularui.drawable.text.TextRenderer;
-import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.event.RichTooltipEvent;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
@@ -601,8 +600,10 @@ public class GuiDraw {
             oldYHeadRotO = livingEntity.yHeadRotO;
             oldYHeadRot = livingEntity.yHeadRot;
 
-            livingEntity.yBodyRotO = livingEntity.yBodyRot = 180.0f + xAngle * 20.0f;
-            livingEntity.yHeadRotO = livingEntity.yHeadRot = entity.getYRot();
+            livingEntity.yBodyRot = 180.0f + xAngle * 20.0f;
+            livingEntity.yHeadRot = entity.getYRot();
+            livingEntity.yBodyRotO = livingEntity.yBodyRot;
+            livingEntity.yHeadRotO = livingEntity.yHeadRot;
         }
 
         // skip rotating the render by 180° on the Z axis here, because we always do that in setupDrawEntity
