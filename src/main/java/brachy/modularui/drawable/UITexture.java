@@ -7,17 +7,22 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolations;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
-import brachy.modularui.widget.sizer.Area;
 
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +30,10 @@ import java.util.Objects;
 
 @Accessors(fluent = true, chain = true)
 public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
+
+    public static final Codec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.xmap(Builder::buildForCodec, UITexture::toBuilder);
+    public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(DrawableSerialization::getTextureId, DrawableSerialization::getTexture);
+    public static final Codec<UITexture> CODEC = IDrawable.CODECS.register("texture", CodecUtil.chainedCodec(CODEC_FROM_NAME, CODEC_FROM_BUILDER));
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", ColorType.DEFAULT);
     public static final FileToIdConverter GUI_TEXTURE_ID_CONVERTER = new FileToIdConverter("textures/gui", ".png");
@@ -49,15 +58,14 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     private static final String TEXTURES_PREFIX = "textures/";
     private static final String PNG_SUFFIX = ".png";
 
-    @Getter
-    public final ResourceLocation location;
-    public final float u0, v0, u1, v1;
+    @Getter public final ResourceLocation location;
+    @Getter public final float u0, v0, u1, v1;
     @Getter
     @Nullable
     public final ColorType colorType;
-    public final boolean nonOpaque;
+    @Getter public final boolean nonOpaque;
 
-    protected int colorOverride = 0;
+    @Getter protected int colorOverride = 0;
 
     /**
      * Creates a drawable texture
@@ -285,6 +293,14 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         json.addProperty("colorOverride", this.colorOverride);
     }
 
+    public Builder toBuilder() {
+        return builder()
+                .location(this.location)
+                .subAreaUV(this.u0, this.v0, this.u1, this.v1)
+                .colorType(this.colorType)
+                .nonOpaque(this.nonOpaque);
+    }
+
     @Override
     public boolean equals(Object o) {
         return o != null && getClass() == o.getClass() && isEqual((UITexture) o);
@@ -321,18 +337,44 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     /**
      * A builder class to help create image textures.
      */
+    @Accessors(fluent = false)
     public static class Builder {
 
-        private ResourceLocation location;
+        public static final MutableObjectCodec<Builder> CODEC = MutableObjectCodec.builder(UITexture::builder)
+                .add("location", Builder::location, Builder::getLocation, ResourceLocation.CODEC)
+                .addDynOpt("imageWidth", Builder::setIw, Builder::getIw, Codec.INT, () -> UITexture.defaultImageWidth, "iw")
+                .addDynOpt("imageHeight", Builder::setIh, Builder::getIh, Codec.INT, () -> UITexture.defaultImageHeight, "ih")
+                .addOpt("x", Builder::setX, Builder::getX, Codec.INT, 0)
+                .addOpt("y", Builder::setY, Builder::getY, Codec.INT, 0)
+                .addOpt("w", Builder::setW, Builder::getW, Codec.INT, 0)
+                .addOpt("h", Builder::setH, Builder::getH, Codec.INT, 0)
+                .addOpt("u0", Builder::setU0, Builder::getU0, Codec.FLOAT, 0f, "uStart")
+                .addOpt("v0", Builder::setV0, Builder::getV0, Codec.FLOAT, 0f, "vStart")
+                .addOpt("u1", Builder::setU1, Builder::getU1, Codec.FLOAT, 1f, "uEnd")
+                .addOpt("v1", Builder::setV1, Builder::getV1, Codec.FLOAT, 1f, "vEnd")
+                .addOpt("bl", Builder::setBl, Builder::getBl, Codec.INT, 0, "borderLeft", "borderX", "border")
+                .addOpt("bt", Builder::setBt, Builder::getBt, Codec.INT, 0, "borderTop", "borderY", "border")
+                .addOpt("br", Builder::setBr, Builder::getBr, Codec.INT, 0, "borderRight", "borderX", "border")
+                .addOpt("bb", Builder::setBb, Builder::getBb, Codec.INT, 0, "borderBottom", "borderY", "border")
+                .addOpt("name", Builder::name, Builder::getName, Codec.STRING, null)
+                .addOpt("tiled", Builder::tiled, Builder::isTiled, Codec.BOOL, false)
+                .addOpt("colorType", Builder::colorType, Builder::getColorType, ColorType.CODEC, null)
+                .addOpt("nonOpaque", Builder::nonOpaque, Builder::isNonOpaque, Codec.BOOL, false)
+                .build();
+
+        @Getter private ResourceLocation location;
+        @Getter
+        @Setter
         private int iw = defaultImageWidth, ih = defaultImageHeight;
-        private int x, y, w, h;
-        private float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
-        private Mode mode = Mode.FULL;
-        private int bl = 0, bt = 0, br = 0, bb = 0;
-        private String name;
-        private boolean tiled = false;
-        private ColorType colorType = null;
-        private boolean nonOpaque = false;
+        @Getter private int x, y, w, h;
+        @Getter private float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+        @Getter private Mode mode = Mode.FULL;
+        @Getter private int bl = 0, bt = 0, br = 0, bb = 0;
+        @Getter private String name;
+        @Getter private boolean tiled = false;
+        @Getter private ColorType colorType = null;
+        @Getter private boolean nonOpaque = false;
+        @Getter private int colorOverride = 0;
 
         /**
          * @param loc location of the image to draw
@@ -386,7 +428,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
          * This will make the image be drawn tiled rather than stretched.
          */
         public Builder tiled() {
-            this.tiled = true;
+            return tiled(true);
+        }
+
+        public Builder tiled(boolean tiled) {
+            this.tiled = tiled;
             return this;
         }
 
@@ -563,7 +609,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
          * Sets this texture as at least partially transparent, will not disable glBlend when drawing.
          */
         public Builder nonOpaque() {
-            this.nonOpaque = true;
+            return nonOpaque(true);
+        }
+
+        public Builder nonOpaque(boolean nonOpaque) {
+            this.nonOpaque = nonOpaque;
             return this;
         }
 
@@ -573,16 +623,31 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
          * @return the created texture
          */
         public UITexture build() {
-            UITexture texture = create();
-            DrawableSerialization.registerTexture(this.name, texture);
-            return texture;
+            return create()
+                    .resultOrPartial(s -> {
+                        throw new IllegalArgumentException(s);
+                    }).map(texture -> {
+                        DrawableSerialization.registerTexture(this.name, texture);
+                        return texture;
+                    }).map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
+                    .orElseThrow();
         }
 
-        private UITexture create() {
+        private UITexture buildForCodec() {
+            // no error throwing and no drawable registration
+            return create()
+                    .resultOrPartial(ModularUI.LOGGER::error)
+                    .map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
+                    .orElseThrow();
+        }
+
+        private DataResult<UITexture> create() {
             if (this.location == null) {
-                throw new NullPointerException("Location must not be null");
+                return DataResult.error(() -> "Location must not be null");
             }
-            if (this.iw <= 0 || this.ih <= 0) throw new IllegalArgumentException("Image size must be > 0");
+            if (this.iw <= 0 || this.ih <= 0) {
+                return DataResult.error(() -> "Image size must be > 0");
+            }
             if (this.mode == Mode.FULL) {
                 this.u0 = 0;
                 this.v0 = 0;
@@ -590,6 +655,9 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                 this.v1 = 1;
                 this.mode = Mode.RELATIVE;
             } else if (this.mode == Mode.PIXEL) {
+                if (this.x < 0 || this.y < 0 || this.w > this.iw || this.h > this.ih) {
+                    return DataResult.error(() -> "X and Y must be > 0 and W and H must by smaller than the specified image size");
+                }
                 float tw = 1f / this.iw, th = 1f / this.ih;
                 this.u0 = this.x * tw;
                 this.v0 = this.y * th;
@@ -598,19 +666,78 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                 this.mode = Mode.RELATIVE;
             }
             if (this.mode == Mode.RELATIVE) {
-                if (this.u0 < 0 || this.v0 < 0 || this.u1 > 1 || this.v1 > 1)
-                    throw new IllegalArgumentException("UV values must be 0 - 1");
+                if (this.u0 < 0 || this.v0 < 0 || this.u1 > 1 || this.v1 > 1) {
+                    return DataResult.error(() -> "UV values must be 0 - 1");
+                }
                 if (this.bl > 0 || this.bt > 0 || this.br > 0 || this.bb > 0) {
-                    return new AdaptableUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType,
-                            this.nonOpaque, 0, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled);
+                    return DataResult.success(new AdaptableUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType,
+                            this.nonOpaque, 0, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled));
                 }
                 if (this.tiled) {
-                    return new TiledUITexture(this.location, this.u0, this.v0, this.u1, this.v1,
-                            this.colorType, this.nonOpaque, 0, this.iw, this.ih);
+                    return DataResult.success(new TiledUITexture(this.location, this.u0, this.v0, this.u1, this.v1,
+                            this.colorType, this.nonOpaque, 0, this.iw, this.ih));
                 }
-                return new UITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType, this.nonOpaque);
+                return DataResult.success(new UITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType, this.nonOpaque));
             }
-            throw new IllegalStateException();
+            return DataResult.error(() -> "Unknown error");
+        }
+
+        // Setters for codec
+
+        private void setX(int x) {
+            this.x = x;
+            if (x > 0) this.mode = Mode.PIXEL;
+        }
+
+        private void setY(int y) {
+            this.y = y;
+            if (y > 0) this.mode = Mode.PIXEL;
+        }
+
+        private void setW(int w) {
+            this.w = w;
+            if (w > 0) this.mode = Mode.PIXEL;
+        }
+
+        private void setH(int h) {
+            this.h = h;
+            if (h > 0) this.mode = Mode.PIXEL;
+        }
+
+        private void setU0(float u0) {
+            this.u0 = u0;
+            if (u0 > 0) this.mode = Mode.RELATIVE;
+        }
+
+        private void setV0(float v0) {
+            this.v0 = v0;
+            if (v0 > 0) this.mode = Mode.RELATIVE;
+        }
+
+        private void setU1(float u1) {
+            this.u1 = u1;
+            if (u1 < 1) this.mode = Mode.RELATIVE;
+        }
+
+        private void setV1(float v1) {
+            this.v1 = v1;
+            if (v1 < 1) this.mode = Mode.RELATIVE;
+        }
+
+        private void setBl(int bl) {
+            this.bl = bl;
+        }
+
+        private void setBb(int bb) {
+            this.bb = bb;
+        }
+
+        private void setBr(int br) {
+            this.br = br;
+        }
+
+        private void setBt(int bt) {
+            this.bt = bt;
         }
     }
 

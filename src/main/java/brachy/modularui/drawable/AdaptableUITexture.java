@@ -2,11 +2,23 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.screen.viewport.GuiContext;
 
+import brachy.modularui.utils.Color;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import lombok.Getter;
+
+import lombok.experimental.Accessors;
+
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import com.google.gson.JsonObject;
+
+import net.minecraft.util.ExtraCodecs;
+
 import org.joml.Matrix4f;
 
 import java.util.Objects;
@@ -15,10 +27,11 @@ import java.util.Objects;
  * This class is a <a href="https://en.wikipedia.org/wiki/9-slice_scaling">9-slice texture</a>. It can be created using
  * {@link UITexture.Builder#adaptable(int, int, int, int)}.
  */
+@Accessors(fluent = true)
 public class AdaptableUITexture extends UITexture {
 
-    private final int imageWidth, imageHeight, bl, bt, br, bb;
-    private final boolean tiled;
+    @Getter private final int imageWidth, imageHeight, bl, bt, br, bb;
+    @Getter private final boolean tiled;
 
     /**
      * Use {@link UITexture#builder()} with {@link Builder#adaptable(int, int)}
@@ -224,6 +237,14 @@ public class AdaptableUITexture extends UITexture {
     @Override
     public AdaptableUITexture withColorOverride(int color) {
         return (AdaptableUITexture) super.withColorOverride(color);
+    }
+
+    @Override
+    public Builder toBuilder() {
+        return super.toBuilder()
+                .imageSize(this.imageWidth, this.imageHeight)
+                .adaptable(this.bl, this.bt, this.br, this.bb)
+                .tiled();
     }
 
     @Override

@@ -2,6 +2,9 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.screen.viewport.GuiContext;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,9 +13,10 @@ import com.google.gson.JsonObject;
 
 import java.util.Objects;
 
+@Accessors(fluent = true)
 public class TiledUITexture extends UITexture {
 
-    private final int imageWidth, imageHeight;
+    @Getter private final int imageWidth, imageHeight;
 
     /**
      * Use {@link UITexture#builder()} with {@link Builder#tiled()}
@@ -57,6 +61,11 @@ public class TiledUITexture extends UITexture {
     @Override
     public TiledUITexture withColorOverride(int color) {
         return (TiledUITexture) super.withColorOverride(color);
+    }
+
+    @Override
+    public Builder toBuilder() {
+        return super.toBuilder().tiled(this.imageWidth, this.imageHeight);
     }
 
     @Override

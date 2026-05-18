@@ -8,6 +8,7 @@ import com.mojang.serialization.JsonOps;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.ApiStatus;
 
+@Deprecated
 public interface IJsonSerializable<T extends IJsonSerializable<T>> {
 
     /**

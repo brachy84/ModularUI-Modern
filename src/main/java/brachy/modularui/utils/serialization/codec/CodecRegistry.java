@@ -17,7 +17,7 @@ public class CodecRegistry<T> {
         return this.drawableCodecs.get(name);
     }
 
-    public @Nullable Codec<? extends T> get(String name) {
+    public Codec<? extends T> get(String name) {
         return Objects.requireNonNull(getNullable(name));
     }
 
@@ -29,12 +29,12 @@ public class CodecRegistry<T> {
         return this.drawableCodecs.getOrDefault(name, codec);
     }
 
-    public <A extends T> Codec<A> register(String name, Codec<A> codec) {
+    public synchronized <A extends T> Codec<A> register(String name, Codec<A> codec) {
         this.drawableCodecs.put(name, Objects.requireNonNull(codec));
         return codec;
     }
 
-    public <A extends T> Codec<A> register(Codec<A> codec, String... names) {
+    public synchronized <A extends T> Codec<A> register(Codec<A> codec, String... names) {
         for (String name : names) this.drawableCodecs.put(name, codec);
         return codec;
     }
