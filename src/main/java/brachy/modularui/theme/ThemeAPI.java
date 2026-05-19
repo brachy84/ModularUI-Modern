@@ -99,11 +99,11 @@ public class ThemeAPI implements IThemeApi {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends WidgetTheme> WidgetThemeKey<T> registerWidgetTheme(String id, T defaultTheme, T defaultHoverTheme,
-                                                                         WidgetThemeParser<T> parser) {
+    public <T extends WidgetTheme> WidgetThemeKey<T> registerWidgetTheme(String id, T defaultTheme, T defaultHoverTheme, WidgetThemeMerger<T> merger, WidgetThemeCodec<T> codec) {
         Objects.requireNonNull(id, "Id for widget theme must not be null");
         Objects.requireNonNull(defaultTheme, "Default widget theme must not be null, but is null for id '" + id + "'.");
-        Objects.requireNonNull(parser, "Parser for widget theme must not be null, but is null for id '" + id + "'.");
+        Objects.requireNonNull(merger, "Merger for widget theme must not be null, but is null for id '" + id + "'.");
+        Objects.requireNonNull(codec, "Codec for widget theme must not be null, but is null for id '" + id + "'.");
         if (WidgetThemeKey.getFromFullName(id) != null) {
             throw new IllegalStateException("there already is a widget theme for id '" + id + "' registered.");
         }
@@ -112,7 +112,7 @@ public class ThemeAPI implements IThemeApi {
                     "' is invalid. Id must only contain letters, numbers, underscores and minus.");
         }
         Class<T> type = (Class<T>) defaultTheme.getClass();
-        return new WidgetThemeKey<>(type, id, defaultTheme, defaultHoverTheme, parser);
+        return new WidgetThemeKey<>(type, id, defaultTheme, defaultHoverTheme, merger, codec);
     }
 
     @Override

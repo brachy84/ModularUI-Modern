@@ -6,12 +6,16 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
+import com.mojang.serialization.codecs.KeyDispatchCodec;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -74,17 +78,76 @@ public class CodecUtil {
     }
 
     public static <E, A> Codec<E> dispatchNullable(Codec<A> keyCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
-        return dispatchNullable("type", keyCodec, type, codec);
+        return dispatchNullable("type", keyCodec, type, codec, true);
     }
 
-    public static <E, A> Codec<E> dispatchNullable(String key, Codec<A> keyCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
-        return keyCodec.partialDispatch(key, e -> {
-            A a = type.apply(e);
-            return a == null ? DataResult.error(() -> "No key found") : DataResult.success(a);
-        }, a -> {
-            Codec<? extends E> e = codec.apply(a);
-            return e == null ? DataResult.error(() -> "No codec found for key " + a) : DataResult.success(e);
-        });
+    /**
+     * Creates a dispatch codec, but with nullable type and codec functions.
+     * If the functions return null, an error data result is returned instead of crashing.
+     *
+     * @see #dispatch(String, Codec, Function, Function, boolean)
+     */
+    public static <K, V> Codec<V> dispatchNullable(String key, Codec<K> keyCodec,
+                                                   Function<? super V, ? extends K> type,
+                                                   Function<? super K, ? extends Codec<? extends V>> codec, boolean assumeMap) {
+        return dispatch(key, keyCodec, v -> {
+            K k = type.apply(v);
+            return k == null ? DataResult.error(() -> "No key found") : DataResult.success(k);
+        }, k -> {
+            Codec<? extends V> e = codec.apply(k);
+            return e == null ? DataResult.error(() -> "No codec found for key " + k) : DataResult.success(e);
+        }, assumeMap);
+    }
+
+    /**
+     * Creates a dispatch codec with the option to assume map.
+     * {@link Codec#dispatch(Function, Function)} assumes the data in a structure like this for this example:
+     * <pre>
+     * {@code
+     *     {
+     *         "type": "pos2d",
+     *         "value: {
+     *             "x": 1,
+     *             "y": 2
+     *         }
+     *     }
+     * }
+     * </pre>
+     * With assumeMap it would look like this:
+     * <pre>
+     * {@code
+     *     {
+     *         "type": "pos2d",
+     *         "x": 1,
+     *         "y": 2
+     *     }
+     * }
+     * </pre>
+     *
+     * @param key       key to get the type name, usually just "type"
+     * @param keyCodec  codec for the key
+     * @param type      function to get the key from a value
+     * @param codec     function to get the codec from a key
+     * @param assumeMap if the codec should assume map like described above
+     * @param <K>       key type
+     * @param <V>       value type
+     */
+    public static <K, V> Codec<V> dispatch(String key, Codec<K> keyCodec,
+                                           Function<? super V, ? extends DataResult<? extends K>> type,
+                                           Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec, boolean assumeMap) {
+        return assumeMap ?
+                KeyDispatchCodec.unsafe(key, keyCodec, type, codec, v -> CodecUtil.getCodec(type, codec, v)).codec() :
+                new KeyDispatchCodec<>(key, keyCodec, type, codec).codec();
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <K, V> DataResult<? extends Encoder<V>> getCodec(final Function<? super V, ? extends DataResult<? extends K>> type,
+                                                                    final Function<? super K, ? extends DataResult<? extends Encoder<? extends V>>> encoder,
+                                                                    final V input) {
+        return type.apply(input)
+                .<Encoder<? extends V>>flatMap(k -> encoder.apply(k).map(Function.identity()))
+                .map(c -> ((Encoder<V>) c));
     }
 
     public static <A> Encoder<A> checked(Encoder<A> codec, Predicate<A> test) {
@@ -132,13 +195,27 @@ public class CodecUtil {
         return mapValues;
     }
 
+    public static <A> Codec<Set<A>> setOf(Codec<A> codec) {
+        return codec.listOf().xmap(ObjectOpenHashSet::new, ArrayList::new);
+    }
+
     /**
-     * Creates a codec that accepts either a list or a single element and turns it into a list.
+     * Creates a codec that accepts either a data list or a single element and turns it into a list.
      */
     public static <A> Codec<List<A>> listLike(Codec<A> codec) {
         return chainedCodec(codec.flatComapMap(Collections::singletonList, list -> {
             if (list.size() != 1) return DataResult.error(() -> "List must contain exactly one element");
             return DataResult.success(list.get(0));
         }), codec.listOf());
+    }
+
+    /**
+     * Creates a codec that accepts either a data list or a single element and turns it into a set.
+     */
+    public static <A> Codec<Set<A>> setLike(Codec<A> codec) {
+        return chainedCodec(codec.flatComapMap(Collections::singleton, list -> {
+            if (list.size() != 1) return DataResult.error(() -> "List must contain exactly one element");
+            return DataResult.success(list.iterator().next());
+        }), setOf(codec));
     }
 }

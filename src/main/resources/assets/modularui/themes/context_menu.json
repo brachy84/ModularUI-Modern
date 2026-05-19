@@ -3,7 +3,7 @@
   "panel": {
     "background": {
       "type": "texture",
-      "id": "menu"
+      "name": "menu"
     }
   },
   "button": {

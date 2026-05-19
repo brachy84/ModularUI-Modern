@@ -3,9 +3,7 @@ package brachy.modularui.theme;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,12 +24,6 @@ public class SlotTheme extends WidgetTheme {
                      boolean textShadow, int iconColor, int slotHoverColor) {
         super(defaultWidth, defaultHeight, background, color, textColor, textShadow, iconColor);
         this.slotHoverColor = slotHoverColor;
-    }
-
-    public SlotTheme(SlotTheme parent, JsonObject json, JsonObject fallback) {
-        super(parent, json, fallback);
-        this.slotHoverColor = JsonHelper.getColorWithFallback(json, fallback, parent.getSlotHoverColor(),
-                IThemeApi.SLOT_HOVER_COLOR);
     }
 
     @Override

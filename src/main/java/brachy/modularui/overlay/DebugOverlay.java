@@ -3,6 +3,7 @@ package brachy.modularui.overlay;
 import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IMuiScreen;
+import brachy.modularui.api.ITheme;
 import brachy.modularui.api.drawable.IIcon;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.IBoolValue;
@@ -12,9 +13,11 @@ import brachy.modularui.drawable.NamedDrawableRow;
 import brachy.modularui.drawable.Rectangle;
 import brachy.modularui.screen.CustomModularScreen;
 import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.TreeUtil;
+import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.value.BoolValue;
 import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widgets.ButtonWidget;
@@ -64,7 +67,7 @@ public class DebugOverlay extends CustomModularScreen {
                                         .widthRel(1f)
                                         .invisible()
                                         .overlay(Text.str("Print widget trees"))
-                                        .onMousePressed((context1, b) -> this.logWidgetTrees(b)))
+                                        .onMousePressed(this::logWidgetTrees))
                                 .child(new ButtonWidget<>().name("print_resizer_tree_button")
                                         .height(12)
                                         .widthRel(1f)
@@ -74,6 +77,12 @@ public class DebugOverlay extends CustomModularScreen {
                                             TreeUtil.print(parent.screen().getResizeNode());
                                             return true;
                                         }))
+                                .child(new ButtonWidget<>().name("print_theme")
+                                        .height(12)
+                                        .widthRel(1f)
+                                        .invisible()
+                                        .overlay(Text.str("Print Theme json"))
+                                        .onMousePressed(this::logTheme))
                                 .child(new ContextMenuButton<>("menu_hover_info")
                                         .height(10)
                                         .widthRel(1f)
@@ -134,10 +143,16 @@ public class DebugOverlay extends CustomModularScreen {
                         .name(Text.str(name)));
     }
 
-    private boolean logWidgetTrees(int b) {
+    private boolean logWidgetTrees(GuiContext context, int b) {
         for (ModularPanel<?> panel : parent.screen().getPanelManager().getOpenPanels()) {
             WidgetTree.print(panel);
         }
+        return true;
+    }
+
+    private boolean logTheme(GuiContext context, int b) {
+        var s = JsonHelper.toJsonString(ITheme.ENCODER, this.parent.screen().getCurrentTheme());
+        ModularUI.LOGGER.info("Theme JSON of screen {}:\n{}", this.parent.screen(), s);
         return true;
     }
 }

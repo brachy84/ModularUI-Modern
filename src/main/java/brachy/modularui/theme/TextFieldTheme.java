@@ -4,9 +4,7 @@ import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,13 +25,6 @@ public class TextFieldTheme extends WidgetTheme {
         super(defaultWidth, defaultHeight, background, color, textColor, textShadow, iconColor);
         this.markedColor = markedColor;
         this.hintColor = hintColor;
-    }
-
-    public TextFieldTheme(TextFieldTheme parent, JsonObject json, JsonObject fallback) {
-        super(parent, json, fallback);
-        this.markedColor = JsonHelper.getColorWithFallback(json, fallback, parent.getMarkedColor(),
-                IThemeApi.MARKED_COLOR);
-        this.hintColor = JsonHelper.getColorWithFallback(json, fallback, parent.getHintColor(), IThemeApi.HINT_COLOR);
     }
 
     @Override

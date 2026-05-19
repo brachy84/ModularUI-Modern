@@ -1,6 +1,9 @@
 package brachy.modularui.theme;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import com.mojang.serialization.JsonOps;
+
+import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +13,7 @@ import java.util.Objects;
 
 public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetThemeKey<?>> {
 
-    private static final Map<String, WidgetThemeKey<?>> KEYS = new Object2ObjectOpenHashMap<>();
+    private static final Map<String, WidgetThemeKey<?>> KEYS = new Object2ReferenceOpenHashMap<>();
 
     @Nullable
     public static WidgetThemeKey<?> getFromFullName(String key) {
@@ -20,36 +23,34 @@ public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetT
     @Nullable
     @Getter
     private final WidgetThemeKey<T> parent;
-    private final Class<T> type;
-    @Getter
-    private final String name;
+    @Getter private final Class<T> type;
+    @Getter private final String name;
     @Nullable
     @Getter
     private final String subName;
-    @Getter
-    private final T defaultValue;
-    @Getter
-    private final T defaultHoverValue;
-    @Getter
-    private final WidgetThemeParser<T> parser;
+    @Getter private final T defaultValue;
+    @Getter private final T defaultHoverValue;
+    @Getter private final WidgetThemeMerger<T> merger;
+    @Getter private final WidgetThemeCodec<T> codec;
 
-    WidgetThemeKey(Class<T> type, String name, T defaultValue, WidgetThemeParser parser) {
-        this(type, name, defaultValue, defaultValue, parser);
+    WidgetThemeKey(Class<T> type, String name, T defaultValue, WidgetThemeMerger<T> merger, WidgetThemeCodec<T> codec) {
+        this(type, name, defaultValue, defaultValue, merger, codec);
     }
 
-    WidgetThemeKey(Class<T> type, String name, T defaultValue, T defaultHoverValue, WidgetThemeParser<T> parser) {
-        this(null, type, name, null, defaultValue, defaultHoverValue, parser);
+    WidgetThemeKey(Class<T> type, String name, T defaultValue, T defaultHoverValue, WidgetThemeMerger<T> merger, WidgetThemeCodec<T> codec) {
+        this(null, type, name, null, defaultValue, defaultHoverValue, merger, codec);
     }
 
     WidgetThemeKey(@Nullable WidgetThemeKey<T> parent, Class<T> type, String name, @Nullable String subName,
-                   T defaultValue, T defaultHoverValue, WidgetThemeParser<T> parser) {
+                   T defaultValue, T defaultHoverValue, WidgetThemeMerger<T> merger, WidgetThemeCodec<T> codec) {
         this.parent = parent;
         this.type = type;
         this.name = name;
         this.subName = subName;
         this.defaultValue = defaultValue;
         this.defaultHoverValue = defaultHoverValue;
-        this.parser = parser;
+        this.merger = merger;
+        this.codec = codec;
         KEYS.put(getFullName(), this);
         ThemeAPI.INSTANCE.registerWidgetThemeKey(this);
     }
@@ -71,7 +72,15 @@ public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetT
         return new WidgetThemeKey<>(this, type, name, subName,
                 defaultValue != null ? defaultValue : getDefaultValue(),
                 defaultHoverValue != null ? defaultHoverValue : getDefaultHoverValue(),
-                this.parser);
+                this.merger, this.codec);
+    }
+
+    public T parseJson(JsonObject json) {
+        return getCodec().parse(JsonOps.INSTANCE, json).getOrThrow(false, s -> {});
+    }
+
+    public JsonObject encodeJson(T theme) {
+        return getCodec().encodeStart(JsonOps.INSTANCE, theme).getOrThrow(false, s -> {}).getAsJsonObject();
     }
 
     public Class<T> getWidgetThemeType() {

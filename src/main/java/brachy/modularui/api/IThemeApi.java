@@ -11,10 +11,14 @@ import brachy.modularui.theme.TextFieldTheme;
 import brachy.modularui.theme.ThemeAPI;
 import brachy.modularui.theme.ThemeBuilder;
 import brachy.modularui.theme.WidgetTheme;
+import brachy.modularui.theme.WidgetThemeCodec;
 import brachy.modularui.theme.WidgetThemeKey;
 import brachy.modularui.theme.WidgetThemeKeyBuilder;
-import brachy.modularui.theme.WidgetThemeParser;
+import brachy.modularui.theme.WidgetThemeMerger;
+import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
+
+import com.mojang.serialization.Codec;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -30,63 +34,11 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface IThemeApi {
 
-    // widget themes
-    WidgetThemeKey<WidgetTheme> FALLBACK = get().widgetThemeKeyBuilder("default", WidgetTheme.class)
-            .defaultTheme(WidgetTheme.darkTextNoShadow(18, 18, null))
-            .register();
-
-    WidgetThemeKey<WidgetTheme> PANEL = get().widgetThemeKeyBuilder("panel", WidgetTheme.class)
-            .defaultTheme(WidgetTheme.darkTextNoShadow(176, 166, GuiTextures.MC_BACKGROUND))
-            .register();
-
-    WidgetThemeKey<WidgetTheme> BUTTON = get().widgetThemeKeyBuilder("button", WidgetTheme.class)
-            .defaultTheme(WidgetTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON))
-            .defaultHoverTheme(WidgetTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON_HOVERED))
-            .register();
-
-    WidgetThemeKey<WidgetTheme> CLOSE_BUTTON = get().widgetThemeKeyBuilder("closeButton", WidgetTheme.class)
-            .defaultTheme(WidgetTheme.whiteTextShadow(10, 10, GuiTextures.MC_BUTTON))
-            .defaultHoverTheme(WidgetTheme.whiteTextShadow(10, 10, GuiTextures.MC_BUTTON_HOVERED))
-            .register();
-
-    WidgetThemeKey<WidgetTheme> SCROLLBAR = get().widgetThemeKeyBuilder("scrollbar", WidgetTheme.class)
-            .defaultTheme(WidgetTheme.darkTextNoShadow(4, 4, Scrollbar.VANILLA))
-            .register();
-
-    WidgetThemeKey<SlotTheme> ITEM_SLOT = get().widgetThemeKeyBuilder("itemSlot", SlotTheme.class)
-            .defaultTheme(new SlotTheme(GuiTextures.SLOT_ITEM))
-            .register();
-
-    WidgetThemeKey<SlotTheme> FLUID_SLOT = get().widgetThemeKeyBuilder("fluidSlot", SlotTheme.class)
-            .defaultTheme(new SlotTheme(GuiTextures.SLOT_FLUID))
-            .register();
-
-    WidgetThemeKey<TextFieldTheme> TEXT_FIELD = get().widgetThemeKeyBuilder("textField", TextFieldTheme.class)
-            .defaultTheme(new TextFieldTheme(0xFF2F72A8, 0xFF5F5F5F))
-            .register();
-
-    WidgetThemeKey<SelectableTheme> TOGGLE_BUTTON = get().widgetThemeKeyBuilder("toggleButton", SelectableTheme.class)
-            .defaultTheme(
-                    SelectableTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON, GuiTextures.MC_BUTTON_DISABLED))
-            .defaultHoverTheme(SelectableTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON_HOVERED,
-                    IDrawable.NONE))
-            .register();
-
-    // subwidget themes
-    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER = ITEM_SLOT.createSubKey("player");
-    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_HOTBAR = ITEM_SLOT_PLAYER.createSubKey("playerHotbar");
-    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_MAIN_INV = ITEM_SLOT_PLAYER.createSubKey("playerMainInventory");
-    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_OFFHAND = ITEM_SLOT_PLAYER.createSubKey("playerOffhand");
-    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_ARMOR = ITEM_SLOT_PLAYER.createSubKey("playerArmor");
-
-    String HOVER_SUFFIX = ":hover";
-
     // properties
     String PARENT = "parent";
     String DEFAULT_WIDTH = "defaultWidth";
     String DEFAULT_HEIGHT = "defaultHeight";
     String BACKGROUND = "background";
-    String HOVER_BACKGROUND = "hoverBackground";
     String COLOR = "color";
     String TEXT_COLOR = "textColor";
     String TEXT_SHADOW = "textShadow";
@@ -99,6 +51,79 @@ public interface IThemeApi {
     String SELECTED_TEXT_COLOR = "selectedTextColor";
     String SELECTED_TEXT_SHADOW = "selectedTextShadow";
     String SELECTED_ICON_COLOR = "selectedIconColor";
+
+    // widget themes
+    WidgetThemeKey<WidgetTheme> FALLBACK = get().widgetThemeKeyBuilder("default", WidgetTheme.class)
+            .defaultTheme(WidgetTheme.darkTextNoShadow(18, 18, null))
+            .field(DEFAULT_WIDTH, int.class, Codec.INT, WidgetTheme::getDefaultWidth)
+            .field(DEFAULT_HEIGHT, int.class, Codec.INT, WidgetTheme::getDefaultHeight)
+            .field(BACKGROUND, IDrawable.class, IDrawable.CODEC, WidgetTheme::getBackground)
+            .fallbackField(COLOR, int.class, Color.CODEC, WidgetTheme::getColor)
+            .fallbackField(TEXT_COLOR, int.class, Color.CODEC, WidgetTheme::getTextColor)
+            .fallbackField(TEXT_SHADOW, boolean.class, Codec.BOOL, WidgetTheme::isTextShadow)
+            .fallbackField(ICON_COLOR, int.class, Color.CODEC, WidgetTheme::getIconColor)
+            .register();
+
+    WidgetThemeKey<WidgetTheme> PANEL = get().widgetThemeKeyBuilder("panel", WidgetTheme.class)
+            .defaultTheme(WidgetTheme.darkTextNoShadow(176, 166, GuiTextures.MC_BACKGROUND))
+            .fieldsOf(FALLBACK)
+            .register();
+
+    WidgetThemeKey<WidgetTheme> BUTTON = get().widgetThemeKeyBuilder("button", WidgetTheme.class)
+            .defaultTheme(WidgetTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON))
+            .defaultHoverTheme(WidgetTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON_HOVERED))
+            .fieldsOf(FALLBACK)
+            .register();
+
+    WidgetThemeKey<WidgetTheme> CLOSE_BUTTON = get().widgetThemeKeyBuilder("closeButton", WidgetTheme.class)
+            .defaultTheme(WidgetTheme.whiteTextShadow(10, 10, GuiTextures.MC_BUTTON))
+            .defaultHoverTheme(WidgetTheme.whiteTextShadow(10, 10, GuiTextures.MC_BUTTON_HOVERED))
+            .fieldsOf(FALLBACK)
+            .register();
+
+    WidgetThemeKey<WidgetTheme> SCROLLBAR = get().widgetThemeKeyBuilder("scrollbar", WidgetTheme.class)
+            .defaultTheme(WidgetTheme.darkTextNoShadow(4, 4, Scrollbar.VANILLA))
+            .fieldsOf(FALLBACK)
+            .register();
+
+    WidgetThemeKey<SlotTheme> ITEM_SLOT = get().widgetThemeKeyBuilder("itemSlot", SlotTheme.class)
+            .defaultTheme(new SlotTheme(GuiTextures.SLOT_ITEM))
+            .fieldsOf(FALLBACK)
+            .field(SLOT_HOVER_COLOR, int.class, Color.CODEC, SlotTheme::getSlotHoverColor)
+            .register();
+
+    WidgetThemeKey<SlotTheme> FLUID_SLOT = get().widgetThemeKeyBuilder("fluidSlot", SlotTheme.class)
+            .defaultTheme(new SlotTheme(GuiTextures.SLOT_FLUID))
+            .fieldsOf(ITEM_SLOT)
+            .register();
+
+    WidgetThemeKey<TextFieldTheme> TEXT_FIELD = get().widgetThemeKeyBuilder("textField", TextFieldTheme.class)
+            .defaultTheme(new TextFieldTheme(0xFF2F72A8, 0xFF5F5F5F))
+            .fieldsOf(FALLBACK)
+            .field(MARKED_COLOR, int.class, Color.CODEC, TextFieldTheme::getMarkedColor)
+            .field(HINT_COLOR, int.class, Color.CODEC, TextFieldTheme::getHintColor)
+            .register();
+
+    WidgetThemeKey<SelectableTheme> TOGGLE_BUTTON = get().widgetThemeKeyBuilder("toggleButton", SelectableTheme.class)
+            .defaultTheme(SelectableTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON, GuiTextures.MC_BUTTON_DISABLED))
+            .defaultHoverTheme(SelectableTheme.whiteTextShadow(18, 18, GuiTextures.MC_BUTTON_HOVERED, IDrawable.NONE))
+            .fieldsOf(FALLBACK)
+            .field(SELECTED_BACKGROUND, IDrawable.class, IDrawable.CODEC, SelectableTheme::getSelectedBackground)
+            .field(SELECTED_COLOR, int.class, Color.CODEC, SelectableTheme::getSelectedColor)
+            .field(SELECTED_TEXT_COLOR, int.class, Color.CODEC, SelectableTheme::getSelectedTextColor)
+            .field(SELECTED_TEXT_SHADOW, boolean.class, Codec.BOOL, SelectableTheme::isSelectedTextShadow)
+            .field(SELECTED_ICON_COLOR, int.class, Color.CODEC, SelectableTheme::getSelectedIconColor)
+            .register();
+
+    // subwidget themes
+    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER = ITEM_SLOT.createSubKey("player");
+    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_HOTBAR = ITEM_SLOT_PLAYER.createSubKey("playerHotbar");
+    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_MAIN_INV = ITEM_SLOT_PLAYER.createSubKey("playerMainInventory");
+    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_OFFHAND = ITEM_SLOT_PLAYER.createSubKey("playerOffhand");
+    WidgetThemeKey<SlotTheme> ITEM_SLOT_PLAYER_ARMOR = ITEM_SLOT_PLAYER.createSubKey("playerArmor");
+
+    String HOVER_SUFFIX = ":hover";
+
 
     /**
      * @return the default api implementation
@@ -219,21 +244,12 @@ public interface IThemeApi {
      */
     void registerThemeForScreen(String screen, String theme);
 
-    /**
-     * Registers a widget theme. It is recommended to store the resulting key in a static variable and make it
-     * accessible by public methods.
-     *
-     * @param id                id of the widget theme
-     * @param defaultTheme      the fallback widget theme
-     * @param defaultHoverTheme the fallback hover widget theme
-     * @param parser            the widget theme json parser function. This is usually another constructor.
-     * @return key to access the widget theme
-     */
+    @Deprecated
     <T extends WidgetTheme> WidgetThemeKey<T> registerWidgetTheme(String id, T defaultTheme, T defaultHoverTheme,
-                                                                  WidgetThemeParser<T> parser);
+                                                                  WidgetThemeMerger<T> merger, WidgetThemeCodec<T> codec);
 
     default <T extends WidgetTheme> WidgetThemeKeyBuilder<T> widgetThemeKeyBuilder(String id, Class<T> type) {
-        return new WidgetThemeKeyBuilder<>(id);
+        return new WidgetThemeKeyBuilder<>(id, type);
     }
 
     @UnmodifiableView
