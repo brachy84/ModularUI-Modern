@@ -1,6 +1,7 @@
 package brachy.modularui.utils.serialization.codec;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -11,30 +12,35 @@ import java.util.Optional;
 
 public class CodecRegistry<T> {
 
-    private final Map<String, Codec<? extends T>> drawableCodecs = new Object2ReferenceOpenHashMap<>();
+    private final Map<String, MapCodec<? extends T>> drawableCodecs = new Object2ReferenceOpenHashMap<>();
 
-    public @Nullable Codec<? extends T> getNullable(String name) {
+    public @Nullable MapCodec<? extends T> getNullable(String name) {
         return this.drawableCodecs.get(name);
     }
 
-    public Codec<? extends T> get(String name) {
+    public @Nullable Codec<? extends T> getNullableCodec(String name) {
+        var c = getNullable(name);
+        return c != null ? c.codec() : null;
+    }
+
+    public MapCodec<? extends T> get(String name) {
         return Objects.requireNonNull(getNullable(name));
     }
 
-    public Optional<Codec<? extends T>> getOptional(String name) {
+    public Optional<MapCodec<? extends T>> getOptional(String name) {
         return Optional.ofNullable(getNullable(name));
     }
 
-    public Codec<? extends T> getOrElse(String name, Codec<? extends T> codec) {
+    public MapCodec<? extends T> getOrElse(String name, MapCodec<? extends T> codec) {
         return this.drawableCodecs.getOrDefault(name, codec);
     }
 
-    public synchronized <A extends T> Codec<A> register(String name, Codec<A> codec) {
+    public synchronized <A extends T> MapCodec<A> register(String name, MapCodec<A> codec) {
         this.drawableCodecs.put(name, Objects.requireNonNull(codec));
         return codec;
     }
 
-    public synchronized <A extends T> Codec<A> register(Codec<A> codec, String... names) {
+    public synchronized <A extends T> MapCodec<A> register(MapCodec<A> codec, String... names) {
         for (String name : names) this.drawableCodecs.put(name, codec);
         return codec;
     }

@@ -9,7 +9,7 @@ import brachy.modularui.drawable.Rectangle;
 import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.codec.MutableCodec;
+import brachy.modularui.utils.serialization.codec.MutableDecoder;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widget.Widget;
@@ -52,9 +52,9 @@ public class CodecTest {
     void text() {
         // NOTE: integer colors do not work properly when they have an alpha value due to a Minecraft bug.
         // I fixed this in TextColorMixin, but mixins are not applied in testing.
-        test(ModularComponent.CODEC, Text.str("Hello"), true);
-        test(ModularComponent.CODEC, Text.str("World").style(Text.UNDERLINE).color(Color.withAlpha(Color.GREEN.main, 0)), true);
-        test(ModularComponent.CODEC, Text.comp(
+        test(ModularComponent.CODEC.mutableCodec(), Text.str("Hello"), true);
+        test(ModularComponent.CODEC.mutableCodec(), Text.str("World").style(Text.UNDERLINE).color(Color.withAlpha(Color.GREEN.main, 0)), true);
+        test(ModularComponent.CODEC.mutableCodec(), Text.comp(
                 Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
                 Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
     }
@@ -156,10 +156,10 @@ public class CodecTest {
     }
 
     private static <A> void test(MutableObjectCodec<A> codec, A obj1, Supplier<A> supplier, boolean checkObjEquals) {
-        JsonElement json1 = toJson(codec, obj1);
-        A obj2 = fromJson(codec, json1, supplier.get());
+        JsonElement json1 = toJson(codec.mutableCodec(), obj1);
+        A obj2 = fromJson(codec.mutableCodec(), json1, supplier.get());
         if (checkObjEquals) assertEquals(obj1, obj2);
-        JsonElement json2 = toJson(codec, obj2);
+        JsonElement json2 = toJson(codec.mutableCodec(), obj2);
         assertEquals(json1, json2);
         System.out.println(JsonHelper.GSON.toJson(json1));
     }
@@ -177,7 +177,7 @@ public class CodecTest {
         assertEquals(obj, fromJson(codec, json));
     }
 
-    public static <T> T fromJson(MutableCodec<T> codec, JsonElement json, T instance) {
+    public static <T> T fromJson(MutableDecoder<T> codec, JsonElement json, T instance) {
         var d = codec.parse(JsonOps.INSTANCE, json, instance);
         var err = d.error();
         assertTrue(err.isEmpty(), () -> "Expected no error, but got: " + err.get().message());

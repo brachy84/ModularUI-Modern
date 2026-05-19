@@ -6,6 +6,9 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -24,33 +27,7 @@ public class CodecUtil {
 
     @SafeVarargs
     public static <A> Codec<A> chainedCodec(Codec<A>... codecs) {
-        if (codecs == null || codecs.length == 0) throw new NullPointerException();
-        if (codecs.length == 1) return codecs[0];
-        return new Codec<>() {
-            @Override
-            public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
-                StringBuilder message = new StringBuilder();
-                DataResult<Pair<A, T>> last = null;
-                for (var codec : codecs) {
-                    last = codec.decode(ops, input);
-                    if (last.result().isPresent()) return last;
-                    message.append(last.error().orElseThrow().message()).append("; ");
-                }
-                return last.mapError(s -> message.substring(0, message.length() - 2));
-            }
-
-            @Override
-            public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
-                StringBuilder message = new StringBuilder();
-                DataResult<T> last = null;
-                for (var codec : codecs) {
-                    last = codec.encode(input, ops, prefix);
-                    if (last.result().isPresent()) return last;
-                    message.append(last.error().orElseThrow().message()).append("; ");
-                }
-                return last.mapError(s -> message.substring(0, message.length() - 2));
-            }
-        };
+        return Codec.of(chainedEncoder(codecs), chainedDecoder(codecs));
     }
 
     @SafeVarargs
@@ -61,9 +38,53 @@ public class CodecUtil {
             @Override
             public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
                 StringBuilder message = new StringBuilder();
-                DataResult<Pair<A, T>> last = null;
+                DataResult<Pair<A, T>> last;
+                MapLike<T> map = null;
+                boolean isMap = true;
                 for (var codec : decoder) {
-                    last = codec.decode(ops, input);
+                    if (codec instanceof MapCodec.MapCodecCodec<A> mcc) {
+                        if (!isMap) continue;
+                        MapCodec<A> mapCodec = mcc.codec();
+                        if (map == null) {
+                            var d = ops.getMap(input);
+                            var res = d.result();
+                            if (res.isEmpty()) {
+                                isMap = false;
+                                message.append(d.error().orElseThrow().message()).append("; ");
+                                continue;
+                            }
+                            map = res.get();
+                        }
+                        last = mapCodec.decode(ops, map).map(a -> new Pair<>(a, input));
+                    } else {
+                        last = codec.decode(ops, input);
+                    }
+                    if (last.result().isPresent()) return last;
+                    message.append(last.error().orElseThrow().message()).append("; ");
+                }
+                return DataResult.error(() -> message.substring(0, message.length() - 2));
+            }
+        };
+    }
+
+    @SafeVarargs
+    public static <A> Encoder<A> chainedEncoder(Encoder<A>... encoder) {
+        if (encoder == null || encoder.length == 0) throw new NullPointerException();
+        if (encoder.length == 1) return encoder[0];
+        return new Encoder<>() {
+            @Override
+            public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
+                StringBuilder message = new StringBuilder();
+                DataResult<T> last = null;
+                for (var codec : encoder) {
+                    if (codec instanceof MapCodec.MapCodecCodec<A> mcc) {
+                        MapCodec<A> mapCodec = mcc.codec();
+                        RecordBuilder<T> recordBuilder = ops.mapBuilder();
+                        recordBuilder = mapCodec.encode(input, ops, recordBuilder);
+                        last = recordBuilder.build(prefix);
+                    } else {
+                        last = codec.encode(input, ops, prefix);
+                    }
                     if (last.result().isPresent()) return last;
                     message.append(last.error().orElseThrow().message()).append("; ");
                 }
@@ -73,71 +94,86 @@ public class CodecUtil {
     }
 
     @SafeVarargs
+    public static <A> MapCodec<A> chainedMapCodec(MapCodec<A>... codecs) {
+        if (codecs == null || codecs.length == 0) throw new NullPointerException();
+        if (codecs.length == 1) return codecs[0];
+        // I hate this
+        return new MapCodec<>() {
+            @Override
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                Stream<T> s = Stream.empty();
+                for (MapCodec<A> mapCodec : codecs) {
+                    s = Stream.concat(s, mapCodec.keys(ops));
+                }
+                return s;
+            }
+
+            @Override
+            public <T> DataResult<A> decode(DynamicOps<T> ops, MapLike<T> input) {
+                StringBuilder message = new StringBuilder();
+                DataResult<A> last;
+                for (var codec : codecs) {
+                    last = codec.decode(ops, input);
+                    if (last.result().isPresent()) return last;
+                    message.append(last.error().orElseThrow().message()).append("; ");
+                }
+                return DataResult.error(() -> message.substring(0, message.length() - 2));
+            }
+
+            @Override
+            public <T> RecordBuilder<T> encode(A input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+                StringBuilder message = new StringBuilder();
+                DataResult<T> last;
+                for (var codec : codecs) {
+                    var builder = ops.mapBuilder();
+                    builder = codec.encode(input, ops, builder);
+                    last = builder.build((T) null);
+                    if (last.result().isPresent()) {
+                        return codec.encode(input, ops, prefix);
+                    }
+                    message.append(last.error().orElseThrow().message()).append("; ");
+                }
+                return prefix.withErrorsFrom(DataResult.error(() -> message.substring(0, message.length() - 2)));
+            }
+        };
+    }
+
+    public static <A, J> DataResult<A> ifMap(DynamicOps<J> ops, J input, Function<MapLike<J>, DataResult<A>> map) {
+        var d = ops.getMap(input);
+        var res = d.result();
+        if (res.isEmpty()) return DataResult.error(() -> d.error().orElseThrow().message());
+        return map.apply(res.get());
+    }
+
+    @SafeVarargs
     public static <A> Codec<A> codecOf(Encoder<A> encoder, Decoder<A>... decoder) {
         return Codec.of(encoder, chainedDecoder(decoder));
     }
 
-    public static <E, A> Codec<E> dispatchNullable(Codec<A> keyCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
-        return dispatchNullable("type", keyCodec, type, codec, true);
+    public static <E, A> MapCodec<E> dispatchNullable(Codec<A> keyCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
+        return dispatchNullable("type", keyCodec, type, codec);
     }
 
     /**
      * Creates a dispatch codec, but with nullable type and codec functions.
      * If the functions return null, an error data result is returned instead of crashing.
-     *
-     * @see #dispatch(String, Codec, Function, Function, boolean)
      */
-    public static <K, V> Codec<V> dispatchNullable(String key, Codec<K> keyCodec,
-                                                   Function<? super V, ? extends K> type,
-                                                   Function<? super K, ? extends Codec<? extends V>> codec, boolean assumeMap) {
-        return dispatch(key, keyCodec, v -> {
+    public static <K, V> MapCodec<V> dispatchNullable(String key, Codec<K> keyCodec,
+                                                      Function<? super V, ? extends K> type,
+                                                      Function<? super K, ? extends Codec<? extends V>> codec) {
+        return partialDispatchMap(key, keyCodec, v -> {
             K k = type.apply(v);
             return k == null ? DataResult.error(() -> "No key found") : DataResult.success(k);
         }, k -> {
             Codec<? extends V> e = codec.apply(k);
             return e == null ? DataResult.error(() -> "No codec found for key " + k) : DataResult.success(e);
-        }, assumeMap);
+        });
     }
 
-    /**
-     * Creates a dispatch codec with the option to assume map.
-     * {@link Codec#dispatch(Function, Function)} assumes the data in a structure like this for this example:
-     * <pre>
-     * {@code
-     *     {
-     *         "type": "pos2d",
-     *         "value: {
-     *             "x": 1,
-     *             "y": 2
-     *         }
-     *     }
-     * }
-     * </pre>
-     * With assumeMap it would look like this:
-     * <pre>
-     * {@code
-     *     {
-     *         "type": "pos2d",
-     *         "x": 1,
-     *         "y": 2
-     *     }
-     * }
-     * </pre>
-     *
-     * @param key       key to get the type name, usually just "type"
-     * @param keyCodec  codec for the key
-     * @param type      function to get the key from a value
-     * @param codec     function to get the codec from a key
-     * @param assumeMap if the codec should assume map like described above
-     * @param <K>       key type
-     * @param <V>       value type
-     */
-    public static <K, V> Codec<V> dispatch(String key, Codec<K> keyCodec,
-                                           Function<? super V, ? extends DataResult<? extends K>> type,
-                                           Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec, boolean assumeMap) {
-        return assumeMap ?
-                KeyDispatchCodec.unsafe(key, keyCodec, type, codec, v -> CodecUtil.getCodec(type, codec, v)).codec() :
-                new KeyDispatchCodec<>(key, keyCodec, type, codec).codec();
+    public static <K, V> MapCodec<V> partialDispatchMap(String key, Codec<K> keyCodec,
+                                                        Function<? super V, ? extends DataResult<? extends K>> type,
+                                                        Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec) {
+        return new KeyDispatchCodec<>(key, keyCodec, type, codec);
 
     }
 

@@ -32,7 +32,7 @@ public class ComponentSerializerMixin {
                     target = "Lnet/minecraft/network/chat/Component$Serializer;serialize(Lnet/minecraft/network/chat/Component;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;"))
     public JsonElement serialize(Component.Serializer instance, Component src, Type typeOfSrc, JsonSerializationContext context, Operation<JsonElement> original) {
         if (src instanceof ModularComponent mc) {
-            var d = ModularComponent.CODEC.encodeJson(mc);
+            var d = ModularComponent.CODEC.mutableCodec().encodeJson(mc);
             var res = d.result();
             if (res.isPresent()) return res.get();
             ModularUI.LOGGER.error("Error encoding nested ModularComponent: {}", d.error().orElseThrow().message());
@@ -45,7 +45,7 @@ public class ComponentSerializerMixin {
         MutableComponent comp = original.call(instance, json, typeOfT, context);
         if (comp.getClass() == MutableComponent.class && json instanceof JsonObject jsonObj && ModularComponent.CODEC.hasAnyField(jsonObj)) {
             ModularComponent mc = comp.asModular();
-            var d = ModularComponent.CODEC.parseJson(jsonObj, mc);
+            var d = ModularComponent.CODEC.mutableCodec().parseJson(jsonObj, mc);
             var res = d.result();
             if (res.isEmpty()) throw new JsonParseException(d.error().orElseThrow().message());
             return res.get();

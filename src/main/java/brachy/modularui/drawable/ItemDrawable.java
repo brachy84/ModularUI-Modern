@@ -28,7 +28,7 @@ import java.util.List;
 @Accessors(fluent = true, chain = true)
 public class ItemDrawable implements IDrawable {
 
-    public static final Codec<ItemDrawable> CODEC = MutableObjectCodec.drawableBuilder(ItemDrawable::new)
+    public static final MutableObjectCodec<ItemDrawable> CODEC = MutableObjectCodec.drawableBuilder(ItemDrawable::new)
             .add("items", ItemDrawable::items, ItemDrawable::getItemList, CodecUtil.listLike(ItemStack.CODEC)).alias("item")
             .addOpt("cycleTime", ItemDrawable::cycleTime, ItemDrawable::cycleTime, Codec.INT, 1000)
             .build();

@@ -33,7 +33,7 @@ import java.util.function.UnaryOperator;
 public interface IWidget extends ITreeNode<IWidget> {
 
     CodecRegistry<IWidget> CODECS = new CodecRegistry<>();
-    Codec<IWidget> CODEC = Codec.STRING.dispatch("widget", IWidget::getTypeName, CODECS::getNullable);
+    Codec<IWidget> CODEC = Codec.STRING.dispatch("widget", IWidget::getTypeName, CODECS::getNullableCodec);
 
     String WIDGET_TRANSLATION_KEY_FORMAT = "widget.%s.name";
     /**

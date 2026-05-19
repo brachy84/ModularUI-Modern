@@ -7,11 +7,11 @@ import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  */
 public interface Text extends IDrawable {
 
-    Codec<ModularComponent> CODEC = ModularComponent.CODEC;
+    MutableObjectCodec<ModularComponent> CODEC = ModularComponent.CODEC;
 
     int TEXT_COLOR = 0xFF404040;
 

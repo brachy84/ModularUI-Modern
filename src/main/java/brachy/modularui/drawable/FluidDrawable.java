@@ -26,7 +26,7 @@ import java.util.List;
 @Accessors(fluent = true, chain = true)
 public class FluidDrawable implements IDrawable {
 
-    public static final Codec<FluidDrawable> CODEC = MutableObjectCodec.drawableBuilder(FluidDrawable::new)
+    public static final MutableObjectCodec<FluidDrawable> CODEC = MutableObjectCodec.drawableBuilder(FluidDrawable::new)
             .add("fluids", FluidDrawable::fluids, FluidDrawable::getFluidList, CodecUtil.listLike(FluidStack.CODEC)).alias("fluid")
             .addOpt("cycleTime", FluidDrawable::cycleTime, FluidDrawable::cycleTime, Codec.INT, 1000)
             .build();

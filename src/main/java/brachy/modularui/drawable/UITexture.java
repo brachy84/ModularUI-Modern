@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,10 +28,10 @@ import java.util.Objects;
 @Accessors(fluent = true, chain = true)
 public class UITexture implements IDrawable {
 
-    public static final Codec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.xmap(Builder::buildForCodec, UITexture::toBuilder);
+    public static final MapCodec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.xmap(Builder::buildForCodec, UITexture::toBuilder);
     public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(TextureRegistry::getTextureId, TextureRegistry::getTexture);
-    public static final Codec<UITexture> CODEC = IDrawable.CODECS.register("texture",
-            CodecUtil.chainedCodec(CODEC_FROM_NAME.fieldOf("name").codec(), CODEC_FROM_BUILDER));
+    public static final MapCodec<UITexture> CODEC = IDrawable.CODECS.register("texture",
+            CodecUtil.chainedMapCodec(CODEC_FROM_NAME.fieldOf("name"), CODEC_FROM_BUILDER));
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", ColorType.DEFAULT);
     public static final FileToIdConverter GUI_TEXTURE_ID_CONVERTER = new FileToIdConverter("textures/gui", ".png");

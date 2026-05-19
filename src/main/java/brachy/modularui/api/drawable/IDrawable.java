@@ -19,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -52,7 +53,7 @@ public interface IDrawable {
     IDrawable NONE = (context, x, y, width, height, widgetTheme) -> {};
 
     CodecRegistry<IDrawable> CODECS = new CodecRegistry<>();
-    Codec<IDrawable> CODEC_DISPATCH = CodecUtil.dispatchNullable(Codec.STRING, IDrawable::getTypeName, CODECS::getNullable);
+    MapCodec<IDrawable> CODEC_DISPATCH = CodecUtil.dispatchNullable(Codec.STRING, IDrawable::getTypeName, CODECS::getNullableCodec);
     Codec<IDrawable> CODEC_EMPTY_NONE = Codec.STRING.flatXmap(s -> {
         if (s == null || s.equals("empty") || s.equals("null")) return DataResult.success(EMPTY);
         if (s.equals("none")) return DataResult.success(NONE);
@@ -62,7 +63,7 @@ public interface IDrawable {
         if (d == NONE) return DataResult.success("none");
         return DataResult.error(() -> "Only works for empty and none");
     });
-    Codec<IDrawable> CODEC = CodecUtil.chainedCodec(CODEC_EMPTY_NONE, DrawableStack.CODEC, CODEC_DISPATCH);
+    Codec<IDrawable> CODEC = CodecUtil.chainedCodec(CODEC_EMPTY_NONE, DrawableStack.CODEC, CODEC_DISPATCH.codec());
 
     static DataResult<JsonElement> toJson(IDrawable drawable) {
         return CODEC.encodeStart(JsonOps.INSTANCE, drawable);

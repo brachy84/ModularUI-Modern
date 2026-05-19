@@ -64,7 +64,7 @@ public class ClientProxy extends CommonProxy {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
-        test(ModularComponent.CODEC, Text.comp(
+        test(ModularComponent.CODEC.mutableCodec(), Text.comp(
                 Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
                 Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
     }

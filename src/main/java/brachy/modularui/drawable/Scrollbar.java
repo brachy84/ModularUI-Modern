@@ -6,6 +6,7 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public record Scrollbar(boolean striped) implements IDrawable {
 
@@ -16,8 +17,8 @@ public record Scrollbar(boolean striped) implements IDrawable {
         return striped ? VANILLA : DEFAULT;
     }
 
-    public static final Codec<Scrollbar> CODEC = IDrawable.CODECS.register(
-            Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped).codec(),
+    public static final MapCodec<Scrollbar> CODEC = IDrawable.CODECS.register(
+            Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped),
             "scrollbar", "Scrollbar");
 
     @Override
