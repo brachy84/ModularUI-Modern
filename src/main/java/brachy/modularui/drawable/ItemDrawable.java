@@ -34,8 +34,7 @@ public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> 
             .addOpt("cycleTime", ItemDrawable::cycleTime, ItemDrawable::cycleTime, Codec.INT, 1000)
             .build();
 
-    @Getter
-    private ItemStack[] items;
+    private ItemStack[] items = new ItemStack[0];
     @Getter
     @Setter
     private int cycleTime = 1000;
@@ -87,6 +86,10 @@ public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> 
     @Override
     public int getDefaultWidth() {
         return 16;
+    }
+
+    public ItemStack[] getItems() {
+        return this.items;
     }
 
     public void ingredient(Ingredient ingredient) {

@@ -33,7 +33,8 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
 
     public static final Codec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.xmap(Builder::buildForCodec, UITexture::toBuilder);
     public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(DrawableSerialization::getTextureId, DrawableSerialization::getTexture);
-    public static final Codec<UITexture> CODEC = IDrawable.CODECS.register("texture", CodecUtil.chainedCodec(CODEC_FROM_NAME, CODEC_FROM_BUILDER));
+    public static final Codec<UITexture> CODEC = IDrawable.CODECS.register("texture",
+            CodecUtil.chainedCodec(CODEC_FROM_NAME.fieldOf("name").codec(), CODEC_FROM_BUILDER));
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", ColorType.DEFAULT);
     public static final FileToIdConverter GUI_TEXTURE_ID_CONVERTER = new FileToIdConverter("textures/gui", ".png");
@@ -631,7 +632,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     .resultOrPartial(s -> {
                         throw new IllegalArgumentException(s);
                     }).map(texture -> {
-                        //DrawableSerialization.registerTexture(this.name, texture);
+                        DrawableSerialization.registerTexture(this.name, texture);
                         return texture;
                     }).map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
                     .orElseThrow();
@@ -672,7 +673,8 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     return DataResult.error(() -> "UV values must be 0 - 1");
                 }
                 if (this.bl > 0 || this.bt > 0 || this.br > 0 || this.bb > 0) {
-                    if (this.iw <= 0 || this.ih <= 0) return DataResult.error(() -> "Image size must be > 0 for adaptable textures (border > 0)");
+                    if (this.iw <= 0 || this.ih <= 0)
+                        return DataResult.error(() -> "Image size must be > 0 for adaptable textures (border > 0)");
                     return DataResult.success(new AdaptableUITexture(this.location, this.u0, this.v0, this.u1, this.v1, this.colorType,
                             this.nonOpaque, 0, this.iw, this.ih, this.bl, this.bt, this.br, this.bb, this.tiled));
                 }

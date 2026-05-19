@@ -5,8 +5,11 @@ import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
-
 import brachy.modularui.utils.serialization.codec.MutableCodec;
+
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.JsonOps;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,10 +19,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
-
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -240,13 +239,13 @@ public class JsonHelper {
         return json;
     }
 
-    public static <T> JsonElement toJson(Codec<T> codec, T input) {
+    public static <T> JsonElement toJson(Encoder<T> codec, T input) {
         var d = codec.encodeStart(JsonOps.INSTANCE, input);
         if (d.error().isPresent()) ModularUI.LOGGER.error("Error encoding '{}' to json: {}", input, d.error().get());
         return d.result().orElse(JsonNull.INSTANCE);
     }
 
-    public static <T> String toJsonString(Codec<T> codec, T input) {
+    public static <T> String toJsonString(Encoder<T> codec, T input) {
         return GSON.toJson(toJson(codec, input));
     }
 
@@ -256,7 +255,7 @@ public class JsonHelper {
         return instance;
     }
 
-    public static <T> T fromJson(Codec<T> codec, JsonElement json) {
+    public static <T> T fromJson(Decoder<T> codec, JsonElement json) {
         var d = codec.parse(JsonOps.INSTANCE, json);
         if (d.error().isPresent()) ModularUI.LOGGER.error("Error decoding from json: {}", d.error().get());
         return d.result().orElseThrow();
@@ -266,7 +265,7 @@ public class JsonHelper {
         return fromJson(codec, JsonParser.parseString(json), instance);
     }
 
-    public static <T> T fromJsonString(Codec<T> codec, String json) {
+    public static <T> T fromJsonString(Decoder<T> codec, String json) {
         return fromJson(codec, JsonParser.parseString(json));
     }
 }

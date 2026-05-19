@@ -7,12 +7,22 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.json.JsonHelper;
 
+import com.mojang.serialization.Codec;
+
 import com.google.gson.JsonObject;
 
 public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable<Scrollbar> {
 
     public static final Scrollbar DEFAULT = new Scrollbar(false);
     public static final Scrollbar VANILLA = new Scrollbar(true);
+
+    public static Scrollbar get(boolean striped) {
+        return striped ? VANILLA : DEFAULT;
+    }
+
+    public static final Codec<Scrollbar> CODEC = IDrawable.CODECS.register(
+            Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped).codec(),
+            "scrollbar", "Scrollbar");
 
     public static Scrollbar ofJson(JsonObject json) {
         if (JsonHelper.getBoolean(json, false, "striped", "vanilla")) {

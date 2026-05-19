@@ -31,8 +31,7 @@ public class FluidDrawable implements IDrawable {
             .addOpt("cycleTime", FluidDrawable::cycleTime, FluidDrawable::cycleTime, Codec.INT, 1000)
             .build();
 
-    @Getter
-    private FluidStack[] fluids;
+    private FluidStack[] fluids = new FluidStack[0];
     @Getter
     @Setter
     private int cycleTime;
@@ -86,6 +85,10 @@ public class FluidDrawable implements IDrawable {
 
     public List<FluidStack> getFluidList() {
         return Arrays.asList(this.fluids);
+    }
+
+    public FluidStack[] getFluids() {
+        return this.fluids;
     }
 
     public FluidDrawable fluids(Collection<FluidStack> fluids) {
