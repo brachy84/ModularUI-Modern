@@ -1,27 +1,24 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IIcon;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widget.sizer.Box;
 
 import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 
 /**
  * A {@link IDrawable} wrapper with a fixed size and an alignment.
  */
-public class Icon implements IIcon, IJsonSerializable<Icon> {
+public class Icon implements IIcon {
 
     public static final MutableObjectCodec<Icon> CODEC = MutableObjectCodec.drawableBuilder(Icon::new)
             .add("drawable", Icon::drawable, Icon::getDrawable, IDrawable.CODEC)
@@ -182,34 +179,6 @@ public class Icon implements IIcon, IJsonSerializable<Icon> {
             Box.CODEC.copyFields(box, this.margin);
         }
         return this;
-    }
-
-    @Override
-    public void loadFromJson(JsonObject json) {
-        this.width = (json.has("autoWidth") || json.has("autoSize")) &&
-                JsonHelper.getBoolean(json, true, "autoWidth", "autoSize") ? 0 :
-                JsonHelper.getInt(json, 0, "width", "w", "size");
-        this.height = (json.has("autoHeight") || json.has("autoSize")) &&
-                JsonHelper.getBoolean(json, true, "autoHeight", "autoSize") ? 0 :
-                JsonHelper.getInt(json, 0, "height", "h", "size");
-        this.aspectRatio = JsonHelper.getFloat(json, 0, "aspectRatio");
-        this.alignment = JsonHelper.deserialize(json, Alignment.class, Alignment.Center, "alignment", "align");
-        this.margin.fromJson(json);
-    }
-
-    public static Icon ofJson(JsonObject json) {
-        return JsonHelper.deserialize(json, IDrawable.class, IDrawable.EMPTY, "drawable", "icon").asIcon();
-    }
-
-    @Override
-    public boolean saveToJson(JsonObject json) {
-        json.add("drawable", JsonHelper.serialize(this.drawable));
-        json.addProperty("width", this.width);
-        json.addProperty("height", this.height);
-        json.addProperty("aspectRatio", this.aspectRatio);
-        json.add("alignment", JsonHelper.serialize(this.alignment));
-        this.margin.toJson(json);
-        return true;
     }
 
     @Override

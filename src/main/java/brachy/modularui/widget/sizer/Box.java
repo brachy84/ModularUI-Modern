@@ -4,9 +4,6 @@ import brachy.modularui.animation.IAnimatable;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
-import brachy.modularui.utils.serialization.json.JsonHelper;
-
-import com.google.gson.JsonObject;
 
 import com.mojang.serialization.Codec;
 
@@ -104,29 +101,6 @@ public class Box implements IAnimatable<Box> {
 
     public int getEnd(GuiAxis axis) {
         return axis.isHorizontal() ? this.right : this.bottom;
-    }
-
-    public void fromJson(JsonObject json) {
-        all(JsonHelper.getInt(json, 0, "margin"));
-        if (json.has("marginHorizontal")) {
-            this.left = json.get("marginHorizontal").getAsInt();
-            this.right = this.left;
-        }
-        if (json.has("marginVertical")) {
-            this.top = json.get("marginVertical").getAsInt();
-            this.bottom = this.top;
-        }
-        this.top = JsonHelper.getInt(json, this.top, "marginTop");
-        this.bottom = JsonHelper.getInt(json, this.bottom, "marginBottom");
-        this.left = JsonHelper.getInt(json, this.left, "marginLeft");
-        this.right = JsonHelper.getInt(json, this.right, "marginRight");
-    }
-
-    public void toJson(JsonObject json) {
-        json.addProperty("marginTop", this.top);
-        json.addProperty("marginBottom", this.bottom);
-        json.addProperty("marginLeft", this.left);
-        json.addProperty("marginRight", this.right);
     }
 
     @Override

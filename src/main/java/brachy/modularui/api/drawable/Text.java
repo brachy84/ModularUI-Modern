@@ -1,6 +1,5 @@
 package brachy.modularui.api.drawable;
 
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.drawable.text.DynamicComponent;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.ModularComponent;
@@ -9,14 +8,13 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +24,7 @@ import java.util.function.Supplier;
 /**
  * This represents a piece of text in a GUI.
  */
-public interface Text extends IDrawable, IJsonSerializable<Text> {
+public interface Text extends IDrawable {
 
     Codec<ModularComponent> CODEC = ModularComponent.CODEC;
 
@@ -240,20 +238,5 @@ public interface Text extends IDrawable, IJsonSerializable<Text> {
     @Override
     default String getTypeName() {
         return "text";
-    }
-
-    @Override
-    default void loadFromJson(JsonObject json) {
-        if (json.has("color") || json.has("shadow") || json.has("align") || json.has("alignment") ||
-                json.has("scale")) {
-            /*StyledText styledText = this instanceof StyledText styledText1 ? styledText1 : withStyle();
-            if (json.has("color")) {
-                styledText.color(JsonHelper.getInt(json, 0, "color"));
-            }
-            styledText.shadow(JsonHelper.getBoolean(json, false, "shadow"));
-            styledText.alignment(
-                    JsonHelper.deserialize(json, Alignment.class, styledText.alignment(), "align", "alignment"));
-            styledText.scale(JsonHelper.getFloat(json, 1, "scale"));*/
-        }
     }
 }

@@ -8,7 +8,6 @@ import brachy.modularui.client.component.DrawableTooltipComponent;
 import brachy.modularui.client.component.TooltipComponentIcon;
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.drawable.DelegateIcon;
-import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.drawable.HoverableIcon;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.InteractableIcon;
@@ -55,7 +54,6 @@ public class ClientProxy extends CommonProxy {
         if (!ModularUI.isDataGen()) {
             CursorHandler.init();
             AnimatorManager.init();
-            DrawableSerialization.init();
         }
     }
 

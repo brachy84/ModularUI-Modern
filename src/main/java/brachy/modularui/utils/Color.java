@@ -3,7 +3,6 @@ package brachy.modularui.utils;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IInterpolation;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.util.Mth;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,9 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import java.util.Locale;
 import java.util.Random;
@@ -1027,77 +1024,6 @@ public class Color {
         }
         String finalColorString1 = colorString;
         return DataResult.error(() -> String.format("No color shade for name '%s' was found", finalColorString1), fallback);
-    }
-
-    /**
-     * Parses a ARGB color of a json element.
-     *
-     * @param jsonElement json element
-     * @return ARGB color
-     * @throws JsonParseException if color could not be parsed
-     */
-    @Deprecated
-    public static int ofJson(JsonElement jsonElement) {
-        if (jsonElement.isJsonPrimitive()) {
-            return parseString(jsonElement.getAsString()).resultOrPartial(s -> {}).orElse(WHITE.main);
-        }
-        if (jsonElement.isJsonObject()) {
-            JsonObject json = jsonElement.getAsJsonObject();
-            String alphaS = JsonHelper.getString(json, "1f", "a", "alpha");
-            float alphaF;
-            int alpha;
-            if (alphaS.contains(".") || alphaS.endsWith("f") || alphaS.endsWith("F") || alphaS.endsWith("d") ||
-                    alphaS.endsWith("D")) {
-                try {
-                    alphaF = Mth.clamp(Float.parseFloat(alphaS), 0f, 1f);
-                    alpha = (int) (alphaF * 255);
-                } catch (NumberFormatException e) {
-                    throw new JsonParseException("Failed to parse alpha value", e);
-                }
-            } else {
-                try {
-                    alpha = Mth.clamp(Integer.parseInt(alphaS), 0, 255);
-                    alphaF = alpha / 255f;
-                } catch (NumberFormatException e) {
-                    throw new JsonParseException("Failed to parse alpha value", e);
-                }
-            }
-            if (hasRGB(json)) {
-                if (hasHS(json) || hasV(json) || hasL(json))
-                    throw new JsonParseException("Found RGB values, but also HSV or HSL values!");
-                if (hasCMYK(json))
-                    throw new JsonParseException("Found RGB values, but also CMYK values!");
-                int red = JsonHelper.getInt(json, 255, "r", "red");
-                int green = JsonHelper.getInt(json, 255, "g", "green");
-                int blue = JsonHelper.getInt(json, 255, "b", "blue");
-                if ((red | green | blue) != 0 && alpha == 0) {
-                    alpha = 255;
-                }
-                return Color.argb(red, green, blue, alpha);
-            }
-            if (hasHS(json)) {
-                if (hasCMYK(json))
-                    throw new JsonParseException("Found HSV or HSL values, but also CMYK values!");
-                int hue = JsonHelper.getInt(json, 0, "h", "hue");
-                float saturation = JsonHelper.getFloat(json, 0, "s", "saturation");
-                if (hasV(json)) {
-                    if (hasL(json)) throw new JsonParseException("Found HSV values, but also HSL values!");
-                    float value = JsonHelper.getFloat(json, 1f, "v", "value");
-                    return ofHSV(hue, saturation, value, alphaF);
-                }
-                float lightness = JsonHelper.getFloat(json, 0.5f, "l", "lightness");
-                return ofHSL(hue, saturation, lightness, alphaF);
-            }
-            if (hasCMYK(json)) {
-                float c = JsonHelper.getFloat(json, 1f, "c", "cyan");
-                float m = JsonHelper.getFloat(json, 1f, "m", "magenta");
-                float y = JsonHelper.getFloat(json, 1f, "y", "yellow");
-                float k = JsonHelper.getFloat(json, 1f, "k", "black");
-                return ofCMYK(c, m, y, k, alphaF);
-            }
-            throw new JsonParseException("Empty color declaration");
-        }
-        throw new JsonParseException("Color must be a primitive or an object!");
     }
 
     private static boolean hasRGB(JsonObject json) {

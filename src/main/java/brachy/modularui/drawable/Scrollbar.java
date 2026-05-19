@@ -1,17 +1,13 @@
 package brachy.modularui.drawable;
 
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.mojang.serialization.Codec;
 
-import com.google.gson.JsonObject;
-
-public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable<Scrollbar> {
+public record Scrollbar(boolean striped) implements IDrawable {
 
     public static final Scrollbar DEFAULT = new Scrollbar(false);
     public static final Scrollbar VANILLA = new Scrollbar(true);
@@ -23,13 +19,6 @@ public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable
     public static final Codec<Scrollbar> CODEC = IDrawable.CODECS.register(
             Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped).codec(),
             "scrollbar", "Scrollbar");
-
-    public static Scrollbar ofJson(JsonObject json) {
-        if (JsonHelper.getBoolean(json, false, "striped", "vanilla")) {
-            return VANILLA;
-        }
-        return DEFAULT;
-    }
 
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
@@ -60,12 +49,6 @@ public record Scrollbar(boolean striped) implements IDrawable, IJsonSerializable
 
     @Override
     public boolean canApplyTheme() {
-        return true;
-    }
-
-    @Override
-    public boolean saveToJson(JsonObject json) {
-        json.addProperty("striped", this.striped);
         return true;
     }
 }

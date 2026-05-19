@@ -2,7 +2,6 @@ package brachy.modularui.theme;
 
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
 
 public class WidgetThemeBuilder<T extends WidgetTheme, B extends WidgetThemeBuilder<T, B>> extends JsonBuilder {
@@ -43,7 +42,7 @@ public class WidgetThemeBuilder<T extends WidgetTheme, B extends WidgetThemeBuil
     }
 
     public B background(IDrawable background) {
-        add(IThemeApi.BACKGROUND, DrawableSerialization.serialize(background));
+        add(IThemeApi.BACKGROUND, IDrawable.toJsonOrThrow(background));
         return getThis();
     }
 

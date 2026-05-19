@@ -5,7 +5,6 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 import brachy.modularui.widgets.TextWidget;
 
 import net.minecraft.ChatFormatting;
@@ -24,7 +23,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +35,6 @@ import java.util.function.UnaryOperator;
 
 public class ModularComponent extends MutableComponent implements Text {
 
-    // TODO: This currently doesn't not handle nested components correctly. I might have to write a complete custom codec for this.
     public static final MutableObjectCodec<ModularComponent> CODEC = MutableObjectCodec.drawableBuilder(ModularComponent.class, "Text")
             .wrapped(ExtraCodecs.COMPONENT.xmap(ModularComponent::of, mc -> mc))
             .addOpt("alignment", ModularComponent::alignment, ModularComponent::getAlignment, Alignment.CODEC, Alignment.Center)
@@ -225,25 +222,5 @@ public class ModularComponent extends MutableComponent implements Text {
     @Override
     public @NotNull ModularComponent withStyle(@NotNull UnaryOperator<Style> modifyFunc) {
         return (ModularComponent) super.withStyle(modifyFunc);
-    }
-
-    @Override
-    public boolean saveToJson(JsonObject json) {
-        json.add("alignment", JsonHelper.serialize(this.alignment));
-        json.addProperty("scale", this.scale);
-        if (this.shadow != null) json.addProperty("shadow", this.shadow);
-        if (this.dynamicColor != null) json.addProperty("color", this.dynamicColor.getAsInt());
-        return true;
-    }
-
-    @Override
-    public void loadFromJson(JsonObject json) {
-        this.alignment = JsonHelper.deserialize(json, Alignment.class, Alignment.CENTER, "alignment");
-        this.scale = JsonHelper.getFloat(json, 1f, "scale");
-        this.shadow = JsonHelper.getBoxedBool(json, null, "shadow");
-        final Integer color = JsonHelper.getBoxedInt(json, null, "color");
-        if (color != null) {
-            this.dynamicColor = () -> color;
-        }
     }
 }

@@ -14,8 +14,11 @@ import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
+import com.google.gson.JsonElement;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -60,6 +63,14 @@ public interface IDrawable {
         return DataResult.error(() -> "Only works for empty and none");
     });
     Codec<IDrawable> CODEC = CodecUtil.chainedCodec(CODEC_EMPTY_NONE, DrawableStack.CODEC, CODEC_DISPATCH);
+
+    static DataResult<JsonElement> toJson(IDrawable drawable) {
+        return CODEC.encodeStart(JsonOps.INSTANCE, drawable);
+    }
+
+    static JsonElement toJsonOrThrow(IDrawable drawable) {
+        return toJson(drawable).getOrThrow(false, s -> {});
+    }
 
     /**
      * Draws this drawable at the given position with the given size. It's the implementors responsibility to properly

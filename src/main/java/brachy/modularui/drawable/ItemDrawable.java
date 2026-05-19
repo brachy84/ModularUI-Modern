@@ -1,6 +1,5 @@
 package brachy.modularui.drawable;
 
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
@@ -27,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Accessors(fluent = true, chain = true)
-public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> {
+public class ItemDrawable implements IDrawable {
 
     public static final Codec<ItemDrawable> CODEC = MutableObjectCodec.drawableBuilder(ItemDrawable::new)
             .add("items", ItemDrawable::items, ItemDrawable::getItemList, CodecUtil.listLike(ItemStack.CODEC)).alias("item")

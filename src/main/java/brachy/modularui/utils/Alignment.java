@@ -1,7 +1,6 @@
 package brachy.modularui.utils;
 
 import brachy.modularui.utils.serialization.codec.CodecUtil;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
@@ -9,19 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import com.google.common.base.CaseFormat;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Type;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -174,38 +165,6 @@ public class Alignment {
         @Override
         public @NotNull String getSerializedName() {
             return this.name;
-        }
-    }
-
-    @Deprecated
-    public static class Json implements JsonDeserializer<Alignment>, JsonSerializer<Alignment> {
-
-        @Override
-        public Alignment deserialize(JsonElement json, Type typeOfT,
-                                     JsonDeserializationContext context) throws JsonParseException {
-            if (!json.isJsonObject()) {
-                Alignment alignment = ALIGNMENT_MAP.get(json.getAsString());
-                if (alignment == null) {
-                    throw new JsonParseException("Can't find alignment for " + json.getAsString());
-                }
-                return alignment;
-            }
-            float x = JsonHelper.getFloat(json.getAsJsonObject(), 0f, "x");
-            float y = JsonHelper.getFloat(json.getAsJsonObject(), 0f, "y");
-            return new Alignment(x, y);
-        }
-
-        @Override
-        public JsonElement serialize(Alignment src, Type typeOfSrc, JsonSerializationContext context) {
-            for (Map.Entry<String, Alignment> entry : ALIGNMENT_MAP.entrySet()) {
-                if (entry.getValue() == src) {
-                    return new JsonPrimitive(entry.getKey());
-                }
-            }
-            return JsonHelper.makeJson(json -> {
-                json.addProperty("x", src.x);
-                json.addProperty("y", src.y);
-            });
         }
     }
 }

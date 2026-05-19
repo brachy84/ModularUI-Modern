@@ -2,7 +2,6 @@ package brachy.modularui.theme;
 
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
 
@@ -100,7 +99,7 @@ public class SelectableTheme extends WidgetTheme {
         }
 
         public B selectedBackground(IDrawable drawable) {
-            add(IThemeApi.SELECTED_BACKGROUND, DrawableSerialization.serialize(drawable));
+            add(IThemeApi.SELECTED_BACKGROUND, IDrawable.toJsonOrThrow(drawable));
             return getThis();
         }
 

@@ -217,18 +217,6 @@ public class AdaptableUITexture extends UITexture {
     }
 
     @Override
-    protected void saveTextureToJson(JsonObject json) {
-        super.saveToJson(json);
-        json.addProperty("imageWidth", this.imageWidth);
-        json.addProperty("imageHeight", this.imageHeight);
-        json.addProperty("bl", this.bl);
-        json.addProperty("br", this.br);
-        json.addProperty("bt", this.bt);
-        json.addProperty("bb", this.bb);
-        json.addProperty("tiled", this.tiled);
-    }
-
-    @Override
     protected AdaptableUITexture copy() {
         return new AdaptableUITexture(location, u0, v0, u1, v1, colorType, nonOpaque,
                 colorOverride, imageWidth, imageHeight, bl, bt, br, bb, tiled);

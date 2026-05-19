@@ -1,26 +1,23 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.animation.IAnimatable;
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent = true, chain = true)
-public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable<Circle> {
+public class Circle implements IDrawable, IAnimatable<Circle> {
 
     public static final MutableObjectCodec<Circle> CODEC = MutableObjectCodec.drawableBuilder(Circle::new)
             .addOpt("colorInner", Circle::colorInner, Circle::colorInner, Codec.INT, 0).alias("color")
@@ -54,21 +51,6 @@ public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable
         applyColor(widgetTheme.getColor());
         GuiDraw.drawEllipse(context.getGraphics(), x0, y0, width, height,
                 this.colorInner, this.colorOuter, this.segments);
-    }
-
-    @Override
-    public void loadFromJson(JsonObject json) {
-        this.colorInner = JsonHelper.getColor(json, Color.WHITE.main, "colorInner", "color");
-        this.colorOuter = JsonHelper.getColor(json, Color.WHITE.main, "colorOuter", "color");
-        this.segments = JsonHelper.getInt(json, 40, "segments");
-    }
-
-    @Override
-    public boolean saveToJson(JsonObject json) {
-        json.addProperty("colorInner", this.colorInner);
-        json.addProperty("colorOuter", this.colorOuter);
-        json.addProperty("segments", this.segments);
-        return true;
     }
 
     @Override

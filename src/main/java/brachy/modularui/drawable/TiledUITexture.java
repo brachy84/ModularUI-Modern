@@ -2,14 +2,12 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.screen.viewport.GuiContext;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
-
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Objects;
 
@@ -43,14 +41,6 @@ public class TiledUITexture extends UITexture {
         GuiDraw.drawTiledTexture(context.getLastGraphicsPose(), this.location, x, y, width, height,
                 this.u0, this.v0, this.u1, this.v1,
                 this.imageWidth, this.imageHeight, 0);
-    }
-
-    @Override
-    protected void saveTextureToJson(JsonObject json) {
-        super.saveToJson(json);
-        json.addProperty("imageWidth", this.imageWidth);
-        json.addProperty("imageHeight", this.imageHeight);
-        json.addProperty("tiled", true);
     }
 
     @Override

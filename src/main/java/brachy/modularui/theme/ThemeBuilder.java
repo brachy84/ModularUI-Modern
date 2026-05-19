@@ -2,7 +2,6 @@ package brachy.modularui.theme;
 
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.drawable.DrawableSerialization;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
 
 import lombok.Getter;
@@ -35,7 +34,7 @@ public class ThemeBuilder<B extends ThemeBuilder<B>> extends JsonBuilder {
     }
 
     public B defaultBackground(IDrawable v) {
-        add(IThemeApi.BACKGROUND, DrawableSerialization.serialize(v));
+        add(IThemeApi.BACKGROUND, IDrawable.toJsonOrThrow(v));
         return getThis();
     }
 
@@ -46,7 +45,7 @@ public class ThemeBuilder<B extends ThemeBuilder<B>> extends JsonBuilder {
 
     public B defaultHoverBackground(IDrawable v) {
         mergeAdd(IThemeApi.HOVER_SUFFIX,
-                new JsonBuilder().add(IThemeApi.BACKGROUND, DrawableSerialization.serialize(v)));
+                new JsonBuilder().add(IThemeApi.BACKGROUND, IDrawable.toJsonOrThrow(v)));
         return getThis();
     }
 
@@ -108,7 +107,7 @@ public class ThemeBuilder<B extends ThemeBuilder<B>> extends JsonBuilder {
 
     public B background(WidgetThemeKey<?> widgetTheme, IDrawable v) {
         mergeAdd(widgetTheme.getFullName(),
-                new JsonBuilder().add(IThemeApi.BACKGROUND, DrawableSerialization.serialize(v)));
+                new JsonBuilder().add(IThemeApi.BACKGROUND, IDrawable.toJsonOrThrow(v)));
         return getThis();
     }
 
@@ -124,7 +123,7 @@ public class ThemeBuilder<B extends ThemeBuilder<B>> extends JsonBuilder {
 
     public B hoverBackground(WidgetThemeKey<?> widgetTheme, IDrawable v) {
         mergeAdd(widgetTheme.getFullName() + IThemeApi.HOVER_SUFFIX,
-                new JsonBuilder().add(IThemeApi.BACKGROUND, DrawableSerialization.serialize(v)));
+                new JsonBuilder().add(IThemeApi.BACKGROUND, IDrawable.toJsonOrThrow(v)));
         return getThis();
     }
 

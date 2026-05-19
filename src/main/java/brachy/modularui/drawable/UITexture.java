@@ -1,7 +1,6 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.api.IJsonSerializable;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
@@ -9,7 +8,6 @@ import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
-import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +17,6 @@ import com.mojang.serialization.DataResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -29,10 +25,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 @Accessors(fluent = true, chain = true)
-public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
+public class UITexture implements IDrawable {
 
     public static final Codec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.xmap(Builder::buildForCodec, UITexture::toBuilder);
-    public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(DrawableSerialization::getTextureId, DrawableSerialization::getTexture);
+    public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(TextureRegistry::getTextureId, TextureRegistry::getTexture);
     public static final Codec<UITexture> CODEC = IDrawable.CODECS.register("texture",
             CodecUtil.chainedCodec(CODEC_FROM_NAME.fieldOf("name").codec(), CODEC_FROM_BUILDER));
 
@@ -156,7 +152,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     }
 
     public UITexture register(String name) {
-        DrawableSerialization.registerTexture(name, this);
+        TextureRegistry.registerTexture(name, this);
         return this;
     }
 
@@ -217,81 +213,6 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         } else {
             IDrawable.super.applyColor(themeColor);
         }
-    }
-
-    public static UITexture parseFromJson(JsonObject json) {
-        String name = JsonHelper.getString(json, null, "name", "id");
-        if (name != null) {
-            UITexture drawable = DrawableSerialization.getTexture(name);
-            if (drawable != null) return drawable;
-            ModularUI.LOGGER.error("Tried to parse UITexture from json, but no texture with name '{}' is registered!", name);
-            return GuiTextures.HELP;
-        }
-        Builder builder = builder();
-        builder.location(JsonHelper.getString(json, ModularUI.MOD_ID + ":gui/widgets/error", "location"))
-                .imageSize(JsonHelper.getInt(json, -1, "imageWidth", "iw"),
-                        JsonHelper.getInt(json, -1, "imageHeight", "ih"));
-        boolean mode1 = json.has("x") || json.has("y") || json.has("w") || json.has("h") || json.has("width") ||
-                json.has("height");
-        boolean mode2 = json.has("u0") || json.has("v0") || json.has("u1") || json.has("u1");
-        if (mode1) {
-            if (mode2) {
-                throw new JsonParseException("Tried to specify x, y, w, h and u0, v0, u1, v1!");
-            }
-            builder.subAreaXYWH(JsonHelper.getInt(json, 0, "x"),
-                    JsonHelper.getInt(json, 0, "y"),
-                    JsonHelper.getInt(json, builder.iw, "w", "width"),
-                    JsonHelper.getInt(json, builder.ih, "h", "height"));
-        } else if (mode2) {
-            builder.subAreaUV(JsonHelper.getFloat(json, 0, "u0"),
-                    JsonHelper.getFloat(json, 0, "v0"),
-                    JsonHelper.getFloat(json, 1, "u1"),
-                    JsonHelper.getFloat(json, 1, "v1"));
-        }
-        int bl = JsonHelper.getInt(json, 0, "bl", "borderLeft", "borderX", "border");
-        int br = JsonHelper.getInt(json, 0, "br", "borderRight", "borderY", "border");
-        int bt = JsonHelper.getInt(json, 0, "bt", "borderTop", "borderBottom", "border");
-        int bb = JsonHelper.getInt(json, 0, "bb", "borderBottom", "borderTop", "border");
-        if (bl > 0 || br > 0 || bt > 0 || bb > 0) {
-            builder.adaptable(bl, bt, br, bb);
-        }
-        if (JsonHelper.getBoolean(json, false, "tiled")) {
-            builder.tiled();
-        }
-        String colorTypeName = JsonHelper.getString(json, null, "colorType", "color");
-        if (colorTypeName != null) {
-            builder.colorType(ColorType.get(colorTypeName));
-        } else if (JsonHelper.getBoolean(json, false, "canApplyTheme")) {
-            builder.canApplyTheme();
-        }
-        if (JsonHelper.getBoolean(json, false, "nonOpaque")) {
-            builder.nonOpaque();
-        }
-        UITexture uiTexture = builder.build();
-        uiTexture.colorOverride = JsonHelper.getColor(json, 0, "colorOverride");
-        return uiTexture;
-    }
-
-    @Override
-    public boolean saveToJson(JsonObject json) {
-        String name = DrawableSerialization.getTextureId(this);
-        if (name != null) {
-            json.addProperty("id", name);
-            return true;
-        }
-        saveTextureToJson(json);
-        return true;
-    }
-
-    protected void saveTextureToJson(JsonObject json) {
-        json.addProperty("location", this.location.toString());
-        json.addProperty("u0", this.u0);
-        json.addProperty("v0", this.v0);
-        json.addProperty("u1", this.u1);
-        json.addProperty("v1", this.v1);
-        if (this.colorType != null) json.addProperty("colorType", this.colorType.getName());
-        json.addProperty("nonOpaque", this.nonOpaque);
-        json.addProperty("colorOverride", this.colorOverride);
     }
 
     @Override
@@ -632,7 +553,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
                     .resultOrPartial(s -> {
                         throw new IllegalArgumentException(s);
                     }).map(texture -> {
-                        DrawableSerialization.registerTexture(this.name, texture);
+                        TextureRegistry.registerTexture(this.name, texture);
                         return texture;
                     }).map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
                     .orElseThrow();
