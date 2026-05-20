@@ -11,18 +11,23 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public class MCHelper {
 
+    @SuppressWarnings("DataFlowIssue")
+    @Nullable
     @SideOnly(Side.CLIENT)
     public static Minecraft getMc() {
         return Minecraft.getInstance();
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public static Player getPlayer() {
-        return getMc().player;
+        return getMc() == null ? null : getMc().player;
     }
 
     @SideOnly(Side.CLIENT)
@@ -60,12 +65,12 @@ public class MCHelper {
 
     @SideOnly(Side.CLIENT)
     public static Screen getCurrentScreen() {
-        return getMc().screen;
+        return getMc() == null ? null : getMc().screen;
     }
 
     @SideOnly(Side.CLIENT)
     public static Font getFont() {
-        return getMc().font;
+        return getMc() == null ? null : getMc().font;
     }
 
     public static List<Component> getItemToolTip(ItemStack item) {

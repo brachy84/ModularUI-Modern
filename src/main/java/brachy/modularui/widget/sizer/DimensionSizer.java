@@ -27,9 +27,9 @@ public class DimensionSizer {
     public static final MutableObjectCodec<DimensionSizer> CODEC = MutableObjectCodec.builder(DimensionSizer.class)
             .baseCopy(sizer -> new DimensionSizer(sizer.resizer, sizer.axis))
             .addOpt("coverChildrenMinSize", DimensionSizer::setCoverChildrenMinSize, DimensionSizer::getCoverChildrenMinSize, Codec.INT, -1)
-            .addOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit.ZERO)
-            .addOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit.ZERO)
-            .addOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit.ZERO)
+            .addOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit.ZERO).neverWriteDefault()
+            .addOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit.ZERO).neverWriteDefault()
+            .addOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit.ZERO).neverWriteDefault()
             .build();
 
     private final ResizeNode resizer;
@@ -421,6 +421,7 @@ public class DimensionSizer {
             }
         }
         ret.reset();
+        System.out.printf("Changing Unit %s of axis %s to %s\n", ret.state, this.axis, newState);
         ret.state = newState;
         this.next = other;
         return ret;
@@ -448,7 +449,7 @@ public class DimensionSizer {
     }
 
     private void setStart(Unit unit) {
-        if (unit == null || unit.isUnused()) {
+        if (unit == null) {
             if (this.start != null) {
                 this.start.reset();
                 if (this.next != this.start && !this.next.isUnused()) {
@@ -462,7 +463,7 @@ public class DimensionSizer {
     }
 
     private void setEnd(Unit unit) {
-        if (unit == null || unit.isUnused()) {
+        if (unit == null) {
             if (this.end != null) {
                 this.end.reset();
                 if (this.next != this.end && !this.next.isUnused()) {
@@ -476,7 +477,7 @@ public class DimensionSizer {
     }
 
     private void setSize(Unit unit) {
-        if (unit == null || unit.isUnused()) {
+        if (unit == null) {
             if (this.size != null) {
                 this.size.reset();
                 if (this.next != this.size && !this.next.isUnused()) {

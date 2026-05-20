@@ -37,6 +37,20 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
             .add("y", StandardResizer::setY, StandardResizer::getY, DimensionSizer.CODEC)
             .build();
 
+    public static final MutableObjectCodec<StandardResizer> COMPACT_CODEC = MutableObjectCodec.builder(StandardResizer.class)
+            .baseCopy(resizer -> new StandardResizer(resizer.getWidget()))
+            .addOpt("expanded", StandardResizer::expanded, StandardResizer::isExpanded, Codec.BOOL, false)
+            .addOpt("decoration", StandardResizer::decoration, StandardResizer::isDecoration, Codec.BOOL, false)
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getX, "coverChildrenMinSize", "coverChildrenMinSizeX")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getY, "coverChildrenMinSize", "coverChildrenMinSizeY")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getX, "start", "left")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getX, "end", "right")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getX, "size", "width")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getY, "start", "top")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getY, "end", "bottom")
+            .addFieldOf(DimensionSizer.CODEC, StandardResizer::getY, "size", "height")
+            .build();
+
     @Getter(AccessLevel.PRIVATE) private final DimensionSizer x;
     @Getter(AccessLevel.PRIVATE) private final DimensionSizer y;
     @Getter private boolean expanded = false;

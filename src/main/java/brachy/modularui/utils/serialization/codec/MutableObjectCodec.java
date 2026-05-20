@@ -19,9 +19,12 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -36,26 +39,30 @@ import java.util.stream.Stream;
 @Accessors(fluent = true)
 public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDecoder<T> {
 
-    private final Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields;
+    private final List<Field<T, ?>> fields;
     private final InstanceMapDecoder<T> instanceDecoder;
     private final UnaryOperator<T> baseCopy;
     private final Codec<T> wrapped;
     @Getter private final MutableCodecCodec<T> mutableCodec = new MutableCodecCodec<>(this);
 
-    private MutableObjectCodec(Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields,
+    private MutableObjectCodec(List<Field<T, ?>> fields,
                                InstanceMapDecoder<T> instanceDecoder, UnaryOperator<T> baseCopy, Codec<T> wrapped) {
-        this.fields = fields;
+        this.fields = Collections.unmodifiableList(fields);
         this.instanceDecoder = instanceDecoder;
         this.baseCopy = baseCopy;
         this.wrapped = wrapped;
     }
 
+    public Optional<Field<T, ?>> findField(String name) {
+        return this.fields.stream().filter(f -> f.name().equals(name)).findFirst();
+    }
+
     public void forEachField(Consumer<Field<T, ?>> consumer) {
-        this.fields.values().forEach(consumer);
+        this.fields.forEach(consumer);
     }
 
     public boolean testEachField(Predicate<Field<T, ?>> test) {
-        for (Field<T, ?> f : this.fields.values()) {
+        for (Field<T, ?> f : this.fields) {
             if (!test.test(f)) return false;
         }
         return true;
@@ -73,11 +80,6 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
         });
     }
 
-    @SuppressWarnings("unchecked")
-    private <V> Field<T, V> getField(String name) {
-        return (Field<T, V>) this.fields.get(name);
-    }
-
     public boolean canCopy() {
         return this.baseCopy != null;
     }
@@ -93,7 +95,7 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
     }
 
     public void copyFields(T from, T to) {
-        forEachField(f -> f.copy(from, to));
+        forEachField(f -> f.copyValue(from, to));
     }
 
     public void applyDefaults(T instance) {
@@ -187,7 +189,7 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
 
     @Override
     public <J> Stream<J> keys(DynamicOps<J> ops) {
-        return this.fields.values().stream().map(Field::name).map(ops::createString);
+        return this.fields.stream().map(Field::name).map(ops::createString);
     }
 
     @Override
@@ -336,6 +338,44 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
             return registryTypeName(registry, typeName.getSimpleName());
         }
 
+        public Builder<T> addField(Field<T, ?> field) {
+            this.lastField = field;
+            this.fields.put(field.name(), field);
+            return this;
+        }
+
+        public Builder<T> addFieldsOfSameType(MutableObjectCodec<T> parent) {
+            parent.fields.forEach(f -> this.fields.put(f.name(), f));
+            return this;
+        }
+
+        public <P> Builder<T> addFieldsOf(MutableObjectCodec<P> parent, Function<T, P> converter) {
+            parent.fields.forEach(f -> this.fields.put(f.name(), f.copyToType(converter)));
+            return this;
+        }
+
+        public Builder<T> addFieldOfSameType(MutableObjectCodec<T> parent, String fieldName) {
+            return addFieldOfSameType(parent, fieldName, fieldName);
+        }
+
+        public Builder<T> addFieldOfSameType(MutableObjectCodec<T> parent, String fieldName, String newName) {
+            parent.findField(fieldName).ifPresentOrElse(f -> addField(f.copy(newName)), () -> {
+                throw new IllegalArgumentException("MutableObjectCodec does not have field '" + fieldName + "'.");
+            });
+            return this;
+        }
+
+        public <P> Builder<T> addFieldOf(MutableObjectCodec<P> parent, Function<T, P> converter, String fieldName) {
+            return addFieldOf(parent, converter, fieldName, fieldName);
+        }
+
+        public <P> Builder<T> addFieldOf(MutableObjectCodec<P> parent, Function<T, P> converter, String fieldName, String newName) {
+            parent.findField(fieldName).ifPresentOrElse(f -> addField(f.copyToType(newName, converter)), () -> {
+                throw new IllegalArgumentException("MutableObjectCodec does not have field '" + fieldName + "'.");
+            });
+            return this;
+        }
+
         public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, MapCodec<V> codec) {
             return addDynOpt(name, fieldWriter, fieldReader, codec.codec(), null);
         }
@@ -365,9 +405,7 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
             Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
-            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue, false);
-            this.fields.put(name, this.lastField);
-            return this;
+            return addField(new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue, false));
         }
 
         public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, MapCodec<V> codec,
@@ -392,10 +430,8 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
             Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
-            this.lastField = new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier, defaultSupplier != null);
-            this.lastField.alwaysEncode(true);
-            this.fields.put(name, this.lastField);
-            return this;
+            return addField(new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier, defaultSupplier != null)
+                    .encodeWhen(Field.EncodeWhen.ALWAYS));
         }
 
         public <V> Builder<T> addUnencodable(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader) {
@@ -420,11 +456,27 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
         }
 
         public Builder<T> alwaysEncode() {
-            return alwaysEncode(true);
+            return encodeWhen(Field.EncodeWhen.ALWAYS);
         }
 
-        public Builder<T> alwaysEncode(boolean alwaysEncode) {
-            return doOnField(f -> f.alwaysEncode(alwaysEncode));
+        public Builder<T> neverEncode() {
+            return encodeWhen(Field.EncodeWhen.NEVER);
+        }
+
+        public Builder<T> encodeWhenChanged() {
+            return encodeWhen(Field.EncodeWhen.CHANGED);
+        }
+
+        public Builder<T> encodeWhen(Field.EncodeWhen encodeWhen) {
+            return doOnField(f -> f.encodeWhen(encodeWhen));
+        }
+
+        public Builder<T> neverWriteDefault() {
+            return writeDefault(false);
+        }
+
+        public Builder<T> writeDefault(boolean writeDefault) {
+            return doOnField(f -> f.writeDefault(writeDefault));
         }
 
         public Builder<T> alias(String... alias) {
@@ -439,7 +491,7 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
         }
 
         public MutableObjectCodec<T> build() {
-            var c = new MutableObjectCodec<>(this.fields, this.instanceDecoder, this.baseCopy, this.wrapped);
+            var c = new MutableObjectCodec<>(new ArrayList<>(this.fields.values()), this.instanceDecoder, this.baseCopy, this.wrapped);
             if (this.registry != null) {
                 this.registry.register(c, this.names);
             }

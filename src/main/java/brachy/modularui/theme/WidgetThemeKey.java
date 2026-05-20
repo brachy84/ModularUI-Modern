@@ -1,5 +1,9 @@
 package brachy.modularui.theme;
 
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+
+import net.minecraft.util.ExtraCodecs;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import com.google.gson.JsonObject;
@@ -14,6 +18,7 @@ import java.util.Objects;
 public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetThemeKey<?>> {
 
     private static final Map<String, WidgetThemeKey<?>> KEYS = new Object2ReferenceOpenHashMap<>();
+    public static final Codec<WidgetThemeKey<?>> CODEC = CodecUtil.chainedCodec(CodecUtil.nullCodec(), ExtraCodecs.stringResolverCodec(WidgetThemeKey::getFullName, KEYS::get));
 
     @Nullable
     public static WidgetThemeKey<?> getFromFullName(String key) {

@@ -188,7 +188,7 @@ public class ModularUIConfig {
         private Dev() {}
 
         public static boolean debugUI() {
-            return DEBUG_UI.get();
+            return ModularUI.isTestEnv() || DEBUG_UI.get();
         }
 
         public static int textColor() {

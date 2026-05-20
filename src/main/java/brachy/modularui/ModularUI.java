@@ -32,6 +32,7 @@ public class ModularUI {
     private static final ResourceLocation TEMPLATE_LOCATION = new ResourceLocation(MOD_ID, "");
 
     public static final Logger LOGGER = LogManager.getLogger(NAME);
+    public static final boolean UNIT_TEST = Boolean.getBoolean("unit.testing");
 
     public ModularUI() {
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
@@ -69,6 +70,10 @@ public class ModularUI {
         return !isProd();
     }
 
+    public static boolean isTestEnv() {
+        return UNIT_TEST;
+    }
+
     /**
      * @return if we're running data generation
      */
@@ -99,7 +104,7 @@ public class ModularUI {
      * @return if the current thread is the client thread
      */
     public static boolean isClientThread() {
-        return isClientSide() && Minecraft.getInstance().isSameThread();
+        return isTestEnv() || (isClientSide() && Minecraft.getInstance().isSameThread());
     }
 
     /**

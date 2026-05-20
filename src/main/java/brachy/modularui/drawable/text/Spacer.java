@@ -3,11 +3,16 @@ package brachy.modularui.drawable.text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.screen.viewport.GuiContext;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.gui.Font;
 
 import lombok.Getter;
 
 public class Spacer implements ITextLine {
+
+    public static final Codec<Spacer> CODEC = Codec.INT.xmap(Spacer::of, Spacer::getSpace);
+    public static final MapCodec<Spacer> CODEC_MAP = CODEC.fieldOf("spacer");
 
     public static final Spacer SPACER_2PX = new Spacer(2);
     public static final Spacer LINE_SPACER = new Spacer(FontRenderHelper.getDefaultTextHeight());

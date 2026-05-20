@@ -13,8 +13,11 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Rectangle;
 import brachy.modularui.utils.TooltipLines;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.sizer.Area;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -22,6 +25,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
@@ -35,8 +39,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -45,10 +51,17 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     private static final Area HOLDER = new Area();
 
+    public static final MutableObjectCodec<RichTooltip> CODEC = MutableObjectCodec.builder(RichTooltip::new)
+            .addOpt("posType", RichTooltip::pos, RichTooltip::pos, CodecUtil.wrapNullsafe(Pos.CODEC), null)
+            .addOpt("showUpTimer", RichTooltip::showUpTimer, RichTooltip::showUpTimer, Codec.INT, 0)
+            .addOpt("titleMargin", RichTooltip::titleMargin, RichTooltip::titleMargin, Codec.INT, 0)
+            .addFieldsOf(RichText.CODEC, tooltip -> tooltip.text)
+            .build();
+
     private final RichText text = new RichText();
     @Setter
     private Consumer<Area> parent;
-    @Setter
+    @Setter @Getter
     private Pos pos = null;
     private Consumer<RichTooltip> tooltipBuilder;
     @Getter
@@ -57,11 +70,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     @Getter
     @Setter
     private boolean autoUpdate = false;
-    private int titleMargin = 0;
+    @Getter private int titleMargin = 0;
     private boolean appliedMargin = true;
 
     private int x = 0, y = 0;
-    private int maxWidth = Integer.MAX_VALUE;
+    @Getter private int maxWidth = Integer.MAX_VALUE;
 
     private boolean dirty;
 
@@ -385,10 +398,6 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         return this;
     }
 
-    public RichTooltip titleMargin() {
-        return titleMargin(0);
-    }
-
     public RichTooltip titleMargin(int margin) {
         this.titleMargin = margin;
         this.appliedMargin = false;
@@ -445,7 +454,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         return tooltip;
     }
 
-    public enum Pos {
+    public enum Pos implements StringRepresentable {
 
         ABOVE(GuiAxis.Y),
         BELOW(GuiAxis.Y),
@@ -456,10 +465,19 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         NEXT_TO_MOUSE(null),
         FIXED(null);
 
+        public static final Codec<Pos> CODEC = StringRepresentable.fromEnum(Pos::values);
+
         public final GuiAxis axis;
+        public final String name;
 
         Pos(GuiAxis axis) {
             this.axis = axis;
+            this.name = name().toLowerCase(Locale.ENGLISH);
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return this.name;
         }
     }
 }

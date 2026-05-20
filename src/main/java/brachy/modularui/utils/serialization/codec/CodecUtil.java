@@ -69,6 +69,14 @@ public class CodecUtil {
         };
     }
 
+    public static <A> Codec<A> wrapNullsafe(Codec<A> codec) {
+        return chainedCodec(nullCodec(), codec);
+    }
+
+    public static <A> Codec<A> decodeNullsafe(Codec<A> codec) {
+        return chainedCodec(nullDecoder(), codec);
+    }
+
     @SafeVarargs
     public static <A> Codec<A> chainedCodec(Codec<A>... codecs) {
         return Codec.of(chainedEncoder(codecs), chainedDecoder(codecs));
@@ -157,6 +165,24 @@ public class CodecUtil {
         };
     }
 
+    public static Decoder<Object> optionsDecoder(Decoder<?>... codecs) {
+        if (codecs == null || codecs.length == 0) throw new NullPointerException();
+        if (codecs.length == 1) return (Codec<Object>) codecs[0];
+        return new Decoder<>() {
+            @Override
+            public <T> DataResult<Pair<Object, T>> decode(DynamicOps<T> ops, T input) {
+                StringBuilder message = new StringBuilder();
+                for (var codec : codecs) {
+                    var d = codec.decode(ops, input);
+                    var res = d.result();
+                    if (res.isPresent()) return DataResult.success(new Pair<>(res.get().getFirst(), res.get().getSecond()));
+                    message.append(d.error().orElseThrow().message()).append("; ");
+                }
+                return DataResult.error(() -> message.substring(0, message.length() - 2));
+            }
+        };
+    }
+
     public static <A, J> DataResult<A> ifMap(DynamicOps<J> ops, J input, Function<MapLike<J>, DataResult<A>> map) {
         var d = ops.getMap(input);
         var res = d.result();
@@ -195,16 +221,6 @@ public class CodecUtil {
                                                         Function<? super K, ? extends DataResult<? extends Codec<? extends V>>> codec) {
         return new KeyDispatchCodec<>(key, keyCodec, type, codec);
 
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <K, V> DataResult<? extends Encoder<V>> getCodec(
-            final Function<? super V, ? extends DataResult<? extends K>> type,
-            final Function<? super K, ? extends DataResult<? extends Encoder<? extends V>>> encoder,
-            final V input) {
-        return type.apply(input)
-                .<Encoder<? extends V>>flatMap(k -> encoder.apply(k).map(Function.identity()))
-                .map(c -> ((Encoder<V>) c));
     }
 
     public static <A> Encoder<A> checked(Encoder<A> codec, Predicate<A> test) {

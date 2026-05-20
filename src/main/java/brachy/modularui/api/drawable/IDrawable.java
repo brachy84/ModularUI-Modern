@@ -79,7 +79,7 @@ public interface IDrawable {
         return DataResult.error(() -> "Only works for empty and none");
     });
     Codec<IDrawable> CODEC = CodecUtil.chainedCodec(
-            CodecUtil.nullDecoder(EMPTY), CODEC_EMPTY_NONE,
+            CodecUtil.nullCodec(EMPTY), CODEC_EMPTY_NONE,
             DrawableStack.CODEC, CODEC_DISPATCH.codec());
 
     static DataResult<JsonElement> toJson(IDrawable drawable) {

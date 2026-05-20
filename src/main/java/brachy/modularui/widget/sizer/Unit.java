@@ -24,7 +24,7 @@ public class Unit {
             .addOpt("measure", Unit::setMeasure, Unit::getMeasure, Measure.CODEC, Measure.PIXEL)
             .addOpt("anchor", Unit::setAnchor, Unit::getAnchor, Codec.FLOAT, 0f)
             .addOpt("offset", Unit::setOffset, Unit::getOffset, Codec.INT, 0)
-            .addOpt("state", Unit::setState, Unit::getState, State.CODEC, State.UNUSED)
+            .addOpt("state", Unit::setState, Unit::getState, State.CODEC, State.UNUSED).neverEncode()
             .addUnencodableOpt("valueSupplier", Unit::setValue, Unit::getValueSupplier, null)
             .build();
 

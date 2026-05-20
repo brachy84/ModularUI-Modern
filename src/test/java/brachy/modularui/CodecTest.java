@@ -11,6 +11,7 @@ import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
+import brachy.modularui.utils.serialization.codec.Field;
 import brachy.modularui.utils.serialization.codec.MutableDecoder;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
@@ -35,9 +36,16 @@ public class CodecTest {
 
     @Test
     void resizer() {
-        resizerTest(new Widget<>().left(5)
+        TestUtil.bootstrap();
+        widgetTest(new Widget<>()
+                .name("cool name")
+                .syncHandler("sync_handler", 9)
+                .padding(4, 6)
+                .margin(4)
+                .coverChildrenHeight(11)
+                .left(5)
                 .bottomRel(0.75f, -67, 0.42f)
-                .size(20)
+                .width(20)
                 .decoration());
     }
 
@@ -156,7 +164,11 @@ public class CodecTest {
     }
 
     private static void resizerTest(IWidget widget) {
-        test(StandardResizer.CODEC, widget.resizer(), () -> new Widget<>().resizer(), false);
+        test(StandardResizer.COMPACT_CODEC, widget.resizer(), () -> new Widget<>().resizer(), false);
+    }
+
+    private static void widgetTest(Widget<?> widget) {
+        test(Widget.CODEC, widget, Widget::new, false);
     }
 
     private static void drawableTest(IDrawable widget) {
@@ -164,10 +176,10 @@ public class CodecTest {
     }
 
     private static <A> void test(MutableObjectCodec<A> codec, A obj1, Supplier<A> supplier, boolean checkObjEquals) {
-        JsonElement json1 = toJson(codec.mutableCodec(), obj1);
+        JsonElement json1 = toJson(codec.codec(), obj1);
         A obj2 = fromJson(codec.mutableCodec(), json1, supplier.get());
         if (checkObjEquals) assertEquals(obj1, obj2);
-        JsonElement json2 = toJson(codec.mutableCodec(), obj2);
+        JsonElement json2 = toJson(codec.codec(), obj2);
         assertEquals(json1, json2);
         System.out.println(JsonHelper.GSON.toJson(json1));
     }

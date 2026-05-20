@@ -5,12 +5,14 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.Interpolations;
-import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.utils.Point;
 import brachy.modularui.utils.Rectangle;
+import brachy.modularui.utils.math.MathUtils;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.util.Mth;
+import com.mojang.serialization.Codec;
 
 import lombok.Getter;
 
@@ -21,6 +23,15 @@ import java.util.Objects;
  * Also has fields for a relative position, a layer and margin & padding.
  */
 public class Area extends Rectangle implements IAnimatable<Area> {
+
+    public static final MutableObjectCodec<Area> CODEC = MutableObjectCodec.builder(Area::new)
+            .addOpt("x", Area::x, Area::x, Codec.INT, 0)
+            .addOpt("y", Area::y, Area::y, Codec.INT, 0)
+            .addOpt("w", Area::w, Area::w, Codec.INT, 0).alias("width")
+            .addOpt("h", Area::h, Area::h, Codec.INT, 0).alias("height")
+            .addOpt("margin", Area::setMargin, Area::getMargin, Box.CODEC, Box.ZERO)
+            .addOpt("padding", Area::setPadding, Area::getPadding, Box.CODEC, Box.ZERO)
+            .build();
 
     public static boolean isInside(int x, int y, int w, int h, int px, int py) {
         SHARED.set(x, y, w, h);
@@ -238,6 +249,16 @@ public class Area extends Rectangle implements IAnimatable<Area> {
     public void setRelativePos(int rx, int ry) {
         this.rx = rx;
         this.ry = ry;
+    }
+
+    public void setMargin(Box box) {
+        if (this.margin == box) return;
+        Box.CODEC.copyFields(box, this.margin);
+    }
+
+    public void setPadding(Box box) {
+        if (this.padding == box) return;
+        Box.CODEC.copyFields(box, this.padding);
     }
 
     /**

@@ -13,10 +13,13 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-@Accessors(fluent = true)
+@Accessors(fluent = true, chain = true)
 public final class Field<T, V> {
+
+    public static boolean DEBUG_ENCODE_ALL = false;
 
     @Getter private final String name;
     @Getter private final FieldWriter<T, V> fieldWriter;
@@ -29,7 +32,10 @@ public final class Field<T, V> {
     private String[] altNames;
     @Getter
     @Setter
-    private boolean alwaysEncode;
+    private EncodeWhen encodeWhen = EncodeWhen.CHANGED;
+    @Getter
+    @Setter
+    private boolean writeDefault = true;
 
     Field(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec, Supplier<V> defaultSupplier, boolean dynamicSupplier) {
         this.name = name;
@@ -71,14 +77,25 @@ public final class Field<T, V> {
             return;
         }
         if (value == null) {
-            if (hasDefault()) return;
-            map.withErrorsFrom(DataResult.error(() -> String.format("Field '%s' is not optional, but is trying to encode a null value", this.name)));
+            if (!hasDefault()) {
+                map.withErrorsFrom(DataResult.error(() -> String.format("Field '%s' is not optional, but is trying to encode a null value", this.name)));
+                return;
+            }
+            if (DEBUG_ENCODE_ALL || this.encodeWhen == EncodeWhen.ALWAYS) {
+                value = getModifiableDefault();
+                map.add(this.name, this.codec.encodeStart(ops, value));
+            }
             return;
         }
-        if (!alwaysEncode() && hasDefault() && Objects.equals(value, getDefault())) {
-            return;
+        if (shouldEncode(value)) {
+            map.add(this.name, this.codec.encodeStart(ops, value));
         }
-        map.add(this.name, this.codec.encodeStart(ops, value));
+    }
+
+    public boolean shouldEncode(V value) {
+        if (DEBUG_ENCODE_ALL || this.encodeWhen == EncodeWhen.ALWAYS) return true;
+        if (this.encodeWhen == EncodeWhen.NEVER) return false;
+        return !hasDefault() || !Objects.equals(value, getDefault());
     }
 
     @SuppressWarnings("unchecked")
@@ -91,8 +108,9 @@ public final class Field<T, V> {
             }
         }
         if (element == null) {
+            if (this.encodeWhen == EncodeWhen.NEVER || !this.writeDefault) return null;
             if (!hasDefault()) {
-                return isUnencodable() ? null : String.format("Field '%s' has no value and is not optional", this.name);
+                return null;//isUnencodable() ? null : String.format("Field '%s' has no value and is not optional", this.name);
             }
             this.fieldWriter.writeField(holder, getModifiableDefault());
             return null;
@@ -127,13 +145,15 @@ public final class Field<T, V> {
         if (dRes.isEmpty()) return DataResult.error(() -> dMap.error().orElseThrow().message());
         V value = this.fieldReader.readField(holder);
         if (value == null) {
-            if (decoder.canDecodeInstance()) {
+            if (hasDefault()) {
+                value = getModifiableDefault();
+            }
+            if (value == null && decoder.canDecodeInstance()) {
                 var d = decoder.decodeInstance(ops, dRes.get());
                 var res = d.result();
                 if (res.isEmpty()) return d;
                 value = res.get();
             }
-            if (value == null && hasDefault()) value = getModifiableDefault();
             if (value == null) {
                 return DataResult.error(() -> String.format("Field '%s' is unable to decode instance and the holder has no default value and this property has no default value", this.name));
             }
@@ -144,13 +164,15 @@ public final class Field<T, V> {
     private <J> DataResult<V> decode(T holder, DynamicOps<J> ops, J element, MutableDecoder<V> decoder) {
         V value = this.fieldReader.readField(holder);
         if (value == null) {
-            if (decoder.canDecodeInstance()) {
+            if (hasDefault()) {
+                value = getModifiableDefault();
+            }
+            if (value == null && decoder.canDecodeInstance()) {
                 var d = decoder.parseInstance(ops, element);
                 var res = d.result();
                 if (res.isEmpty()) return d;
                 value = res.get();
             }
-            if (value == null && hasDefault()) value = getModifiableDefault();
             if (value == null) {
                 return DataResult.error(() -> String.format("Field '%s' is unable to decode instance and the holder has no default value and this property has no default value", this.name));
             }
@@ -158,7 +180,7 @@ public final class Field<T, V> {
         return decoder.parse(ops, element, value);
     }
 
-    public void copy(T from, T to) {
+    public void copyValue(T from, T to) {
         V value = this.fieldReader.readField(from);
         if (this.codec instanceof MapCodec.MapCodecCodec<V> mcc && mcc.codec() instanceof MutableObjectCodec<V> moc) {
             value = moc.copy(value);
@@ -174,5 +196,33 @@ public final class Field<T, V> {
 
     public boolean isEmpty(V value) {
         return value == null;
+    }
+
+    public <O> Field<O, V> copyToType(Function<O, T> converter) {
+        return copyToType(this.name, converter);
+    }
+
+    public <O> Field<O, V> copyToType(String newName, Function<O, T> converter) {
+        var field = new Field<O, V>(newName, (o, v) -> this.fieldWriter.writeField(converter.apply(o), v),
+                (o) -> this.fieldReader.readField(converter.apply(o)), this.codec, this.defaultSupplier, this.dynamicSupplier);
+        field.altNames(this.altNames);
+        field.encodeWhen(this.encodeWhen);
+        field.writeDefault(this.writeDefault);
+        return field;
+    }
+
+    public Field<T, V> copy(String newName) {
+        if (this.name.equals(newName)) return this;
+        var field = new Field<>(newName, this.fieldWriter, this.fieldReader, this.codec, this.defaultSupplier, this.dynamicSupplier);
+        field.altNames(this.altNames);
+        field.encodeWhen(this.encodeWhen);
+        field.writeDefault(this.writeDefault);
+        return field;
+    }
+
+    public enum EncodeWhen {
+        ALWAYS,
+        NEVER,
+        CHANGED
     }
 }
