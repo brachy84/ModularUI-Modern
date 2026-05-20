@@ -9,7 +9,9 @@ import net.minecraft.client.gui.screens.Screen;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Experimental
 @Accessors(fluent = true)
 public record RecipeViewerScreenWrapper(ModularScreen screen) implements IMuiScreen {
 

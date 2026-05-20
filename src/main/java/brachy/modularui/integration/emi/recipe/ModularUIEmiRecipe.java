@@ -1,6 +1,5 @@
 package brachy.modularui.integration.emi.recipe;
 
-import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
@@ -27,6 +26,7 @@ import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
+@ApiStatus.Experimental
 public abstract class ModularUIEmiRecipe implements EmiRecipe {
 
     private static final LoadingCache<ModularUIEmiRecipe, ModularScreen> SCREEN_CACHE = CacheBuilder.newBuilder()

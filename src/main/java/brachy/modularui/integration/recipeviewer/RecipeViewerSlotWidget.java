@@ -13,6 +13,9 @@ import brachy.modularui.widget.Widget;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Experimental
 public abstract class RecipeViewerSlotWidget<W extends RecipeViewerSlotWidget<W>> extends Widget<W> implements Interactable {
 
     public abstract W recipeSlotRole(RecipeSlotRole recipeSlotRole);

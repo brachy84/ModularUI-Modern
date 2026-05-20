@@ -36,6 +36,7 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.impl.client.gui.widget.EntryWidget;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@ApiStatus.Experimental
 public class ModularUIREIDisplay implements Display {
 
     private final ResourceLocation recipeId;

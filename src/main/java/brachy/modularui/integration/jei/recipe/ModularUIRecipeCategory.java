@@ -33,12 +33,14 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+@ApiStatus.Experimental
 public abstract class ModularUIRecipeCategory<T> implements IRecipeCategory<T> {
 
     private final LoadingCache<T, ModularScreen> modularScreenCache;

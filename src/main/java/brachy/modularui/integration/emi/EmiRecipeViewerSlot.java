@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Experimental
 public class EmiRecipeViewerSlot extends RecipeViewerSlotWidget<EmiRecipeViewerSlot> {
 
     @ApiStatus.Internal

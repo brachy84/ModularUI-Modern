@@ -11,6 +11,7 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Experimental
 public class RecipeScreenRenderingUtil {
 
     public static final IItemHandlerModifiable EMPTY_ITEM_HANDLER = new EmptyHandler() {
