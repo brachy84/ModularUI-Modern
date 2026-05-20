@@ -76,11 +76,11 @@ public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetT
     }
 
     public T parseJson(JsonObject json) {
-        return getCodec().parse(JsonOps.INSTANCE, json).getOrThrow(false, s -> {});
+        return getCodec().codec().parse(JsonOps.INSTANCE, json).getOrThrow(false, s -> {});
     }
 
     public JsonObject encodeJson(T theme) {
-        return getCodec().encodeStart(JsonOps.INSTANCE, theme).getOrThrow(false, s -> {}).getAsJsonObject();
+        return getCodec().codec().encodeStart(JsonOps.INSTANCE, theme).getOrThrow(false, s -> {}).getAsJsonObject();
     }
 
     public Class<T> getWidgetThemeType() {

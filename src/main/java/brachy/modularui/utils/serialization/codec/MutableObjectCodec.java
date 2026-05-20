@@ -263,9 +263,7 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
 
         @Override
         public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
-            var builder = ops.mapBuilder();
-            builder = this.codec.encode(input, ops, builder);
-            return builder.build(prefix);
+            return this.codec.codec().encode(input, ops, prefix);
         }
     }
 

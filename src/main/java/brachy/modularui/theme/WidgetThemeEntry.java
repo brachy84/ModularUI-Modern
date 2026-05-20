@@ -2,11 +2,8 @@ package brachy.modularui.theme;
 
 import brachy.modularui.api.IThemeApi;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DynamicOps;
-
-import java.util.List;
-import java.util.stream.Stream;
+import com.mojang.serialization.RecordBuilder;
 
 public record WidgetThemeEntry<T extends WidgetTheme>(WidgetThemeKey<T> key, T theme, T hoverTheme) {
 
@@ -15,7 +12,7 @@ public record WidgetThemeEntry<T extends WidgetTheme>(WidgetThemeKey<T> key, T t
     }
 
     public T getTheme(boolean hover) {
-        return hover ? hoverTheme : theme;
+        return hover ? this.hoverTheme : this.theme;
     }
 
     @SuppressWarnings("unchecked")
@@ -28,39 +25,13 @@ public record WidgetThemeEntry<T extends WidgetTheme>(WidgetThemeKey<T> key, T t
                         this.key.getWidgetThemeType().getSimpleName(), expectedType.getSimpleName()));
     }
 
-    public <J> J encodeFallback(DynamicOps<J> ops, J prefix, List<String> errors) {
-        var d = key().getCodec().encode(theme(), ops, prefix);
-        var res = d.result();
-        if (res.isEmpty()) {
-            errors.add(d.error().orElseThrow().message());
+    public <J> void encode(DynamicOps<J> ops, RecordBuilder<J> mapBuilder, boolean fallback) {
+        if (fallback) {
+            this.key.getCodec().encode(this.theme, ops, mapBuilder);
         } else {
-            prefix = res.get();
+            mapBuilder.add(this.key.getFullName(), this.key.getCodec().codec().encodeStart(ops, this.theme));
         }
-        if (theme() == hoverTheme()) return prefix;
-        d = key().getCodec().encode(hoverTheme(), ops, prefix);
-        res = d.result();
-        if (res.isEmpty()) {
-            errors.add(d.error().orElseThrow().message());
-            return prefix;
-        }
-        return res.get();
-    }
-
-    public <J> void encode(DynamicOps<J> ops, Stream.Builder<Pair<J, J>> mapBuilder, List<String> errors) {
-        var d = key.getCodec().encodeStart(ops, theme);
-        var res = d.result();
-        if (res.isEmpty()) {
-            errors.add(d.error().orElseThrow().message());
-        } else {
-            mapBuilder.accept(new Pair<>(ops.createString(key.getFullName()), res.get()));
-        }
-        if (theme == hoverTheme) return;
-        d = key.getCodec().encodeStart(ops, theme);
-        res = d.result();
-        if (res.isEmpty()) {
-            errors.add(d.error().orElseThrow().message());
-            return;
-        }
-        mapBuilder.accept(new Pair<>(ops.createString(key.getFullName() + IThemeApi.HOVER_SUFFIX), res.get()));
+        if (this.theme == this.hoverTheme) return;
+        mapBuilder.add(this.key.getFullName() + IThemeApi.HOVER_SUFFIX, this.key.getCodec().codec().encodeStart(ops, this.hoverTheme));
     }
 }

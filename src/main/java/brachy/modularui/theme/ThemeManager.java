@@ -392,8 +392,8 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
             JsonObject widgetThemeHover = merger.merge(widgetThemeHoverJson, parentWidgetHoverTheme, fallback);
             var immutableHoverWidgetTheme = ImmutableJson.of(widgetThemeHover);
 
-            T widgetThemeInstance = key.getCodec().parse(JsonOps.INSTANCE, widgetThemeJson.toJson()).getOrThrow(false, s -> {});
-            T widgetThemeHoverInstance = key.getCodec().parse(JsonOps.INSTANCE, immutableHoverWidgetTheme.toJson()).getOrThrow(false, s -> {});
+            T widgetThemeInstance = key.getCodec().codec().parse(JsonOps.INSTANCE, widgetThemeJson.toJson()).getOrThrow(false, s -> {});
+            T widgetThemeHoverInstance = key.getCodec().codec().parse(JsonOps.INSTANCE, immutableHoverWidgetTheme.toJson()).getOrThrow(false, s -> {});
 
             map.register(key, widgetThemeInstance, widgetThemeHoverInstance);
         }

@@ -1,5 +1,6 @@
 package brachy.modularui;
 
+import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
@@ -7,6 +8,7 @@ import brachy.modularui.drawable.Circle;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.Rectangle;
 import brachy.modularui.drawable.text.ModularComponent;
+import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.codec.MutableDecoder;
@@ -84,6 +86,12 @@ public class CodecTest {
         TestUtil.repeatRnd(10, CodecTest::testColorHSV);
         TestUtil.repeatRnd(10, CodecTest::testColorHSL);
         TestUtil.repeatRnd(10, CodecTest::testColorCMYK);
+    }
+
+    @Test
+    void widgetTheme() {
+        TestUtil.bootstrap();
+        test(IThemeApi.FALLBACK.getCodec().codec(), WidgetTheme.darkTextNoShadow(1, 2, GuiTextures.MENU_BACKGROUND), false);
     }
 
     private static void testColorHex(Random rnd) {

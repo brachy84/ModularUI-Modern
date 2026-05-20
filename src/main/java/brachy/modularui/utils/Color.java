@@ -873,14 +873,18 @@ public class Color {
         return toFullHexString(getRed(rgb), getGreen(rgb), getBlue(rgb));
     }
 
+    public static String argbToFullHexString(int argb) {
+        return argbToFullHexString(argb, true);
+    }
+
     /**
      * Returns an eight digit hex string representation of a color component with upper case letters.
      *
      * @param argb argb color
      * @return hex string representation
      */
-    public static String argbToFullHexString(int argb) {
-        return toFullHexString(getRed(argb), getGreen(argb), getBlue(argb), getAlpha(argb));
+    public static String argbToFullHexString(int argb, boolean excludeFullAlpha) {
+        return toFullHexString(getRed(argb), getGreen(argb), getBlue(argb), getAlpha(argb), excludeFullAlpha);
     }
 
     /**
@@ -895,6 +899,10 @@ public class Color {
         return componentToFullHexString(r) + componentToFullHexString(g) + componentToFullHexString(b);
     }
 
+    public static String toFullHexString(int r, int g, int b, int a) {
+        return toFullHexString(r, g, b, a, true);
+    }
+
     /**
      * Returns an eight digit hex string representation of a color component with upper case letters.
      *
@@ -904,8 +912,9 @@ public class Color {
      * @param a alpha
      * @return hex string representation
      */
-    public static String toFullHexString(int r, int g, int b, int a) {
-        return componentToFullHexString(a) + toFullHexString(r, g, b);
+    public static String toFullHexString(int r, int g, int b, int a, boolean excludeFullAlpha) {
+        String rgb = toFullHexString(r, g, b);
+        return excludeFullAlpha && a == 255 ? rgb : componentToFullHexString(a) + rgb;
     }
 
     /**

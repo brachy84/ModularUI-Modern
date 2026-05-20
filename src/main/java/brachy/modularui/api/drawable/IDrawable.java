@@ -14,8 +14,6 @@ import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
-import com.google.gson.JsonElement;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -23,6 +21,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -63,7 +62,9 @@ public interface IDrawable {
         if (d == NONE) return DataResult.success("none");
         return DataResult.error(() -> "Only works for empty and none");
     });
-    Codec<IDrawable> CODEC = CodecUtil.chainedCodec(CODEC_EMPTY_NONE, DrawableStack.CODEC, CODEC_DISPATCH.codec());
+    Codec<IDrawable> CODEC = CodecUtil.chainedCodec(
+            CodecUtil.nullDecoder(EMPTY), CODEC_EMPTY_NONE,
+            DrawableStack.CODEC, CODEC_DISPATCH.codec());
 
     static DataResult<JsonElement> toJson(IDrawable drawable) {
         return CODEC.encodeStart(JsonOps.INSTANCE, drawable);

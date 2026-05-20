@@ -12,7 +12,6 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +20,54 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class CodecUtil {
+
+    public static <A> Codec<A> nullDecoder() {
+        return nullDecoder(() -> null);
+    }
+
+    public static <A> Codec<A> nullDecoder(A decodedNull) {
+        return nullDecoder(() -> decodedNull);
+    }
+
+    public static <A> Codec<A> nullDecoder(Supplier<A> decoder) {
+        return nullCodec(decoder, a -> false);
+    }
+
+    public static <A> Codec<A> nullCodec() {
+        return nullCodec(() -> null, Objects::isNull);
+    }
+
+    public static <A> Codec<A> nullCodec(A decodedNull) {
+        return nullCodec(() -> decodedNull);
+    }
+
+    public static <A> Codec<A> nullCodec(Supplier<A> decoder) {
+        return nullCodec(decoder, Objects::isNull);
+    }
+
+    public static <A> Codec<A> nullCodec(Supplier<A> decoder, Predicate<A> nullTester) {
+        return new Codec<>() {
+            @Override
+            public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
+                if (input == null || Objects.equals(ops.empty(), input)) {
+                    return DataResult.success(new Pair<>(decoder.get(), ops.empty()));
+                }
+                return DataResult.error(() -> "Not null");
+            }
+
+            @Override
+            public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
+                if (nullTester.test(input)) {
+                    return DataResult.success(ops.empty());
+                }
+                return DataResult.error(() -> "Not null");
+            }
+        };
+    }
 
     @SafeVarargs
     public static <A> Codec<A> chainedCodec(Codec<A>... codecs) {
@@ -39,26 +83,8 @@ public class CodecUtil {
             public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
                 StringBuilder message = new StringBuilder();
                 DataResult<Pair<A, T>> last;
-                MapLike<T> map = null;
-                boolean isMap = true;
                 for (var codec : decoder) {
-                    if (codec instanceof MapCodec.MapCodecCodec<A> mcc) {
-                        if (!isMap) continue;
-                        MapCodec<A> mapCodec = mcc.codec();
-                        if (map == null) {
-                            var d = ops.getMap(input);
-                            var res = d.result();
-                            if (res.isEmpty()) {
-                                isMap = false;
-                                message.append(d.error().orElseThrow().message()).append("; ");
-                                continue;
-                            }
-                            map = res.get();
-                        }
-                        last = mapCodec.decode(ops, map).map(a -> new Pair<>(a, input));
-                    } else {
-                        last = codec.decode(ops, input);
-                    }
+                    last = codec.decode(ops, input);
                     if (last.result().isPresent()) return last;
                     message.append(last.error().orElseThrow().message()).append("; ");
                 }
@@ -77,14 +103,7 @@ public class CodecUtil {
                 StringBuilder message = new StringBuilder();
                 DataResult<T> last = null;
                 for (var codec : encoder) {
-                    if (codec instanceof MapCodec.MapCodecCodec<A> mcc) {
-                        MapCodec<A> mapCodec = mcc.codec();
-                        RecordBuilder<T> recordBuilder = ops.mapBuilder();
-                        recordBuilder = mapCodec.encode(input, ops, recordBuilder);
-                        last = recordBuilder.build(prefix);
-                    } else {
-                        last = codec.encode(input, ops, prefix);
-                    }
+                    last = codec.encode(input, ops, prefix);
                     if (last.result().isPresent()) return last;
                     message.append(last.error().orElseThrow().message()).append("; ");
                 }
@@ -150,7 +169,8 @@ public class CodecUtil {
         return Codec.of(encoder, chainedDecoder(decoder));
     }
 
-    public static <E, A> MapCodec<E> dispatchNullable(Codec<A> keyCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
+    public static <E, A> MapCodec<E> dispatchNullable(Codec<A> keyCodec, Function<? super E, ? extends
+            A> type, Function<? super A, ? extends Codec<? extends E>> codec) {
         return dispatchNullable("type", keyCodec, type, codec);
     }
 
@@ -178,9 +198,10 @@ public class CodecUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> DataResult<? extends Encoder<V>> getCodec(final Function<? super V, ? extends DataResult<? extends K>> type,
-                                                                    final Function<? super K, ? extends DataResult<? extends Encoder<? extends V>>> encoder,
-                                                                    final V input) {
+    private static <K, V> DataResult<? extends Encoder<V>> getCodec(
+            final Function<? super V, ? extends DataResult<? extends K>> type,
+            final Function<? super K, ? extends DataResult<? extends Encoder<? extends V>>> encoder,
+            final V input) {
         return type.apply(input)
                 .<Encoder<? extends V>>flatMap(k -> encoder.apply(k).map(Function.identity()))
                 .map(c -> ((Encoder<V>) c));
@@ -212,23 +233,6 @@ public class CodecUtil {
                 return super.toString() + "[Checked encoder]";
             }
         };
-    }
-
-    public static <T> @Nullable Stream.Builder<Pair<T, T>> mergePrefixToMapBuilder(DynamicOps<T> ops, @Nullable T prefix) {
-        return mergePrefixToMapBuilder(ops, prefix, null);
-    }
-
-    public static <T> @Nullable Stream.Builder<Pair<T, T>> mergePrefixToMapBuilder(DynamicOps<T> ops, @Nullable T prefix, @Nullable Stream.Builder<Pair<T, T>> mapValues) {
-        if (mapValues == null) mapValues = Stream.builder();
-        if (prefix != null && !Objects.equals(prefix, ops.empty())) {
-            // add values of prefix map
-            // this is more performant than mergeToMap of DynamicOps
-            var prefixMap = ops.getMapValues(prefix);
-            var res = prefixMap.result();
-            if (res.isEmpty()) return null; // prefix is not empty and is not a map
-            res.get().forEach(mapValues);
-        }
-        return mapValues;
     }
 
     public static <A> Codec<Set<A>> setOf(Codec<A> codec) {

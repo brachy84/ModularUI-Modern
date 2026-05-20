@@ -2,32 +2,25 @@ package brachy.modularui.theme;
 
 import brachy.modularui.utils.serialization.codec.FieldReader;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.RecordBuilder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public record WidgetThemeField<T extends WidgetTheme, V>(String name, Class<V> type, Codec<V> codec, FieldReader<T, V> fieldReader,
                                                          boolean canFallback) {
 
-    <J> void encode(T widgetTheme, DynamicOps<J> ops, Stream.Builder<Pair<J, J>> mapBuilder, List<String> errors) {
+    <J> void encode(T widgetTheme, DynamicOps<J> ops, RecordBuilder<J> mapBuilder) {
         var value = fieldReader().readField(widgetTheme);
         J data;
         if (value == null) {
             data = ops.empty();
+            mapBuilder.add(name, data);
         } else {
-            var d = codec().encodeStart(ops, value);
-            var res = d.result();
-            if (res.isEmpty()) {
-                errors.add(d.error().orElseThrow().message());
-                return;
-            }
-            data = res.get();
+            mapBuilder.add(name, codec().encodeStart(ops, value));
         }
-        mapBuilder.accept(new Pair<>(ops.createString(name()), data));
     }
 
     <J> V decode(DynamicOps<J> ops, Map<String, J> map, List<String> errors) {
