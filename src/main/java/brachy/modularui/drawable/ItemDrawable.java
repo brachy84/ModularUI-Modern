@@ -6,6 +6,8 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import lombok.ToString;
+
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+@ToString
 @Accessors(fluent = true, chain = true)
 public class ItemDrawable implements IDrawable {
 

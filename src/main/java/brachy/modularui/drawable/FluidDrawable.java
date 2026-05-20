@@ -7,6 +7,8 @@ import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.Widget;
 
+import lombok.ToString;
+
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
@@ -23,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+@ToString
 @Accessors(fluent = true, chain = true)
 public class FluidDrawable implements IDrawable {
 

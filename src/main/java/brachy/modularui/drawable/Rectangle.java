@@ -12,6 +12,9 @@ import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
+
+import lombok.ToString;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,6 +23,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.joml.Matrix4f;
 
+@ToString
 @Accessors(fluent = true, chain = true)
 public class Rectangle implements IDrawable, IAnimatable<Rectangle> {
 

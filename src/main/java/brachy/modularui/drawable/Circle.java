@@ -14,8 +14,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
+@ToString
 @Accessors(fluent = true, chain = true)
 public class Circle implements IDrawable, IAnimatable<Circle> {
 

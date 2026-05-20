@@ -44,12 +44,28 @@ public interface IDrawable {
     /**
      * An empty drawable. Does nothing.
      */
-    IDrawable EMPTY = (context, x, y, width, height, widgetTheme) -> {};
+    IDrawable EMPTY = new IDrawable() {
+        @Override
+        public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {}
+
+        @Override
+        public String toString() {
+            return "IDrawable.EMPTY";
+        }
+    };
 
     /**
      * An empty drawable used to mark hover textures as "should not be used"!
      */
-    IDrawable NONE = (context, x, y, width, height, widgetTheme) -> {};
+    IDrawable NONE = new IDrawable() {
+        @Override
+        public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {}
+
+        @Override
+        public String toString() {
+            return "IDrawable.NONE";
+        }
+    };
 
     CodecRegistry<IDrawable> CODECS = new CodecRegistry<>();
     MapCodec<IDrawable> CODEC_DISPATCH = CodecUtil.dispatchNullable(Codec.STRING, IDrawable::getTypeName, CODECS::getNullableCodec);
