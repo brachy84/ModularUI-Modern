@@ -23,7 +23,7 @@ public class MinecraftMixin {
 
     @Inject(method = "runTick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Timer;advanceTime(J)I", shift = At.Shift.AFTER))
-    public void timer(CallbackInfo ci) {
+    public void modularui$updateTimer(CallbackInfo ci) {
         int ticks = ClientProxy.getTimer60Fps().advanceTime(Util.getMillis());
         for (int j = 0; j < Math.min(20, ticks); ++j) {
             ClientScreenHandler.onFrameUpdate();
@@ -31,10 +31,10 @@ public class MinecraftMixin {
     }
 
     @Inject(method = "setScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;removed()V"))
-    public void setScreen(Screen guiScreen, CallbackInfo ci) {
+    public void modularui$trackRealScreenClose(Screen guiScreen, CallbackInfo ci) {
         if (guiScreen == null) {
             // the ScreenEvent.Closing is also closed when the screen is transitioning to another screen,
-            // but we only want to know when the next screen null is, so that all screens close.
+            // but we only want to know when the next screen is null, so that all screens close.
             ClientScreenHandler.onCloseScreens(this.screen);
         }
     }

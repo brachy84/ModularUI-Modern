@@ -20,7 +20,7 @@ public class AbstractContainerScreenMixin implements IClickableContainerScreen {
     protected Slot hoveredSlot;
 
     @Unique
-    private Slot gtceu$clickedSlot;
+    private Slot modularui$clickedSlot;
 
     /**
      * Mixin into ModularUI screen wrapper to return the true hovered slot.
@@ -28,21 +28,21 @@ public class AbstractContainerScreenMixin implements IClickableContainerScreen {
      * That's why we can just return the current hovered slot.
      */
     @Inject(method = "findSlot", at = @At("HEAD"), cancellable = true)
-    public void getSlot(double mouseX, double mouseY, CallbackInfoReturnable<Slot> cir) {
-        if (this.gtceu$clickedSlot != null) {
-            cir.setReturnValue(this.gtceu$clickedSlot);
+    public void modularui$getSlot(double mouseX, double mouseY, CallbackInfoReturnable<Slot> cir) {
+        if (this.modularui$clickedSlot != null) {
+            cir.setReturnValue(this.modularui$clickedSlot);
         } else if (IMuiScreen.class.isAssignableFrom(this.getClass())) {
             cir.setReturnValue(this.hoveredSlot);
         }
     }
 
     @Override
-    public void gtceu$setClickedSlot(Slot slot) {
-        this.gtceu$clickedSlot = slot;
+    public void modularui$setClickedSlot(Slot slot) {
+        this.modularui$clickedSlot = slot;
     }
 
     @Override
-    public Slot gtceu$getClickedSlot() {
-        return gtceu$clickedSlot;
+    public Slot modularui$getClickedSlot() {
+        return modularui$clickedSlot;
     }
 }
