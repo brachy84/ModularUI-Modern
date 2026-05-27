@@ -291,8 +291,10 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     }
 
     protected boolean isEqual(UITexture texture) {
-        return Objects.equals(location, texture.location) && Float.compare(u0, texture.u0) == 0 && Float.compare(v0, texture.v0) == 0 &&
-                Float.compare(u1, texture.u1) == 0 && Float.compare(v1, texture.v1) == 0 && nonOpaque == texture.nonOpaque &&
+        return Objects.equals(location, texture.location) &&
+                Float.compare(u0, texture.u0) == 0 && Float.compare(v0, texture.v0) == 0 &&
+                Float.compare(u1, texture.u1) == 0 && Float.compare(v1, texture.v1) == 0 &&
+                nonOpaque == texture.nonOpaque &&
                 colorOverride == texture.colorOverride && Objects.equals(colorType, texture.colorType);
     }
 

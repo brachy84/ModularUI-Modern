@@ -10,6 +10,8 @@ import brachy.modularui.utils.Alignment;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class NamedDrawableRow implements IDrawable {
 
     @Getter
@@ -62,5 +64,19 @@ public class NamedDrawableRow implements IDrawable {
     public NamedDrawableRow drawable(@Nullable IIcon drawable) {
         this.drawable = drawable;
         return this;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof NamedDrawableRow that)) return false;
+
+        return Objects.equals(name, that.name) && Objects.equals(drawable, that.drawable);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(drawable);
+        return result;
     }
 }

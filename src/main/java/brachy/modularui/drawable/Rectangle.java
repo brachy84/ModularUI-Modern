@@ -206,4 +206,26 @@ public class Rectangle implements IDrawable, IJsonSerializable<Rectangle>, IAnim
                 .cornerSegments(this.cornerSegments)
                 .canApplyTheme(this.canApplyTheme);
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof Rectangle rectangle)) return false;
+
+        return cornerRadius == rectangle.cornerRadius && colorTL == rectangle.colorTL && colorTR == rectangle.colorTR &&
+                colorBL == rectangle.colorBL && colorBR == rectangle.colorBR && cornerSegments == rectangle.cornerSegments &&
+                Float.compare(borderThickness, rectangle.borderThickness) == 0 && canApplyTheme == rectangle.canApplyTheme;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = cornerRadius;
+        result = 31 * result + colorTL;
+        result = 31 * result + colorTR;
+        result = 31 * result + colorBL;
+        result = 31 * result + colorBR;
+        result = 31 * result + cornerSegments;
+        result = 31 * result + Float.hashCode(borderThickness);
+        result = 31 * result + Boolean.hashCode(canApplyTheme);
+        return result;
+    }
 }

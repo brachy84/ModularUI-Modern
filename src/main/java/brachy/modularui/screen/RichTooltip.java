@@ -445,6 +445,33 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         return tooltip;
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof RichTooltip that)) return false;
+
+        return showUpTimer == that.showUpTimer && autoUpdate == that.autoUpdate &&
+                titleMargin == that.titleMargin && appliedMargin == that.appliedMargin
+                && x == that.x && y == that.y && maxWidth == that.maxWidth &&
+                text.equals(that.text) && Objects.equals(parent, that.parent) && pos == that.pos &&
+                Objects.equals(tooltipBuilder, that.tooltipBuilder);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = text.hashCode();
+        result = 31 * result + Objects.hashCode(parent);
+        result = 31 * result + pos.hashCode();
+        result = 31 * result + Objects.hashCode(tooltipBuilder);
+        result = 31 * result + showUpTimer;
+        result = 31 * result + Boolean.hashCode(autoUpdate);
+        result = 31 * result + titleMargin;
+        result = 31 * result + Boolean.hashCode(appliedMargin);
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + maxWidth;
+        return result;
+    }
+
     public enum Pos {
 
         ABOVE(GuiAxis.Y),

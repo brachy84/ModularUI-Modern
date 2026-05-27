@@ -28,9 +28,11 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 public class ArraySchema implements ISchema {
@@ -144,6 +146,23 @@ public class ArraySchema implements ISchema {
                 }
             }
         };
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof ArraySchema entries)) return false;
+
+        return level.equals(entries.level) && Arrays.deepEquals(blocks, entries.blocks) &&
+                Objects.equals(renderFilter, entries.renderFilter) && center.equals(entries.center);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = level.hashCode();
+        result = 31 * result + Arrays.deepHashCode(blocks);
+        result = 31 * result + Objects.hashCode(renderFilter);
+        result = 31 * result + center.hashCode();
+        return result;
     }
 
     public static class Builder {

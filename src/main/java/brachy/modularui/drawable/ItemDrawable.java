@@ -137,4 +137,16 @@ public class ItemDrawable implements IDrawable, IJsonSerializable<ItemDrawable> 
         }
         return true;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof ItemDrawable that)) return false;
+
+        return ItemStack.isSameItemSameTags(item, that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return item.hashCode();
+    }
 }

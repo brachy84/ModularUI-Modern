@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.function.UnaryOperator;
@@ -208,6 +209,24 @@ public class ModularComponent extends MutableComponent implements Text {
     @Override
     public @NotNull ModularComponent withStyle(@NotNull UnaryOperator<Style> modifyFunc) {
         return (ModularComponent) super.withStyle(modifyFunc);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof ModularComponent other)) return false;
+        return super.equals(other) && this.alignment.equals(other.alignment) && Float.compare(this.scale, other.scale) == 0 &&
+                Objects.equals(this.shadow, other.shadow) && this.dynamicColor.equals(other.dynamicColor);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(this.alignment);
+        result = 31 * result + Float.hashCode(this.scale);
+        result = 31 * result + Objects.hashCode(this.shadow);
+        result = 31 * result + Objects.hashCode(getDynamicColor());
+        return result;
     }
 
     @Override

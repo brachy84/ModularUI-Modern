@@ -48,4 +48,16 @@ public class FluidDrawable implements IDrawable {
         this.fluid = fluid;
         return this;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof FluidDrawable that)) return false;
+
+        return fluid.isFluidEqual(that.fluid);
+    }
+
+    @Override
+    public int hashCode() {
+        return fluid.hashCode();
+    }
 }

@@ -74,4 +74,23 @@ public class SubAreaDrawable extends DelegateDrawable {
         setDrawable(drawable);
         return this;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof SubAreaDrawable that)) return false;
+        if (!super.equals(o)) return false;
+
+        return Float.compare(u0, that.u0) == 0 && Float.compare(v0, that.v0) == 0 &&
+                Float.compare(u1, that.u1) == 0 && Float.compare(v1, that.v1) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Float.hashCode(u0);
+        result = 31 * result + Float.hashCode(v0);
+        result = 31 * result + Float.hashCode(u1);
+        result = 31 * result + Float.hashCode(v1);
+        return result;
+    }
 }

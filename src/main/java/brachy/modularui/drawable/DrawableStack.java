@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,5 +85,17 @@ public record DrawableStack(IDrawable... drawables) implements IDrawable, IJsonS
         }
         json.add("drawables", jsonArray);
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DrawableStack that)) return false;
+
+        return Arrays.equals(drawables, that.drawables);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(drawables);
     }
 }

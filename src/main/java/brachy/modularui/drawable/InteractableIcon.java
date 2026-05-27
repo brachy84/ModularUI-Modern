@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 @Accessors(fluent = true, chain = true)
 public class InteractableIcon extends DelegateIcon implements Interactable {
 
@@ -125,5 +127,32 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
     public InteractableIcon onKeyTapped(IGuiAction.KeyPressed keyTapped) {
         this.keyTapped = keyTapped;
         return this;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof InteractableIcon that)) return false;
+        if (!super.equals(o)) return false;
+
+        return playClickSound == that.playClickSound &&
+                Objects.equals(mousePressed, that.mousePressed) && Objects.equals(mouseReleased, that.mouseReleased) &&
+                Objects.equals(mouseTapped, that.mouseTapped) && Objects.equals(mouseScroll, that.mouseScroll) &&
+                Objects.equals(keyPressed, that.keyPressed) && Objects.equals(keyReleased, that.keyReleased) &&
+                Objects.equals(keyTapped, that.keyTapped) && Objects.equals(context, that.context);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(mousePressed);
+        result = 31 * result + Objects.hashCode(mouseReleased);
+        result = 31 * result + Objects.hashCode(mouseTapped);
+        result = 31 * result + Objects.hashCode(mouseScroll);
+        result = 31 * result + Objects.hashCode(keyPressed);
+        result = 31 * result + Objects.hashCode(keyReleased);
+        result = 31 * result + Objects.hashCode(keyTapped);
+        result = 31 * result + Boolean.hashCode(playClickSound);
+        result = 31 * result + Objects.hashCode(context);
+        return result;
     }
 }

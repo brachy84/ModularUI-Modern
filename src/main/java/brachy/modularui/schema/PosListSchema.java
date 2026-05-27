@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 public abstract class PosListSchema implements ISchema {
@@ -59,5 +60,20 @@ public abstract class PosListSchema implements ISchema {
                 return pair;
             }
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof PosListSchema entries)) return false;
+
+        return level.equals(entries.level) && posList.equals(entries.posList) && Objects.equals(renderFilter, entries.renderFilter);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = level.hashCode();
+        result = 31 * result + posList.hashCode();
+        result = 31 * result + Objects.hashCode(renderFilter);
+        return result;
     }
 }

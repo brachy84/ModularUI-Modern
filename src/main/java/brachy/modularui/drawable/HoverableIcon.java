@@ -10,6 +10,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class HoverableIcon extends DelegateIcon implements IHoverable, ITooltip<HoverableIcon> {
 
     private final Area area = new Area();
@@ -42,5 +44,21 @@ public class HoverableIcon extends DelegateIcon implements IHoverable, ITooltip<
     public HoverableIcon tooltip(RichTooltip tooltip) {
         this.tooltip = tooltip;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof HoverableIcon that)) return false;
+        if (!super.equals(o)) return false;
+
+        return area.equals(that.area) && Objects.equals(tooltip, that.tooltip);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + area.hashCode();
+        result = 31 * result + Objects.hashCode(tooltip);
+        return result;
     }
 }

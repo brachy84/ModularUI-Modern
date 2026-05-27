@@ -71,6 +71,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -512,6 +513,23 @@ public class BaseSchemaRenderer implements IDrawable {
 
     public boolean isBEREnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BaseSchemaRenderer that)) return false;
+
+        return schema.equals(that.schema) && renderLevel.equals(that.renderLevel) && camera.equals(that.camera) &&
+                Arrays.equals(viewport, that.viewport);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = schema.hashCode();
+        result = 31 * result + renderLevel.hashCode();
+        result = 31 * result + camera.hashCode();
+        result = 31 * result + Arrays.hashCode(viewport);
+        return result;
     }
 
     protected enum CompileStatus {

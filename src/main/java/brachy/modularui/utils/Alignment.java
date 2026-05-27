@@ -62,6 +62,13 @@ public class Alignment {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Alignment other)) return false;
+        return this.x == other.x && this.y == other.y;
+    }
+
     /**
      * Defines how elements should be aligned on the main axis.
      * In a row this would mean the x coordinates.

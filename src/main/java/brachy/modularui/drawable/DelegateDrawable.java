@@ -61,4 +61,16 @@ public class DelegateDrawable implements IDrawable {
     public Icon asIcon() {
         return this.drawable.asIcon();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DelegateDrawable that)) return false;
+
+        return drawable.equals(that.drawable);
+    }
+
+    @Override
+    public int hashCode() {
+        return drawable.hashCode();
+    }
 }

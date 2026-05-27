@@ -107,7 +107,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     }
 
     @Override
-    public RichText add(FormattedText c) {
+    public RichText add(Component c) {
         addElement(c);
         clearComponents();
         return this;

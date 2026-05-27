@@ -13,6 +13,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -96,5 +97,28 @@ public class SchemaRenderer extends BaseSchemaRenderer {
     @Override
     public boolean isIsometric() {
         return isometric;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SchemaRenderer that)) return false;
+        if (!super.equals(o)) return false;
+
+        return isometric == that.isometric && rayTracing == that.rayTracing && Objects.equals(scale, that.scale) &&
+                Objects.equals(disableBER, that.disableBER) && Objects.equals(afterRender, that.afterRender) &&
+                Objects.equals(cameraFunc, that.cameraFunc) && Objects.equals(highlight, that.highlight);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(scale);
+        result = 31 * result + Objects.hashCode(disableBER);
+        result = 31 * result + Objects.hashCode(afterRender);
+        result = 31 * result + Objects.hashCode(cameraFunc);
+        result = 31 * result + Objects.hashCode(highlight);
+        result = 31 * result + Boolean.hashCode(isometric);
+        result = 31 * result + Boolean.hashCode(rayTracing);
+        return result;
     }
 }

@@ -91,4 +91,19 @@ public class Circle implements IDrawable, IJsonSerializable<Circle>, IAnimatable
                 .setColor(this.colorInner, this.colorOuter)
                 .setSegments(this.segments);
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof Circle circle)) return false;
+
+        return colorInner == circle.colorInner && colorOuter == circle.colorOuter && segments == circle.segments;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = colorInner;
+        result = 31 * result + colorOuter;
+        result = 31 * result + segments;
+        return result;
+    }
 }

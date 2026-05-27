@@ -17,6 +17,7 @@ import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class DynamicComponent implements Component, IDrawable {
@@ -101,5 +102,19 @@ public class DynamicComponent implements Component, IDrawable {
 
     public Style getFallbackStyle() {
         return this.style;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof DynamicComponent that)) return false;
+
+        return Objects.equals(supplier, that.supplier) && style.equals(that.style);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(supplier);
+        result = 31 * result + style.hashCode();
+        return result;
     }
 }

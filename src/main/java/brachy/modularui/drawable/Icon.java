@@ -189,6 +189,25 @@ public class Icon implements IIcon, IJsonSerializable<Icon> {
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof Icon icon)) return false;
+
+        return width == icon.width && height == icon.height && Float.compare(aspectRatio, icon.aspectRatio) == 0 &&
+                drawable.equals(icon.drawable) && alignment.equals(icon.alignment) && margin.equals(icon.margin);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = drawable.hashCode();
+        result = 31 * result + width;
+        result = 31 * result + height;
+        result = 31 * result + Float.hashCode(aspectRatio);
+        result = 31 * result + alignment.hashCode();
+        result = 31 * result + margin.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + this.drawable.getClass().getSimpleName() + ")";
     }

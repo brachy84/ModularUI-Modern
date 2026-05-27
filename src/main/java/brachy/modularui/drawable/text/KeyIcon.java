@@ -11,6 +11,8 @@ import net.minecraft.client.gui.Font;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * An icon which represents a {@link Text} object.
  * Note: This class assumes the string will be a single line!
@@ -125,6 +127,24 @@ public class KeyIcon implements IIcon {
     public KeyIcon font(Font fr) {
         this.overrideFont = fr;
         return this;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof KeyIcon that)) return false;
+
+        return expandWidth == that.expandWidth && expandHeight == that.expandHeight &&
+                key.equals(that.key) && Objects.equals(overrideFont, that.overrideFont) && margin.equals(that.margin);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key.hashCode();
+        result = 31 * result + Objects.hashCode(overrideFont);
+        result = 31 * result + margin.hashCode();
+        result = 31 * result + Boolean.hashCode(expandWidth);
+        result = 31 * result + Boolean.hashCode(expandHeight);
+        return result;
     }
 
     @Override

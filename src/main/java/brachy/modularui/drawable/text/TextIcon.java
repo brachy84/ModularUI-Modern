@@ -50,4 +50,22 @@ public class TextIcon implements IIcon {
     public Box getMargin() {
         return margin;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof TextIcon textIcon)) return false;
+
+        return width == textIcon.width && height == textIcon.height && Float.compare(scale, textIcon.scale) == 0 &&
+                text.equals(textIcon.text) && alignment.equals(textIcon.alignment);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = text.hashCode();
+        result = 31 * result + width;
+        result = 31 * result + height;
+        result = 31 * result + Float.hashCode(scale);
+        result = 31 * result + alignment.hashCode();
+        return result;
+    }
 }
