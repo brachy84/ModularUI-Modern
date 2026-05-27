@@ -46,8 +46,7 @@ public class ByteBufAdapters {
     public static final IByteBufAdapter<GlobalPos> GLOBAL_POS = makeAdapterFromCodec(GlobalPos.CODEC, GlobalPos::equals);
     public static final IByteBufAdapter<ResourceLocation> RESOURCE_LOCATION = makeAdapterFromCodec(ResourceLocation.CODEC, ResourceLocation::equals);
     public static final IByteBufAdapter<UUID> UUID = makeAdapter(FriendlyByteBuf::readUUID, FriendlyByteBuf::writeUUID, java.util.UUID::equals);
-    public static final IByteBufAdapter<Component> COMPONENT = makeAdapter(FriendlyByteBuf::readComponent, FriendlyByteBuf::writeComponent,
-            (a, b) -> Objects.equals(a.getString(), b.getString()));
+    public static final IByteBufAdapter<Component> COMPONENT = makeAdapter(FriendlyByteBuf::readComponent, FriendlyByteBuf::writeComponent, Component::equals);
 
     public static final IByteBufAdapter<byte[]> BYTE_ARR = new IByteBufAdapter<>() {
 
