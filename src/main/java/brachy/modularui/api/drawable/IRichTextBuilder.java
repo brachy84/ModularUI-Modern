@@ -3,8 +3,7 @@ package brachy.modularui.api.drawable;
 import brachy.modularui.drawable.text.Spacer;
 import brachy.modularui.utils.Alignment;
 
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
@@ -31,7 +30,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
      * @param c component to add
      * @return this
      */
-    default T add(FormattedText c) {
+    default T add(Component c) {
         getRichText().add(c);
         return getThis();
     }
@@ -61,7 +60,7 @@ public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
         return getThis();
     }
 
-    default T addLine(FormattedText formattedText) {
+    default T addLine(Component formattedText) {
         getRichText().add(formattedText).newLine();
         return getThis();
     }

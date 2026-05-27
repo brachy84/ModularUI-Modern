@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -31,13 +32,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 
+import com.mojang.datafixers.util.Either;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
@@ -147,8 +152,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         // vanilla event to gather additional tooltip
         TooltipLines textLines = copy.getAsText();
+        List<Either<FormattedText, TooltipComponent>> vanillaLines = textLines.stream()
+                .map(either -> either.mapBoth(c -> (FormattedText) c, Function.identity()))
+                .toList();
         // noinspection UnstableApiUsage
-        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
+        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, vanillaLines, this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
         this.maxWidth = vanillaGatherEvent.getMaxWidth();
 
@@ -187,7 +195,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         context.getGraphics().pose().translate(-screen.x, -screen.y, 400);
         GuiDraw.drawTooltipBackground(context, stack, components, area.x, area.y, area.width, area.height, copy);
 
-        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y,
+        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, vanillaLines, area.x, area.y,
         // TextRenderer.getFont(), area.width, area.height));
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -375,11 +383,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     public RichTooltip addFromItem(ItemStack item) {
         List<Component> lines = MCHelper.getItemToolTip(item);
-        add((FormattedText) lines.get(0));
+        add(lines.get(0));
         if (lines.size() > 1) {
             spaceLine();
             for (int i = 1, n = lines.size(); i < n; i++) {
-                add((FormattedText) lines.get(i)).newLine();
+                add(lines.get(i)).newLine();
             }
         }
         return this;
