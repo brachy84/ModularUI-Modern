@@ -162,7 +162,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     }
 
     @Override
-    public RichText add(FormattedText c) {
+    public RichText add(Component c) {
         addElement(c);
         clearComponents();
         return this;
@@ -442,6 +442,22 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         this.scale = richText.scale;
         this.color = richText.color;
         this.shadow = richText.shadow;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RichText text = (RichText) o;
+        return Float.compare(scale, text.scale) == 0 &&
+                Objects.equals(elements, text.elements) &&
+                Objects.equals(alignment, text.alignment) &&
+                Objects.equals(color, text.color) &&
+                Objects.equals(shadow, text.shadow);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements, alignment, scale, color, shadow);
     }
 
     public static void verifyListElements(List<Object> elements) {

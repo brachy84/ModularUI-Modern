@@ -20,6 +20,7 @@ import org.joml.Vector3fc;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -128,6 +129,25 @@ public class MapSchema implements ISchema {
                 }
             }
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MapSchema entries)) return false;
+
+        return Objects.equals(level, entries.level) && blocks.equals(entries.blocks) &&
+                Objects.equals(renderFilter, entries.renderFilter) && Objects.equals(origin, entries.origin) &&
+                Objects.equals(center, entries.center);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(level);
+        result = 31 * result + blocks.hashCode();
+        result = 31 * result + Objects.hashCode(renderFilter);
+        result = 31 * result + Objects.hashCode(origin);
+        result = 31 * result + Objects.hashCode(center);
+        return result;
     }
 
     @Accessors(chain = true)

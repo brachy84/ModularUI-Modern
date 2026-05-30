@@ -27,6 +27,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -34,6 +35,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
+
+import com.mojang.datafixers.util.Either;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +46,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
@@ -388,11 +393,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     public RichTooltip addFromItem(ItemStack item) {
         List<Component> lines = MCHelper.getItemToolTip(item);
-        add((FormattedText) lines.get(0));
+        add(lines.get(0));
         if (lines.size() > 1) {
             spaceLine();
             for (int i = 1, n = lines.size(); i < n; i++) {
-                add((FormattedText) lines.get(i)).newLine();
+                add(lines.get(i)).newLine();
             }
         }
         return this;
@@ -452,6 +457,33 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         tooltip.maxWidth = this.maxWidth;
         tooltip.dirty = this.dirty;
         return tooltip;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof RichTooltip that)) return false;
+
+        return showUpTimer == that.showUpTimer && autoUpdate == that.autoUpdate &&
+                titleMargin == that.titleMargin && appliedMargin == that.appliedMargin
+                && x == that.x && y == that.y && maxWidth == that.maxWidth &&
+                text.equals(that.text) && Objects.equals(parent, that.parent) && pos == that.pos &&
+                Objects.equals(tooltipBuilder, that.tooltipBuilder);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = text.hashCode();
+        result = 31 * result + Objects.hashCode(parent);
+        result = 31 * result + pos.hashCode();
+        result = 31 * result + Objects.hashCode(tooltipBuilder);
+        result = 31 * result + showUpTimer;
+        result = 31 * result + Boolean.hashCode(autoUpdate);
+        result = 31 * result + titleMargin;
+        result = 31 * result + Boolean.hashCode(appliedMargin);
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + maxWidth;
+        return result;
     }
 
     public enum Pos implements StringRepresentable {

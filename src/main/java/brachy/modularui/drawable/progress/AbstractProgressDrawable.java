@@ -6,6 +6,8 @@ import brachy.modularui.theme.WidgetTheme;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 public abstract class AbstractProgressDrawable<D extends AbstractProgressDrawable<D>> extends BaseProgressDrawable<D> {
 
     @Getter private IDrawable filledTexture;
@@ -32,5 +34,21 @@ public abstract class AbstractProgressDrawable<D extends AbstractProgressDrawabl
     public D filledTexture(IDrawable drawable) {
         this.filledTexture = drawable;
         return self();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractProgressDrawable<?> that)) return false;
+        if (!super.equals(o)) return false;
+
+        return Objects.equals(filledTexture, that.filledTexture);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(filledTexture);
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 package brachy.modularui.utils;
 
+import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.drawable.text.FontRenderHelper;
@@ -44,44 +45,50 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
 
     private Line parseNext() {
         if (this.lastElementIndex >= elements.size()) return null;
-        FormattedText currentLine = FormattedText.EMPTY;
+        List<Component> currentLine = new ArrayList<>();
         int currentLength = 0;
         for (int i = this.lastElementIndex; i < this.elements.size(); i++) {
             Object o = elements.get(i);
             currentLength++;
-            if (o == Text.LINE_FEED) {
-                if (currentLength == 1 && i > 0 && this.elements.get(i - 1) != Text.LINE_FEED) {
+            if (Text.LINE_FEED.equals(o)) {
+                if (currentLength == 1 && i > 0 && !Text.LINE_FEED.equals(this.elements.get(i - 1))) {
                     this.lastElementIndex++;
                     continue;
                 }
-                Line line = new Line(currentLine, this.lastElementIndex, currentLength);
+                Line line = new Line(collapse(currentLine), this.lastElementIndex, currentLength);
                 this.lastElementIndex += currentLength;
                 return line;
             }
-            FormattedText s = null;
-            if (o instanceof FormattedText txt) {
-                s = txt;
+            Component c = null;
+            if (o instanceof Component txt) {
+                c = txt;
             } else if (o instanceof String str) {
-                s = FormattedText.of(str);
+                c = Component.literal(str);
             } else if (o instanceof TextIcon ti) {
-                s = ti.getText();
-            } else if (o instanceof TooltipComponent tc) {
-                if (FontRenderHelper.isEmpty(currentLine)) {
-                    Line line = new Line(tc, this.lastElementIndex, currentLength);
-                    this.lastElementIndex += currentLength;
-                    return line;
-                } else {
-                    Line line = new Line(currentLine, this.lastElementIndex, currentLength);
-                    this.lastElementIndex += currentLength - 1;
-                    return line;
-                }
+                c = ti.getText();
             }
-            if (s != null) {
-                currentLine = FontRenderHelper.isEmpty(currentLine) ? s : FormattedText.composite(currentLine, s);
+            if (c != null && !FontRenderHelper.isEmpty(c)) {
+                currentLine.add(c);
+                continue;
+            }
+
+            if (o instanceof IDrawable drawable && !(o instanceof TooltipComponent)) {
+                o = drawable.asIcon();
+            }
+            if (o instanceof TooltipComponent tc) {
+                Line line;
+                if (currentLine.isEmpty()) {
+                    line = new Line(tc, this.lastElementIndex, currentLength);
+                    this.lastElementIndex += currentLength;
+                } else {
+                    line = new Line(collapse(currentLine), this.lastElementIndex, currentLength);
+                    this.lastElementIndex += currentLength - 1;
+                }
+                return line;
             }
         }
         if (currentLength > 0) {
-            Line line = new Line(currentLine, this.lastElementIndex, currentLength);
+            Line line = new Line(collapse(currentLine), this.lastElementIndex, currentLength);
             this.lastElementIndex += currentLength;
             return line;
         }
@@ -133,11 +140,11 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
         // TODO support tooltip component
     }
 
-    public void add(int index, FormattedText s) {
+    public void add(int index, Component s) {
         add(index, Either.left(s));
     }
 
-    public void add(FormattedText s) {
+    public void add(Component s) {
         add(size(), Either.left(s));
     }
 
@@ -180,6 +187,12 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
         if (comp instanceof ClientTooltipComponent ctc) return ctc;
         if (comp instanceof ClientTooltipComponentIcon icon) return icon.getClientTooltipComponent();
         return ClientTooltipComponent.create(comp);
+    }
+
+    private static Component collapse(List<Component> components) {
+        if (components.isEmpty()) return Text.EMPTY;
+        else if (components.size() == 1) return components.get(0);
+        else return Text.comp(components.toArray(Component[]::new));
     }
 
     private static class Line {

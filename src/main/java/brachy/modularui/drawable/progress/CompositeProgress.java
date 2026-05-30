@@ -111,6 +111,22 @@ public class CompositeProgress extends BaseProgressDrawable<CompositeProgress> {
         return super.progress(progress);
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompositeProgress that)) return false;
+        if (!super.equals(o)) return false;
+
+        return this.parts.equals(that.parts);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + this.parts.hashCode();
+        return result;
+    }
+
     public static class Part implements Comparable<Part> {
 
         private final BaseProgressDrawable<?> progress;

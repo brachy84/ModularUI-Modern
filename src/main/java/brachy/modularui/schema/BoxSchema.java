@@ -45,4 +45,20 @@ public class BoxSchema extends PosListSchema {
     public BlockPos getOrigin() {
         return min;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BoxSchema entries)) return false;
+
+        return level.equals(entries.level) && min.equals(entries.min) && max.equals(entries.max) && center.equals(entries.center);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = level.hashCode();
+        result = 31 * result + min.hashCode();
+        result = 31 * result + max.hashCode();
+        result = 31 * result + center.hashCode();
+        return result;
+    }
 }

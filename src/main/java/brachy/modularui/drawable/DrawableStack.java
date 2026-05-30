@@ -12,6 +12,7 @@ import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,5 +59,17 @@ public record DrawableStack(IDrawable... drawables) implements IDrawable {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DrawableStack that)) return false;
+
+        return Arrays.equals(drawables, that.drawables);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(drawables);
     }
 }

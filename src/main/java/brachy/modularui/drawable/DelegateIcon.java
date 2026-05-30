@@ -55,6 +55,18 @@ public class DelegateIcon implements IIcon {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DelegateIcon that)) return false;
+
+        return icon.equals(that.icon);
+    }
+
+    @Override
+    public int hashCode() {
+        return icon.hashCode();
+    }
+
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + this.icon + ")";
     }

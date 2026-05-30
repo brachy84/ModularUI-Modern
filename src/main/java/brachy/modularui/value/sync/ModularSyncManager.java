@@ -30,7 +30,6 @@ import java.util.function.Supplier;
 public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
 
     public static final String AUTO_SYNC_PREFIX = "auto_sync:";
-    private static final String CURSOR_KEY = ISyncRegistrar.makeSyncKey("cursor_slot", 255255);
 
     private final Map<String, PanelSyncManager> panelSyncManagerMap = new Object2ObjectOpenHashMap<>();
     // A set of all panels which have been opened during the ui. May also contain closed panels.
@@ -40,7 +39,6 @@ public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
     private PanelSyncManager mainPSM;
     @Getter
     private ModularContainerMenu menu;
-    private final CursorSlotSyncHandler cursorSlotSyncHandler = new CursorSlotSyncHandler();
     @Getter
     private final boolean client;
     private State state = State.INIT;
@@ -59,7 +57,6 @@ public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
         if (this.mainPSM.getSlotGroup(PlayerSlotGroup.NAME) == null) {
             this.mainPSM.bindPlayerInventory(getPlayer());
         }
-        this.mainPSM.syncValue(CURSOR_KEY, this.cursorSlotSyncHandler);
         open(mainPanelName, this.mainPSM);
     }
 
@@ -121,7 +118,6 @@ public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
 
     public void setCursorItem(ItemStack item) {
         getPlayer().containerMenu.setCarried(item);
-        this.cursorSlotSyncHandler.sync();
     }
 
     @ApiStatus.Internal

@@ -124,6 +124,23 @@ public class ProgressDrawable extends AbstractProgressDrawable<ProgressDrawable>
         return super.smooth().progressPixelStepSize(-1);
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProgressDrawable that)) return false;
+        if (!super.equals(o)) return false;
+
+        return Float.compare(progressPixelStepSize, that.progressPixelStepSize) == 0 && direction == that.direction;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + direction.hashCode();
+        result = 31 * result + Float.hashCode(progressPixelStepSize);
+        return result;
+    }
+
     public enum Direction {
         LEFT,
         RIGHT,

@@ -169,7 +169,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                 richTooltip.isEmpty(); // causes the tooltip to rebuild if necessary
                 IRichTextBuilder<?> richTextBuilder = richTooltip.getRichText();
                 if (richTextBuilder instanceof RichText richText) {
-                    // scuffed conversion, but it works mostly
+                    // scuffed conversion, but it mostly works
                     return richText.getAsText().toClientTooltipComponents();
                 }
                 return List.of();

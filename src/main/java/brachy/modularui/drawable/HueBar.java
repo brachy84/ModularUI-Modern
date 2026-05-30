@@ -41,4 +41,16 @@ public class HueBar implements IDrawable {
             previous = current;
         }
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof HueBar hueBar)) return false;
+
+        return axis == hueBar.axis;
+    }
+
+    @Override
+    public int hashCode() {
+        return axis.hashCode();
+    }
 }

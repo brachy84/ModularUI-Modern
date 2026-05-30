@@ -196,4 +196,21 @@ public class FlowDrawable implements IDrawable {
         this.icons.clear();
         return this;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof FlowDrawable that)) return false;
+
+        return axis == that.axis && icons.equals(that.icons) &&
+                mainAxisAlignment == that.mainAxisAlignment && crossAxisAlignment == that.crossAxisAlignment;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = axis.hashCode();
+        result = 31 * result + icons.hashCode();
+        result = 31 * result + mainAxisAlignment.hashCode();
+        result = 31 * result + crossAxisAlignment.hashCode();
+        return result;
+    }
 }

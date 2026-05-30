@@ -11,6 +11,7 @@ import lombok.ToString;
 
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.fluids.FluidStack;
@@ -147,5 +148,25 @@ public class FluidDrawable implements IDrawable {
     @Override
     public String getTypeName() {
         return "fluid";
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof FluidDrawable that)) return false;
+        if (this.cycleTime != that.cycleTime || this.fluids.length != that.fluids.length) return false;
+        for (int i = 0; i < this.fluids.length; i++) {
+            var f1 = this.fluids[i];
+            var f2 = that.fluids[i];
+            if ((f1 == null || f2 == null) && f1 != f2) return false;
+            if (!f1.isFluidStackIdentical(f2)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(this.fluids);
+        result = 31 * result + this.cycleTime;
+        return result;
     }
 }

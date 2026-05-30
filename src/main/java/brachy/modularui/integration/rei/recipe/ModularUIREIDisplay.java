@@ -2,7 +2,6 @@ package brachy.modularui.integration.rei.recipe;
 
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.client.component.FormattedTextContents;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerScreenWrapper;
@@ -19,13 +18,9 @@ import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.slot.FluidSlot;
 import brachy.modularui.widgets.slot.ItemSlot;
 
-import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import lombok.Getter;
 import me.shedaniel.math.Rectangle;
@@ -139,11 +134,8 @@ public class ModularUIREIDisplay implements Display {
                 if (tooltip.tooltip().getRichText() instanceof RichText richText) {
                     var textList = richText.getAsText();
                     entryWidget.tooltipProcessor(text -> {
-                        for (Either<FormattedText, TooltipComponent> line : textList) {
-                            // TODO this is stupid
-                            line.ifLeft(ft -> text.add(MutableComponent.create(new FormattedTextContents(ft))));
-                            line.ifRight(text::add);
-                        }
+                        // FIXME this is stupid
+                        textList.forEach(line -> line.map(text::add, text::add));
                         return text;
                     });
                 }

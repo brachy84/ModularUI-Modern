@@ -73,9 +73,6 @@ public class GraphAxis {
                 this.min -= padding;
             }
         }
-        if (this.majorTickFinder instanceof AutoMajorTickFinder tickFinder && tickFinder.isAutoAdjust()) {
-            tickFinder.calculateAutoTickMultiple(this.min, this.max);
-        }
         this.majorTicks = this.majorTickFinder.find(this.min, this.max, this.majorTicks);
         this.minorTicks = this.minorTickFinder.find(this.min, this.max, this.majorTicks, this.minorTicks);
 

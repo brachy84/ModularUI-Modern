@@ -5,27 +5,17 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.DynamicLinkedSyncHandler;
 import brachy.modularui.value.sync.DynamicSyncHandler;
 import brachy.modularui.value.sync.IDynamicSyncNotifiable;
-import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.value.sync.SyncHandler;
 import brachy.modularui.widget.Widget;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
- * A widget which can update its child based on a function in {@link DynamicSyncHandler}.
- * Such a sync handler must be supplied or else this widget has no effect.
- * The dynamic child can be a widget tree of any size which can also contain {@link SyncHandler}s. These sync handlers
- * MUST be registered
- * via a variant of
- * {@link PanelSyncManager#getOrCreateSyncHandler(String, Class, Supplier)
- * PanelSyncManager#getOrCreateSyncHandler(String, Class, Supplier)}.
- *
- * @param <W> type of this widget
+ * @deprecated use {@link brachy.modularui.widgets.dynamic.DynamicWidget} instead.
  */
+@Deprecated(forRemoval = true)
 public class DynamicSyncedWidget<W extends DynamicSyncedWidget<W>> extends Widget<W> {
 
     private IDynamicSyncNotifiable syncHandler;

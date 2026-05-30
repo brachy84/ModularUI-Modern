@@ -3,9 +3,15 @@ package brachy.modularui.utils.serialization.network;
 import brachy.modularui.utils.EqualityTest;
 import brachy.modularui.utils.NetworkUtils;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 
 import io.netty.buffer.ByteBuf;
@@ -15,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
+import java.util.UUID;
 
 public class ByteBufAdapters {
 
@@ -33,6 +40,13 @@ public class ByteBufAdapters {
     public static final IByteBufAdapter<Byte> BYTE = makeAdapter(FriendlyByteBuf::readByte, (buffer, b) -> buffer.writeByte(b), null);
     public static final IByteBufAdapter<Short> SHORT = makeAdapter(FriendlyByteBuf::readShort, (buffer, b) -> buffer.writeShort(b), null);
     public static final IByteBufAdapter<Character> CHAR = makeAdapter(FriendlyByteBuf::readChar, (buffer, b) -> buffer.writeChar(b), null);
+
+    public static final IByteBufAdapter<BlockState> BLOCKSTATE = makeAdapterFromCodec(BlockState.CODEC, BlockState::equals);
+    public static final IByteBufAdapter<BlockPos> BLOCKPOS = makeAdapterFromCodec(BlockPos.CODEC, BlockPos::equals);
+    public static final IByteBufAdapter<GlobalPos> GLOBAL_POS = makeAdapterFromCodec(GlobalPos.CODEC, GlobalPos::equals);
+    public static final IByteBufAdapter<ResourceLocation> RESOURCE_LOCATION = makeAdapterFromCodec(ResourceLocation.CODEC, ResourceLocation::equals);
+    public static final IByteBufAdapter<UUID> UUID = makeAdapter(FriendlyByteBuf::readUUID, FriendlyByteBuf::writeUUID, java.util.UUID::equals);
+    public static final IByteBufAdapter<Component> COMPONENT = makeAdapter(FriendlyByteBuf::readComponent, FriendlyByteBuf::writeComponent, Component::equals);
 
     public static final IByteBufAdapter<byte[]> BYTE_ARR = new IByteBufAdapter<>() {
 
@@ -141,5 +155,24 @@ public class ByteBufAdapters {
                                                            @NotNull IByteBufMemberSerializer<T> memberSerializer,
                                                            @Nullable EqualityTest<T> comparator) {
         return makeAdapter(deserializer, memberSerializer.asBasic(), comparator);
+    }
+    public static <T> IByteBufAdapter<T> makeAdapterFromCodec(@NotNull Codec<T> codec, @NotNull EqualityTest<T> equals) {
+        return new IByteBufAdapter<>() {
+
+            @Override
+            public T deserialize(FriendlyByteBuf buffer) {
+                return buffer.readJsonWithCodec(codec);
+            }
+
+            @Override
+            public void serialize(FriendlyByteBuf buffer, T u) {
+                buffer.writeJsonWithCodec(codec, u);
+            }
+
+            @Override
+            public boolean areEqual(@NotNull T t1, @NotNull T t2) {
+                return equals.areEqual(t1, t2);
+            }
+        };
     }
 }

@@ -10,6 +10,7 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,9 +33,9 @@ public interface Text extends IDrawable {
 
     TextRenderer renderer = new TextRenderer();
 
-    Component EMPTY = str("");
-    Component LINE_FEED = str("\n");
-    Component SPACE = str(" ");
+    Component EMPTY = CommonComponents.EMPTY;
+    Component LINE_FEED = CommonComponents.NEW_LINE;
+    Component SPACE = CommonComponents.SPACE;
 
     // Formatting for convenience
     ChatFormatting BLACK = ChatFormatting.BLACK;
@@ -117,11 +118,11 @@ public interface Text extends IDrawable {
         if (keys.length == 0) {
             return ModularComponent.empty();
         }
-        MutableComponent main = ModularComponent.empty();
+        ModularComponent main = ModularComponent.empty();
         for (Component key : keys) {
             main.append(key);
         }
-        return main.asModular();
+        return main;
     }
 
     /**

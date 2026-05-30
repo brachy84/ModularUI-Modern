@@ -33,6 +33,7 @@ public class InternalWidgetTree {
             if (widget.isName(current)) {
                 if (isLast) {
                     if (!widget.isType(type)) {
+                        if (nullable) return null;
                         throw new ClassCastException("Found widget at '" +
                                 Joiner.on('/').join(Arrays.copyOfRange(path, 0, index + 1)) + "' with type '" +
                                 widget.getClass().getName() + "', but expected type '" + type.getName() + "'.");

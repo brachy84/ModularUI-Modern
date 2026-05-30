@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import net.minecraft.Util;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.DoubleSupplier;
 
@@ -121,5 +122,23 @@ public abstract class BaseProgressDrawable<D extends BaseProgressDrawable<D>> im
         ProgressWidget widget = new ProgressWidget(this);
         if (this.progress != null) widget.clientValue(this.progress);
         return widget;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseProgressDrawable<?> that)) return false;
+
+        return Float.compare(progressStepSize, that.progressStepSize) == 0 &&
+                Objects.equals(emptyBackground, that.emptyBackground) &&
+                Objects.equals(progress, that.progress);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(emptyBackground);
+        result = 31 * result + Objects.hashCode(progress);
+        result = 31 * result + Float.hashCode(progressStepSize);
+        return result;
     }
 }

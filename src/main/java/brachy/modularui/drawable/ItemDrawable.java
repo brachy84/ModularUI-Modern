@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @ToString
 @Accessors(fluent = true, chain = true)
@@ -155,5 +156,25 @@ public class ItemDrawable implements IDrawable {
     @Override
     public String getTypeName() {
         return "item";
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof ItemDrawable that)) return false;
+        if (this.cycleTime != that.cycleTime || this.items.length != that.items.length) return false;
+        for (int i = 0; i < this.items.length; i++) {
+            var i1 = this.items[i];
+            var i2 = that.items[i];
+            if ((i1 == null || i2 == null) && i1 != i2) return false;
+            if (!ItemStack.isSameItemSameTags(i1, i2)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(this.items);
+        result = 31 * result + this.cycleTime;
+        return result;
     }
 }

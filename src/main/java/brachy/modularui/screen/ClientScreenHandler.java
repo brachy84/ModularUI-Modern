@@ -399,11 +399,11 @@ public class ClientScreenHandler {
                 // remove buttons to make sure they are not clicked
                 acc.setChildren(Collections.emptyList());
                 // set clicked slot to make sure the container clicks the desired slot
-                clickableScreen.gtceu$setClickedSlot(slot);
+                clickableScreen.modularui$setClickedSlot(slot);
                 screen.mouseClicked(ctx.getMouseX(), ctx.getMouseY(), ctx.getLastMouseButton());
             } finally {
                 // undo modifications
-                clickableScreen.gtceu$setClickedSlot(null);
+                clickableScreen.modularui$setClickedSlot(null);
                 acc.setChildren(buttonList);
             }
         }

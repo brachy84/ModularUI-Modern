@@ -122,6 +122,22 @@ public class CircularProgressDrawable extends AbstractProgressDrawable<CircularP
         return direction(Direction.CCW);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CircularProgressDrawable that)) return false;
+        if (!super.equals(o)) return false;
+
+        return direction == that.direction;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + direction.hashCode();
+        return result;
+    }
+
     public enum Direction {
         CW, CCW
     }

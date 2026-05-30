@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface ISyncRegistrar<S extends ISyncRegistrar<S>> {
@@ -180,6 +181,22 @@ public interface ISyncRegistrar<S extends ISyncRegistrar<S>> {
 
     default <T extends SyncHandler<?>> @NotNull T findSyncHandler(String name, Class<T> type) {
         return findSyncHandler(name, 0, type);
+    }
+
+    default @NotNull Optional<SyncHandler<?>> findSyncHandlerOptional(String name) {
+        return Optional.ofNullable(findSyncHandlerNullable(name));
+    }
+
+    default @NotNull Optional<SyncHandler<?>> findSyncHandlerOptional(String name, int id) {
+        return Optional.ofNullable(findSyncHandlerNullable(name, id));
+    }
+
+    default <T extends SyncHandler<?>> @NotNull Optional<T> findSyncHandlerOptional(String name, Class<T> type) {
+        return Optional.ofNullable(findSyncHandlerNullable(name, type));
+    }
+
+    default <T extends SyncHandler<?>> @NotNull Optional<T> findSyncHandlerOptional(String name, int id, Class<T> type) {
+        return Optional.ofNullable(findSyncHandlerNullable(name, id, type));
     }
 
     SlotGroup getSlotGroup(String name);

@@ -3,7 +3,7 @@ package brachy.modularui.value.sync;
 import brachy.modularui.api.IPacketWriter;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widget.WidgetTree;
-import brachy.modularui.widgets.DynamicSyncedWidget;
+import brachy.modularui.widgets.dynamic.IDynamicHandler;
 
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * This sync handler is used to update a widget dynamically. The update can be called from client and server side.
  * To use it add a widget provider with {@link #widgetProvider(IWidgetProvider)} and link this sync handler to a
- * {@link DynamicSyncedWidget DynamicSyncedWidget}. When you want the widget to be
+ * {@link brachy.modularui.widgets.dynamic.DynamicWidget DynamicWidget}. When you want the widget to be
  * updated call
  * {@link #notifyUpdate(IPacketWriter)}. The passed in packed writer will write a packet, which can the be read inside
  * the widget provider.
@@ -24,13 +24,17 @@ import java.util.function.Supplier;
  * {@link ISyncRegistrar#getOrCreateSyncHandler(String, int, Class, Supplier)}.
  */
 @ApiStatus.Obsolete
-public class DynamicSyncHandler extends SyncHandler<DynamicSyncHandler> implements IDynamicSyncNotifiable {
+public class DynamicSyncHandler extends SyncHandler<DynamicSyncHandler> implements IDynamicHandler {
 
     private IWidgetProvider widgetProvider;
     private Consumer<IWidget> onWidgetUpdate;
 
     private IPacketWriter lastRejectedPacket;
     private IWidget lastRejectedWidget;
+
+    public DynamicSyncHandler() {
+        allowC2S();
+    }
 
     @Override
     public void readOnClient(int id, FriendlyByteBuf buf) {
@@ -112,7 +116,7 @@ public class DynamicSyncHandler extends SyncHandler<DynamicSyncHandler> implemen
      * {@link PanelSyncManager#getOrCreateSyncHandler(String, int, Class, Supplier)}. Returning null in the function
      * will not update the widget.
      * On client side the result is handed over to a linked
-     * {@link DynamicSyncedWidget}.
+     * {@link brachy.modularui.widgets.dynamic.DynamicWidget DynamicWidget}.
      *
      * @param widgetProvider the widget creator function
      * @return this
@@ -124,7 +128,7 @@ public class DynamicSyncHandler extends SyncHandler<DynamicSyncHandler> implemen
     }
 
     /**
-     * An internal function which is used to link the {@link DynamicSyncedWidget}.
+     * An internal function which is used to link the {@link brachy.modularui.widgets.dynamic.DynamicWidget DynamicWidget}.
      */
     @ApiStatus.Internal
     @Override

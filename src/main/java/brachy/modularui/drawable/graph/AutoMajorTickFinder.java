@@ -7,6 +7,7 @@ public class AutoMajorTickFinder implements MajorTickFinder {
 
     @Getter
     private final boolean autoAdjust;
+    @Getter
     @Setter
     private double multiple = 10;
 
@@ -21,6 +22,9 @@ public class AutoMajorTickFinder implements MajorTickFinder {
 
     @Override
     public double[] find(double min, double max, double[] ticks) {
+        if (this.autoAdjust) {
+            calculateAutoTickMultiple(min, max);
+        }
         int s = (int) Math.ceil((max - min) / multiple) + 2;
         if (s > ticks.length) ticks = new double[s];
         double next = (Math.floor(min / multiple) * multiple);
@@ -36,7 +40,7 @@ public class AutoMajorTickFinder implements MajorTickFinder {
         return ticks;
     }
 
-    void calculateAutoTickMultiple(double min, double max) {
+    private void calculateAutoTickMultiple(double min, double max) {
         double step = (max - min) / 5;
         if (step < 1) {
             int significantPlaces = (int) Math.abs(Math.log10(step)) + 2;

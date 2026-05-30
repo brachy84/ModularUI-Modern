@@ -171,6 +171,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
         private EqualityTest<T> equals;
         private ICopy<T> copy;
         private boolean nullable;
+        private boolean allowC2S;
 
         private Builder(Class<T> type) {
             this.type = type;
@@ -309,7 +310,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
 
         /**
          * Sets the value to be nullable. This wraps all the used functions into null safe variants. This only for convenience.
-         * Manually having to consider nullability inside all the function is cumbersome. This setter is a shortcut.
+         * Manually having to consider nullability inside all the functions is cumbersome. This setter is a shortcut.
          * It is opt-in since, it creates a very minor overhead in the serializer and deserializer.
          * <p><b>This setter is optional!</b></p>
          *
@@ -317,6 +318,11 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          */
         public Builder<T> nullable() {
             this.nullable = true;
+            return this;
+        }
+
+        public Builder<T> allowC2S() {
+            this.allowC2S = true;
             return this;
         }
 
@@ -328,7 +334,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @throws IllegalArgumentException if the value type is null and the getter returns null
          */
         public GenericSyncValue<T> build() {
-            return new GenericSyncValue<>(type, getter, setter, deserializer, serializer, equals, copy, nullable);
+            return new GenericSyncValue<>(type, getter, setter, deserializer, serializer, equals, copy, nullable).allowC2S(this.allowC2S);
         }
     }
 }
