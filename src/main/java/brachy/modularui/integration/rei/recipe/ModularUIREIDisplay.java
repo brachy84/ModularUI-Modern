@@ -20,6 +20,7 @@ import brachy.modularui.widgets.slot.ItemSlot;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
@@ -134,8 +135,7 @@ public class ModularUIREIDisplay implements Display {
                 if (tooltip.tooltip().getRichText() instanceof RichText richText) {
                     var textList = richText.getAsText();
                     entryWidget.tooltipProcessor(text -> {
-                        // FIXME this is stupid
-                        textList.forEach(line -> line.map(text::add, text::add));
+                        textList.forEach(line -> line.map(t -> text.add((Component) t), text::add));
                         return text;
                     });
                 }

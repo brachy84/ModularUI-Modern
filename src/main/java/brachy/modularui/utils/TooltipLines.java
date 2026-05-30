@@ -134,6 +134,9 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
             lines.get(i).index++;
         }
         s.ifLeft(ft -> {
+            if (!(ft instanceof Component)) {
+                throw new IllegalArgumentException("Tooltip text must be components");
+            }
             this.elements.add(elementIndex, ft);
             this.lastElementIndex++;
         });
@@ -151,6 +154,11 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
     @Override
     public Either<FormattedText, TooltipComponent> set(int index, Either<FormattedText, TooltipComponent> element) {
         Line line = lines.get(index);
+        element.ifLeft(ft -> {
+            if (!(ft instanceof Component)) {
+                throw new IllegalArgumentException("Tooltip text must be components");
+            }
+        });
         if (line.length == 1) {
             this.elements.set(line.index, element);
             this.lines.set(index, new Line(element, line.index, line.length));
