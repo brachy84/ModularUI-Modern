@@ -5,7 +5,6 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.widget.IWidget;
-
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import com.mojang.serialization.Codec;
