@@ -13,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
 @ApiStatus.Internal
@@ -63,7 +64,11 @@ public class Unit {
     }
 
     public void copyPropertiesOf(Unit other) {
-        this.state = other.state;
+        copyPropertiesOf(other, false);
+    }
+
+    private void copyPropertiesOf(Unit other, boolean copyState) {
+        if (copyState) this.state = other.state;
         this.autoAnchor = other.autoAnchor;
         this.value = other.value;
         this.valueSupplier = other.valueSupplier;
@@ -107,6 +112,31 @@ public class Unit {
 
     public boolean isUnused() {
         return this.state == State.UNUSED;
+    }
+
+    public boolean isEqual(Unit o) {
+        return o != null &&
+                this.autoAnchor == o.autoAnchor &&
+                Float.compare(this.value, o.value) == 0 &&
+                Float.compare(this.anchor, o.anchor) == 0 &&
+                this.offset == o.offset &&
+                this.measure == o.measure &&
+                this.valueSupplier == o.valueSupplier &&
+                this.state == o.state;
+    }
+
+    public static boolean areEqual(Unit a, Unit b) {
+        return a == null ? b == null : a.isEqual(b);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && obj.getClass() == Unit.class && isEqual((Unit) obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(autoAnchor, value, valueSupplier, measure, anchor, offset, state);
     }
 
     public enum Measure implements StringRepresentable {

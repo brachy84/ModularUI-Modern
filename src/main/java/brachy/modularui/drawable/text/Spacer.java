@@ -3,9 +3,9 @@ package brachy.modularui.drawable.text;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.screen.viewport.GuiContext;
 
+import net.minecraft.client.gui.Font;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.gui.Font;
 
 import lombok.Getter;
 

@@ -13,10 +13,9 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.ObjectValue;
 import brachy.modularui.widget.Widget;
 
-import lombok.Getter;
-
 import net.minecraft.world.item.ItemStack;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements IngredientProvider<ItemStack> {

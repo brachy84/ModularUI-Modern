@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Handles merging widget theme JSONs into a single one and inherits values properly
+ *
  * @param <T>
  */
 public class WidgetThemeMerger<T extends WidgetTheme> {

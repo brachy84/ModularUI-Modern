@@ -1,12 +1,12 @@
 package brachy.modularui.utils.serialization.codec;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * A {@link Codec} that can decode mutable field to an existing instance.

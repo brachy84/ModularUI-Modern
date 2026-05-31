@@ -1,16 +1,14 @@
 package brachy.modularui.drawable.progress;
 
 import brachy.modularui.api.drawable.IDrawable;
-
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.math.MathUtils;
-
 import brachy.modularui.widgets.ProgressWidget;
 
-import lombok.Getter;
-
 import net.minecraft.Util;
+
+import lombok.Getter;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

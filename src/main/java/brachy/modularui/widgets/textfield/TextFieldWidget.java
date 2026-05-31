@@ -2,8 +2,8 @@ package brachy.modularui.widgets.textfield;
 
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.IStringValue;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.ITooltip;
@@ -51,7 +51,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     public double parse(String num) {
         if (!this.acceptsExpression) {
             try {
-                return NumberFormat.AMOUNT_TEXT.format.parse(num).doubleValue();
+                return NumberFormat.AMOUNT_TEXT.format().parse(num).doubleValue();
             } catch (ParseException ex) {
                 this.mathFailMessage = "Unable to parse number.";
                 return 0.0;

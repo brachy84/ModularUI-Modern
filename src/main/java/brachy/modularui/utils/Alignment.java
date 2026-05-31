@@ -86,6 +86,17 @@ public class Alignment {
         return Objects.hash(x, y);
     }
 
+    @Override
+    public String toString() {
+        if (this.name != null) {
+            return "Alignment{" + this.name + "}";
+        }
+        return "Alignment{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
+
     /**
      * Defines how elements should be aligned on the main axis.
      * In a row this would mean the x coordinates.

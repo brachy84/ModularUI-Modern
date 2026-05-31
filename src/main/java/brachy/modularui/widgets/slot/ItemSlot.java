@@ -19,8 +19,6 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.sync.ItemSlotSyncHandler;
 import brachy.modularui.widget.Widget;
 
-import lombok.Getter;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -33,6 +31,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

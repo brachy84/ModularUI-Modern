@@ -12,14 +12,12 @@ import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
-
-import lombok.ToString;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.joml.Matrix4f;
 

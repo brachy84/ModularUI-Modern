@@ -3,6 +3,9 @@ package brachy.modularui.core.mixins.common;
 import brachy.modularui.ModularUI;
 import brachy.modularui.drawable.text.ModularComponent;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,11 +13,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-
-import net.minecraft.network.chat.Component;
-
-import net.minecraft.network.chat.MutableComponent;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

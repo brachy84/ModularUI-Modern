@@ -14,11 +14,9 @@ import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.CharMatcher;
-
 import com.mojang.serialization.Codec;
 
+import com.google.common.base.CharMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -9,12 +9,11 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.widget.Widget;
 
-import lombok.Getter;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import com.mojang.blaze3d.platform.InputConstants;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

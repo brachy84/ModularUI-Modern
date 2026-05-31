@@ -7,17 +7,15 @@ import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.Widget;
 
-import lombok.ToString;
-
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;

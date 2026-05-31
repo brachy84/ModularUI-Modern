@@ -26,7 +26,8 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
     @Setter
     public boolean playClickSound = true;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private GuiContext context;
 
     public InteractableIcon(IIcon icon) {

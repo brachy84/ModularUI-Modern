@@ -6,12 +6,11 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.widget.sizer.Box;
 
-import lombok.Getter;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientTooltipComponentIcon implements IIcon {

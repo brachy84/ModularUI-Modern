@@ -10,9 +10,9 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Interpolation;
 
-import lombok.Getter;
-
 import net.minecraft.network.chat.Component;
+
+import lombok.Getter;
 
 public class ScrollingTextWidget extends TextWidget<ScrollingTextWidget> {
 

@@ -5,27 +5,20 @@ import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
-
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.widget.SlotWidget;
-
-import dev.emi.emi.api.widget.TankWidget;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-
 import net.minecraftforge.fluids.FluidStack;
 
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.widget.SlotWidget;
+import dev.emi.emi.api.widget.TankWidget;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental

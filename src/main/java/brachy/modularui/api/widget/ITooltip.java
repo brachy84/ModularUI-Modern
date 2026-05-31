@@ -1,8 +1,8 @@
 package brachy.modularui.api.widget;
 
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.drawable.ITextLine;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.utils.Alignment;
 

@@ -16,8 +16,6 @@ import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
 
-import lombok.Getter;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,6 +31,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.ModList;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +54,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     private FluidSlotSyncHandler syncHandler;
 
     @Getter private boolean alwaysShowFull = true;
+
     public FluidSlot() {
         tooltip().autoUpdate(true);
         tooltipBuilder(this::addTooltip);

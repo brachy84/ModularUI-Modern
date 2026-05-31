@@ -16,7 +16,6 @@ import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class ModularNetworkSide {

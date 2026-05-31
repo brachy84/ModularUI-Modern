@@ -9,8 +9,6 @@ import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
-import lombok.ToString;
-
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -22,6 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +59,8 @@ public class UITexture implements IDrawable {
     private static final String PNG_SUFFIX = ".png";
 
     @ToString.Include
-    @Getter public final ResourceLocation location;
+    @Getter
+    public final ResourceLocation location;
     @Getter public final float u0, v0, u1, v1;
     @Getter
     @Nullable

@@ -43,57 +43,51 @@ public class NumberFormat {
         return new ParamsBuilder();
     }
 
-    public static class Params {
+    public record Params(DecimalFormat format, int maxLength, boolean considerOnlyDecimalsForLength,
+                         boolean considerDecimalSeparatorForLength, boolean considerMinusForLength, boolean considerSuffixForLength,
+                         boolean spaceAfterNumber) {
 
-        public final DecimalFormat format;
-        public final int maxLength;
-        public final boolean considerOnlyDecimalsForLength;
-        public final boolean considerDecimalSeparatorForLength;
-        public final boolean considerMinusForLength;
-        public final boolean considerSuffixForLength;
-        public final boolean spaceAfterNumber;
+            public Params(DecimalFormat format, int maxLength, boolean considerOnlyDecimalsForLength, boolean considerDecimalSeparatorForLength,
+                          boolean considerMinusForLength, boolean considerSuffixForLength, boolean spaceAfterNumber) {
+                this.format = format;
+                this.maxLength = maxLength;
+                this.considerOnlyDecimalsForLength = considerOnlyDecimalsForLength;
+                this.considerDecimalSeparatorForLength = considerDecimalSeparatorForLength;
+                this.considerMinusForLength = considerMinusForLength;
+                this.considerSuffixForLength = considerSuffixForLength;
+                this.spaceAfterNumber = spaceAfterNumber;
+                if (!this.considerOnlyDecimalsForLength && this.maxLength < 4) {
+                    throw new IllegalArgumentException("Max length must be at least 4 characters");
+                }
+            }
 
-        public Params(DecimalFormat format, int maxLength, boolean considerOnlyDecimalsForLength, boolean considerDecimalSeparatorForLength,
-                      boolean considerMinusForLength, boolean considerSuffixForLength, boolean spaceAfterNumber) {
-            this.format = format;
-            this.maxLength = maxLength;
-            this.considerOnlyDecimalsForLength = considerOnlyDecimalsForLength;
-            this.considerDecimalSeparatorForLength = considerDecimalSeparatorForLength;
-            this.considerMinusForLength = considerMinusForLength;
-            this.considerSuffixForLength = considerSuffixForLength;
-            this.spaceAfterNumber = spaceAfterNumber;
-            if (!this.considerOnlyDecimalsForLength && this.maxLength < 4) {
-                throw new IllegalArgumentException("Max length must be at least 4 characters");
+            public ParamsBuilder copyToBuilder() {
+                DecimalFormat format = (DecimalFormat) this.format.clone();
+                format.setMinimumFractionDigits(this.format.getMinimumFractionDigits());
+                format.setMaximumFractionDigits(this.format.getMaximumFractionDigits());
+                format.setMinimumIntegerDigits(this.format.getMinimumIntegerDigits());
+                format.setMaximumIntegerDigits(this.format.getMaximumIntegerDigits());
+                format.setRoundingMode(this.format.getRoundingMode());
+                format.setGroupingSize(this.format.getGroupingSize());
+                format.setGroupingUsed(this.format.isGroupingUsed());
+                return new ParamsBuilder()
+                        .format(format)
+                        .maxLength(this.maxLength)
+                        .considerOnlyDecimalsForLength(this.considerOnlyDecimalsForLength)
+                        .considerDecimalSeparatorForLength(this.considerDecimalSeparatorForLength)
+                        .considerMinusForLength(this.considerMinusForLength)
+                        .considerSuffixForLength(this.considerSuffixForLength)
+                        .spaceAfterNumber(this.spaceAfterNumber);
+            }
+
+            public String format(double number) {
+                return NumberFormat.format(number, this);
+            }
+
+            public String format(BigDecimal number) {
+                return NumberFormat.format(number, this);
             }
         }
-
-        public ParamsBuilder copyToBuilder() {
-            DecimalFormat format = (DecimalFormat) this.format.clone();
-            format.setMinimumFractionDigits(this.format.getMinimumFractionDigits());
-            format.setMaximumFractionDigits(this.format.getMaximumFractionDigits());
-            format.setMinimumIntegerDigits(this.format.getMinimumIntegerDigits());
-            format.setMaximumIntegerDigits(this.format.getMaximumIntegerDigits());
-            format.setRoundingMode(this.format.getRoundingMode());
-            format.setGroupingSize(this.format.getGroupingSize());
-            format.setGroupingUsed(this.format.isGroupingUsed());
-            return new ParamsBuilder()
-                    .format(format)
-                    .maxLength(this.maxLength)
-                    .considerOnlyDecimalsForLength(this.considerOnlyDecimalsForLength)
-                    .considerDecimalSeparatorForLength(this.considerDecimalSeparatorForLength)
-                    .considerMinusForLength(this.considerMinusForLength)
-                    .considerSuffixForLength(this.considerSuffixForLength)
-                    .spaceAfterNumber(this.spaceAfterNumber);
-        }
-
-        public String format(double number) {
-            return NumberFormat.format(number, this);
-        }
-
-        public String format(BigDecimal number) {
-            return NumberFormat.format(number, this);
-        }
-    }
 
     public static class ParamsBuilder {
 

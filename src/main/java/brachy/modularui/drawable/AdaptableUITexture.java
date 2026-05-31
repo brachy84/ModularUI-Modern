@@ -2,23 +2,12 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.screen.viewport.GuiContext;
 
-import brachy.modularui.utils.Color;
-
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import lombok.Getter;
-
-import lombok.experimental.Accessors;
-
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import com.google.gson.JsonObject;
-
-import net.minecraft.util.ExtraCodecs;
-
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.joml.Matrix4f;
 
 import java.util.Objects;

@@ -4,8 +4,8 @@ import brachy.modularui.GTRenderTypes;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.math.DAM;
 import brachy.modularui.utils.Interpolations;
+import brachy.modularui.utils.math.DAM;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;

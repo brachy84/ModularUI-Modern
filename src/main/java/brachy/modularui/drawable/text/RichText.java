@@ -40,8 +40,8 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
 
     private static final TextRenderer renderer = new TextRenderer();
 
-    // TODO fuck this
-    private static final Decoder<Object> RICH_ELEMENT_DECODER = CodecUtil.optionsDecoder(Text.CODEC.codec(), ExtraCodecs.COMPONENT,
+    private static final Decoder<Object> RICH_ELEMENT_DECODER = CodecUtil.optionsDecoder(
+            ModularComponent.CODEC.codec(), ExtraCodecs.COMPONENT,
             Spacer.CODEC_MAP.codec(), Codec.STRING, IDrawable.CODEC);
     private static final Encoder<Object> RICH_ELEMENT_ENCODER = new Encoder<>() {
         @Override
@@ -111,8 +111,6 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     private List<Object> getElementsForCodec() {
         return this.elements;
     }
-
-    ;
 
     private void clearComponents() {
         if (this.componentList != null) {

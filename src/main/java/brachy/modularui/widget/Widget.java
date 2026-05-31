@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -893,5 +894,29 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Override
     public W getThis() {
         return (W) this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != Widget.class) return false;
+        return isEqual((Widget<?>) obj);
+    }
+
+    public boolean isEqual(Widget<?> o) {
+        return o != null &&
+                Objects.equals(getName(), o.getName()) &&
+                isEnabled() == o.isEnabled() &&
+                Objects.equals(this.syncKey, o.syncKey) &&
+                this.disableThemeBackground == o.disableThemeBackground &&
+                this.disableHoverThemeBackground == o.disableHoverThemeBackground &&
+                Objects.equals(this.shadow, o.shadow) &&
+                Objects.equals(this.background, o.background) &&
+                Objects.equals(this.hoverBackground, o.hoverBackground) &&
+                Objects.equals(this.overlay, o.overlay) &&
+                Objects.equals(this.hoverOverlay, o.hoverOverlay) &&
+                this.widgetThemeOverride == o.widgetThemeOverride &&
+                this.excludeAreaInRecipeViewer == o.excludeAreaInRecipeViewer &&
+                Objects.equals(this.tooltip, o.tooltip) &&
+                resizer().isEqual(o.resizer());
     }
 }

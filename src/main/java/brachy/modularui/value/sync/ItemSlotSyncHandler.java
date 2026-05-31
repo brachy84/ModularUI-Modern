@@ -5,7 +5,6 @@ import brachy.modularui.widgets.slot.PlayerSlotType;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;

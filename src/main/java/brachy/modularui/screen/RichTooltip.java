@@ -17,26 +17,22 @@ import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.sizer.Area;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
-
-import com.mojang.datafixers.util.Either;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
@@ -66,7 +61,8 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     private final RichText text = new RichText();
     @Setter
     private Consumer<Area> parent;
-    @Setter @Getter
+    @Setter
+    @Getter
     private Pos pos = null;
     private Consumer<RichTooltip> tooltipBuilder;
     @Getter

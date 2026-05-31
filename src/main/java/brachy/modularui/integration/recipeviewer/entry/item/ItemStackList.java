@@ -1,8 +1,8 @@
 package brachy.modularui.integration.recipeviewer.entry.item;
 
-import lombok.Getter;
-
 import net.minecraft.world.item.ItemStack;
+
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;

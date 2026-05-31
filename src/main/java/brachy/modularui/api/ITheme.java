@@ -6,7 +6,6 @@ import brachy.modularui.theme.TextFieldTheme;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.theme.WidgetThemeKey;
-import brachy.modularui.utils.serialization.codec.CodecUtil;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -16,9 +15,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

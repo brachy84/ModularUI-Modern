@@ -7,9 +7,6 @@ import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 
 import lombok.Getter;

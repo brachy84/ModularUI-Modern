@@ -161,7 +161,7 @@ public class RichTextCompiler {
             for (Object o : this.currentLine) {
                 if (o instanceof FormattedCharSequence fcs) {
                     fcsList.add(fcs);
-                } else  {
+                } else {
                     this.lines.add(new ComposedLine(this.currentLine, x, h));
                     this.currentLine = new ArrayList<>();
                     return;

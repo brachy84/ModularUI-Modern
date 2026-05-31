@@ -7,17 +7,15 @@ import brachy.modularui.screen.ContainerScreenWrapper;
 import brachy.modularui.screen.ModularContainerMenu;
 import brachy.modularui.screen.ScreenWrapper;
 
-import mezz.jei.api.helpers.IJeiHelpers;
-
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 

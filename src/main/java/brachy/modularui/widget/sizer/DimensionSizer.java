@@ -421,7 +421,6 @@ public class DimensionSizer {
             }
         }
         ret.reset();
-        System.out.printf("Changing Unit %s of axis %s to %s\n", ret.state, this.axis, newState);
         ret.state = newState;
         this.next = other;
         return ret;
@@ -496,5 +495,18 @@ public class DimensionSizer {
         if (sizer.end != null) getEnd(null).copyPropertiesOf(sizer.end);
         if (sizer.size != null) getSize(null).copyPropertiesOf(sizer.size);
         this.coverChildrenMinSize = sizer.coverChildrenMinSize;
+    }
+
+    public boolean isEqual(DimensionSizer o) {
+        return o != null &&
+                this.axis == o.axis &&
+                Unit.areEqual(this.start, o.start) &&
+                Unit.areEqual(this.end, o.end) &&
+                Unit.areEqual(this.size, o.size) &&
+                this.coverChildrenMinSize == o.coverChildrenMinSize;
+    }
+
+    public static boolean areEqual(DimensionSizer a, DimensionSizer b) {
+        return a == null ? b == null : a.isEqual(b);
     }
 }

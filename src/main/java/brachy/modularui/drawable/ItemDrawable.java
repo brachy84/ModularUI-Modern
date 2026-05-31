@@ -6,8 +6,6 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
-import lombok.ToString;
-
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @ToString
 @Accessors(fluent = true, chain = true)

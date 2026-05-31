@@ -4,7 +4,6 @@ import brachy.modularui.animation.Animator;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.Scrollbar;
-import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Interpolation;

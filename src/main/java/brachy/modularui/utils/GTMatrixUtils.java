@@ -1,6 +1,7 @@
 package brachy.modularui.utils;
 
 import brachy.modularui.utils.math.MathUtils;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

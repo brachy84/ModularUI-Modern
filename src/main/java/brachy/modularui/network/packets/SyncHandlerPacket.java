@@ -5,7 +5,6 @@ import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.network.NetworkHandler;
 import brachy.modularui.utils.NetworkUtils;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;

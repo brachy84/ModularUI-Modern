@@ -251,6 +251,32 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
         return DataResult.error(() -> "Instance can not be created since no instance decoder or wrapped codec was provided.");
     }
 
+    public String convertToString(T instance, boolean pretty) {
+        return convertToString(instance, pretty ? 0 : -1);
+    }
+
+    String convertToString(T instance, int indent) {
+        if (instance == null) return "null";
+        StringBuilder b = new StringBuilder();
+        b.append(instance.getClass().getSimpleName())
+                .append(" {");
+        if (indent >= 0) b.append("\n");
+        forEachField(f -> {
+            if (indent >= 0) b.append("  ".repeat(indent + 1));
+            f.convertToString(instance, b, indent + 1);
+            b.append(",");
+            if (indent >= 0) b.append('\n');
+            else b.append(" ");
+        });
+        b.deleteCharAt(b.length() - 2);
+        if (indent < 0) {
+            b.deleteCharAt(b.length() - 1);
+        } else {
+            b.append("  ".repeat(indent));
+        }
+        return b.append("}").toString();
+    }
+
     public record MutableCodecCodec<A>(MutableObjectCodec<A> codec) implements MutableCodec<A> {
 
         @Override

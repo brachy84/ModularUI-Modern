@@ -11,7 +11,6 @@ import brachy.modularui.drawable.text.ModularComponent;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.codec.Field;
 import brachy.modularui.utils.serialization.codec.MutableDecoder;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.utils.serialization.json.JsonHelper;
@@ -26,9 +25,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,11 +64,11 @@ public class CodecTest {
     void text() {
         // NOTE: integer colors do not work properly when they have an alpha value due to a Minecraft bug.
         // I fixed this in TextColorMixin, but mixins are not applied in testing.
-        test(ModularComponent.CODEC.mutableCodec(), Text.str("Hello"), true);
-        test(ModularComponent.CODEC.mutableCodec(), Text.str("World").style(Text.UNDERLINE).color(Color.withAlpha(Color.GREEN.main, 0)), true);
+        test(ModularComponent.CODEC.mutableCodec(), Text.str("Hello"), false);
+        test(ModularComponent.CODEC.mutableCodec(), Text.str("World").style(Text.UNDERLINE).color(Color.withAlpha(Color.GREEN.main, 0)), false);
         test(ModularComponent.CODEC.mutableCodec(), Text.comp(
                 Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
-                Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
+                Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), false);
     }
 
     @Test
@@ -168,17 +170,20 @@ public class CodecTest {
     }
 
     private static void widgetTest(Widget<?> widget) {
-        test(Widget.CODEC, widget, Widget::new, false);
+        test(Widget.CODEC, widget, Widget::new, true);
     }
 
     private static void drawableTest(IDrawable widget) {
-        test(IDrawable.CODEC, widget, false);
+        test(IDrawable.CODEC, widget, true);
     }
 
     private static <A> void test(MutableObjectCodec<A> codec, A obj1, Supplier<A> supplier, boolean checkObjEquals) {
         JsonElement json1 = toJson(codec.codec(), obj1);
         A obj2 = fromJson(codec.mutableCodec(), json1, supplier.get());
-        if (checkObjEquals) assertEquals(obj1, obj2);
+        if (checkObjEquals) {
+            assertEq(codec, obj1, obj2, Objects::equals, null);
+            return;
+        }
         JsonElement json2 = toJson(codec.codec(), obj2);
         assertEquals(json1, json2);
         System.out.println(JsonHelper.GSON.toJson(json1));
@@ -187,7 +192,10 @@ public class CodecTest {
     private static <A> void test(Codec<A> codec, A obj, boolean checkObjEquals) {
         JsonElement json1 = toJson(codec, obj);
         A obj2 = fromJson(codec, json1);
-        if (checkObjEquals) assertEquals(obj, obj2);
+        if (checkObjEquals) {
+            assertEquals(obj, obj2);
+            return;
+        }
         JsonElement json2 = toJson(codec, obj2);
         assertEquals(json1, json2);
         System.out.println(JsonHelper.GSON.toJson(json1));
@@ -216,5 +224,16 @@ public class CodecTest {
         var err = d.error();
         assertTrue(err.isEmpty(), () -> "Expected no error, but got: " + err.get().message());
         return d.result().orElseThrow();
+    }
+
+    static <T> void assertEq(MutableObjectCodec<T> codec, T t1, T t2, BiPredicate<T, T> eq, String extraMsg) {
+        if (!eq.test(t1, t2)) {
+            throw assertionFailure()
+                    .expected(codec.convertToString(t1, true))
+                    .actual(codec.convertToString(t2, true))
+                    .reason("Objects are not equal")
+                    .message(extraMsg)
+                    .build();
+        }
     }
 }

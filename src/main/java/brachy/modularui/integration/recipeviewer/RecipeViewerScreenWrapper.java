@@ -7,7 +7,6 @@ import brachy.modularui.utils.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
-import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 

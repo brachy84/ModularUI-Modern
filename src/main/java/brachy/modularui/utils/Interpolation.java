@@ -154,8 +154,8 @@ public enum Interpolation implements IInterpolation, StringRepresentable {
 
             float v = (float) Math.sin((20 * x - 11.125) * c5);
             float factor = x == 0 ? 0 : (x == 1 ? 1 :
-                    (x < 0.5 ? -((float) Math.pow(2, 20 * x - 10) * v) / 2 :
-                            ((float) Math.pow(2, -20 * x + 10) * v) / 2 + 1));
+                                         (x < 0.5 ? -((float) Math.pow(2, 20 * x - 10) * v) / 2 :
+                                          ((float) Math.pow(2, -20 * x + 10) * v) / 2 + 1));
 
             return Interpolations.lerp(a, b, factor);
         }

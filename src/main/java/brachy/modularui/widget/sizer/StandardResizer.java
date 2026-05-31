@@ -17,7 +17,6 @@ import com.mojang.serialization.Codec;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -793,5 +792,17 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
 
     private Unit getHeight() {
         return this.y.getSize(getWidget());
+    }
+
+    public boolean isEqual(StandardResizer o) {
+        return o != null &&
+                this.x.isEqual(o.x) &&
+                this.y.isEqual(o.y) &&
+                this.expanded == o.expanded &&
+                this.decoration == o.decoration;
+    }
+
+    public static boolean areEqual(StandardResizer a, StandardResizer b) {
+        return a == null ? b == null : a.isEqual(b);
     }
 }

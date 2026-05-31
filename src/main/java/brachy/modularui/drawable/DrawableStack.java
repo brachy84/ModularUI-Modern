@@ -5,8 +5,6 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 
-import lombok.ToString;
-
 import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;

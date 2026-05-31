@@ -7,8 +7,6 @@ import brachy.modularui.api.UIFactory;
 import brachy.modularui.factory.GuiData;
 import brachy.modularui.factory.PosGuiData;
 
-import lombok.experimental.Accessors;
-
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.IntFunction;

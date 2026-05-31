@@ -3,7 +3,6 @@ package brachy.modularui.utils.serialization.network;
 import brachy.modularui.utils.EqualityTest;
 import brachy.modularui.utils.NetworkUtils;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.fluids.FluidStack;
 
 import io.netty.buffer.ByteBuf;
@@ -156,6 +156,7 @@ public class ByteBufAdapters {
                                                            @Nullable EqualityTest<T> comparator) {
         return makeAdapter(deserializer, memberSerializer.asBasic(), comparator);
     }
+
     public static <T> IByteBufAdapter<T> makeAdapterFromCodec(@NotNull Codec<T> codec, @NotNull EqualityTest<T> equals) {
         return new IByteBufAdapter<>() {
 

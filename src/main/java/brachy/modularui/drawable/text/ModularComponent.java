@@ -230,7 +230,7 @@ public class ModularComponent extends MutableComponent implements Text {
         if (this == obj) return true;
         if (!(obj instanceof ModularComponent other)) return false;
         return super.equals(other) && this.alignment.equals(other.alignment) && Float.compare(this.scale, other.scale) == 0 &&
-                Objects.equals(this.shadow, other.shadow) && this.dynamicColor.equals(other.dynamicColor);
+                Objects.equals(this.shadow, other.shadow) && Objects.equals(this.dynamicColor, other.dynamicColor);
     }
 
     @Override

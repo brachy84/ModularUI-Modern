@@ -3,12 +3,11 @@ package brachy.modularui.integration.jei;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 
-import mezz.jei.common.input.ClickableIngredient;
-import mezz.jei.common.util.ImmutableRect2i;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import mezz.jei.common.input.ClickableIngredient;
+import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

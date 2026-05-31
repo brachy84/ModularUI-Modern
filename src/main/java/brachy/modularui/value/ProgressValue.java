@@ -1,8 +1,8 @@
 package brachy.modularui.value;
 
-import lombok.Getter;
-
 import net.minecraft.Util;
+
+import lombok.Getter;
 
 import java.util.concurrent.TimeUnit;
 

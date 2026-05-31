@@ -2,12 +2,11 @@ package brachy.modularui.drawable;
 
 import brachy.modularui.theme.WidgetTheme;
 
+import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
-
-import net.minecraft.util.ExtraCodecs;
 
 import java.util.Map;
 import java.util.Objects;

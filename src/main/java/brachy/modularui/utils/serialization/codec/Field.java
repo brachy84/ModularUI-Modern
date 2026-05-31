@@ -19,8 +19,6 @@ import java.util.function.Supplier;
 @Accessors(fluent = true, chain = true)
 public final class Field<T, V> {
 
-    public static boolean DEBUG_ENCODE_ALL = false;
-
     @Getter private final String name;
     @Getter private final FieldWriter<T, V> fieldWriter;
     @Getter private final FieldReader<T, V> fieldReader;
@@ -81,7 +79,7 @@ public final class Field<T, V> {
                 map.withErrorsFrom(DataResult.error(() -> String.format("Field '%s' is not optional, but is trying to encode a null value", this.name)));
                 return;
             }
-            if (DEBUG_ENCODE_ALL || this.encodeWhen == EncodeWhen.ALWAYS) {
+            if (this.encodeWhen == EncodeWhen.ALWAYS) {
                 value = getModifiableDefault();
                 map.add(this.name, this.codec.encodeStart(ops, value));
             }
@@ -93,7 +91,7 @@ public final class Field<T, V> {
     }
 
     public boolean shouldEncode(V value) {
-        if (DEBUG_ENCODE_ALL || this.encodeWhen == EncodeWhen.ALWAYS) return true;
+        if (this.encodeWhen == EncodeWhen.ALWAYS) return true;
         if (this.encodeWhen == EncodeWhen.NEVER) return false;
         return !hasDefault() || !Objects.equals(value, getDefault());
     }
@@ -218,6 +216,17 @@ public final class Field<T, V> {
         field.encodeWhen(this.encodeWhen);
         field.writeDefault(this.writeDefault);
         return field;
+    }
+
+    public void convertToString(T instance, StringBuilder b, int indent) {
+        b.append(this.name)
+                .append(": ");
+        V value = this.fieldReader.readField(instance);
+        if (this.codec instanceof MapCodec.MapCodecCodec<V> mcc && mcc.codec() instanceof MutableObjectCodec<V> moc) {
+            b.append(moc.convertToString(value, indent));
+        } else {
+            b.append(value);
+        }
     }
 
     public enum EncodeWhen {
