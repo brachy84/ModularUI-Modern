@@ -64,18 +64,6 @@ public class ClientProxy extends CommonProxy {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
         }
-        test(ModularComponent.CODEC.mutableCodec(), Text.comp(
-                Text.str("Hello ").color(Color.withAlpha(Color.BLUE.main, 0)),
-                Text.lang("World").scale(1.5f)).alignment(Alignment.BottomCenter), true);
-    }
-
-    private static <A> void test(Codec<A> codec, A obj, boolean checkObjEquals) {
-        JsonElement json1 = JsonHelper.toJson(codec, obj);
-        A obj2 = JsonHelper.fromJson(codec, json1);
-        if (checkObjEquals) ModularUI.LOGGER.info("Equals: {}", Objects.equals(obj, obj2));
-        JsonElement json2 = JsonHelper.toJson(codec, obj2);
-        ModularUI.LOGGER.info("Equals: {}", Objects.equals(json1, json2));
-        ModularUI.LOGGER.info(JsonHelper.GSON.toJson(json1));
     }
 
     private void onRegisterClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
