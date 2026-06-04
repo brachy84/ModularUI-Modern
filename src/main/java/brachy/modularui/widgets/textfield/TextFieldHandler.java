@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -99,9 +98,8 @@ public class TextFieldHandler {
                 this.renderer.setSimulate(false);
                 this.scrollArea.getScrollX().setScrollSize((int) (this.renderer.getLastWidth() + 0.5f));
                 if (this.scrollArea.getScrollX().isScrollBarActive(this.scrollArea)) {
-                    String line = this.text.get(main.y);
                     int scrollTo = (int) this.renderer
-                            .getPosOf(this.renderer.measureStringLines(Collections.singletonList(line)), main).x;
+                            .getPosOf(this.renderer.measureStringLines(this.text), main).x;
                     scrollTo -= this.scrollArea.getScrollX().getFullVisibleSize(this.scrollArea) / 2;
                     if (animate) {
                         this.scrollArea.getScrollX().animateTo(this.scrollArea, scrollTo);
