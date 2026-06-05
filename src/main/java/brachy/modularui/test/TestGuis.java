@@ -11,6 +11,7 @@ import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.client.schemarenderer.BlockHighlight;
 import brachy.modularui.drawable.FluidDrawable;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.GuiTextures;
@@ -413,7 +414,11 @@ public class TestGuis extends CustomModularScreen {
                 .build();
 
         var panel = ModularPanel.defaultPanel("main").size(170);
-        panel.child(new SchemaWidget(new SchemaRenderer(schema).rayTracing(true))
+        panel.child(new SchemaWidget(new SchemaRenderer(schema)
+                        .rayTracing(true)
+                        .highlightRenderer(new BlockHighlight(Color.withAlpha(Color.RED.main, 0.5f))
+                                .allSides(true)
+                                .thickness(0.1f)))
                         .full())
                 .child(new SchemaWidget.LayerButton(schema, 0, 3)
                         .bottom(1)

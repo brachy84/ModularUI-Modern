@@ -27,5 +27,7 @@
     "modularui.debug.slot_number": "§7Slot Number: §3%d",
     "modularui.debug.shift_click_priority": "§7Shift-Click Priority: §3%d",
     "modularui.debug.disabled": "§cDISABLED",
-    "modularui.debug.hovered": "§7Hovered: §6%s"
+    "modularui.debug.hovered": "§7Hovered: §6%s",
+    "modularui.debug.schema.raytrace": "§7Raytrace: §6%s§7 at §3%d§7, §3%d§7, §3%d",
+    "modularui.debug.schema.debug": "§7Depth: §3%d§7, OpenGL pos: §3%d§7, §3%d"
 }

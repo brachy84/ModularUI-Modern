@@ -632,25 +632,6 @@ public class ClientScreenHandler {
             graphics.pose().popPose();
             locatedHovered.unapplyMatrix(context);
             if (showHovered) {
-                if (hovered instanceof SchemaWidget sw) {
-                    float depth = sw.getSchemaRenderer().depth();
-                    s = "Depth, mx, my: %f, %d, %d".formatted(depth, sw.getSchemaRenderer().mx(), sw.getSchemaRenderer().my());
-                    GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
-                    lineY -= shift;
-
-                    var res = sw.getSchemaRenderer().lastRayTrace();
-                    if (res != null) {
-                        String block = "miss";
-                        if (res.getType() == HitResult.Type.BLOCK) {
-                            var bs = sw.getSchemaRenderer().schema().getLevel().getBlockState(res.getBlockPos());
-                            block = bs.getBlock().getName().getString();
-                        }
-                        s = "Raytrace: %s at %d %d %d".formatted(block, res.getBlockPos().getX(), res.getBlockPos().getY(), res.getBlockPos().getZ());
-                        GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
-                        lineY -= shift;
-                    }
-                }
-
                 if (ModularUIConfig.Dev.showWidgetTheme()) {
                     s = I18n.get("modularui.debug.widget_theme", hovered.getWidgetTheme(hovered.getPanel().getTheme()).key().getFullName());
                     GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
@@ -723,6 +704,30 @@ public class ClientScreenHandler {
                     }
                     s = I18n.get("modularui.debug.hovered", hoveredElement);
                     GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
+                } else if (hovered instanceof SchemaWidget sw) {
+                    var r = sw.getSchemaRenderer();
+                    var res = r.lastRayTrace();
+                    if (r.captureDebugInfo() || res != null) {
+                        drawSegmentLine(graphics, lineY -= 4, scale, textColor);
+                        lineY -= 10;
+                    }
+                    if (r.captureDebugInfo()) {
+                        float depth = sw.getSchemaRenderer().depth();
+                        s = I18n.get("modularui.debug.schema.debug", depth, r.openGLMouseX(), r.openGLMouseY());
+                        GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
+                        lineY -= shift;
+                    }
+                    if (res != null) {
+                        String block = "Miss";
+                        if (res.getType() == HitResult.Type.BLOCK) {
+                            var bs = r.schema().getLevel().getBlockState(res.getBlockPos());
+                            block = bs.getBlock().getName().getString();
+                        }
+                        s = I18n.get("modularui.debug.schema.raytrace", block,
+                                res.getBlockPos().getX(), res.getBlockPos().getY(), res.getBlockPos().getZ());
+                        GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
+                        lineY -= shift;
+                    }
                 }
             }
         }

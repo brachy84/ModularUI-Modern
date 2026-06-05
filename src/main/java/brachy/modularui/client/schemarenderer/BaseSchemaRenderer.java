@@ -17,6 +17,7 @@ import brachy.modularui.widgets.SchemaWidget;
 import net.minecraft.CrashReport;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -63,6 +64,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -111,9 +113,13 @@ public class BaseSchemaRenderer implements IDrawable {
 
     private Matrix4f modelView;
     private Matrix4f projection;
+
+    @Getter
+    @Setter
+    private boolean captureDebugInfo;
     @Getter private float depth;
-    @Getter private int mx, my;
-    private List<Vector3f> pos = new ArrayList<>();
+    @Getter private int openGLMouseX, openGLMouseY;
+    private final List<Vector3f> pos = new ArrayList<>();
 
     public BaseSchemaRenderer(ISchema schema) {
         this.schema = schema;
@@ -191,7 +197,6 @@ public class BaseSchemaRenderer implements IDrawable {
 
         context.getGraphics().flush();
         context.graphicsPose().pushPose();
-        // context.getStencil().push(x, y, width, height);
 
         Window window = Minecraft.getInstance().getWindow();
         double guiScale = window.getGuiScale();
@@ -209,27 +214,56 @@ public class BaseSchemaRenderer implements IDrawable {
         if (doRayTrace()) {
             BlockHitResult result = null;
             if (Area.isInside(x, y, width, height, mouseX, mouseY)) {
-                result = rayTrace(context.getGraphics().bufferSource(), mouseX, mouseY, width, height);
+                result = rayTrace(mouseX, mouseY, width, height);
             }
             if (result == null || result.getType() != HitResult.Type.BLOCK) {
                 if (this.lastRayTrace != null) {
                     onRayTraceFailed();
                 }
             } else {
-                onSuccessfulRayTrace(context.graphicsPose(), result);
+                onSuccessfulRayTrace(createWorldRenderPose(), result);
             }
             this.lastRayTrace = result;
-            new BlockHighlight(Color.withAlpha(Color.RED.main, 0.5f)).renderHighlight(RenderSystem.getModelViewStack(), new BlockPos(3, 1, 1), null, this.camera.pos());
         }
 
         resetCamera();
         context.graphicsPose().popPose();
+
+        if (this.captureDebugInfo) {
+            drawProjectedBlockPos(context.getGraphics(), width, height);
+        }
+    }
+
+    public void drawProjectedBlockPos(GuiGraphics graphics, int width, int height) {
         for (Vector3f s : this.pos) {
             float x0 = ((s.x - this.viewport[0]) / (float) this.viewport[2]) * width;
             float y0 = (1f - ((s.y - this.viewport[1]) / (float) this.viewport[3])) * height;
-            GuiDraw.drawRect(context.getGraphics(), x0 - 1, y0 - 1, 2, 2, Color.withAlpha(Color.BLUE.main, 1f));
+            GuiDraw.drawRect(graphics, x0 - 1, y0 - 1, 2, 2, Color.withAlpha(Color.BLUE.main, 1f));
         }
-        // context.getStencil().pop();
+    }
+
+    public void drawBlockOutlines(MultiBufferSource.BufferSource bufferSource) {
+        VertexConsumer vc = bufferSource.getBuffer(RenderType.lines());
+        var ps = createWorldRenderPose();
+        for (var e : this.schema) {
+            if (!e.getValue().isAir()) {
+                var p = e.getKey();
+                LevelRenderer.renderLineBox(
+                        ps,
+                        vc,
+                        p.getX(), p.getY(), p.getZ(),
+                        p.getX() + 1, p.getY() + 1, p.getZ() + 1,
+                        1f, 0f, 0f, 1f
+                );
+            }
+        }
+        bufferSource.endBatch(RenderType.lines());
+    }
+
+    public PoseStack createWorldRenderPose() {
+        var ps = new PoseStack();
+        ps.translate(-camera.pos().x, -camera.pos().y, -camera.pos().z);
+        return ps;
     }
 
     @SuppressWarnings("deprecation")
@@ -269,28 +303,6 @@ public class BaseSchemaRenderer implements IDrawable {
             Minecraft.getInstance().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).restoreLastBlurMipmap();
             renderBlocks(RenderType.cutout());
 
-            VertexConsumer vc = bufferSource.getBuffer(RenderType.lines());
-            var ps = RenderSystem.getModelViewStack();
-            ps.pushPose();
-            ps.setIdentity();
-            ps.mulPoseMatrix(RenderSystem.getModelViewMatrix());
-            for (var e : this.schema) {
-                if (!e.getValue().isAir()) {
-                    var p = e.getKey();
-                    var m1 = this.modelView;
-                    var m2 = ps.last().pose();
-                    LevelRenderer.renderLineBox(
-                            ps,
-                            vc,
-                            p.getX(), p.getY(), p.getZ(),
-                            p.getX()+1, p.getY()+1, p.getZ()+1,
-                            1f, 0f, 0f, 1f
-                    );
-                }
-            }
-            bufferSource.endBatch(RenderType.lines());
-            ps.popPose();
-
             bufferSource.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
             bufferSource.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
             bufferSource.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
@@ -314,6 +326,10 @@ public class BaseSchemaRenderer implements IDrawable {
 
             renderBlocks(RenderType.translucent());
             renderBlocks(RenderType.tripwire());
+
+            if (this.captureDebugInfo) {
+                drawBlockOutlines(bufferSource);
+            }
         });
         RenderSystem.enableDepthTest();
     }
@@ -442,8 +458,7 @@ public class BaseSchemaRenderer implements IDrawable {
     protected void setupCamera(int width, int height) {
         // setup viewport and clear GL buffers
         int clearColor = getClearColor();
-        RenderSystem.clearColor(Color.getRedF(clearColor), Color.getGreenF(clearColor), Color.getBlueF(clearColor),
-                Color.getAlphaF(clearColor));
+        RenderSystem.clearColor(Color.getRedF(clearColor), Color.getGreenF(clearColor), Color.getBlueF(clearColor), Color.getAlphaF(clearColor));
         RenderSystem.backupProjectionMatrix();
 
         float near = 0.05f;
@@ -467,18 +482,18 @@ public class BaseSchemaRenderer implements IDrawable {
         PoseStack modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.pushPose();
         modelViewStack.setIdentity();
+
         if (isIsometric()) {
             // see GameRenderer:935
             // Vanilla uses a -2000 z translation for isometric rendering
             modelViewStack.translate(0.0f, 0.0f, -2000.0f);
         }
         MatrixUtils.lookAt(modelViewStack, this.camera.pos(), this.camera.lookAt());
-
         RenderSystem.applyModelViewMatrix();
+
         this.projection = new Matrix4f(RenderSystem.getProjectionMatrix());
         this.modelView = new Matrix4f(RenderSystem.getModelViewMatrix());
-        this.modelView.scale(0.5f);
-        //this.modelView.scale(0.5f, -0.5f, 0.5f).translate(0, 1, 0);
+        this.modelView.translate(-camera.pos().x, -camera.pos().y, -camera.pos().z);
     }
 
     protected void resetCamera() {
@@ -491,6 +506,7 @@ public class BaseSchemaRenderer implements IDrawable {
 
         // restore model view matrix
         RenderSystem.getModelViewStack().popPose();
+        //RenderSystem.getModelViewStack().popPose();
         RenderSystem.applyModelViewMatrix();
     }
 
@@ -503,79 +519,70 @@ public class BaseSchemaRenderer implements IDrawable {
      * @param height Width of the drawn framebuffer
      * @return raytrace result
      */
-    protected BlockHitResult rayTrace(MultiBufferSource.BufferSource bufferSource, int mouseX, int mouseY, int width, int height) {
-        // transform mouse pos into relative mouse pos from 0 to 1
-        float x = (float) mouseX / width;
-        float y = (float) mouseY / height;
-
-        int wx = this.viewport[0] + (int) (x * this.viewport[2]);
-        int wy = this.viewport[1] + (int) ((1.0f - y) * (this.viewport[3] - 1));
-        this.mx = wx;
-        this.my = wy;
-        this.depth = MatrixUtils.readDepth(wx, wy);
-        /*Vector3f near = screenToWorldPos(x, y, 0);
-        Vector3f far  = screenToWorldPos(x, y, 1);
-        Vector3f pos  = screenToWorldPos(x, y, depth);
-        Vector3f ray = far.sub(near, new Vector3f());
-        float t = pos.sub(near, new Vector3f()).length() / ray.length();*/
-
-        this.pos.clear();
-        var m = getTrafo(new Matrix4f());
-        /*RenderSystem.disableDepthTest();
-        VertexConsumer vc = bufferSource.getBuffer(RenderType.lines());
-        var ps = RenderSystem.getModelViewStack();
-        ps.pushPose();
-        ps.setIdentity();
-        ps.mulPoseMatrix(this.modelView);*/
-        for (var e : this.schema) {
-            if (!e.getValue().isAir()) {
-                var p = e.getKey();
-                this.pos.add(m.project(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ() + 0.5f, this.viewport, new Vector3f()));
-                //var wp = m.unproject(this.pos.get(this.pos.size()-1), this.viewport, new Vector3f());
-
-                /*var m1 = this.modelView;
-                var m2 = ps.last().pose();
-
-                LevelRenderer.renderLineBox(
-                        ps,
-                        vc,
-                        p.getX(), p.getY(), p.getZ(),
-                        p.getX()+1, p.getY()+1, p.getZ()+1,
-                        1f, 0f, 0f, 1f
-                );*/
+    protected BlockHitResult rayTrace(int mouseX, int mouseY, int width, int height) {
+        var m = getProjection();
+        if (this.captureDebugInfo) {
+            this.pos.clear();
+            for (var e : this.schema) {
+                if (!e.getValue().isAir()) {
+                    var p = e.getKey();
+                    this.pos.add(m.project(p.getX() + 0.5f, p.getY() + 0.5f, p.getZ() + 0.5f, this.viewport, new Vector3f()));
+                }
             }
         }
-        //bufferSource.endBatch(RenderType.lines());
-        //ps.popPose();
-        //Vector3f w = getTrafo(new Matrix4f()).unproject(s, this.viewport, new Vector3f());
+        var openGLPos = screenToOpenGLPos(mouseX, mouseY, width, height, 1, this.captureDebugInfo, new Vector3f());
+        this.openGLMouseX = (int) openGLPos.x;
+        this.openGLMouseY = (int) openGLPos.y;
+        this.depth = openGLPos.z;
 
-        Vector3f worldPos = screenToWorldPos(x, y, 0);
-        Vector3f target = screenToWorldPos(x, y, depth);
-        //Vector3f target = this.camera.getLookVec().mul(20).add(worldPos);
+        openGLPos.z = 0;
+        Vector3f worldPos = screenToWorldPos(m, openGLPos);
+        openGLPos.z = 1;
+        Vector3f target = screenToWorldPos(m, openGLPos);
 
-        ClipContext context = new ClipContext(new Vec3(worldPos), new Vec3(target), ClipContext.Block.OUTLINE,
+        ClipContext context = new ClipContext(new Vec3(worldPos), new Vec3(target),
+                ClipContext.Block.OUTLINE,
                 ClipContext.Fluid.ANY, null);
         return this.renderLevel.clip(context);
     }
 
-    /**
-     * Converts a relative screen space position to a world space position in the preview.
-     *
-     * @param x X pos from 0 to 1
-     * @param y Y pos from 0 to 1
-     * @return world pos
-     */
-    protected Vector3f screenToWorldPos(float x, float y, float depth) {
-        // convert relative pos to opengl pos
-        int wx = (int) (this.viewport[0] + x * this.viewport[2]);
-        int wy = (int) (this.viewport[1] + y * this.viewport[3]);
-
-        return getTrafo(new Matrix4f()).unproject(wx, wy, depth, this.viewport, new Vector3f());
+    public Vector3f screenToOpenGLPos(int x, int y, int width, int height, Vector3f dest) {
+        return screenToOpenGLPos(x, y, width, height, 0, true, dest);
     }
 
-    public Matrix4f getTrafo(Matrix4f dest) {
+    public Vector3f screenToOpenGLPos(int x, int y, int width, int height, float depth, Vector3f dest) {
+        return screenToOpenGLPos(x, y, width, height, depth, false, dest);
+    }
+
+    private Vector3f screenToOpenGLPos(int x, int y, int width, int height, float depth, boolean readDepth, Vector3f dest) {
+        float rx = (float) x / width;
+        float ry = (float) y / height;
+        dest.x = this.viewport[0] + (int) (rx * this.viewport[2]);
+        dest.y = this.viewport[1] + (int) ((1.0f - ry) * (this.viewport[3] - 1));
+        if (readDepth) depth = MatrixUtils.readDepth((int) dest.x, (int) dest.y);
+        dest.z = depth;
+        return dest;
+    }
+
+    public Vector3f screenToWorldPos(int x, int y, int screenWidth, int screenHeight) {
+        return screenToWorldPos(getProjection(), screenToOpenGLPos(x, y, screenWidth, screenHeight, new Vector3f()), new Vector3f());
+    }
+
+    private Vector3f screenToWorldPos(Matrix4f projection, Vector3f openGLPos) {
+        return screenToWorldPos(projection, openGLPos, new Vector3f());
+    }
+
+    private Vector3f screenToWorldPos(Matrix4f projection, Vector3f openGLPos, Vector3f dest) {
+        return projection.unproject(openGLPos, this.viewport, dest);
+    }
+
+    public Matrix4f getProjection() {
+        return getProjection(new Matrix4f());
+    }
+
+    public Matrix4f getProjection(Matrix4f dest) {
         if (this.modelView != null && this.projection != null) return this.projection.mul(this.modelView, dest);
-        return new Matrix4f(RenderSystem.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix());
+        return new Matrix4f(RenderSystem.getProjectionMatrix()).mul(RenderSystem.getModelViewStack().last().pose());
     }
 
     @ApiStatus.OverrideOnly
