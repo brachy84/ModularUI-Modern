@@ -4,13 +4,16 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.IUIHolder;
 import brachy.modularui.api.drawable.Text;
+import brachy.modularui.client.schemarenderer.BlockHighlight;
 import brachy.modularui.drawable.Circle;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.ItemDrawable;
+import brachy.modularui.drawable.SchemaRenderer;
 import brachy.modularui.drawable.progress.CircularProgressDrawable;
 import brachy.modularui.drawable.progress.CompositeProgress;
 import brachy.modularui.drawable.progress.ProgressDrawable;
 import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.schema.ArraySchema;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.RichTooltip;
@@ -37,6 +40,7 @@ import brachy.modularui.widgets.ItemDisplayWidget;
 import brachy.modularui.widgets.PageButton;
 import brachy.modularui.widgets.PagedWidget;
 import brachy.modularui.widgets.ProgressWidget;
+import brachy.modularui.widgets.SchemaWidget;
 import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.ToggleButton;
 import brachy.modularui.widgets.dynamic.DynamicWidget;
@@ -110,6 +114,22 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
 
     }
 
+    public ModularPanel<?> openSchemaWindow(PanelSyncManager syncManager, IPanelHandler syncHandler, PosGuiData data) {
+        var panel = ModularPanel.defaultPanel("Page 5 schema").size(140);
+        panel.child(Text.str("Schema").asWidget());
+
+        if (getLevel().isClientSide()) {
+            panel.child(new SchemaWidget(
+                            new SchemaRenderer(ArraySchema.of(data.getPlayer(), 4)
+                            )
+                                    .highlightRenderer(
+                                            new BlockHighlight(Color.withAlpha(Color.GREEN.brighter(1), 0.9f), 1 / 32f))
+                    ).size(100).center()
+            ).child(ButtonWidget.panelCloseButton());
+        }
+        return panel;
+    }
+
     @Override
     public ModularScreen createScreen(PosGuiData data, ModularPanel<?> mainPanel) {
         return new ModularScreen(ModularUI.MOD_ID, mainPanel);
@@ -120,6 +140,7 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
         //settings.customContainer(() -> new CraftingModularContainer(3, 3, this.craftingInventory));
         //settings.customGui(() -> TestGuiContainer::new);
 
+        IPanelHandler schemaButton = syncManager.syncedPanel("schemaPanel", true, (a, b) -> openSchemaWindow(a, b, guiData) );
         syncManager.registerSlotGroup("item_inv", 3);
         syncManager.registerSlotGroup(new SlotGroup("crafting", 3).setAllowSorting(false));
         IntSyncValue cycleStateValue = new IntSyncValue(() -> this.cycleState, val -> this.cycleState = val).allowC2S();
@@ -236,6 +257,10 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
                                                                 .slotGroup("item_inv")
                                                                 .build()
                                                                 .placeSortButtonsTopRightVertical())
+                                                        .child(new ButtonWidget<>() .onMousePressed((context, mouseButton) -> {
+                                                            schemaButton.openPanel();
+                                                            return true;
+                                                        }))
                                                         .child(new ButtonWidget<>()
                                                                 .height(16)
                                                                 .width(3 * 18)

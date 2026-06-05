@@ -90,7 +90,9 @@ public class BlockHighlight {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         Color.setGlColor(this.color);
         poseStack.pushPose();
-        poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        // blocks are drawn relative to the camera (CHUNK_OFFSET = -camera.pos), so the highlight has to use the
+        // same offset to line up with the rendered block it belongs to
+        poseStack.translate(pos.getX() - camera.x, pos.getY() - camera.y, pos.getZ() - camera.z);
 
         float distance = camera.distance(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
         doRender(poseStack, direction, distance);

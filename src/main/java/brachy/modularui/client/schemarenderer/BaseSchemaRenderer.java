@@ -216,10 +216,11 @@ public class BaseSchemaRenderer implements IDrawable {
                     onRayTraceFailed();
                 }
             } else {
-                onSuccessfulRayTrace(context.graphicsPose(), result);
+                // the highlight's vertices are baked CPU-side by this pose, then the position shader applies the
+                // schema's ProjMat * ModelViewMat. Pass a fresh identity pose so we don't transform twice.
+                onSuccessfulRayTrace(new PoseStack(), result);
             }
             this.lastRayTrace = result;
-            new BlockHighlight(Color.withAlpha(Color.RED.main, 0.5f)).renderHighlight(RenderSystem.getModelViewStack(), new BlockPos(3, 1, 1), null, this.camera.pos());
         }
 
         resetCamera();
@@ -270,17 +271,17 @@ public class BaseSchemaRenderer implements IDrawable {
             renderBlocks(RenderType.cutout());
 
             VertexConsumer vc = bufferSource.getBuffer(RenderType.lines());
-            var ps = RenderSystem.getModelViewStack();
-            ps.pushPose();
-            ps.setIdentity();
-            ps.mulPoseMatrix(RenderSystem.getModelViewMatrix());
+            // The line batch is flushed with the model-view already on RenderSystem's stack (MV here), and
+            // renderLineBox additionally bakes its own PoseStack into the geometry. Reusing RenderSystem's stack
+            // would therefore apply MV twice (a doubled rotation). Bake only the chunk offset T(-camera.pos) into a
+            // separate pose; combined with the MV the flush applies this yields the block transform MV * T(-camera.pos).
+            PoseStack linePose = new PoseStack();
+            linePose.translate(-camera.pos().x, -camera.pos().y, -camera.pos().z);
             for (var e : this.schema) {
                 if (!e.getValue().isAir()) {
                     var p = e.getKey();
-                    var m1 = this.modelView;
-                    var m2 = ps.last().pose();
                     LevelRenderer.renderLineBox(
-                            ps,
+                            linePose,
                             vc,
                             p.getX(), p.getY(), p.getZ(),
                             p.getX()+1, p.getY()+1, p.getZ()+1,
@@ -289,7 +290,6 @@ public class BaseSchemaRenderer implements IDrawable {
                 }
             }
             bufferSource.endBatch(RenderType.lines());
-            ps.popPose();
 
             bufferSource.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
             bufferSource.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
@@ -477,8 +477,10 @@ public class BaseSchemaRenderer implements IDrawable {
         RenderSystem.applyModelViewMatrix();
         this.projection = new Matrix4f(RenderSystem.getProjectionMatrix());
         this.modelView = new Matrix4f(RenderSystem.getModelViewMatrix());
-        this.modelView.scale(0.5f);
-        //this.modelView.scale(0.5f, -0.5f, 0.5f).translate(0, 1, 0);
+        // Blocks are drawn by the chunk shader as ProjMat * ModelViewMat * (vertex + CHUNK_OFFSET), with
+        // CHUNK_OFFSET = -camera.pos (see renderBlocks). The matrix used for ray projection/unprojection must
+        // bake in that same offset, otherwise screen<->world mapping won't line up with the rendered blocks.
+        this.modelView.translate(-camera.pos().x, -camera.pos().y, -camera.pos().z);
     }
 
     protected void resetCamera() {
@@ -549,9 +551,9 @@ public class BaseSchemaRenderer implements IDrawable {
         //ps.popPose();
         //Vector3f w = getTrafo(new Matrix4f()).unproject(s, this.viewport, new Vector3f());
 
+        // cast a ray from the near plane to the far plane through the cursor; clip() returns the first block hit
         Vector3f worldPos = screenToWorldPos(x, y, 0);
-        Vector3f target = screenToWorldPos(x, y, depth);
-        //Vector3f target = this.camera.getLookVec().mul(20).add(worldPos);
+        Vector3f target = screenToWorldPos(x, y, 1);
 
         ClipContext context = new ClipContext(new Vec3(worldPos), new Vec3(target), ClipContext.Block.OUTLINE,
                 ClipContext.Fluid.ANY, null);
@@ -566,9 +568,10 @@ public class BaseSchemaRenderer implements IDrawable {
      * @return world pos
      */
     protected Vector3f screenToWorldPos(float x, float y, float depth) {
-        // convert relative pos to opengl pos
+        // convert relative pos to opengl pos. Screen-space y is top-down, OpenGL window coords are bottom-up,
+        // so the y component has to be flipped before unprojecting.
         int wx = (int) (this.viewport[0] + x * this.viewport[2]);
-        int wy = (int) (this.viewport[1] + y * this.viewport[3]);
+        int wy = (int) (this.viewport[1] + (1.0f - y) * this.viewport[3]);
 
         return getTrafo(new Matrix4f()).unproject(wx, wy, depth, this.viewport, new Vector3f());
     }
