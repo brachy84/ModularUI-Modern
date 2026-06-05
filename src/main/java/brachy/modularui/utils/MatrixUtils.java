@@ -31,7 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class GTMatrixUtils {
+public class MatrixUtils {
 
     @SuppressWarnings("UnstableApiUsage")
     private static final ImmutableMap<Direction, Vector3fc> directionAxises = Util.make(() -> {
@@ -206,7 +206,7 @@ public class GTMatrixUtils {
      */
     public static void lookAt(PoseStack.Pose pose, Vector3fc eyePos, Vector3fc target) {
         pose.pose().lookAt(eyePos, target, MathUtils.UNIT_Y);
-        pose.normal().lookAlong(target, MathUtils.UNIT_Y);
+        pose.normal().lookAlong(target.sub(eyePos, new Vector3f()), MathUtils.UNIT_Y);
     }
 
     /**
@@ -251,7 +251,7 @@ public class GTMatrixUtils {
      */
     public static Vector3f projectScreenToWorld(int x, int y) {
         Window window = Minecraft.getInstance().getWindow();
-        return projectScreenToWorld(x, y, window.getWidth(), window.getHeight(), true);
+        return projectScreenToWorld(x, y, window.getWidth(), window.getHeight());
     }
 
     /**
@@ -262,14 +262,13 @@ public class GTMatrixUtils {
      * @param y          Y-coordinate in pixels
      * @param viewWidth  the viewport's width
      * @param viewHeight the viewport's height
-     * @param checkDepth whether to read the depth value of the targeted position
      * @return world pos
      */
-    public static Vector3f projectScreenToWorld(int x, int y, int viewWidth, int viewHeight, boolean checkDepth) {
+    public static Vector3f projectScreenToWorld(int x, int y, int viewWidth, int viewHeight) {
         // update the viewport size array
         VIEWPORT_COORDS[2] = viewWidth;
         VIEWPORT_COORDS[3] = viewHeight;
-        return projectScreenToWorld(x, y, VIEWPORT_COORDS, checkDepth);
+        return projectScreenToWorld(x, y, VIEWPORT_COORDS);
     }
 
     /**
@@ -279,22 +278,28 @@ public class GTMatrixUtils {
      * @param x          X-coordinate in pixels
      * @param y          Y-coordinate in pixels
      * @param viewport   the viewport described by {@code [x, y, width, height]}
-     * @param checkDepth whether to read the depth value of the targeted position
      * @return world pos
      */
-    public static Vector3f projectScreenToWorld(int x, int y, int[] viewport, boolean checkDepth) {
+    public static Vector3f projectScreenToWorld(int x, int y, int[] viewport) {
+       return projectScreenToWorld(x, y, viewport, 0, true);
+    }
+
+    public static Vector3f projectScreenToWorld(int x, int y, int[] viewport, float depth) {
+        return projectScreenToWorld(x, y, viewport, depth, false);
+    }
+
+    private static Vector3f projectScreenToWorld(int x, int y, int[] viewport, float depth, boolean checkDepth) {
         // read projection and model view matrices
         Matrix4f transform = new Matrix4f(RenderSystem.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix());
-
-        float depth = 1.0f;
-        if (checkDepth) {
-            // read depth under mouse
-            RenderSystem.readPixels(x, y, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, PIXEL_DEPTH_BUFFER);
-            PIXEL_DEPTH_BUFFER.rewind();
-            depth = PIXEL_DEPTH_BUFFER.getFloat();
-            PIXEL_DEPTH_BUFFER.rewind();
-        }
-
+        if (checkDepth) depth = readDepth(x, y);
         return transform.unproject(x, y, depth, viewport, new Vector3f());
+    }
+
+    public static float readDepth(int x, int y) {
+        RenderSystem.readPixels(x, y, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, PIXEL_DEPTH_BUFFER);
+        PIXEL_DEPTH_BUFFER.rewind();
+        float depth = PIXEL_DEPTH_BUFFER.getFloat();
+        PIXEL_DEPTH_BUFFER.rewind();
+        return depth;
     }
 }

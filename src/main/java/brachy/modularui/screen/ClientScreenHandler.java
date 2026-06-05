@@ -25,6 +25,7 @@ import brachy.modularui.utils.FpsCounter;
 import brachy.modularui.utils.Stencil;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.RichTextWidget;
+import brachy.modularui.widgets.SchemaWidget;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
@@ -43,6 +44,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.HitResult;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -588,6 +590,7 @@ public class ClientScreenHandler {
                 muiScreen.getContext().getRecipeViewerSettings().isEnabled(muiScreen)) {
             lineY -= 18;
         }
+
         String s = I18n.get("modularui.debug.mouse_pos", mouseX, mouseY);
         GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
         lineY -= shift;
@@ -629,6 +632,25 @@ public class ClientScreenHandler {
             graphics.pose().popPose();
             locatedHovered.unapplyMatrix(context);
             if (showHovered) {
+                if (hovered instanceof SchemaWidget sw) {
+                    float depth = sw.getSchemaRenderer().depth();
+                    s = "Depth, mx, my: %f, %d, %d".formatted(depth, sw.getSchemaRenderer().mx(), sw.getSchemaRenderer().my());
+                    GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
+                    lineY -= shift;
+
+                    var res = sw.getSchemaRenderer().lastRayTrace();
+                    if (res != null) {
+                        String block = "miss";
+                        if (res.getType() == HitResult.Type.BLOCK) {
+                            var bs = sw.getSchemaRenderer().schema().getLevel().getBlockState(res.getBlockPos());
+                            block = bs.getBlock().getName().getString();
+                        }
+                        s = "Raytrace: %s at %d %d %d".formatted(block, res.getBlockPos().getX(), res.getBlockPos().getY(), res.getBlockPos().getZ());
+                        GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
+                        lineY -= shift;
+                    }
+                }
+
                 if (ModularUIConfig.Dev.showWidgetTheme()) {
                     s = I18n.get("modularui.debug.widget_theme", hovered.getWidgetTheme(hovered.getPanel().getTheme()).key().getFullName());
                     GuiDraw.drawText(graphics, s, 5, lineY, scale, textColor, true);
