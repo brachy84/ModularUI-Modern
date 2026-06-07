@@ -131,8 +131,29 @@ public class BaseSchemaRenderer implements IDrawable {
         }
     }
 
+    public boolean isCompiling() {
+        return this.compileStatus.get() == CompileStatus.COMPILING;
+    }
+
+    public boolean isCompleted() {
+        return this.compileStatus.get() == CompileStatus.SUCCESS;
+    }
+
+    public boolean isCanceled() {
+        return this.compileStatus.get() == CompileStatus.CANCELED;
+    }
+
+    private boolean shouldDiscard(CompileStatus status) {
+        return status == CompileStatus.CANCELED || status == CompileStatus.DISABLED || status == CompileStatus.FAILED;
+    }
+
     protected void recompile() {
-        cancelCompilation();
+        if (isCompiling()) return;
+
+        if (isCanceled()) {
+            cancelCompilation();
+        }
+
         this.lastRenderCompileTask = new RenderCompileTask();
         this.compileStatus.set(CompileStatus.COMPILING);
 
@@ -146,10 +167,10 @@ public class BaseSchemaRenderer implements IDrawable {
                         Minecraft.getInstance().delayCrash(CrashReport.forThrowable(error, "Batching chunks"));
                     } else {
                         var status = result.status;
-                        if (status != CompileStatus.CANCELED && status != CompileStatus.DISABLED) {
-                            this.chunkBufferBuilders.clearAll();
-                        } else {
+                        if (shouldDiscard(status)) {
                             this.chunkBufferBuilders.discardAll();
+                        } else {
+                            this.chunkBufferBuilders.clearAll();
                         }
                         if (status == CompileStatus.SUCCESS) {
                             if (this.compiledRenderResult.get() != null) {
@@ -157,10 +178,8 @@ public class BaseSchemaRenderer implements IDrawable {
                             }
                             this.compiledRenderResult.set(result);
                         }
-                        if (this.compiledRenderResult.get() != null && this.compiledRenderResult.get().status == CompileStatus.SUCCESS) {
-                            status = CompileStatus.SUCCESS;
-                        }
                         this.compileStatus.set(status);
+                        onRendered();
                     }
                 });
     }
@@ -637,7 +656,8 @@ public class BaseSchemaRenderer implements IDrawable {
         DISABLED,
         COMPILING,
         SUCCESS,
-        CANCELED
+        CANCELED,
+        FAILED
     }
 
     protected class RenderCompileTask {
@@ -680,7 +700,11 @@ public class BaseSchemaRenderer implements IDrawable {
                     RenderType renderType = ItemBlockRenderTypes.getRenderLayer(fluidState);
                     BufferBuilder builder = chunkBufferBuilders.builder(renderType);
                     if (startedBuffers.add(renderType)) {
-                        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+                        if (builder.building()) {
+                            ModularUI.LOGGER.warn("Buffer is already building for RenderType: {}!", renderType);
+                            return CompletableFuture.completedFuture(compileResults.withStatus(CompileStatus.FAILED));
+                        }
+                        builder.begin(renderType.mode(), renderType.format());
                     }
 
                     SectionPos sectionPos = SectionPos.of(pos);
