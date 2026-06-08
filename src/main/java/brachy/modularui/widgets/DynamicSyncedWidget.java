@@ -4,8 +4,8 @@ import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.DynamicLinkedSyncHandler;
 import brachy.modularui.value.sync.DynamicSyncHandler;
-import brachy.modularui.value.sync.IDynamicSyncNotifiable;
 import brachy.modularui.widget.Widget;
+import brachy.modularui.widgets.dynamic.IDynamicHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,18 +18,18 @@ import java.util.List;
 @Deprecated(forRemoval = true)
 public class DynamicSyncedWidget<W extends DynamicSyncedWidget<W>> extends Widget<W> {
 
-    private IDynamicSyncNotifiable syncHandler;
+    private IDynamicHandler syncHandler;
     private IWidget child;
 
     @Override
     public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
-        return syncOrValue.isTypeOrEmpty(IDynamicSyncNotifiable.class);
+        return syncOrValue.isTypeOrEmpty(IDynamicHandler.class);
     }
 
     @Override
     protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
-        this.syncHandler = syncOrValue.castNullable(IDynamicSyncNotifiable.class);
+        this.syncHandler = syncOrValue.castNullable(IDynamicHandler.class);
         if (this.syncHandler != null) this.syncHandler.attachDynamicWidgetListener(this::updateChild);
     }
 
@@ -55,7 +55,7 @@ public class DynamicSyncedWidget<W extends DynamicSyncedWidget<W>> extends Widge
         }
     }
 
-    public @NotNull IDynamicSyncNotifiable getDynamicSyncHandler() {
+    public @NotNull IDynamicHandler getDynamicSyncHandler() {
         return syncHandler;
     }
 

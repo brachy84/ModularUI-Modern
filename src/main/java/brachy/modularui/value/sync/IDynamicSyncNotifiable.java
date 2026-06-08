@@ -1,17 +1,9 @@
 package brachy.modularui.value.sync;
 
-import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.widgets.DynamicSyncedWidget;
+import brachy.modularui.widgets.dynamic.IDynamicHandler;
 
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.function.Consumer;
-
-public interface IDynamicSyncNotifiable {
-
-    /**
-     * An internal function which is used to link the {@link DynamicSyncedWidget}.
-     */
-    @ApiStatus.Internal
-    void attachDynamicWidgetListener(Consumer<IWidget> onWidgetUpdate);
-}
+/**
+ * @deprecated use {@link brachy.modularui.widgets.dynamic.IDynamicHandler} instead.
+ */
+@Deprecated(forRemoval = true)
+public interface IDynamicSyncNotifiable extends IDynamicHandler {}

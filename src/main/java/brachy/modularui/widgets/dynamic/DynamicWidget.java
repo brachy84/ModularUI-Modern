@@ -28,7 +28,7 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
 
     @Override
     public void onInit() {
-        if (this.child == null && this.dynamicHandler instanceof DynamicHandler dynamicHandler1) {
+        if (this.child.isEmpty() && this.dynamicHandler instanceof DynamicHandler dynamicHandler1) {
             dynamicHandler1.notifyUpdate();
         }
     }
