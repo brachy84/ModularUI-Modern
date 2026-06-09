@@ -147,12 +147,9 @@ public class BaseSchemaRenderer implements IDrawable {
         return status == CompileStatus.CANCELED || status == CompileStatus.DISABLED || status == CompileStatus.FAILED;
     }
 
+    ///  only called from {@link #checkRecompile()} when {@linkplain #compileStatus} is CANCELED
     protected void recompile() {
-        if (isCompiling()) return;
-
-        if (isCanceled()) {
-            cancelCompilation();
-        }
+        cancelCompilation();
 
         this.lastRenderCompileTask = new RenderCompileTask();
         this.compileStatus.set(CompileStatus.COMPILING);
@@ -274,6 +271,7 @@ public class BaseSchemaRenderer implements IDrawable {
         return ps;
     }
 
+    ///  called each draw tick
     private RenderCompileResults checkRecompile() {
         var res = this.compiledRenderResult.get();
         var status = this.compileStatus.get();
