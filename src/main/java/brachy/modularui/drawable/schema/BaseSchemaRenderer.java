@@ -104,6 +104,7 @@ public class BaseSchemaRenderer implements IDrawable {
     private final ChunkBufferBuilderPack chunkBufferBuilders;
     private final AtomicReference<CompileStatus> compileStatus = new AtomicReference<>();
     private final AtomicReference<RenderCompileResults> compiledRenderResult = new AtomicReference<>();
+    private boolean dirty = true;
 
     // projection * model view matrix
     @Getter private final Matrix4f projection = new Matrix4f();
@@ -117,11 +118,10 @@ public class BaseSchemaRenderer implements IDrawable {
         this.schema = schema;
         this.renderLevel = new RenderLevel(schema, (pos, state) -> this.renderFilter.shouldRender(pos, state));
         this.chunkBufferBuilders = new ChunkBufferBuilderPack();
-        notifyRecompile();
     }
 
     public void notifyRecompile() {
-        this.compileStatus.set(CompileStatus.CANCELED);
+        this.dirty = true;
     }
 
     protected void cancelCompilation() {
@@ -273,20 +273,24 @@ public class BaseSchemaRenderer implements IDrawable {
 
     ///  called each draw tick
     private RenderCompileResults checkRecompile() {
-        var res = this.compiledRenderResult.get();
         var status = this.compileStatus.get();
-        if (status == CompileStatus.DISABLED) return null;
-        if (res == null || res.status != CompileStatus.SUCCESS) {
-            if (res != null) {
-                if (res.status == CompileStatus.DISABLED) return null;
-                res.clearBuffer();
-                this.compiledRenderResult.set(null);
-                res = null;
-            } else if (status != CompileStatus.COMPILING && status != CompileStatus.CANCELED){
-                this.compileStatus.set(CompileStatus.CANCELED);
-            }
+        if (status == CompileStatus.DISABLED) return null; // disabled, no-op
+
+        var res = this.compiledRenderResult.get();
+
+        // if we're still compiling, send previous result
+        if (status == CompileStatus.COMPILING) {
+            return res;
         }
-        if (this.compileStatus.get() == CompileStatus.CANCELED) recompile();
+
+        // otherwise, check if we're dirty
+        // the only possible statuses is CANCELED or SUCCESS
+        if (this.dirty || status == CompileStatus.CANCELED) {
+            this.dirty = false;
+            recompile();
+        }
+
+        // return stale result
         return res;
     }
 
