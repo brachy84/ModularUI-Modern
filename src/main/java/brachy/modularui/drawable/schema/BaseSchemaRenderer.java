@@ -278,20 +278,16 @@ public class BaseSchemaRenderer implements IDrawable {
 
         var res = this.compiledRenderResult.get();
 
-        // if we're still compiling, send previous result
-        if (status == CompileStatus.COMPILING) {
-            return res;
-        }
-
         // otherwise, check if we're dirty
         // the only possible statuses is CANCELED or SUCCESS
-        if (this.dirty || status == CompileStatus.CANCELED) {
+        if (status != CompileStatus.COMPILING && (status == CompileStatus.CANCELED || this.dirty)) {
             this.dirty = false;
             recompile();
         }
 
-        // return stale result
+        // if we're still compiling, send previous result
         return res;
+
     }
 
     @SuppressWarnings("deprecation")
