@@ -144,7 +144,7 @@ public class BaseSchemaRenderer implements IDrawable {
     }
 
     private boolean shouldDiscard(CompileStatus status) {
-        return status == CompileStatus.CANCELED || status == CompileStatus.DISABLED || status == CompileStatus.FAILED;
+        return status == CompileStatus.CANCELED || status == CompileStatus.DISABLED;
     }
 
     ///  only called from {@link #checkRecompile()} when {@linkplain #compileStatus} is CANCELED
@@ -654,8 +654,7 @@ public class BaseSchemaRenderer implements IDrawable {
         DISABLED,
         COMPILING,
         SUCCESS,
-        CANCELED,
-        FAILED
+        CANCELED
     }
 
     protected class RenderCompileTask {
@@ -700,7 +699,7 @@ public class BaseSchemaRenderer implements IDrawable {
                     if (startedBuffers.add(renderType)) {
                         if (builder.building()) {
                             ModularUI.LOGGER.warn("Buffer is already building for RenderType: {}!", renderType);
-                            return CompletableFuture.completedFuture(compileResults.withStatus(CompileStatus.FAILED));
+                            return CompletableFuture.completedFuture(compileResults.withStatus(CompileStatus.CANCELED));
                         }
                         builder.begin(renderType.mode(), renderType.format());
                     }
