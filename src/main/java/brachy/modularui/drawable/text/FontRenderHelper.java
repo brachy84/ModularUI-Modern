@@ -1,9 +1,9 @@
 package brachy.modularui.drawable.text;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.core.mixins.client.StringSplitterAccessor;
-
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
@@ -59,6 +59,7 @@ public class FontRenderHelper {
     }
 
     public static int getDefaultTextHeight() {
+        if (!ModularUI.isClientSide()) return 9;
         Font fr = MCHelper.getFont();
         return fr != null ? fr.lineHeight : 9;
     }
