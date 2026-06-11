@@ -1,7 +1,5 @@
 package brachy.modularui.screen;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.Event;
 
 import lombok.Getter;
@@ -16,7 +14,6 @@ import java.util.function.UnaryOperator;
  * {@link brachy.modularui.api.widget.IWidget#visitTransformAllChildren(UnaryOperator) IWidget.visitTransformAllChildren(UnaryOperator)}.
  */
 @ApiStatus.NonExtendable
-@OnlyIn(Dist.CLIENT)
 public class BuildPanelEvent extends Event {
 
     @Getter private final ModularScreen screen;
