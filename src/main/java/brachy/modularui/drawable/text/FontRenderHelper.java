@@ -59,7 +59,7 @@ public class FontRenderHelper {
     }
 
     public static int getDefaultTextHeight() {
-        if (!ModularUI.isClientSide()) return 9;
+        if (!ModularUI.isClientThread()) return 9;
         Font fr = MCHelper.getFont();
         return fr != null ? fr.lineHeight : 9;
     }

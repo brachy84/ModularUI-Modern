@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import org.apache.logging.log4j.LogManager;
@@ -104,7 +105,7 @@ public class ModularUI {
      * @return if the current thread is the client thread
      */
     public static boolean isClientThread() {
-        return isTestEnv() || (isClientSide() && Minecraft.getInstance().isSameThread());
+        return isTestEnv() || (isClientSide() && Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT);
     }
 
     /**
@@ -114,7 +115,7 @@ public class ModularUI {
      * @see #isClientThread()
      */
     public static boolean isClientSide() {
-        return FMLEnvironment.dist.isClient();
+        return isTestEnv() || FMLEnvironment.dist.isClient();
     }
 
     /**
