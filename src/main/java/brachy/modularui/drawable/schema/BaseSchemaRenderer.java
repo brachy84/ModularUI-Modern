@@ -351,6 +351,8 @@ public class BaseSchemaRenderer implements IDrawable {
             }
         });
         RenderSystem.enableDepthTest();
+
+        Lighting.setupFor3DItems();
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
