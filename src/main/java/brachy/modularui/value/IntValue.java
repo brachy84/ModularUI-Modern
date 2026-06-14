@@ -69,7 +69,7 @@ public class IntValue implements IIntValue<Integer>, IDoubleValue<Integer>, IStr
         return Integer.class;
     }
 
-    public static class Dynamic implements IIntValue<Integer>, IStringValue<Integer> {
+    public static class Dynamic implements IIntValue<Integer>, IDoubleValue<Integer>, IStringValue<Integer> {
 
         private final IntSupplier getter;
         private final IntConsumer setter;
@@ -87,6 +87,16 @@ public class IntValue implements IIntValue<Integer>, IDoubleValue<Integer>, IStr
         @Override
         public void setIntValue(int val) {
             this.setter.accept(val);
+        }
+
+        @Override
+        public double getDoubleValue() {
+            return getIntValue();
+        }
+
+        @Override
+        public void setDoubleValue(double val) {
+            setIntValue((int) val);
         }
 
         @Override
