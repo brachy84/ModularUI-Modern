@@ -27,6 +27,8 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
+
 @Accessors(fluent = true, chain = true)
 public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlotSyncHandler> {
 
@@ -45,6 +47,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
     private boolean controlsAmount = true;
     @Nullable
     private FluidStack lastStoredPhantomFluid;
+    private BooleanSupplier invertFillSlot = () -> false;
 
     public FluidSlotSyncHandler(IFluidTank fluidTank) {
         this.fluidTank = fluidTank;
@@ -141,6 +144,15 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
         }
     }
 
+    public FluidSlotSyncHandler invertedFill(boolean invert) {
+        return invertedFill(() -> invert);
+    }
+
+    public FluidSlotSyncHandler invertedFill(BooleanSupplier invert) {
+        this.invertFillSlot = invert;
+        return this;
+    }
+
     private void tryClickContainer(MouseData mouseData) {
         Player player = getSyncManager().getPlayer();
         ItemStack currentStack = player.containerMenu.getCarried();
@@ -148,7 +160,8 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
             return;
         }
         int maxAttempts = mouseData.shift() ? currentStack.getCount() : 1;
-        if (mouseData.mouseButton() == InputConstants.MOUSE_BUTTON_RIGHT && this.canFillSlot) {
+        int fillButton = invertFillSlot.getAsBoolean() ? InputConstants.MOUSE_BUTTON_LEFT : InputConstants.MOUSE_BUTTON_RIGHT;
+        if (mouseData.mouseButton() == fillButton && this.canFillSlot) {
             boolean performedTransfer = false;
             for (int i = 0; i < maxAttempts; i++) {
                 FluidActionResult result = FluidUtil.tryEmptyContainer(currentStack, this.fluidHandler,
