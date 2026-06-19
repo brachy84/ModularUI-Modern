@@ -27,6 +27,7 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 @Accessors(fluent = true, chain = true)
@@ -161,7 +162,8 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
         }
         int maxAttempts = mouseData.shift() ? currentStack.getCount() : 1;
         int fillButton = invertFillSlot.getAsBoolean() ? InputConstants.MOUSE_BUTTON_LEFT : InputConstants.MOUSE_BUTTON_RIGHT;
-        if (mouseData.mouseButton() == fillButton && this.canFillSlot) {
+        Optional<FluidStack> contained = FluidUtil.getFluidContained(currentStack);
+        if (mouseData.mouseButton() == fillButton && this.canFillSlot && contained.isPresent()) {
             boolean performedTransfer = false;
             for (int i = 0; i < maxAttempts; i++) {
                 FluidActionResult result = FluidUtil.tryEmptyContainer(currentStack, this.fluidHandler,
