@@ -18,6 +18,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Function;
+
 public class TestRegistration {
 
     // @formatter:off
@@ -25,7 +27,15 @@ public class TestRegistration {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModularUI.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ModularUI.MOD_ID);
 
-    public static final DeferredItem<TestItem> TEST_ITEM = ITEMS.registerItem("test_item", TestItem::new);
+
+    private static Function<Item.Properties, TestItem> testItemFactory() {
+        if (ModularUI.Mods.CURIOS.isLoaded()) {
+            return TestCurioItem::new;
+        }
+        return TestItem::new;
+    }
+
+    public static final DeferredItem<TestItem> TEST_ITEM = ITEMS.registerItem("test_item", testItemFactory());
 
     public static final DeferredBlock<TestBlock> TEST_BLOCK = BLOCKS.register("test_block", () -> new TestBlock(TestBlockEntity::new));
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);

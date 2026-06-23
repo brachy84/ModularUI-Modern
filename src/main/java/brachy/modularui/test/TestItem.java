@@ -17,20 +17,14 @@ import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
-
-public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInventoryGuiData<?>> {
+public class TestItem extends Item implements IUIHolder<PlayerInventoryGuiData<?>> {
 
     public TestItem(Properties properties) {
         super(properties);
-        CuriosApi.registerCurio(this, this);
     }
 
     @Override
@@ -71,10 +65,5 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
                 .child(GuiTextures.ANIMATED_TEXTURE_TEST.asWidget().size(32).leftRel(1f).topRel(0f).margin(7));
 
         return panel;
-    }
-
-    @Override
-    public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        return true;
     }
 }
