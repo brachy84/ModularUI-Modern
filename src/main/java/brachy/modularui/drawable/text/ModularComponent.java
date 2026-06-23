@@ -197,6 +197,15 @@ public class ModularComponent extends MutableComponent implements Text {
         return this;
     }
 
+    /**
+     * Prevent vanilla from collapsing a modular component to a plain string when it has no siblings or style, since that
+     * would drop our extra properties (alignment, scale, shadow, ...) during serialization.
+     */
+    @Override
+    public @Nullable String tryCollapseToString() {
+        return null;
+    }
+
     @Override
     public @NotNull ModularComponent append(@NotNull String string) {
         return (ModularComponent) super.append(string);

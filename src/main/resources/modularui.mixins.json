@@ -23,7 +23,7 @@
         "common.WorldLoaderMixin",
         "common.CombinedInvWrapperAccessor",
         "common.ComponentMixin",
-        "common.ComponentSerializerMixin",
+        "common.ComponentSerializationMixin",
         "common.TextColorMixin"
     ],
     "injectors": {
