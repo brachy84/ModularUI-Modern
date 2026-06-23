@@ -10,6 +10,7 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Wraps the vanilla {@link net.minecraft.network.chat.ComponentSerialization#CODEC component codec} so that the extra
@@ -55,22 +56,22 @@ public final class ModularAwareComponentCodec implements Codec<Component> {
     }
 
     private static <T> boolean hasModularField(MapLike<T> map) {
-        boolean[] found = {false};
+        AtomicBoolean found = new AtomicBoolean(false);
         ModularComponent.CODEC.forEachField(field -> {
-            if (found[0]) return;
+            if (found.get()) return;
             if (map.get(field.name()) != null) {
-                found[0] = true;
+                found.set(true);
                 return;
             }
             if (field.altNames() != null) {
                 for (String alt : field.altNames()) {
                     if (map.get(alt) != null) {
-                        found[0] = true;
+                        found.set(true);
                         return;
                     }
                 }
             }
         });
-        return found[0];
+        return found.get();
     }
 }
