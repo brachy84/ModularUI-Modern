@@ -57,7 +57,7 @@ public class GraphAxis {
                 this.min = DAM.min(plots.get(0).getData(this.axis));
                 this.max = DAM.max(plots.get(0).getData(this.axis));
             } else {
-                double min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+                double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
                 for (Plot plot : plots) {
                     double m = DAM.min(plot.getData(this.axis));
                     if (m < min) min = m;

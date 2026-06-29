@@ -1,5 +1,8 @@
 package brachy.modularui.api.value;
 
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+
 /**
  * A value wrapper for widgets.
  *
@@ -12,6 +15,7 @@ public interface IValue<T> extends ISyncOrValue {
      *
      * @return the current value
      */
+    @UnknownNullability
     T getValue();
 
     /**
@@ -19,7 +23,7 @@ public interface IValue<T> extends ISyncOrValue {
      *
      * @param value new value
      */
-    void setValue(T value);
+    void setValue(@UnknownNullability T value);
 
     Class<T> getValueType();
 

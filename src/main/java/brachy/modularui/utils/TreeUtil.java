@@ -439,6 +439,10 @@ public class TreeUtil {
             }
             builder.append(' ');
         }
+        if (parent == null) {
+            builder.append("NULL\n");
+            return;
+        }
         if (visited == null) visited = new ReferenceOpenHashSet<>();
         if (visited.contains(parent)) {
             builder.append("CYCLING TREE FOUND (").append(parent).append(")\n");

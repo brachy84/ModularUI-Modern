@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public enum SIPrefix {
 
-    Infinite('∞', Double.MAX_VALUE, true),
+    Infinite('∞', Double.MAX_VALUE, Double.MIN_VALUE, true),
     Quetta('Q', 30),
     Ronna('R', 27),
     Yotta('Y', 24),
@@ -28,7 +28,7 @@ public enum SIPrefix {
     Yocto('y', -24),
     Ronto('r', -27),
     Quecto('q', -30),
-    Infinitesimal('∞', Double.MIN_NORMAL, true);
+    Infinitesimal('∞', Double.MIN_VALUE, Double.MAX_VALUE, true);
 
     public final char symbol;
     public final String stringSymbol;
@@ -49,12 +49,16 @@ public enum SIPrefix {
     }
 
     SIPrefix(char symbol, double f, boolean inf) {
+        this(symbol, f, 1 / f, inf);
+    }
+
+    SIPrefix(char symbol, double f, double fInv, boolean inf) {
         this.symbol = symbol;
         this.stringSymbol = Character.toString(symbol);
         this.factor = f;
-        this.oneOverFactor = 1 / f;
+        this.oneOverFactor = fInv;
         this.bigFactor = new BigDecimal(f);
-        this.bigOneOverFactor = new BigDecimal(this.oneOverFactor);
+        this.bigOneOverFactor = new BigDecimal(fInv);
         this.infiniteLike = inf;
     }
 

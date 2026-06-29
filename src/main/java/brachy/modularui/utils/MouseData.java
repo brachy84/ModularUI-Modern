@@ -3,6 +3,7 @@ package brachy.modularui.utils;
 import brachy.modularui.api.widget.Interactable;
 
 import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -10,6 +11,26 @@ public record MouseData(Dist side, int mouseButton, boolean shift, boolean ctrl,
 
     public boolean isClient() {
         return this.side.isClient();
+    }
+
+    public boolean isLeftMouseButton() {
+        return this.mouseButton == InputConstants.MOUSE_BUTTON_LEFT;
+    }
+
+    public boolean isRightMouseButton() {
+        return this.mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
+    }
+
+    public boolean isMiddleMouseButton() {
+        return this.mouseButton == InputConstants.MOUSE_BUTTON_MIDDLE;
+    }
+
+    public boolean isScrollUp() {
+        return this.mouseButton > 0;
+    }
+
+    public boolean isScrollDown() {
+        return this.mouseButton < 0;
     }
 
     public void writeToPacket(FriendlyByteBuf buffer) {

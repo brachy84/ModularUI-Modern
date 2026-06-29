@@ -63,6 +63,10 @@ public class SlotGroup {
         this(name, rowSize, STORAGE_SLOT_PRIO, allowShiftTransfer);
     }
 
+    public SlotGroup(String name, int rowSize, int shiftClickPriority) {
+        this(name, rowSize, shiftClickPriority, true, false);
+    }
+
     /**
      * Creates a slot group.
      *

@@ -29,17 +29,13 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import static net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER;
 
-public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInventoryGuiData<?>> {
+public class TestItem extends Item implements IUIHolder<PlayerInventoryGuiData<?>> {
 
     public TestItem(Properties properties) {
         super(properties);
-        CuriosApi.registerCurio(this, this);
     }
 
     @Override
@@ -97,10 +93,5 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
                 return LazyOptional.empty();
             }
         };
-    }
-
-    @Override
-    public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        return true;
     }
 }

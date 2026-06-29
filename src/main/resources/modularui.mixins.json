@@ -12,6 +12,7 @@
         "client.ScreenAccessor",
         "client.SlotAccessor",
         "client.StringSplitterAccessor",
+        "emi.RecipeScreenMixin",
         "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [

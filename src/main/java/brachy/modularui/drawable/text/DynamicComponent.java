@@ -1,13 +1,11 @@
 package brachy.modularui.drawable.text;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.screen.ClientScreenHandler;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
-
 import brachy.modularui.widgets.TextWidget;
-
-import lombok.Getter;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -16,6 +14,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -38,7 +37,12 @@ public class DynamicComponent implements Component, IDrawable {
         if (supplier == null) {
             return Component.empty();
         }
-        if (this.time != ClientScreenHandler.getTicks()) {
+        if (!ModularUI.isClientSide()) {
+            this.lastComp = this.supplier.get();
+            if (this.lastComp instanceof MutableComponent mutableComponent) {
+                mutableComponent.setStyle(mutableComponent.getStyle().applyTo(this.style));
+            }
+        } else if (this.time != ClientScreenHandler.getTicks()) {
             this.lastComp = supplier.get();
             this.time = ClientScreenHandler.getTicks();
             if (this.lastComp instanceof MutableComponent mutableComponent) {

@@ -110,19 +110,20 @@ public class ClientScreenHandler {
         OverlayStack.foreach(ms -> ms.onResize(event.getScreen().width, event.getScreen().height), false);
     }
 
+    // TODO: Figure out when exactly early inputs (before recipe viewer) for mouse press, mouse release, key press, key release,
+    //  mouse scroll and mouse drag are needed. One case would may be draggable widgets.
     @SubscribeEvent
     public static void onScreenKeyPressedHigh(ScreenEvent.KeyPressed.Pre event) {
         defaultContext.updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
-        // TODO: early needs to be before recipe viewers, but emi does mixin into KeyboardHandler so it is before everything
+        if (validateGui(event.getScreen())) {
+            currentScreen.getContext().updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
+        }
         if (keyPressedEvent(event, InputPhase.EARLY)) {
             keyPressedEvent(event, InputPhase.LATE);
         }
     }
 
     private static boolean keyPressedEvent(ScreenEvent.KeyPressed.Pre event, InputPhase phase) {
-        if (validateGui(event.getScreen())) {
-            currentScreen.getContext().updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
-        }
         if (handleKeyboardInput(currentScreen, event.getScreen(), true, phase,
                 event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
             event.setCanceled(true);
@@ -134,7 +135,9 @@ public class ClientScreenHandler {
     @SubscribeEvent
     public static void onScreenKeyReleasedHigh(ScreenEvent.KeyReleased.Pre event) {
         defaultContext.updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), false);
-        // TODO also needs to be before recipe viewers
+        if (validateGui(event.getScreen())) {
+            currentScreen.getContext().updateKey(event.getKeyCode(), event.getScanCode(), event.getModifiers(), true);
+        }
         // dont need late for release event
         keyReleasedEvent(event, InputPhase.EARLY);
     }
@@ -151,8 +154,7 @@ public class ClientScreenHandler {
         return true;
     }
 
-    // before JEI
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public static void onScreenCharTyped(ScreenEvent.CharacterTyped.Pre event) {
         char codePoint = event.getCodePoint();
         int modifiers = event.getModifiers();
@@ -165,8 +167,7 @@ public class ClientScreenHandler {
         }
     }
 
-    // before JEI
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public static void onScreenMousePressed(ScreenEvent.MouseButtonPressed.Pre event) {
         int button = event.getButton();
         defaultContext.updateMouseButton(button, true);
@@ -182,8 +183,7 @@ public class ClientScreenHandler {
         }
     }
 
-    // before JEI
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public static void onScreenMouseReleased(ScreenEvent.MouseButtonReleased.Pre event) {
         int button = event.getButton();
         defaultContext.updateMouseButton(button, false);
@@ -196,8 +196,7 @@ public class ClientScreenHandler {
         }
     }
 
-    // before JEI
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public static void onScreenMouseScrolled(ScreenEvent.MouseScrolled.Pre event) {
         double w = event.getScrollDelta();
         if (w == 0) return;
@@ -209,8 +208,7 @@ public class ClientScreenHandler {
         }
     }
 
-    // before JEI
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public static void onScreenMouseDragged(ScreenEvent.MouseDragged.Pre event) {
         if (doAction(currentScreen, ms -> ms.mouseDragged(
                 event.getMouseButton(), event.getDragX(), event.getDragY()))) {

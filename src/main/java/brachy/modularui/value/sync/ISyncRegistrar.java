@@ -80,7 +80,7 @@ public interface ISyncRegistrar<S extends ISyncRegistrar<S>> {
     }
 
     default S bindPlayerInventory(Player player) {
-        return bindPlayerInventory(player, ModularSlot::new);
+        return bindPlayerInventory(player, (inv, i) -> ModularSlot.playerSlot(inv, i, player));
     }
 
     default S bindPlayerInventory(Player player, @NotNull PanelSyncManager.SlotFunction slotFunction) {

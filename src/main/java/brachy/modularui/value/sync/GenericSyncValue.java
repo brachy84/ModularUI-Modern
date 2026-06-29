@@ -14,6 +14,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -186,7 +187,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param getter function that returns the current value that may be synced
          * @return this builder
          */
-        public Builder<T> getter(Supplier<T> getter) {
+        public Builder<T> getter(Supplier<@UnknownNullability T> getter) {
             this.getter = getter;
             return this;
         }
@@ -200,7 +201,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param setter function that updates the source of the value
          * @return this builder
          */
-        public Builder<T> setter(Consumer<T> setter) {
+        public Builder<T> setter(Consumer<@UnknownNullability T> setter) {
             this.setter = setter;
             return this;
         }
@@ -213,7 +214,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param deserializer function that writes the value to a packet buffer
          * @return this builder
          */
-        public Builder<T> deserializer(IByteBufDeserializer<T> deserializer) {
+        public Builder<T> deserializer(IByteBufDeserializer<@UnknownNullability T> deserializer) {
             this.deserializer = deserializer;
             return this;
         }
@@ -226,7 +227,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param serializer function that reads the value from a packet buffer
          * @return this builder
          */
-        public Builder<T> serializer(IByteBufSerializer<T> serializer) {
+        public Builder<T> serializer(IByteBufSerializer<@UnknownNullability T> serializer) {
             this.serializer = serializer;
             return this;
         }
@@ -242,7 +243,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param equals function that determines if two instances of the value are equal
          * @return this builder
          */
-        public Builder<T> equals(EqualityTest<T> equals) {
+        public Builder<T> equals(EqualityTest<@UnknownNullability T> equals) {
             this.equals = equals;
             return this;
         }
@@ -276,7 +277,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @param copy function that creates a new exact copy of the value
          * @return this builder
          */
-        public Builder<T> copy(ICopy<T> copy) {
+        public Builder<T> copy(ICopy<@UnknownNullability T> copy) {
             this.copy = copy;
             return this;
         }
@@ -302,7 +303,7 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T, GenericSync
          * @see #serializer(IByteBufSerializer)
          * @see #equals(EqualityTest)
          */
-        public Builder<T> adapter(IByteBufAdapter<T> adapter) {
+        public Builder<T> adapter(IByteBufAdapter<@UnknownNullability T> adapter) {
             return deserializer(adapter)
                     .serializer(adapter)
                     .equals(adapter);

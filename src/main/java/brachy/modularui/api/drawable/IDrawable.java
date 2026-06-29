@@ -195,11 +195,11 @@ public interface IDrawable {
     }
 
     default int getDefaultWidth() {
-        return 0;
+        return 18;
     }
 
     default int getDefaultHeight() {
-        return 0;
+        return 18;
     }
 
     /**

@@ -30,6 +30,7 @@ dependencies {
     modLocalRuntime(forge.jade)
     modLocalRuntime(forge.spark)
     modLocalRuntime(forge.modernfix)
+    modImplementation(forge.mousetweaks)
 
     // Runtime Recipe Viewers - uncomment whichever one you want to use //
     modLocalRuntime(forge.emi)

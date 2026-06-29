@@ -121,7 +121,7 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
         //settings.customGui(() -> TestGuiContainer::new);
 
         syncManager.registerSlotGroup("item_inv", 3);
-        syncManager.registerSlotGroup(new SlotGroup("crafting", 3).setAllowSorting(false));
+        syncManager.registerSlotGroup(new SlotGroup("crafting", 3, SlotGroup.STORAGE_SLOT_PRIO * 2).setAllowSorting(false));
         IntSyncValue cycleStateValue = new IntSyncValue(() -> this.cycleState, val -> this.cycleState = val).allowC2S();
         syncManager.getHyperVisor().syncValue("cycle_state", cycleStateValue);
         syncManager.syncValue("progress", new DoubleSyncValue(() -> (double) this.progress / this.duration));

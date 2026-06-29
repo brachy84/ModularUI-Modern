@@ -12,6 +12,7 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.RichTooltip;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -185,6 +186,18 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
             return SCREEN_CACHE.getUnchecked(this.recipe).keyPressed(keyCode, scanCode, modifiers);
+        }
+
+        public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+            return SCREEN_CACHE.getUnchecked(this.recipe).mouseScrolled(delta);
+        }
+
+        public boolean mouseDragged(int button, double dragX, double dragY) {
+            return SCREEN_CACHE.getUnchecked(this.recipe).mouseDragged(button, dragX, dragY);
+        }
+
+        public boolean mouseReleased(int button) {
+            return SCREEN_CACHE.getUnchecked(this.recipe).mouseReleased(button);
         }
     }
 }

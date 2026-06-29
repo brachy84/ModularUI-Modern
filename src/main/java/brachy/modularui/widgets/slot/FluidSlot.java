@@ -20,7 +20,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -63,10 +62,11 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     protected void addTooltip(RichTooltip tooltip) {
         IFluidTank fluidTank = getFluidTank();
         FluidStack fluid = this.syncHandler.getValue();
+        boolean phantom = this.syncHandler.phantom();
         if (fluid != null && !fluid.isEmpty()) {
             tooltip.addLine(fluid.getDisplayName()).spaceLine(2);
         }
-        if (this.syncHandler.phantom()) {
+        if (phantom) {
             if (fluid != null) {
                 if (this.syncHandler.controlsAmount()) {
                     tooltip.addLine(Text.lang("modularui.fluid.phantom.amount",
@@ -78,9 +78,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
                         Text.lang("modularui.fluid.capacity", formatFluidTooltipAmount(fluidTank.getCapacity()),
                                 getUnit()));
             }
-            if (this.syncHandler.controlsAmount()) {
-                tooltip.addLine(Text.lang("modularui.fluid.phantom.control"));
-            }
         } else {
             if (fluid != null) {
                 tooltip.addLine(Text.lang("modularui.fluid.amount", formatFluidTooltipAmount(fluid.getAmount()),
@@ -89,19 +86,24 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
             } else {
                 tooltip.addLine(Text.lang("modularui.fluid.empty"));
             }
-            if (this.syncHandler.canFillSlot() || this.syncHandler.canDrainSlot()) {
-                tooltip.addLine(Text.EMPTY); // Add an empty line to separate from the bottom material tooltips
-                if (Interactable.hasShiftDown()) {
-                    if (this.syncHandler.canFillSlot() && this.syncHandler.canDrainSlot()) {
-                        tooltip.addLine(Text.lang("modularui.fluid.click_combined"));
-                    } else if (this.syncHandler.canDrainSlot()) {
-                        tooltip.addLine(Text.lang("modularui.fluid.click_to_fill"));
-                    } else if (this.syncHandler.canFillSlot()) {
-                        tooltip.addLine(Text.lang("modularui.fluid.click_to_empty"));
-                    }
+        }
+        boolean fills = this.syncHandler.canFillSlot(), drains = this.syncHandler.canDrainSlot();
+        if (fills || drains) {
+            tooltip.addLine(Text.EMPTY); // Add an empty line to separate from the bottom material tooltips
+            if (Interactable.hasShiftDown()) {
+                String phantom_suffix = phantom ? "_phantom" : "";
+                if (fills && drains) {
+                    tooltip.addLine(Text.lang("modularui.fluid.click_combined" + phantom_suffix));
+                } else if (drains) {
+                    tooltip.addLine(Text.lang("modularui.fluid.click_to_fill" + phantom_suffix));
                 } else {
-                    tooltip.addLine(Text.lang("modularui.tooltip.shift"));
+                    tooltip.addLine(Text.lang("modularui.fluid.click_to_empty" + phantom_suffix));
                 }
+                if (!phantom || this.syncHandler.controlsAmount()) {
+                    tooltip.addLine(Text.lang("modularui.fluid.scroll"));
+                }
+            } else {
+                tooltip.addLine(Text.lang("modularui.fluid.controls_info"));
             }
         }
         if (fluid != null && !fluid.isEmpty()) {
@@ -111,17 +113,14 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     private Component getFluidModName(FluidStack fluidStack) {
         String modID = getFluidModID(fluidStack.getFluid());
-        var container = ModList.get().getModContainerById(modID);
-        if (container.isPresent()) {
-            return Component.literal(container.get().getModInfo().getDisplayName()).withStyle(ChatFormatting.BLUE,
-                    ChatFormatting.ITALIC);
-        }
-        return Component.literal(modID).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC);
+        return ModList.get().getModContainerById(modID)
+                .map(modContainer -> Component.literal(modContainer.getModInfo().getDisplayName())
+                        .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC))
+                .orElseGet(() -> Component.literal(modID).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
     }
 
     public static String getFluidModID(Fluid fluid) {
-        ResourceLocation modName = BuiltInRegistries.FLUID.getKey(fluid);
-        return modName.getNamespace();
+        return BuiltInRegistries.FLUID.getKey(fluid).getNamespace();
     }
 
     public void addAdditionalFluidInfo(RichTooltip tooltip, FluidStack fluidStack) {}
@@ -187,8 +186,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         }
         ItemStack cursorStack = Minecraft.getInstance().player.containerMenu.getCarried();
         if (this.syncHandler.phantom() ||
-                (!cursorStack.isEmpty() &&
-                        cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {
+                (!cursorStack.isEmpty() && cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {
             MouseData mouseData = MouseData.create(button);
             this.syncHandler.syncToServer(FluidSlotSyncHandler.SYNC_CLICK, mouseData::writeToPacket);
         }
@@ -197,15 +195,12 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     @Override
     public boolean onMouseScrolled(double delta) {
-        if (this.syncHandler.phantom()) {
-            if ((delta > 0 && !this.syncHandler.canFillSlot()) || (delta < 0 && !this.syncHandler.canDrainSlot())) {
-                return false;
-            }
-            MouseData mouseData = MouseData.create(delta > 0 ? 1 : -1);
-            this.syncHandler.syncToServer(FluidSlotSyncHandler.SYNC_SCROLL, mouseData::writeToPacket);
-            return true;
+        if ((delta > 0 && !this.syncHandler.canFillSlot()) || (delta < 0 && !this.syncHandler.canDrainSlot())) {
+            return false;
         }
-        return false;
+        MouseData mouseData = MouseData.create(delta > 0 ? 1 : -1);
+        this.syncHandler.syncToServer(FluidSlotSyncHandler.SYNC_SCROLL, mouseData::writeToPacket);
+        return true;
     }
 
     @Override

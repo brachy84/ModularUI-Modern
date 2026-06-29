@@ -1,5 +1,6 @@
 package brachy.modularui.widgets.slot;
 
+import brachy.modularui.core.mixins.client.SlotAccessor;
 import brachy.modularui.core.mixins.common.CombinedInvWrapperAccessor;
 import brachy.modularui.value.sync.ItemSlotSyncHandler;
 
@@ -15,6 +16,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -53,6 +55,22 @@ public class ModularSlot extends SlotItemHandler {
 
     private ItemSlotSyncHandler syncHandler = null;
 
+    public static ModularSlot playerSlot(PlayerInvWrapper inv, int index, Player player) {
+        return new ModularSlot(inv, index, player);
+    }
+
+    public static ModularSlot playerSlot(PlayerMainInvWrapper inv, int index, Player player) {
+        return new ModularSlot(inv, index, player);
+    }
+
+    public static ModularSlot playerSlot(PlayerArmorInvWrapper inv, int index, Player player) {
+        return new ModularSlot(inv, index, player);
+    }
+
+    public static ModularSlot playerOffhandSlot(Player player) {
+        return new ModularSlot(new PlayerOffhandInvWrapper(player.getInventory()), 0, player);
+    }
+
     /**
      * Creates a ModularSlot
      *
@@ -61,10 +79,19 @@ public class ModularSlot extends SlotItemHandler {
      */
     public ModularSlot(IItemHandler itemHandler, int index) {
         super(itemHandler, index, Integer.MIN_VALUE, Integer.MIN_VALUE);
-        if (index < 0 || index >= itemHandler.getSlots()) {
-            throw new IllegalArgumentException("Tried to create a slot with invalid index " + index +
-                    ". Valid index range is [0," + itemHandler.getSlots() + ")");
+        validateIndex(itemHandler, index);
+        if (isPlayerInvWrapper(itemHandler)) {
+            throw new IllegalArgumentException("This constructor must NOT use forge player inventory wrapper.");
         }
+    }
+
+    protected ModularSlot(IItemHandler itemHandler, int index, Player player) {
+        super(itemHandler, index, Integer.MIN_VALUE, Integer.MIN_VALUE);
+        validateIndex(itemHandler, index);
+        if (!isPlayerInvWrapper(itemHandler)) {
+            throw new IllegalArgumentException("This constructor must use forge player inventory wrapper.");
+        }
+        ((SlotAccessor) this).setContainer(player.getInventory());
     }
 
     @ApiStatus.Internal
@@ -293,5 +320,17 @@ public class ModularSlot extends SlotItemHandler {
             return wrapper.getInventoryPlayer().player;
         }
         return null;
+    }
+
+    public static boolean isPlayerInvWrapper(IItemHandler itemHandler) {
+        return itemHandler instanceof PlayerInvWrapper || itemHandler instanceof PlayerMainInvWrapper ||
+                itemHandler instanceof PlayerArmorInvWrapper || itemHandler instanceof PlayerOffhandInvWrapper;
+    }
+
+    private static void validateIndex(IItemHandler itemHandler, int index) {
+        if (index < 0 || index >= itemHandler.getSlots()) {
+            throw new IllegalArgumentException("Tried to create a slot with invalid index " + index +
+                    ". Valid index range is [0," + itemHandler.getSlots() + ")");
+        }
     }
 }

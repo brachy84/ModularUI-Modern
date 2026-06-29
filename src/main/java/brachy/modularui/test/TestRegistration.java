@@ -11,6 +11,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 public class TestRegistration {
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ModularUI.MOD_ID);
@@ -19,7 +22,15 @@ public class TestRegistration {
 
     public static final RegistryObject<Block> TEST_BLOCK = BLOCKS.register("test_block", () -> new TestBlock(TestBlockEntity::new));
     public static final RegistryObject<Item> TEST_BLOCK_ITEM = ITEMS.register("test_block", () -> new BlockItem(TEST_BLOCK.get(), new Item.Properties()));
-    public static final RegistryObject<Item> TEST_ITEM = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
+
+    private static Supplier<TestItem> testItemFactory() {
+        if (ModularUI.Mods.CURIOS.isLoaded()) {
+            return () -> new TestCurioItem(new Item.Properties());
+        }
+        return () -> new TestItem(new Item.Properties());
+    }
+
+    public static final RegistryObject<Item> TEST_ITEM = ITEMS.register("test_item", testItemFactory());
     public static final RegistryObject<BlockEntityType<?>> BE_TYPE = BE_TYPES.register("test_block", () -> BlockEntityType.Builder.of(TestBlockEntity::new, TEST_BLOCK.get()).build(null));
 
     public static final RegistryObject<Block> TEST_MACHINE_BLOCK = BLOCKS.register("machine_block", () -> new TestBlock(TestMachine.BE::new));

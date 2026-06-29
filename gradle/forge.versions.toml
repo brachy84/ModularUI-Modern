@@ -18,6 +18,7 @@ modernfix = "DdUByV9S" # 5.24.1+mc1.20.1
 
 ## cursemaven ##
 spark = "4738952"
+mousetweaks = "5338457"
 
 [libraries]
 mixinExtras-common = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixinExtras" }
@@ -42,6 +43,7 @@ embeddium = { module = "maven.modrinth:embeddium", version.ref = "embeddium" }
 oculus = { module = "maven.modrinth:oculus", version.ref = "oculus" }
 modernfix = { module = "maven.modrinth:modernfix", version.ref = "modernfix" }
 spark = { module = "curse.maven:spark-361579", version.ref = "spark" }
+mousetweaks = { module = "curse.maven:mouse_tweaks-60089", version.ref = "mousetweaks" }
 
 [bundles]
 jei = ["jei-common-api", "jei-forge-api", "jei-forge-impl"]

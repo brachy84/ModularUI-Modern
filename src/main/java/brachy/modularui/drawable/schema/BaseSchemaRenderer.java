@@ -209,7 +209,11 @@ public class BaseSchemaRenderer implements IDrawable {
         context.getGraphics().flush();
         context.graphicsPose().pushPose();
 
-        this.viewport.calculateOpenGLViewportFromRectangle(context.transformX(x, y), context.transformY(x, y), width, height);
+        Matrix4f pose = context.getLastGraphicsPose();
+        // needed since emi resets the pose matrix if you want to view schemas in recipe viewers
+        int transformX = (int)pose.m30() + context.transformX(-x,-y);
+        int transformY = (int)pose.m31() + context.transformY(-x,-y);
+        this.viewport.calculateOpenGLViewportFromRectangle(transformX, transformY, width, height);
         this.viewport.applyViewport();
 
         onSetupCamera();
@@ -351,6 +355,8 @@ public class BaseSchemaRenderer implements IDrawable {
             }
         });
         RenderSystem.enableDepthTest();
+
+        Lighting.setupFor3DItems();
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
