@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 public class MutableSingletonList<T> implements List<T> {
 
@@ -44,6 +48,35 @@ public class MutableSingletonList<T> implements List<T> {
 
     public boolean hasNonNullValue() {
         return this.hasValue && this.value != null;
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        applyNullable(action::accept);
+    }
+
+    public void apply(Consumer<T> action) {
+        if (hasNonNullValue()) action.accept(this.value);
+    }
+
+    public void applyNullable(Consumer<T> action) {
+        if (hasValue()) action.accept(this.value);
+    }
+
+    public <V> V toValue(Function<T, V> function) {
+        return toValue(function, null);
+    }
+
+    public <V> V toValue(Function<T, V> function, V defaultValue) {
+        return hasNonNullValue() ? function.apply(this.value) : defaultValue;
+    }
+
+    public int toInt(ToIntFunction<T> function, int defaultValue) {
+        return hasNonNullValue() ? function.applyAsInt(this.value) : defaultValue;
+    }
+
+    public boolean toBool(Predicate<T> function, boolean defaultValue) {
+        return hasNonNullValue() ? function.test(this.value) : defaultValue;
     }
 
     @Override

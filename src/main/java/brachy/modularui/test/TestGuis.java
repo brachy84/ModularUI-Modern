@@ -35,6 +35,7 @@ import brachy.modularui.utils.ColorShade;
 import brachy.modularui.utils.Interpolation;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.math.DAM;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.value.BoolValue;
 import brachy.modularui.value.DoubleValue;
 import brachy.modularui.value.IntValue;
@@ -223,7 +224,7 @@ public class TestGuis extends CustomModularScreen {
     }
 
     public static @NotNull ModularPanel<?> buildPendulumAnimationUI() {
-        IWidget widget = GuiTextures.MUI_LOGO.asWidget().size(20).pos(65, 65);
+        IWidget widget = GuiTextures.MUI_LOGO.asWidget().size(20).center();
         Animator animator = new Animator()
                 .bounds(0, 1)
                 .curve(Interpolation.SINE_INOUT)
@@ -233,13 +234,25 @@ public class TestGuis extends CustomModularScreen {
 
         animator.reset(true);
         animator.animate(true);
+        int l = 55;
+        float maxAngle = MathUtils.PI;
         return ModularPanel.defaultPanel("main").size(150)
+                // TODO: Why is the line on top visually???
+                .child(new TransformWidget(new Rectangle().color(0xFF404040).asWidget().size(l, 1).center())
+                        .transform(stack -> {
+                            stack.translate(l / 2f - 1, 0);
+                            stack.translate(0, 0.5f);
+                            stack.rotateZ(animator.getValue() * maxAngle);
+                            stack.translate(0, -0.5f);
+                        }))
                 .child(new TransformWidget(widget)
                         .transform(stack -> {
-                            double angle = Math.PI;
-                            float x = (float) (55 * Math.cos(animator.getValue() * angle));
-                            float y = (float) (55 * Math.sin(animator.getValue() * angle));
+                            float x = (float) (l * Math.cos(animator.getValue() * maxAngle));
+                            float y = (float) (l * Math.sin(animator.getValue() * maxAngle));
                             stack.translate(x, y);
+                            stack.translate(widget.getArea().width / 2f, widget.getArea().height / 2f);
+                            stack.rotateZ(animator.getValue() * maxAngle - MathUtils.PI_HALF);
+                            stack.translate(-widget.getArea().width / 2f, -widget.getArea().height / 2f);
                         }));
     }
 

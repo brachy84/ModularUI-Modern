@@ -49,12 +49,12 @@ public abstract class AbstractWidget implements IWidget {
 
     @Override
     public void scheduleResize() {
-        this.resizer.markDirty();
+        resizer().markDirty();
     }
 
     @Override
     public boolean requiresResize() {
-        return this.resizer.requiresResize();
+        return resizer().requiresResize();
     }
 
     /**
@@ -68,7 +68,8 @@ public abstract class AbstractWidget implements IWidget {
     public final void initialise(@NotNull IWidget parent, boolean late) {
         this.timeHovered = -1;
         this.timeBelowMouse = -1;
-        if (this.resizer == null) {
+        //noinspection ConstantValue
+        if (resizer() == null) {
             throw new IllegalStateException(
                     "Resizer must be set before the widget initializes! Affected widget: " + this);
         }
@@ -77,10 +78,8 @@ public abstract class AbstractWidget implements IWidget {
             this.panel = parent.getPanel();
             this.context = parent.getContext();
             getArea().z(parent.getArea().z() + 1);
-            if (parent instanceof AbstractWidget aw) {
-                this.resizer.initialize(aw.resizer, parent.getScreen().getResizeNode());
-            } else {
-                this.resizer.initialize(parent.resizer(), parent.getScreen().getResizeNode());
+            if (!(parent instanceof DelegatingWidget del) || del.getDelegate() != this) {
+                resizer().initialize(parent.resizer(), parent.getScreen().getResizeNode());
             }
         }
         this.valid = true;
