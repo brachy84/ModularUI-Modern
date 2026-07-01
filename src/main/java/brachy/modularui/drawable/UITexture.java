@@ -9,6 +9,7 @@ import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -191,6 +192,8 @@ public class UITexture implements IDrawable {
     }
 
     public void draw(GuiContext context, float x, float y, float width, float height) {
+        context.getGraphics().flush();
+        RenderSystem.disableDepthTest();
         GuiDraw.drawTexture(context.getLastGraphicsPose(), this.location, x, y, x + width, y + height, this.u0, this.v0,
                 this.u1, this.v1);
     }
