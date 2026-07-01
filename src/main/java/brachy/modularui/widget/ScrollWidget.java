@@ -25,7 +25,7 @@ public class ScrollWidget<W extends ScrollWidget<W>> extends AbstractScrollWidge
     }
 
     @Override
-    protected IWidget castToType(IWidget widget) {
+    public IWidget castToType(IWidget widget) {
         return widget;
     }
 }

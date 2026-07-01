@@ -257,7 +257,7 @@ public class Grid extends AbstractScrollWidget<IWidget, Grid> implements ILayout
     }
 
     @Override
-    protected IWidget castToType(IWidget widget) {
+    public IWidget castToType(IWidget widget) {
         return widget;
     }
 

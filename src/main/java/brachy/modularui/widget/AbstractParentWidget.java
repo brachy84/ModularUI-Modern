@@ -101,7 +101,7 @@ public abstract class AbstractParentWidget<I extends IWidget, W extends Abstract
     }
 
     private int wrapIndex(int i) {
-        if (i < 0) i = getChildren().size() + i + 1;
+        if (i < 0) i += getChildren().size();
         return i;
     }
 
@@ -116,9 +116,7 @@ public abstract class AbstractParentWidget<I extends IWidget, W extends Abstract
         if (!isChildValid(child)) {
             throw new IllegalArgumentException("Child '" + child + "' is not valid for parent '" + this + "'!");
         }
-        if (index < 0) {
-            index += getChildren().size() + 1;
-        }
+        if (index < 0) index += getChildren().size() + 1;
         this.children.add(index, child);
         if (isValid()) {
             child.initialise(this, true);

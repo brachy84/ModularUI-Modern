@@ -45,7 +45,7 @@ public class ParentWidget<W extends ParentWidget<W>> extends AbstractParentWidge
     }
 
     @Override
-    protected IWidget castToType(IWidget widget) {
+    public IWidget castToType(IWidget widget) {
         return widget;
     }
 

@@ -4,7 +4,11 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
+
 import com.mojang.serialization.MapCodec;
+
+import java.util.function.Supplier;
 
 public class WidgetRegistry extends CodecRegistry<IWidget, WidgetType<?>> {
 
@@ -14,8 +18,8 @@ public class WidgetRegistry extends CodecRegistry<IWidget, WidgetType<?>> {
 
     private WidgetRegistry() {}
 
-    public <W extends IWidget> WidgetType<W> register(String name, MapCodec<W> codec) {
-        var t = new WidgetType<>(name, codec);
+    public <W extends IWidget> WidgetType<W> register(String name, MapCodec<W> codec, Supplier<W> creator) {
+        var t = new WidgetType<>(name, codec, creator);
         register(t);
         return t;
     }

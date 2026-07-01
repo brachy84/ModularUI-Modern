@@ -80,7 +80,8 @@ public interface IWidget extends ITreeNode<IWidget> {
      * @return parent area
      */
     default Area getParentArea() {
-        return getParent().getArea();
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getParentArea() : p.getArea();
     }
 
     /**
