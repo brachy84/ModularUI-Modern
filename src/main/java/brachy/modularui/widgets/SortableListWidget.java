@@ -6,20 +6,19 @@ import brachy.modularui.api.widget.IValueWidget;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.screen.viewport.LocatedWidget;
+import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.ObjectList;
-import brachy.modularui.widget.DraggableWidget;
 import brachy.modularui.widget.sizer.Area;
+import brachy.modularui.widgets.draggable.DraggableWidget;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget.Item<T>, SortableListWidget<T>> {
 
@@ -167,7 +166,6 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
 
         private final T value;
         private List<IWidget> children;
-        private Predicate<IWidget> dropPredicate;
         private SortableListWidget<T> listWidget;
         @Getter
         private int index = -1;
@@ -194,13 +192,8 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
         }
 
         @Override
-        public boolean canDropHere(int x, int y, @Nullable IWidget widget) {
-            return this.dropPredicate == null || this.dropPredicate.test(widget);
-        }
-
-        @Override
-        public void onDrag(int mouseButton, double timeSinceLastClick) {
-            super.onDrag(mouseButton, timeSinceLastClick);
+        public void onDrag(ModularGuiContext context, int mouseButton, double timeSinceLastClick) {
+            super.onDrag(context, mouseButton, timeSinceLastClick);
             for (LocatedWidget hovering : getPanel().getAllHoveringList(false)) {
                 if (hovering.getElement() instanceof SortableListWidget.Item<?> item && item != this &&
                         item.listWidget == this.listWidget) {
@@ -211,7 +204,7 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
         }
 
         @Override
-        public void onDragEnd(boolean successful) {}
+        public void onDragEnd(ModularGuiContext context) {}
 
         @Override
         public T getWidgetValue() {
@@ -232,27 +225,5 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
         public Item<T> child(Function<Item<T>, IWidget> widgetCreator) {
             return child(widgetCreator.apply(this));
         }
-
-        public Item<T> dropPredicate(Predicate<IWidget> dropPredicate) {
-            this.dropPredicate = dropPredicate;
-            return this;
-        }
-
-        /*
-         * public Item<T> removeable() {
-         * this.removeButton = new ButtonWidget<>()
-         * .onMousePressed(mouseButton -> this.listWidget.remove(this.index))
-         * .background(GuiTextures.CLOSE.asIcon())
-         * .width(10).heightRel(1f)
-         * .right(0);
-         * return this;
-         * }
-         *
-         * public Item<T> removeable(Consumer<ButtonWidget<? extends ButtonWidget<?>>> buttonBuilder) {
-         * removeable();
-         * buttonBuilder.accept(this.removeButton);
-         * return this;
-         * }
-         */
     }
 }

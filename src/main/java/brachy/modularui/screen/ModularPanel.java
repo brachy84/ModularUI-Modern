@@ -10,7 +10,9 @@ import brachy.modularui.api.layout.IViewport;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.IDelegatingWidget;
+import brachy.modularui.api.widget.IDragHandle;
 import brachy.modularui.api.widget.IDragResizeable;
+import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.Interactable;
@@ -60,7 +62,7 @@ import java.util.function.Supplier;
  * {@link IPanelHandler#simple(ModularPanel, SecondaryPanel.IPanelBuilder, boolean)}
  * or {@link PanelSyncManager#syncedPanel(String, boolean, PanelSyncHandler.IPanelBuilder)} if the panel should be synced.
  */
-public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable {
+public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable, IDragHandle {
 
     public static final MutableObjectCodec<ModularPanel<?>> CODEC = MutableObjectCodec.<ModularPanel<?>>builder()
             .instanceDecoder(ModularPanel::decodeInstance)
@@ -912,6 +914,16 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     @Override
     public W copyExact() {
         return (W) CODEC.copy(this);
+    }
+
+    @Override
+    public @Nullable IDraggable createDraggable(ModularGuiContext ctx, int button) {
+        if (!isDraggable()) return null;
+        if (!resizer().hasFixedSize()) {
+            throw new IllegalStateException(
+                    "Panel must have a fixed size. It can't specify left AND right or top AND bottom!");
+        }
+        return new DraggablePanelWrapper(this);
     }
 
     public enum State {
