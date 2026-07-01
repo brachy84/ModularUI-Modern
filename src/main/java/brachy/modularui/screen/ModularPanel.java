@@ -9,6 +9,7 @@ import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.layout.IViewport;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.value.ISyncOrValue;
+import brachy.modularui.api.widget.IDelegatingWidget;
 import brachy.modularui.api.widget.IDragResizeable;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IWidget;
@@ -141,7 +142,8 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
 
     @Override
     public Area getParentArea() {
-        return getScreen().getScreenArea();
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getParentArea() : getScreen().getScreenArea();
     }
 
     @Override
@@ -719,7 +721,8 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         if (!isValid()) {
             throw new IllegalStateException();
         }
-        return this.screen;
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getScreen() : this.screen;
     }
 
     @Nullable

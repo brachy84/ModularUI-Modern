@@ -1,5 +1,6 @@
 package brachy.modularui.widget;
 
+import brachy.modularui.api.ITheme;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IDelegatingWidget;
 import brachy.modularui.api.widget.IWidget;
@@ -87,6 +88,11 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
     }
 
     @Override
+    public WidgetThemeEntry<?> getWidgetTheme(ITheme theme) {
+        return this.delegate.toValue(w -> w.getWidgetTheme(theme));
+    }
+
+    @Override
     public void drawBackground(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         this.delegate.apply(w -> w.drawBackground(context, widgetTheme));
     }
@@ -138,12 +144,12 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
 
     @Override
     public boolean canClickThrough() {
-        return this.delegate.toBool(IWidget::canClickThrough, false);
+        return this.delegate.toBool(IWidget::canClickThrough, true);
     }
 
     @Override
     public boolean canHoverThrough() {
-        return this.delegate.toBool(IWidget::canHoverThrough, false);
+        return this.delegate.toBool(IWidget::canHoverThrough, true);
     }
 
     @Override

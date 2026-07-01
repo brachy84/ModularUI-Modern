@@ -73,12 +73,12 @@ public abstract class AbstractWidget implements IWidget {
             throw new IllegalStateException(
                     "Resizer must be set before the widget initializes! Affected widget: " + this);
         }
-        if (!(this instanceof ModularPanel)) {
+        if (!(this instanceof ModularPanel) || parent instanceof IDelegatingWidget) {
             this.parent = parent;
             this.panel = parent.getPanel();
             this.context = parent.getContext();
             getArea().z(parent.getArea().z() + 1);
-            if (!(parent instanceof DelegatingWidget del) || del.getDelegate() != this) {
+            if (!IDelegatingWidget.isDelegating(parent, this)) {
                 resizer().initialize(parent.resizer(), parent.getScreen().getResizeNode());
             }
         }
@@ -205,19 +205,6 @@ public abstract class AbstractWidget implements IWidget {
     @Override
     public Area getArea() {
         return area;
-    }
-
-    /**
-     * Shortcut to get the area of the parent
-     *
-     * @return parent area
-     */
-    public Area getParentArea() {
-        IWidget parent = getParent();
-        while (parent instanceof IDelegatingWidget dw) {
-            parent = dw.getParent();
-        }
-        return parent.getArea();
     }
 
     /**
