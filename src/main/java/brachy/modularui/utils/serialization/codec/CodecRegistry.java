@@ -1,18 +1,23 @@
 package brachy.modularui.utils.serialization.codec;
 
+import com.google.common.collect.Iterators;
+
 import net.minecraft.util.ExtraCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import com.google.common.base.CharMatcher;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class CodecRegistry<T, E extends CodecRegistry.Entry<? extends T>> {
+public abstract class CodecRegistry<T, E extends CodecRegistry.Entry<? extends T>> implements Iterable<E> {
 
     private static final CharMatcher DISALLOWED_NAME_CHARS = CharMatcher.inRange('a', 'z')
             .or(CharMatcher.anyOf("_:"))
@@ -51,6 +56,12 @@ public abstract class CodecRegistry<T, E extends CodecRegistry.Entry<? extends T
             throw new IllegalArgumentException("Entry new can only contain lower case letters, underscores and colons.");
         }
         this.types.put(entry.name(), entry);
+    }
+
+    @Unmodifiable
+    @Override
+    public @NotNull Iterator<E> iterator() {
+        return Iterators.unmodifiableIterator(this.types.values().iterator());
     }
 
     public static class Entry<T> {
