@@ -1,6 +1,8 @@
 package brachy.modularui.utils.serialization.codec;
 
 import brachy.modularui.api.codec.InstanceMapDecoder;
+import brachy.modularui.editor.Option;
+import brachy.modularui.editor.Options;
 import brachy.modularui.utils.EqualityTest;
 
 import com.mojang.serialization.Codec;
@@ -12,6 +14,7 @@ import com.mojang.serialization.MapDecoder;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 
+import com.google.common.collect.AbstractIterator;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceLinkedOpenHashMap;
 import lombok.experimental.Accessors;
@@ -21,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +42,7 @@ import java.util.stream.Stream;
  * @param <T> type of property
  */
 @Accessors(fluent = true)
-public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> {
+public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements Options<T> {
 
     private final List<Field<T, ?>> fields;
     private final InstanceMapDecoder<T> instanceDecoder;
@@ -237,6 +241,24 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> {
     @Override
     public boolean areEqual(@NotNull T t1, @NotNull T t2) {
         return this.equals.areEqual(t1, t2);
+    }
+
+    @Override
+    public @NotNull Iterator<Option<T, ?>> iterator() {
+        return new AbstractIterator<>() {
+
+            private final Iterator<Field<T, ?>> it = MutableObjectCodec.this.fields.iterator();
+
+            @Override
+            protected Option<T, ?> computeNext() {
+                return this.it.hasNext() ? this.it.next() : endOfData();
+            }
+        };
+    }
+
+    @Override
+    public Option<T, ?> getOption(String name) {
+        return findField(name).orElse(null);
     }
 
     public static class Builder<T> {

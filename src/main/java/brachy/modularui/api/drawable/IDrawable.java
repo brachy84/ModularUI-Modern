@@ -237,7 +237,7 @@ public interface IDrawable {
      */
     class DrawableWidget extends Widget<DrawableWidget> {
 
-        public static final MapCodec<IWidget> CODEC = IDrawable.CODEC.fieldOf("drawable").flatXmap(d -> DataResult.success(d.asWidget()), w -> {
+        public static final MapCodec<Widget<?>> CODEC = IDrawable.CODEC.fieldOf("drawable").flatXmap(d -> DataResult.success(d.asWidget()), w -> {
             if (w instanceof DrawableWidget d) return DataResult.success(d.drawable);
             return DataResult.error(() -> "Can only convert DrawableWidget back");
         });
@@ -254,7 +254,7 @@ public interface IDrawable {
             this.drawable.drawAtZero(context, getArea(), getActiveWidgetTheme(widgetTheme, isHovering()));
         }
 
-        @Override
+        /*@Override
         public WidgetType<?> getType() {
             return WidgetType.DRAWABLE;
         }
@@ -264,6 +264,6 @@ public interface IDrawable {
             var copy = new DrawableWidget(drawable);
             Widget.CODEC.copyFields(this, copy);
             return copy;
-        }
+        }*/
     }
 }

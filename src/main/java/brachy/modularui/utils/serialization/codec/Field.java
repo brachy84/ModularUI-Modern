@@ -3,6 +3,7 @@ package brachy.modularui.utils.serialization.codec;
 import brachy.modularui.api.codec.IExtendedCodec;
 import brachy.modularui.api.codec.MutableDecoder;
 import brachy.modularui.api.codec.MutableMapDecoder;
+import brachy.modularui.editor.Option;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Accessors(fluent = true, chain = true)
-public final class Field<T, V> {
+public final class Field<T, V> implements Option<T, V> {
 
     @Getter private final String name;
     @Getter private final FieldWriter<T, V> fieldWriter;
@@ -260,6 +261,26 @@ public final class Field<T, V> {
         } else {
             b.append(value);
         }
+    }
+
+    @Override
+    public void setField(T holder, V value) {
+        this.fieldWriter.writeField(holder, value);
+    }
+
+    @Override
+    public V getField(T holder) {
+        return this.fieldReader.readField(holder);
+    }
+
+    @Override
+    public boolean canRead() {
+        return this.fieldReader != null;
+    }
+
+    @Override
+    public boolean canWrite() {
+        return this.fieldWriter != null;
     }
 
     public enum EncodeWhen {

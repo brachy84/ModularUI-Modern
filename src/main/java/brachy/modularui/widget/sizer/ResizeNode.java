@@ -256,6 +256,13 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
         return axis.isHorizontal() ? hasWidth() : hasHeight();
     }
 
+    public boolean has(GuiAxis axis, Unit.State state) {
+        if (state == Unit.State.SIZE) return hasSize(axis);
+        if (state == Unit.State.START) return hasStartPos(axis);
+        if (state == Unit.State.END) return hasEndPos(axis);
+        return false;
+    }
+
     public boolean isExpanded() {
         return false;
     }

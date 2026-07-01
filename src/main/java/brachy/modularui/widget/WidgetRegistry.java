@@ -1,10 +1,9 @@
 package brachy.modularui.widget;
 
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.editor.Options;
 import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
-
-import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
 import com.mojang.serialization.MapCodec;
 
@@ -18,8 +17,8 @@ public class WidgetRegistry extends CodecRegistry<IWidget, WidgetType<?>> {
 
     private WidgetRegistry() {}
 
-    public <W extends IWidget> WidgetType<W> register(String name, MapCodec<W> codec, Supplier<W> creator) {
-        var t = new WidgetType<>(name, codec, creator);
+    public <W extends IWidget> WidgetType<W> register(String name, MapCodec<W> codec, Options<W> options, Supplier<W> creator) {
+        var t = new WidgetType<>(name, codec, options, creator);
         register(t);
         return t;
     }

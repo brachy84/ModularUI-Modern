@@ -260,7 +260,8 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
     @Override
     public void onChildChangeEnabled(IWidget child, boolean enabled) {
         if (this.collapseDisabledChildren) {
-            ILayoutWidget.super.onChildChangeEnabled(child, enabled);
+            scheduleResize();
+            //ILayoutWidget.super.onChildChangeEnabled(child, enabled);
         }
     }
 

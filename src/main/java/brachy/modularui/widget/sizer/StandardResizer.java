@@ -566,6 +566,11 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
         return axis.isHorizontal() ? this.x.hasEnd() : this.y.hasEnd();
     }
 
+    public void remove(GuiAxis axis, Unit.State state) {
+        var ds = axis.isVertical() ? this.y : this.x;
+        ds.remove(state);
+    }
+
     @Override
     public boolean widthDependsOnParent() {
         return this.x.sizeDependsOnParent();
