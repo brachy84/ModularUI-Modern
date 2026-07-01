@@ -46,6 +46,7 @@ public class DebugOverlay extends CustomModularScreen {
     @Override
     public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
         return new ModularPanel<>("debug")
+                .setEnabledIf(w -> ModularUIConfig.Dev.debugUI())
                 .fullScreenInvisible()
                 .child(new ContextMenuButton<>("menu_debug_options")
                         .horizontalCenter()
