@@ -257,13 +257,12 @@ public class DimensionSizer {
             }
         }
 
-        // TODO find a better place to apply the margin, is it needed at all?
-        // apply padding and margin to size
-        if (this.sizeCalculated && calcParent && ((this.size != null && this.size.isRelative()) ||
-                (this.start != null && this.end != null && (this.start.isRelative() || this.end.isRelative())))) {
-            Box margin = area.getMargin();
-            // padding is applied in calcSize()
-            s = Math.min(s, parentSize /*- padding.getTotal(this.axis)*/ - margin.getTotal(this.axis));
+        // apply margin to size
+        // padding is applied in calcSize()
+        if (!sizeCalculated && this.sizeCalculated && (
+                (this.size != null && this.size.isRelative()) ||
+                (this.start != null && this.end != null))) {
+            s -= area.getMargin().getTotal(this.axis);
         }
         area.setRelativePoint(this.axis, p);
         area.setPoint(this.axis, p + relativeTo.getArea().getPoint(this.axis)); // temporary

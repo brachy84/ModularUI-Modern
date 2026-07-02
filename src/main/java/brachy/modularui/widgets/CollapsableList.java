@@ -19,13 +19,15 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
     @Getter
     private boolean expanded = true;
     @Getter
-    private IIcon collapsedIcon = GuiTextures.MOVE_RIGHT.asIcon().size(8, 16);
-    private IIcon expandedIcon = GuiTextures.MOVE_DOWN.asIcon().size(16, 8);
+    private IIcon collapsedIcon = GuiTextures.MOVE_RIGHT.asIcon().size(5, 10);
+    private IIcon expandedIcon = GuiTextures.MOVE_DOWN.asIcon().size(10, 5);
     private IWidget title;
     @Getter private boolean collapseDisabledChildren = true;
+    @Getter private int childPadding = 2;
+    @Getter private int indent = 4;
 
     public CollapsableList() {
-        coverChildren();
+        coverChildrenHeight().fullWidth();
     }
 
     protected IIcon getCurrentIcon() {
@@ -59,25 +61,29 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
             int s = Math.max(ih, this.title.getArea().requestedHeight());
             this.title.getArea().ry = p + s / 2 - this.title.getArea().requestedHeight() / 2;
             this.title.getArea().rx = getArea().getPadding().left() + iw;
+            this.title.getArea().getMargin().left(iw);
             this.title.resizer().setPosResized(true, true);
-            p += s;
+            this.title.resizer().setMarginPaddingApplied(true);
+            p += s + this.childPadding;
         }
         int ep = 0;
         for (IWidget widget : getTypeChildren()) {
             if (widget == this.title) continue;
             if (shouldIgnoreChildSize(widget)) {
                 widget.resizer().updateResized();
+                widget.resizer().setMarginPaddingApplied(true);
                 continue;
             }
             if (!widget.resizer().isHeightCalculated()) return false;
             ep += widget.getArea().getMargin().top();
             widget.getArea().ry = p + ep;
-            ep += widget.getArea().height + widget.getArea().getMargin().bottom();
+            ep += widget.getArea().height + widget.getArea().getMargin().bottom() + this.childPadding;
             widget.resizer().setYResized(true);
             widget.resizer().setYMarginPaddingApplied(true);
         }
         if (this.expanded) p += ep;
         p += getArea().getPadding().bottom();
+        //resizer().setMarginPaddingApplied(true);
         return true;
     }
 
@@ -89,9 +95,11 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
             if (widget == this.title) continue;
             if (shouldIgnoreChildSize(widget)) {
                 widget.resizer().updateResized();
+                widget.resizer().setXMarginPaddingApplied(true);
                 continue;
             }
-            widget.getArea().rx = l + iw + widget.getArea().getPadding().left() + 4;
+            widget.getArea().rx = l + iw + this.indent;
+            widget.getArea().getMargin().left(iw + this.indent);
             widget.resizer().setXResized(true);
             widget.resizer().setXMarginPaddingApplied(true);
         }
@@ -164,6 +172,16 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
      */
     public CollapsableList collapseDisabledChildren(boolean doCollapse) {
         this.collapseDisabledChildren = doCollapse;
+        return this;
+    }
+
+    public CollapsableList childPadding(int childPadding) {
+        this.childPadding = childPadding;
+        return this;
+    }
+
+    public CollapsableList indent(int indent) {
+        this.indent = indent;
         return this;
     }
 }
