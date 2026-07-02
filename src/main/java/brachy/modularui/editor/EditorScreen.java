@@ -162,12 +162,11 @@ public class EditorScreen extends CustomModularScreen {
 
     private void buildSizePosConfig(IWidget widget) {
         var cfg = this.widgetConfigurator;
-        cfg.child(Text.str("Size and Position").asWidget());
-        var flow = Flow.col().crossAxisAlignment(Alignment.CrossAxis.START)
+        var flow = new CollapsableList()
                 .fullWidth()
                 .coverChildrenHeight()
-                .childPadding(3)
-                .collapseDisabledChildren();
+                .indent(0)
+                .title(Text.str("Size and Position").asWidget());
         cfg.child(flow);
         var type = widget.getType();
         var left = type.getOptions().getOption("left");
@@ -187,20 +186,17 @@ public class EditorScreen extends CustomModularScreen {
 
     }
 
-    private boolean posCard(Flow parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
+    private boolean posCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
         Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
         Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
         Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
         Option<Unit, Float> anchorOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("anchor");
         Option<Unit, Boolean> autoAnchorOption = (Option<Unit, Boolean>) Unit.FULL_CODEC.getOption("autoAnchor");
         var customOffset = new BoolValue(false);
-        var card = Flow.col().name(unit.name() + "_config_card")
-                .coverChildrenHeight()
+        var card = new CollapsableList().name(unit.name() + "_config_card")
                 .padding(2)
-                .childPadding(1)
                 .setEnabledIf(f -> resizer.has(axis, state))
-                .collapseDisabledChildren()
-                .child(Flow.row().name("header")
+                .title(Flow.row().name("header")
                         .coverChildrenHeight()
                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
                         .child(Text.str(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name())).asWidget().name("name"))
@@ -212,7 +208,7 @@ public class EditorScreen extends CustomModularScreen {
                                     resizer.remove(axis, state);
                                     return true;
                                 })))
-                .child(Flow.row()
+                .child(Flow.row().name("value_row")
                         .fullWidth()
                         .height(14)
                         .childPadding(2)
@@ -287,19 +283,16 @@ public class EditorScreen extends CustomModularScreen {
         return resizer.has(axis, state);
     }
 
-    private boolean sizeCard(Flow parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Option<IWidget, Unit> unit) {
+    private boolean sizeCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Option<IWidget, Unit> unit) {
         var state = Unit.State.SIZE;
         Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
         Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
         Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
         var customOffset = new BoolValue(false);
-        var card = Flow.col().name(unit.name() + "_config_card")
-                .coverChildrenHeight()
+        var card = new CollapsableList().name(unit.name() + "_config_card")
                 .padding(2)
-                .childPadding(1)
                 .setEnabledIf(f -> resizer.has(axis, state))
-                .collapseDisabledChildren()
-                .child(Flow.row().name("header")
+                .title(Flow.row().name("header")
                         .coverChildrenHeight()
                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
                         .child(Text.str(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name())).asWidget().name("name"))
@@ -366,6 +359,7 @@ public class EditorScreen extends CustomModularScreen {
         if (u != null) {
             o2.setField(u, value);
             widget.scheduleResize();
+            this.widgetConfigurator.scheduleResize();
         }
     }
 

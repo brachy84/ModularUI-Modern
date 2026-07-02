@@ -9,6 +9,7 @@ import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.IDragResizeable;
 import brachy.modularui.api.widget.IGuiAction;
+import brachy.modularui.api.widget.INotifyEnabled;
 import brachy.modularui.api.widget.IPositioned;
 import brachy.modularui.api.widget.ISynced;
 import brachy.modularui.api.widget.ITooltip;
@@ -31,10 +32,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widgets.slot.ItemSlot;
 
 import com.mojang.serialization.Codec;
-
 import com.mojang.serialization.DataResult;
-
-import com.mojang.serialization.MapCodec;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -100,6 +98,8 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
 
 
     // other
+    @Getter private Predicate<W> dynamicEnabled = w -> true;
+    private boolean lastDynamicEnabled = true;
     @Getter private boolean excludeAreaInRecipeViewer = false;
     // sizing
     @Getter
@@ -188,6 +188,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
                 getContext().getScreen().registerGuiActionListener(action);
             }
         }
+        this.lastDynamicEnabled = this.dynamicEnabled.test(getThis());
 
         if (this.value != null && this.syncKey != null) {
             throw new IllegalStateException(
@@ -730,7 +731,30 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
      * @return this
      */
     public W setEnabledIf(Predicate<W> condition) {
-        return onUpdateListener(w -> setEnabled(condition.test(w)), true);
+        this.dynamicEnabled = condition;
+        return getThis();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        boolean old = super.isEnabled() && this.lastDynamicEnabled;
+        this.enabled = enabled;
+        checkNotifyParentEnabled(old);
+    }
+
+    private boolean checkNotifyParentEnabled(boolean oldEnabled) {
+        boolean current = super.isEnabled() && this.lastDynamicEnabled;
+        if (current != oldEnabled && isValid() && getParent() instanceof INotifyEnabled notifyEnabled) {
+            notifyEnabled.onChildChangeEnabled(this, current);
+        }
+        return current;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        boolean old = super.isEnabled() && this.lastDynamicEnabled;
+        this.lastDynamicEnabled = this.dynamicEnabled.test(getThis());
+        return checkNotifyParentEnabled(old);
     }
 
     // ----------------

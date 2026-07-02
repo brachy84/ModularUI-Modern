@@ -29,7 +29,7 @@ public abstract class AbstractWidget implements IWidget {
 
     @Nullable
     private String name;
-    private boolean enabled = true;
+    boolean enabled = true;
     private int timeHovered = -1;
     private int timeBelowMouse = -1;
 
