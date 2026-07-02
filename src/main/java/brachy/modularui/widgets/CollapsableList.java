@@ -19,8 +19,8 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
     @Getter
     private boolean expanded = true;
     @Getter
-    private IIcon collapsedIcon = GuiTextures.MOVE_RIGHT.asIcon().size(5, 10);
-    private IIcon expandedIcon = GuiTextures.MOVE_DOWN.asIcon().size(10, 5);
+    private IIcon collapsedIcon = GuiTextures.MOVE_RIGHT.asIcon().size(6, 12);
+    private IIcon expandedIcon = GuiTextures.MOVE_DOWN.asIcon().size(12, 6);
     private IWidget title;
     @Getter private boolean collapseDisabledChildren = true;
     @Getter private int childPadding = 2;

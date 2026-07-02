@@ -261,7 +261,7 @@ public class DimensionSizer {
         // padding is applied in calcSize()
         if (!sizeCalculated && this.sizeCalculated && (
                 (this.size != null && this.size.isRelative()) ||
-                (this.start != null && this.end != null))) {
+                        (this.start != null && this.end != null))) {
             s -= area.getMargin().getTotal(this.axis);
         }
         area.setRelativePoint(this.axis, p);
@@ -405,17 +405,34 @@ public class DimensionSizer {
     public void remove(Unit.State state) {
         switch (state) {
             case START -> {
-                this.start.reset();
-                this.start = null;
+                if (this.start != null) {
+                    this.start.reset();
+                    this.next = this.start;
+                    this.start = null;
+                }
             }
             case END -> {
-                this.end.reset();
-                this.end = null;
+                if (this.end != null) {
+                    this.end.reset();
+                    this.next = this.end;
+                    this.end = null;
+                }
             }
             case SIZE -> {
-                this.size.reset();
-                this.size = null;
+                if (this.size != null) {
+                    this.size.reset();
+                    this.next = this.size;
+                    this.size = null;
+                }
             }
+        }
+    }
+
+    public void add(IWidget widget, Unit.State state) {
+        switch (state) {
+            case START -> getStart(widget);
+            case END -> getEnd(widget);
+            case SIZE -> getSize(widget);
         }
     }
 

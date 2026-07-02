@@ -166,8 +166,8 @@ public class EditorScreen extends CustomModularScreen {
                 .fullWidth()
                 .coverChildrenHeight()
                 .indent(0)
+                .paddingRight(2)
                 .title(Text.str("Size and Position").asWidget());
-        cfg.child(flow);
         var type = widget.getType();
         var left = type.getOptions().getOption("left");
         var right = type.getOptions().getOption("right");
@@ -175,37 +175,46 @@ public class EditorScreen extends CustomModularScreen {
         var top = type.getOptions().getOption("top");
         var bottom = type.getOptions().getOption("bottom");
         var height = type.getOptions().getOption("height");
-        var r = widget.resizer();
-        int x = 0, y = 0;
-        if (posCard(flow, widget, r, GuiAxis.X, Unit.State.START, (Option<IWidget, Unit>) left)) x++;
-        if (posCard(flow, widget, r, GuiAxis.X, Unit.State.END, (Option<IWidget, Unit>) right)) x++;
-        if (sizeCard(flow, widget, r, GuiAxis.X, (Option<IWidget, Unit>) width)) x++;
-        if (posCard(flow, widget, r, GuiAxis.Y, Unit.State.START, (Option<IWidget, Unit>) top)) y++;
-        if (posCard(flow, widget, r, GuiAxis.Y, Unit.State.END, (Option<IWidget, Unit>) bottom)) y++;
-        if (sizeCard(flow, widget, r, GuiAxis.Y, (Option<IWidget, Unit>) height)) y++;
 
+        if (left == null || right == null || width == null || top == null || bottom == null || height == null) {
+            cfg.child(Text.str("Widget codec does not have size and position fields!").style(Text.RED)
+                    .asWidget()
+                    .padding(4)
+                    .fullWidth());
+            return;
+        }
+
+        cfg.child(flow);
+        var r = widget.resizer();
+        posCard(flow, widget, r, GuiAxis.X, Unit.State.START, (Option<IWidget, Unit>) left);
+        posCard(flow, widget, r, GuiAxis.X, Unit.State.END, (Option<IWidget, Unit>) right);
+        sizeCard(flow, widget, r, GuiAxis.X, (Option<IWidget, Unit>) width);
+        posCard(flow, widget, r, GuiAxis.Y, Unit.State.START, (Option<IWidget, Unit>) top);
+        posCard(flow, widget, r, GuiAxis.Y, Unit.State.END, (Option<IWidget, Unit>) bottom);
+        sizeCard(flow, widget, r, GuiAxis.Y, (Option<IWidget, Unit>) height);
     }
 
-    private boolean posCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
+    private void posCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
         Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
         Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
         Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
         Option<Unit, Float> anchorOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("anchor");
         Option<Unit, Boolean> autoAnchorOption = (Option<Unit, Boolean>) Unit.FULL_CODEC.getOption("autoAnchor");
-        var customOffset = new BoolValue(false);
+        var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name());
         var card = new CollapsableList().name(unit.name() + "_config_card")
-                .padding(2)
+                .padding(1)
                 .setEnabledIf(f -> resizer.has(axis, state))
                 .title(Flow.row().name("header")
                         .coverChildrenHeight()
                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
-                        .child(Text.str(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name())).asWidget().name("name"))
+                        .child(Text.str(name).asWidget().name("name"))
                         .child(new ButtonWidget<>().name("remove_button")
                                 .invisible()
                                 .overlay(GuiTextures.REMOVE)
                                 .size(12)
                                 .onMousePressed((ctx, button) -> {
                                     resizer.remove(axis, state);
+                                    this.selectedWidget.scheduleResize();
                                     return true;
                                 })))
                 .child(Flow.row().name("value_row")
@@ -239,19 +248,10 @@ public class EditorScreen extends CustomModularScreen {
                         .height(14)
                         .childPadding(2)
                         .setEnabledIf(f -> get(widget, unit, measureOption, Unit.Measure.PIXEL) == Unit.Measure.RELATIVE)
-                        .child(Text.str("Offset").asWidget())
-                        .child(new ToggleButton()
-                                .size(14)
-                                .invisible()
-                                .stateOverlay(GuiTextures.CHECK_BOX)
-                                .value(new BoolValue.Dynamic(customOffset::getBoolValue, v -> {
-                                    customOffset.setBoolValue(v);
-                                    set(widget, unit, offsetOption, 0);
-                                })))
+                        .child(Text.str("Pixel offset").asWidget().expanded())
                         .child(new TextFieldWidget()
                                 .expanded()
                                 .fullHeight()
-                                .setEnabledIf(w -> customOffset.getBoolValue())
                                 .setNumbers(d -> d)
                                 .value(new IntValue.Dynamic(() -> get(widget, unit, offsetOption, 0), v -> {
                                     set(widget, unit, offsetOption, v);
@@ -260,16 +260,17 @@ public class EditorScreen extends CustomModularScreen {
                         .height(14)
                         .childPadding(2)
                         .setEnabledIf(f -> get(widget, unit, measureOption, Unit.Measure.PIXEL) == Unit.Measure.RELATIVE)
-                        .child(Text.str("Anchor").asWidget())
+                        .child(Text.str("Anchor").asWidget().expanded())
                         .child(new ToggleButton()
                                 .size(14)
                                 .invisible()
                                 .stateOverlay(GuiTextures.CHECK_BOX)
                                 .value(new BoolValue.Dynamic(() -> !get(widget, unit, autoAnchorOption, true), v -> {
                                     set(widget, unit, autoAnchorOption, !v);
+                                    if (v) set(widget, unit, anchorOption, get(widget, unit, valueOption, 1f));
                                 })))
                         .child(new TextFieldWidget()
-                                .expanded()
+                                .widthRel(0.5f)
                                 .fullHeight()
                                 .setEnabledIf(w -> !get(widget, unit, autoAnchorOption, true))
                                 .setNumbersDouble(d -> d)
@@ -280,28 +281,56 @@ public class EditorScreen extends CustomModularScreen {
                                     set(widget, unit, anchorOption, v);
                                 }))));
         parent.child(card);
-        return resizer.has(axis, state);
+        parent.child(Flow.row().name(unit.name() + "_disabled")
+                .coverChildrenHeight()
+                .setEnabledIf(f -> !resizer.has(axis, state) && canAddConstraint(resizer, axis))
+                .childPadding(3)
+                .child(new ButtonWidget<>()
+                        .size(12)
+                        .invisible()
+                        .overlay(GuiTextures.ADD)
+                        .tooltipAutoUpdate(true)
+                        .onMousePressed((ctx, button) -> {
+                            if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+                                if (canAddConstraint(resizer, axis)) {
+                                    resizer.add(axis, state);
+                                    this.selectedWidget.scheduleResize();
+                                }
+                                return true;
+                            }
+                            return false;
+                        }))
+                .child(Text.str(name).asWidget()));
     }
 
-    private boolean sizeCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Option<IWidget, Unit> unit) {
+    private boolean canAddConstraint(StandardResizer resizer, GuiAxis axis) {
+        int i = 0;
+        if (resizer.hasSize(axis)) i++;
+        if (resizer.hasStartPos(axis)) i++;
+        if (resizer.hasEndPos(axis)) i++;
+        return i < 2;
+    }
+
+    private void sizeCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Option<IWidget, Unit> unit) {
         var state = Unit.State.SIZE;
         Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
         Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
         Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
-        var customOffset = new BoolValue(false);
+        var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name());
         var card = new CollapsableList().name(unit.name() + "_config_card")
-                .padding(2)
+                .padding(1)
                 .setEnabledIf(f -> resizer.has(axis, state))
                 .title(Flow.row().name("header")
                         .coverChildrenHeight()
                         .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
-                        .child(Text.str(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name())).asWidget().name("name"))
+                        .child(Text.str(name).asWidget().name("name"))
                         .child(new ButtonWidget<>().name("remove_button")
                                 .invisible()
                                 .overlay(GuiTextures.REMOVE)
                                 .size(12)
                                 .onMousePressed((ctx, button) -> {
                                     resizer.remove(axis, state);
+                                    this.selectedWidget.scheduleResize();
                                     return true;
                                 })))
                 .child(Flow.row().name("value_row")
@@ -334,15 +363,7 @@ public class EditorScreen extends CustomModularScreen {
                         .height(14)
                         .childPadding(2)
                         .setEnabledIf(f -> get(widget, unit, measureOption, Unit.Measure.PIXEL) == Unit.Measure.RELATIVE)
-                        .child(Text.str("Offset").asWidget())
-                        .child(new ToggleButton()
-                                .size(14)
-                                .invisible()
-                                .stateOverlay(GuiTextures.CHECK_BOX)
-                                .value(new BoolValue.Dynamic(customOffset::getBoolValue, v -> {
-                                    customOffset.setBoolValue(v);
-                                    set(widget, unit, offsetOption, 0);
-                                })))
+                        .child(Text.str("Pixel offset").asWidget().expanded())
                         .child(new TextFieldWidget()
                                 .expanded()
                                 .fullHeight()
@@ -351,7 +372,26 @@ public class EditorScreen extends CustomModularScreen {
                                     set(widget, unit, offsetOption, v);
                                 }))));
         parent.child(card);
-        return resizer.has(axis, state);
+        parent.child(Flow.row().name(unit.name() + "_disabled")
+                .coverChildrenHeight()
+                .setEnabledIf(f -> !resizer.has(axis, state) && canAddConstraint(resizer, axis))
+                .childPadding(3)
+                .child(new ButtonWidget<>()
+                        .size(12)
+                        .invisible()
+                        .overlay(GuiTextures.ADD)
+                        .tooltipAutoUpdate(true)
+                        .onMousePressed((ctx, button) -> {
+                            if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+                                if (canAddConstraint(resizer, axis)) {
+                                    resizer.add(axis, state);
+                                    this.selectedWidget.scheduleResize();
+                                }
+                                return true;
+                            }
+                            return false;
+                        }))
+                .child(Text.str(name).asWidget()));
     }
 
     private <V> void set(IWidget widget, Option<IWidget, Unit> o1, Option<Unit, V> o2, V value) {

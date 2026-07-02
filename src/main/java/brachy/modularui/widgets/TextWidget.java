@@ -33,6 +33,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     public static final MutableObjectCodec<TextWidget<?>> CODEC = MutableObjectCodec.<TextWidget<?>>builder()
             .instance(TextWidget::new)
             .equalityTest(TextWidget::areEqual)
+            .addFieldsOf(Widget.CODEC, w -> w)
             .add("text", TextWidget::value, TextWidget::getKey, ExtraCodecs.COMPONENT)
             .addOpt("alignment", TextWidget::textAlign, TextWidget::getAlignment, Alignment.CODEC, Alignment.CenterLeft)
             .addOpt("color", TextWidget::color, TextWidget::getColorValue, Color.CODEC, null)
