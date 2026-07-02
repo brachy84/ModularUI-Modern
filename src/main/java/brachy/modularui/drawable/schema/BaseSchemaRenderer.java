@@ -210,10 +210,9 @@ public class BaseSchemaRenderer implements IDrawable {
         context.getGraphics().flush();
         context.graphicsPose().pushPose();
 
-        Matrix4f pose = context.getLastGraphicsPose();
-        // needed since emi resets the pose matrix if you want to view schemas in recipe viewers
-        int transformX = (int)pose.m30() + context.transformX(-x,-y);
-        int transformY = (int)pose.m31() + context.transformY(-x,-y);
+        Area area = context.getScreenArea();
+        int transformX = context.transformX(x, y) + area.x();
+        int transformY = context.transformY(x, y) + area.y();
         this.viewport.calculateOpenGLViewportFromRectangle(transformX, transformY, width, height);
         this.viewport.applyViewport();
 
