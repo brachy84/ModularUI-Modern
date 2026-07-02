@@ -29,6 +29,7 @@ import brachy.modularui.widget.SingleChildWidget;
 import brachy.modularui.widget.SplitView;
 import brachy.modularui.widget.WidgetRegistry;
 import brachy.modularui.widget.WidgetType;
+import brachy.modularui.widget.sizer.Box;
 import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widget.sizer.Unit;
 import brachy.modularui.widgets.ButtonWidget;
@@ -175,6 +176,8 @@ public class EditorScreen extends CustomModularScreen {
         var top = type.getOptions().getOption("top");
         var bottom = type.getOptions().getOption("bottom");
         var height = type.getOptions().getOption("height");
+        var padding = type.getOptions().getOption("padding");
+        var margin = type.getOptions().getOption("margin");
 
         if (left == null || right == null || width == null || top == null || bottom == null || height == null) {
             cfg.child(Text.str("Widget codec does not have size and position fields!").style(Text.RED)
@@ -192,6 +195,8 @@ public class EditorScreen extends CustomModularScreen {
         posCard(flow, widget, r, GuiAxis.Y, Unit.State.START, (Option<IWidget, Unit>) top);
         posCard(flow, widget, r, GuiAxis.Y, Unit.State.END, (Option<IWidget, Unit>) bottom);
         sizeCard(flow, widget, r, GuiAxis.Y, (Option<IWidget, Unit>) height);
+        marginPaddingCard(flow, widget, r, (Option<IWidget, Box>) margin);
+        marginPaddingCard(flow, widget, r, (Option<IWidget, Box>) padding);
     }
 
     private void posCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
@@ -394,7 +399,85 @@ public class EditorScreen extends CustomModularScreen {
                 .child(Text.str(name).asWidget()));
     }
 
-    private <V> void set(IWidget widget, Option<IWidget, Unit> o1, Option<Unit, V> o2, V value) {
+    private void marginPaddingCard(CollapsableList parent, IWidget widget, StandardResizer resizer, Option<IWidget, Box> box) {
+        Option<Box, Integer> leftOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("left");
+        Option<Box, Integer> rightOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("right");
+        Option<Box, Integer> topOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("top");
+        Option<Box, Integer> bottomOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("bottom");
+        var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, box.name());
+        var type = new IntValue(0);
+        var card = new CollapsableList().name(box.name() + "_config_card")
+                .padding(1)
+                .expanded(false)
+                .title(Text.str(name).asWidget())
+                .child(new CycleButtonWidget()
+                        .fullWidth()
+                        .height(14)
+                        .stateCount(3)
+                        .stateOverlay(0, Text.str("All"))
+                        .stateOverlay(1, Text.str("Symmetric"))
+                        .stateOverlay(2, Text.str("Individual"))
+                        .value(new IntValue.Dynamic(type::getIntValue, v -> {
+                            type.setIntValue(v);
+                            if (v == 0) set(widget, box, topOption, get(widget, box, leftOption, 0));
+                            if (v < 2) {
+                                set(widget, box, rightOption, get(widget, box, leftOption, 0));
+                                set(widget, box, bottomOption, get(widget, box, topOption, 0));
+                            }
+                        })))
+                .child(Flow.row()
+                        .height(14)
+                        .child(Text.dynamic(() -> type.getIntValue() == 0 ? Text.str("All sides") : (type.getIntValue() == 1 ? Text.str("Left and Right") : Text.str("Left"))).asWidget().expanded())
+                        .child(new TextFieldWidget()
+                                .expanded()
+                                .fullHeight()
+                                .setNumbers()
+                                .value(new IntValue.Dynamic(() -> get(widget, box, leftOption, 0), v -> {
+                                    set(widget, box, leftOption, v);
+                                    if (type.getIntValue() < 2) set(widget, box, rightOption, v);
+                                    if (type.getIntValue() == 0) {
+                                        set(widget, box, topOption, v);
+                                        set(widget, box, bottomOption, v);
+                                    }
+                                }))))
+                .child(Flow.row()
+                        .height(14)
+                        .setEnabledIf(f -> type.getIntValue() > 0)
+                        .child(Text.dynamic(() -> type.getIntValue() == 1 ? Text.str("Top and Bottom") : Text.str("Right")).asWidget().expanded())
+                        .child(new TextFieldWidget()
+                                .expanded()
+                                .fullHeight()
+                                .setNumbers()
+                                .value(new IntValue.Dynamic(() -> get(widget, box, type.getIntValue() == 1 ? topOption : rightOption, 0), v -> {
+                                    if (type.getIntValue() == 1) {
+                                        set(widget, box, topOption, v);
+                                        set(widget, box, bottomOption, v);
+                                    } else {
+                                        set(widget, box, rightOption, v);
+                                    }
+                                }))))
+                .child(Flow.row()
+                        .height(14)
+                        .setEnabledIf(f -> type.getIntValue() == 2)
+                        .child(Text.str("Top").asWidget().expanded())
+                        .child(new TextFieldWidget()
+                                .expanded()
+                                .fullHeight()
+                                .setNumbers()
+                                .value(new IntValue.Dynamic(() -> get(widget, box, topOption, 0), v -> set(widget, box, topOption, v)))))
+                .child(Flow.row()
+                        .height(14)
+                        .setEnabledIf(f -> type.getIntValue() == 2)
+                        .child(Text.str("Bottom").asWidget().expanded())
+                        .child(new TextFieldWidget()
+                                .expanded()
+                                .fullHeight()
+                                .setNumbers()
+                                .value(new IntValue.Dynamic(() -> get(widget, box, bottomOption, 0), v -> set(widget, box, bottomOption, v)))));
+        parent.child(card);
+    }
+
+    private <V, I> void set(IWidget widget, Option<IWidget, I> o1, Option<I, V> o2, V value) {
         var u = o1.getField(widget);
         if (u != null) {
             o2.setField(u, value);
@@ -403,7 +486,7 @@ public class EditorScreen extends CustomModularScreen {
         }
     }
 
-    private <V> V get(IWidget widget, Option<IWidget, Unit> o1, Option<Unit, V> o2, V defaultValue) {
+    private <V, I> V get(IWidget widget, Option<IWidget, I> o1, Option<I, V> o2, V defaultValue) {
         var u = o1.getField(widget);
         if (u != null) {
             return o2.getField(u);
