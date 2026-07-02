@@ -78,7 +78,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
         return new Menu<>()
                 .widthRel(1f)
                 .coverChildrenHeight()
-                .child(new ListWidget<>()
+                .child(ListWidget.simple()
                         .widthRel(1f)
                         .maxSize(this.maxListSize)
                         .children(this.values, v -> new ButtonWidget<>()

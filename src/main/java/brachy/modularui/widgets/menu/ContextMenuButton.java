@@ -51,7 +51,7 @@ public class ContextMenuButton<W extends ContextMenuButton<W>> extends AbstractM
      * @return this
      */
     public W menuList(Consumer<ListWidget<IWidget, ?>> builder) {
-        ListWidget<IWidget, ?> l = new ListWidget<>().widthRel(1f);
+        ListWidget<IWidget, ?> l = ListWidget.simple().widthRel(1f);
         builder.accept(l);
         return menu(new Menu<>()
                 .widthRel(1f)

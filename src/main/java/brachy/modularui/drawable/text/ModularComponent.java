@@ -36,7 +36,7 @@ import java.util.function.UnaryOperator;
 
 public class ModularComponent extends MutableComponent implements Text {
 
-    public static final MutableObjectCodec<ModularComponent> CODEC = MutableObjectCodec.drawableBuilder(ModularComponent.class, "Text")
+    public static final MutableObjectCodec<ModularComponent> CODEC = MutableObjectCodec.builder(ModularComponent.class)
             .wrapped(ExtraCodecs.COMPONENT.xmap(ModularComponent::of, mc -> mc))
             .addOpt("alignment", ModularComponent::alignment, ModularComponent::getAlignment, Alignment.CODEC, Alignment.Center)
             .addOpt("scale", ModularComponent::scale, ModularComponent::getScale, Codec.FLOAT, 1f)

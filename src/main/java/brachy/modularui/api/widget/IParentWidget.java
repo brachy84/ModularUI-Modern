@@ -8,6 +8,13 @@ public interface IParentWidget<I extends IWidget, W extends IParentWidget<I, W>>
 
     boolean addChild(I child, int index);
 
+    I castToType(IWidget widget);
+
+    default boolean addChildRaw(IWidget child, int index) {
+        var i = castToType(child);
+        return i != null && addChild(i, index);
+    }
+
     default W child(int index, I child) {
         if (!addChild(child, index)) {
             throw new IllegalStateException("Failed to add child");

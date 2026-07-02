@@ -2,10 +2,16 @@ package brachy.modularui.widget.sizer;
 
 import brachy.modularui.animation.IAnimatable;
 import brachy.modularui.api.GuiAxis;
+import brachy.modularui.api.codec.ExtendedMutableCodec;
+import brachy.modularui.api.codec.MutableCodec;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,12 +32,19 @@ public class Box implements IAnimatable<Box> {
 
     public static final Box ONE = new Box().all(1);
 
-    public static final MutableObjectCodec<Box> CODEC = MutableObjectCodec.builder(Box::new)
+    public static final MutableObjectCodec<Box> FULL_CODEC = MutableObjectCodec.builder(Box::new)
             .addOpt("left", Box::left, Box::left, Codec.INT, 0).alias("x", "all")
             .addOpt("top", Box::top, Box::top, Codec.INT, 0).alias("y", "all")
             .addOpt("right", Box::right, Box::right, Codec.INT, 0).alias("x", "all")
             .addOpt("bottom", Box::bottom, Box::bottom, Codec.INT, 0).alias("y", "all")
             .build();
+
+    public static final ExtendedMutableCodec<Box> CODEC = FULL_CODEC.tryBefore(MutableCodec.flatComapMapOf(Codec.INT, Box::all, box -> {
+        if (box.left == box.right && box.left == box.top && box.left == box.bottom) {
+            return DataResult.success(box.left);
+        }
+        return DataResult.error(() -> "Can only handle box if all sides are equal");
+    }));
 
     @Getter
     @Setter

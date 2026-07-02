@@ -7,8 +7,6 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
-import com.mojang.serialization.Codec;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,10 +23,10 @@ public class DimensionSizer {
 
     public static final MutableObjectCodec<DimensionSizer> CODEC = MutableObjectCodec.builder(DimensionSizer.class)
             .baseCopy(sizer -> new DimensionSizer(sizer.resizer, sizer.axis))
-            .addOpt("coverChildrenMinSize", DimensionSizer::setCoverChildrenMinSize, DimensionSizer::getCoverChildrenMinSize, Codec.INT, -1)
-            .addOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit.ZERO).neverWriteDefault()
-            .addOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit.ZERO).neverWriteDefault()
-            .addOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit.ZERO).neverWriteDefault()
+            .equalityTest(DimensionSizer::areEqual)
+            .addOpt("start", DimensionSizer::setStart, DimensionSizer::getStart, Unit.CODEC, Unit.ZERO_START).neverWriteDefault()
+            .addOpt("end", DimensionSizer::setEnd, DimensionSizer::getEnd, Unit.CODEC, Unit.ZERO_END).neverWriteDefault()
+            .addOpt("size", DimensionSizer::setSize, DimensionSizer::getSize, Unit.CODEC, Unit.ZERO_SIZE).neverWriteDefault()
             .build();
 
     private final ResizeNode resizer;
@@ -38,8 +36,6 @@ public class DimensionSizer {
     @Getter(AccessLevel.PRIVATE) private Unit start, end, size;
     private Unit next = p1;
 
-    @Getter
-    private int coverChildrenMinSize = -1;
     @Setter
     private boolean expanded = false;
 
@@ -93,12 +89,18 @@ public class DimensionSizer {
     }
 
     public void setCoverChildren(int minSize, IWidget widget) {
-        if (minSize >= 0) getSize(widget);
-        this.coverChildrenMinSize = minSize;
+        if (minSize != Unit.DISABLE_COVER_CHILDREN) getSize(widget);
+        if (this.size != null) {
+            this.size.setCoverChildren(minSize);
+        }
     }
 
     private void setCoverChildrenMinSize(int minSize) {
         setCoverChildren(minSize, null);
+    }
+
+    public int getCoverChildrenMinSize() {
+        return this.size != null ? this.size.getCoverChildrenMinSize() : Unit.DISABLE_COVER_CHILDREN;
     }
 
     public void setUnit(Unit unit, Unit.State pos) {
@@ -143,8 +145,12 @@ public class DimensionSizer {
         return this.canRelayout;
     }
 
+    public boolean isCoverChildren() {
+        return this.size != null && this.size.isCoverChildren();
+    }
+
     public boolean dependsOnChildren() {
-        return this.coverChildrenMinSize >= 0;
+        return isCoverChildren();
     }
 
     public boolean dependsOnParent() {
@@ -152,7 +158,7 @@ public class DimensionSizer {
     }
 
     public boolean sizeDependsOnParent() {
-        return this.coverChildrenMinSize < 0 && this.size != null && this.size.isRelative();
+        return this.size != null && this.size.isRelative(); // relative automatically implies no cover children
     }
 
     public boolean posDependsOnParent() {
@@ -209,7 +215,7 @@ public class DimensionSizer {
                 p = 0;
                 if (this.size == null) {
                     s = defaultSize.getAsInt();
-                    this.sizeCalculated = s > 0 && !this.expanded && this.coverChildrenMinSize < 0;
+                    this.sizeCalculated = s > 0 && !this.expanded && !isCoverChildren();
                 } else {
                     s = calcSize(this.size, padding, parentSize, calcParent);
                 }
@@ -251,13 +257,12 @@ public class DimensionSizer {
             }
         }
 
-        // TODO find a better place to apply the margin, is it needed at all?
-        // apply padding and margin to size
-        if (this.sizeCalculated && calcParent && ((this.size != null && this.size.isRelative()) ||
-                (this.start != null && this.end != null && (this.start.isRelative() || this.end.isRelative())))) {
-            Box margin = area.getMargin();
-            // padding is applied in calcSize()
-            s = Math.min(s, parentSize /*- padding.getTotal(this.axis)*/ - margin.getTotal(this.axis));
+        // apply margin to size
+        // padding is applied in calcSize()
+        if (!sizeCalculated && this.sizeCalculated && (
+                (this.size != null && this.size.isRelative()) ||
+                        (this.start != null && this.end != null))) {
+            s -= area.getMargin().getTotal(this.axis);
         }
         area.setRelativePoint(this.axis, p);
         area.setPoint(this.axis, p + relativeTo.getArea().getPoint(this.axis)); // temporary
@@ -295,7 +300,7 @@ public class DimensionSizer {
     }
 
     public void coverChildrenForEmpty(ResizeNode resizer, Area relativeTo) {
-        int s = this.coverChildrenMinSize;
+        int s = this.size.getCoverChildrenMinSize();
         Area area = resizer.getArea();
         area.setSize(this.axis, s);
         this.sizeCalculated = true;
@@ -353,7 +358,7 @@ public class DimensionSizer {
 
     private int calcSize(Unit s, Box padding, int parentSize, boolean parentSizeCalculated) {
         // placeholder value, size is calculated externally
-        if (this.coverChildrenMinSize >= 0 || this.expanded) return 18;
+        if (isCoverChildren() || this.expanded) return 18;
         float val = s.getValue();
         if (s.isRelative()) {
             if (!parentSizeCalculated) return (int) val;
@@ -391,10 +396,44 @@ public class DimensionSizer {
     }
 
     public void detectConflictingConfiguration() {
-        if (this.expanded && this.coverChildrenMinSize >= 0) {
+        if (this.expanded && isCoverChildren()) {
             ModularUI.LOGGER.warn("Resizer '{}' has expanded() and coverChildren() on {} axis. This conflicts and may cause layout issues.", this.resizer, this.axis);
         }
         // TODO detect when this depends and all siblings depend on parent and parent depends on all children
+    }
+
+    public void remove(Unit.State state) {
+        switch (state) {
+            case START -> {
+                if (this.start != null) {
+                    this.start.reset();
+                    this.next = this.start;
+                    this.start = null;
+                }
+            }
+            case END -> {
+                if (this.end != null) {
+                    this.end.reset();
+                    this.next = this.end;
+                    this.end = null;
+                }
+            }
+            case SIZE -> {
+                if (this.size != null) {
+                    this.size.reset();
+                    this.next = this.size;
+                    this.size = null;
+                }
+            }
+        }
+    }
+
+    public void add(IWidget widget, Unit.State state) {
+        switch (state) {
+            case START -> getStart(widget);
+            case END -> getEnd(widget);
+            case SIZE -> getSize(widget);
+        }
     }
 
     /**
@@ -493,7 +532,6 @@ public class DimensionSizer {
         if (sizer.start != null) getStart(null).copyPropertiesOf(sizer.start);
         if (sizer.end != null) getEnd(null).copyPropertiesOf(sizer.end);
         if (sizer.size != null) getSize(null).copyPropertiesOf(sizer.size);
-        this.coverChildrenMinSize = sizer.coverChildrenMinSize;
     }
 
     public boolean isEqual(DimensionSizer o) {
@@ -501,8 +539,7 @@ public class DimensionSizer {
                 this.axis == o.axis &&
                 Unit.areEqual(this.start, o.start) &&
                 Unit.areEqual(this.end, o.end) &&
-                Unit.areEqual(this.size, o.size) &&
-                this.coverChildrenMinSize == o.coverChildrenMinSize;
+                Unit.areEqual(this.size, o.size);
     }
 
     public static boolean areEqual(DimensionSizer a, DimensionSizer b) {

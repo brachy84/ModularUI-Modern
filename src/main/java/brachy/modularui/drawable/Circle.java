@@ -21,7 +21,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true, chain = true)
 public class Circle implements IDrawable, IAnimatable<Circle> {
 
-    public static final MutableObjectCodec<Circle> CODEC = MutableObjectCodec.drawableBuilder(Circle::new)
+    public static final MutableObjectCodec<Circle> CODEC = MutableObjectCodec.builder(Circle::new)
             .addOpt("colorInner", Circle::colorInner, Circle::colorInner, Codec.INT, 0).alias("color")
             .addOpt("colorOuter", Circle::colorOuter, Circle::colorOuter, Codec.INT, 0).alias("color")
             .addOpt("segments", Circle::segments, Circle::segments, Codec.INT, 40)
@@ -71,8 +71,8 @@ public class Circle implements IDrawable, IAnimatable<Circle> {
     }
 
     @Override
-    public String getTypeName() {
-        return "circle";
+    public DrawableType<Circle> getType() {
+        return DrawableType.CIRCLE;
     }
 
     @Override

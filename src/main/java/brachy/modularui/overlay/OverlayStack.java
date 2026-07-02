@@ -129,7 +129,7 @@ public class OverlayStack {
                 overlay.constructOverlay(newScreen);
                 open(overlay);
             }
-            if (ModularUIConfig.Dev.debugUI() && newScreen instanceof IMuiScreen muiScreen) {
+            if (newScreen instanceof IMuiScreen muiScreen) {
                 ModularScreen overlay = new DebugOverlay(muiScreen);
                 overlay.constructOverlay(newScreen);
                 open(overlay);

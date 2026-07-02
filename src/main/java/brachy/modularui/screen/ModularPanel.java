@@ -9,7 +9,10 @@ import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.layout.IViewport;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.value.ISyncOrValue;
+import brachy.modularui.api.widget.IDelegatingWidget;
+import brachy.modularui.api.widget.IDragHandle;
 import brachy.modularui.api.widget.IDragResizeable;
+import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.Interactable;
@@ -22,14 +25,20 @@ import brachy.modularui.utils.HoveredWidgetList;
 import brachy.modularui.utils.Interpolation;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.ObjectList;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.value.sync.PanelSyncHandler;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widget.WidgetTree;
+import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.SlotGroupWidget;
 
 import net.minecraft.Util;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +62,29 @@ import java.util.function.Supplier;
  * {@link IPanelHandler#simple(ModularPanel, SecondaryPanel.IPanelBuilder, boolean)}
  * or {@link PanelSyncManager#syncedPanel(String, boolean, PanelSyncHandler.IPanelBuilder)} if the panel should be synced.
  */
-public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable {
+public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable, IDragHandle {
+
+    public static final MutableObjectCodec<ModularPanel<?>> CODEC = MutableObjectCodec.<ModularPanel<?>>builder()
+            .instanceDecoder(ModularPanel::decodeInstance)
+            .baseCopy(p -> new ModularPanel<>(p.getName()))
+            .addFieldsOf(ParentWidget.CODEC, w -> w)
+            .addOpt("theme", ModularPanel::themeOverride, ModularPanel::getThemeOverride, Codec.STRING, null)
+            .addOpt("invisible", ModularPanel::invisible, ModularPanel::isInvisible, Codec.BOOL, false)
+            .addOpt("resizeable", ModularPanel::resizeableOnDrag, ModularPanel::isResizeable, Codec.BOOL, false)
+            .addOpt("draggable", ModularPanel::draggable, ModularPanel::isDraggable, Codec.BOOL, true)
+            .addOpt("disablePanelsBelow", ModularPanel::disablePanelsBelow, ModularPanel::disablePanelsBelow, Codec.BOOL, false)
+            .addOpt("closeOnOutOfBoundsClick", ModularPanel::closeOnOutOfBoundsClick, ModularPanel::closeOnOutOfBoundsClick, Codec.BOOL, false)
+            .removeField("name")
+            .build();
+
+    private static <T> DataResult<ModularPanel<?>> decodeInstance(DynamicOps<T> ops, MapLike<T> input) {
+        var name = input.get("name");
+        if (name == null) return DataResult.error(() -> "Panel widget needs a name property");
+        return ops.getStringValue(name).flatMap(s -> {
+            if (isNameInvalid(s)) return DataResult.error(() -> "Widget name must not start with '#' or a digit and must not contain '/'");
+            return DataResult.success(s);
+        }).map(ModularPanel::new);
+    }
 
     public static ModularPanel<?> defaultPanel(@NotNull String name) {
         return defaultPanel(name, 176, 166);
@@ -86,14 +117,14 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     private int dragX, dragY;
 
     private final List<IPanelHandler> clientSubPanels = new ArrayList<>();
-    private boolean invisible = false;
+    @Getter private boolean invisible = false;
     private Animator animator;
 
-    private String themeOverride;
+    @Getter private String themeOverride;
     private ITheme theme;
 
     private Runnable onCloseAction;
-    private boolean resizeable = false;
+    @Getter private boolean resizeable = false;
     /**
      * True if this panel can be dragged. Never works on the main panel.
      */
@@ -113,7 +144,8 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
 
     @Override
     public Area getParentArea() {
-        return getScreen().getScreenArea();
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getParentArea() : getScreen().getScreenArea();
     }
 
     @Override
@@ -691,7 +723,8 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         if (!isValid()) {
             throw new IllegalStateException();
         }
-        return this.screen;
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getScreen() : this.screen;
     }
 
     @Nullable
@@ -826,6 +859,11 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return super.invisible();
     }
 
+    public W invisible(boolean inv) {
+        this.invisible = inv;
+        return getThis();
+    }
+
     public W fullScreenInvisible() {
         return invisible().full();
     }
@@ -865,6 +903,27 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     @Override
     public W name(String name) {
         throw new IllegalStateException("Name for ModularPanels are final!");
+    }
+
+    @Override
+    public WidgetType<?> getType() {
+        return WidgetType.PANEL;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public W copyExact() {
+        return (W) CODEC.copy(this);
+    }
+
+    @Override
+    public @Nullable IDraggable createDraggable(ModularGuiContext ctx, int button) {
+        if (!isDraggable()) return null;
+        if (!resizer().hasFixedSize()) {
+            throw new IllegalStateException(
+                    "Panel must have a fixed size. It can't specify left AND right or top AND bottom!");
+        }
+        return new DraggablePanelWrapper(this);
     }
 
     public enum State {

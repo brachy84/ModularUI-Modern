@@ -130,6 +130,7 @@ public class ModularScreen implements Renderable {
     @Getter private boolean overlay = false;
 
     private double lastUpdate = -1, lastFrameUpdate = -1;
+    private int lastGuiScale;
 
     /**
      * Creates a new screen with a given owner and {@link ModularPanel}.
@@ -222,6 +223,7 @@ public class ModularScreen implements Renderable {
     public void onResize(int width, int height) {
         this.context.updateScreenArea(width, height);
         if (this.panelManager.tryInit()) {
+            this.lastGuiScale = Minecraft.getInstance().options.guiScale().get();
             onOpen();
         }
 
@@ -245,7 +247,16 @@ public class ModularScreen implements Renderable {
      * Called after the last panel (always the main panel) closes which closes the screen.
      */
     @ApiStatus.OverrideOnly
-    public void onClose() {}
+    public void onClose() {
+        if (getGuiScaleOverride() >= 0) {
+            Minecraft.getInstance().options.guiScale().set(this.lastGuiScale);
+            // We don't want to resize the screen which is currently closing, since it would cause the screen to be "open" and then crash.
+            var screen = Minecraft.getInstance().screen;
+            Minecraft.getInstance().screen = null;
+            Minecraft.getInstance().resizeDisplay();
+            Minecraft.getInstance().screen = screen;
+        }
+    }
 
     /**
      * Gently closes all open panels and this screen. If NeverEnoughAnimations is installed and open/close is enabled
@@ -312,6 +323,13 @@ public class ModularScreen implements Renderable {
      */
     @MustBeInvokedByOverriders
     public void onFrameUpdate() {
+        var scale = Minecraft.getInstance().options.guiScale();
+        if (getGuiScaleOverride() >= 0 && getGuiScaleOverride() != scale.get()) {
+            this.lastGuiScale = scale.get();
+            scale.set(getGuiScaleOverride());
+            Minecraft.getInstance().resizeDisplay();
+        }
+
         this.panelManager.checkDirty();
         for (ObjectIterator<Object2ObjectMap.Entry<IWidget, Runnable>> iterator = this.frameUpdates
                 .object2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
@@ -608,6 +626,10 @@ public class ModularScreen implements Renderable {
             }
         }
         return false;
+    }
+
+    public int getGuiScaleOverride() {
+        return -1;
     }
 
     /**

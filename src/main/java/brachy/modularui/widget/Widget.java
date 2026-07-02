@@ -9,6 +9,7 @@ import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.IDragResizeable;
 import brachy.modularui.api.widget.IGuiAction;
+import brachy.modularui.api.widget.INotifyEnabled;
 import brachy.modularui.api.widget.IPositioned;
 import brachy.modularui.api.widget.ISynced;
 import brachy.modularui.api.widget.ITooltip;
@@ -31,6 +32,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widgets.slot.ItemSlot;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -60,9 +63,17 @@ import java.util.function.Predicate;
  */
 public class Widget<W extends Widget<W>> extends AbstractWidget implements IPositioned<W>, ITooltip<W>, ISynced<W> {
 
-    public static final MutableObjectCodec<Widget<?>> CODEC = MutableObjectCodec.<Widget<?>>widgetBuilder("Widget")
+    protected static final Codec<String> NAME_CODEC = Codec.STRING.comapFlatMap(s -> {
+        if (Widget.isNameInvalid(s)) {
+            return DataResult.error(() -> "Widget name must not start with '#' or a digit and must not contain '/'");
+        }
+        return DataResult.success(s);
+    }, Function.identity());
+
+    public static final MutableObjectCodec<Widget<?>> CODEC = MutableObjectCodec.<Widget<?>>builder()
             .instance(Widget::new)
-            .addOpt("name", Widget::name, Widget::getName, Codec.STRING, null)
+            .equalityTest(Widget::areEqual)
+            .addOpt("name", Widget::name, Widget::getName, NAME_CODEC, null)
             .addOpt("enabled", Widget::setEnabled, Widget::isEnabled, Codec.BOOL, true)
             .addOpt("syncKey", Widget::setSyncKey, Widget::getSyncKey, Codec.STRING, null)
             .addOpt("disableThemeBackground", Widget::disableThemeBackground, Widget::isDisableThemeBackground, Codec.BOOL, false)
@@ -75,7 +86,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             .addOpt("hoverBackgroundOverlay", Widget::setHoverBackgroundOverlay, Widget::getHoverBackground, IDrawable.CODEC, null)
             .addOpt("hoverOverlay", Widget::hoverOverlay, Widget::getHoverOverlay, IDrawable.CODEC, null)
             .addOpt("widgetTheme", Widget::widgetTheme, Widget::getWidgetThemeOverride, WidgetThemeKey.CODEC, null)
-            .addOpt("excludeAreaInRecipeViewer", Widget::excludeAreaInRecipeViewer, Widget::isExcludeAreaInRecipeViewer, Codec.BOOL, false)
+            .addOpt("excludeAreaInRecipeViewer", Widget::excludeAreaInRecipeViewer, w -> w.excludeAreaInRecipeViewer, Codec.BOOL, false)
             .addOpt("tooltip", Widget::setTooltip, Widget::getTooltip, RichTooltip.CODEC, null)
             .addFieldsOf(StandardResizer.COMPACT_CODEC, Widget::resizer)
             .addFieldOf(Area.CODEC, Widget::getArea, "margin")
@@ -85,7 +96,10 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             .addUnencodable("onUpdateListener", Widget::setOnUpdateListener, Widget::getOnUpdateListener)
             .build();
 
+
     // other
+    @Getter private Predicate<W> dynamicEnabled = w -> true;
+    private boolean lastDynamicEnabled = true;
     @Getter private boolean excludeAreaInRecipeViewer = false;
     // sizing
     @Getter
@@ -174,6 +188,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
                 getContext().getScreen().registerGuiActionListener(action);
             }
         }
+        this.lastDynamicEnabled = this.dynamicEnabled.test(getThis());
 
         if (this.value != null && this.syncKey != null) {
             throw new IllegalStateException(
@@ -716,7 +731,30 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
      * @return this
      */
     public W setEnabledIf(Predicate<W> condition) {
-        return onUpdateListener(w -> setEnabled(condition.test(w)), true);
+        this.dynamicEnabled = condition;
+        return getThis();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        boolean old = super.isEnabled() && this.lastDynamicEnabled;
+        this.enabled = enabled;
+        checkNotifyParentEnabled(old);
+    }
+
+    private boolean checkNotifyParentEnabled(boolean oldEnabled) {
+        boolean current = super.isEnabled() && this.lastDynamicEnabled;
+        if (current != oldEnabled && isValid() && getParent() instanceof INotifyEnabled notifyEnabled) {
+            notifyEnabled.onChildChangeEnabled(this, current);
+        }
+        return current;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        boolean old = super.isEnabled() && this.lastDynamicEnabled;
+        this.lastDynamicEnabled = this.dynamicEnabled.test(getThis());
+        return checkNotifyParentEnabled(old);
     }
 
     // ----------------
@@ -886,6 +924,11 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         return getThis();
     }
 
+    @Override
+    public WidgetType<?> getType() {
+        return WidgetType.WIDGET;
+    }
+
     /**
      * Returns this widget with proper generic type.
      *
@@ -895,12 +938,6 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Override
     public W getThis() {
         return (W) this;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != Widget.class) return false;
-        return isEqual((Widget<?>) obj);
     }
 
     public boolean isEqual(Widget<?> o) {
@@ -919,5 +956,20 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
                 this.excludeAreaInRecipeViewer == o.excludeAreaInRecipeViewer &&
                 Objects.equals(this.tooltip, o.tooltip) &&
                 resizer().isEqual(o.resizer());
+    }
+
+    public static boolean areEqual(Widget<?> a, Widget<?> b) {
+        if (a == null || b == null) return a == b;
+        return a.isEqual(b);
+    }
+
+    @Override
+    public final IWidget copy() {
+        return copyExact();
+    }
+
+    @SuppressWarnings("unchecked")
+    public W copyExact() {
+        return (W) CODEC.copy(this);
     }
 }

@@ -1,0 +1,14 @@
+{
+    "target": "modularui:test_tile",
+    "modifications": [
+        {
+            "target": "main_col/paged/dynamic_sync_page/dynamic widgets",
+            "operation": "add",
+            "index": 0,
+            "widget": {
+                "type": "text",
+                "text": "Added from JSON"
+            }
+        }
+    ]
+}

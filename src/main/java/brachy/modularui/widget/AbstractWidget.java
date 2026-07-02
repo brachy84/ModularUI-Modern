@@ -29,7 +29,7 @@ public abstract class AbstractWidget implements IWidget {
 
     @Nullable
     private String name;
-    private boolean enabled = true;
+    boolean enabled = true;
     private int timeHovered = -1;
     private int timeBelowMouse = -1;
 
@@ -49,12 +49,12 @@ public abstract class AbstractWidget implements IWidget {
 
     @Override
     public void scheduleResize() {
-        this.resizer.markDirty();
+        resizer().markDirty();
     }
 
     @Override
     public boolean requiresResize() {
-        return this.resizer.requiresResize();
+        return resizer().requiresResize();
     }
 
     /**
@@ -68,19 +68,18 @@ public abstract class AbstractWidget implements IWidget {
     public final void initialise(@NotNull IWidget parent, boolean late) {
         this.timeHovered = -1;
         this.timeBelowMouse = -1;
-        if (this.resizer == null) {
+        //noinspection ConstantValue
+        if (resizer() == null) {
             throw new IllegalStateException(
                     "Resizer must be set before the widget initializes! Affected widget: " + this);
         }
-        if (!(this instanceof ModularPanel)) {
+        if (!(this instanceof ModularPanel) || parent instanceof IDelegatingWidget) {
             this.parent = parent;
             this.panel = parent.getPanel();
             this.context = parent.getContext();
             getArea().z(parent.getArea().z() + 1);
-            if (parent instanceof AbstractWidget aw) {
-                this.resizer.initialize(aw.resizer, parent.getScreen().getResizeNode());
-            } else {
-                this.resizer.initialize(parent.resizer(), parent.getScreen().getResizeNode());
+            if (!IDelegatingWidget.isDelegating(parent, this)) {
+                resizer().initialize(parent.resizer(), parent.getScreen().getResizeNode());
             }
         }
         this.valid = true;
@@ -209,19 +208,6 @@ public abstract class AbstractWidget implements IWidget {
     }
 
     /**
-     * Shortcut to get the area of the parent
-     *
-     * @return parent area
-     */
-    public Area getParentArea() {
-        IWidget parent = getParent();
-        while (parent instanceof IDelegatingWidget dw) {
-            parent = dw.getParent();
-        }
-        return parent.getArea();
-    }
-
-    /**
      * Returns if this widget is currently enabled. Disabled widgets (and all its children) are not rendered and can't
      * be interacted with.
      *
@@ -322,7 +308,14 @@ public abstract class AbstractWidget implements IWidget {
     }
 
     protected void setName(String name) {
+        if (isNameInvalid(name)) {
+            throw new IllegalArgumentException("Widget name must not start with '#' or a digit and must not contain '/'");
+        }
         this.name = name;
+    }
+
+    public static boolean isNameInvalid(String name) {
+        return name != null && (name.startsWith("#") || name.indexOf('/') >= 0 || Character.isDigit(name.charAt(0)));
     }
 
     public boolean isName(String name) {
@@ -331,15 +324,6 @@ public abstract class AbstractWidget implements IWidget {
 
     public boolean nameContains(String part) {
         return this.name != null && this.name.contains(part);
-    }
-
-    /**
-     * This is only used in {@link #toString()}.
-     *
-     * @return the simple class name or other fitting name
-     */
-    public String getTypeName() {
-        return getClass().getSimpleName();
     }
 
     /**

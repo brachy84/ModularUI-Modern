@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SubAreaDrawable extends DelegateDrawable {
 
-    public static final MutableObjectCodec<SubAreaDrawable> CODEC = MutableObjectCodec.drawableBuilder(SubAreaDrawable::new)
+    public static final MutableObjectCodec<SubAreaDrawable> CODEC = MutableObjectCodec.builder(SubAreaDrawable::new)
             .add("drawable", SubAreaDrawable::drawable, SubAreaDrawable::getWrappedDrawable, IDrawable.CODEC)
             .addOpt("u0", SubAreaDrawable::u0, SubAreaDrawable::getU0, Codec.FLOAT, 0f).alias("uStart")
             .addOpt("v0", SubAreaDrawable::v0, SubAreaDrawable::getV0, Codec.FLOAT, 0f).alias("vStart")
@@ -88,6 +88,11 @@ public class SubAreaDrawable extends DelegateDrawable {
     public SubAreaDrawable drawable(@Nullable IDrawable drawable) {
         setDrawable(drawable);
         return this;
+    }
+
+    @Override
+    public DrawableType<SubAreaDrawable> getType() {
+        return DrawableType.SUB_AREA;
     }
 
     @Override

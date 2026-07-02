@@ -85,6 +85,11 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
+    protected VoidWidget castToType(IWidget widget) {
+        return null;
+    }
+
+    @Override
     public void onInit() {
         super.onInit();
         this.handler.setGuiContext(getContext());

@@ -1,7 +1,7 @@
 package brachy.modularui.utils.serialization.json;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.utils.serialization.codec.MutableCodec;
+import brachy.modularui.api.codec.MutableCodec;
 
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;

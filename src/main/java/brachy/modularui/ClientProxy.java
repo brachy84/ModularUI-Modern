@@ -2,6 +2,7 @@ package brachy.modularui;
 
 import brachy.modularui.animation.AnimatorManager;
 import brachy.modularui.api.drawable.IIcon;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.drawable.DelegateIcon;
 import brachy.modularui.drawable.DrawableTooltipComponent;
@@ -12,18 +13,26 @@ import brachy.modularui.drawable.InteractableIcon;
 import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.TextIcon;
+import brachy.modularui.editor.EditorScreen;
+import brachy.modularui.factory.ClientGUI;
 import brachy.modularui.network.ModularNetwork;
+import brachy.modularui.screen.BuildPanelEvent;
 import brachy.modularui.screen.ContainerScreenWrapper;
 import brachy.modularui.screen.ModularContainerMenu;
 import brachy.modularui.test.TestHandler;
 import brachy.modularui.theme.ThemeManager;
 import brachy.modularui.utils.CursorHandler;
+import brachy.modularui.widget.WidgetSerializer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.brigadier.Command;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,8 +58,10 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(this::onRegisterClientTooltipComponents);
         modBus.addListener(this::onRegisterAssetReloadListeners);
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        forgeBus.addListener(this::onUnloadWorld);
+        forgeBus.addListener(this::onBuildPanel);
         forgeBus.addListener(this::onRegisterAssetReloadListeners);
+        forgeBus.addListener(this::onRegisterCommand);
+        forgeBus.addListener(this::onUnloadWorld);
         if (!ModularUI.isDataGen()) {
             CursorHandler.init();
             AnimatorManager.init();
@@ -78,6 +89,10 @@ public class ClientProxy extends CommonProxy {
                 (MenuScreens.ScreenConstructor<ModularContainerMenu, ContainerScreenWrapper>) ContainerScreenWrapper::new));
     }
 
+    private void onBuildPanel(BuildPanelEvent event) {
+        WidgetSerializer.applyModifications(event.getId(), event.getOpeningPanel());
+    }
+
     private void onRegisterClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
         Function<IIcon, ClientTooltipComponent> factory = DrawableTooltipComponent::new;
         event.register(Icon.class, factory);
@@ -93,6 +108,23 @@ public class ClientProxy extends CommonProxy {
     private void onRegisterAssetReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(new ThemeManager());
         event.registerReloadListener(new GuiSpriteManager(Minecraft.getInstance().textureManager));
+    }
+
+    private void onRegisterCommand(RegisterClientCommandsEvent event) {
+        var command = Commands.literal("mui")
+                .then(Commands.literal("reload_themes")
+                        .executes(ctx -> {
+                            ThemeManager.reload();
+                            // TODO translations for this
+                            ctx.getSource().sendSuccess(() -> Component.literal("ModularUI Themes reloaded").withStyle(Text.GREEN), true);
+                            return Command.SINGLE_SUCCESS;
+                        }))
+                .then(Commands.literal("editor")
+                        .executes(ctx -> {
+                            ClientGUI.open(new EditorScreen(ModularUI.MOD_ID));
+                            return Command.SINGLE_SUCCESS;
+                        }));
+        event.getDispatcher().register(command);
     }
 
     private void onUnloadWorld(LevelEvent.Unload event) {

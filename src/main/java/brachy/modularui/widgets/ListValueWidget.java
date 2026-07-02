@@ -10,7 +10,8 @@ public class ListValueWidget<T, I extends IWidget, W extends ListValueWidget<T, 
 
     private final Function<I, T> widgetToValue;
 
-    public ListValueWidget(Function<I, T> widgetToValue) {
+    public ListValueWidget(Function<IWidget, I> typeCaster, Function<I, T> widgetToValue) {
+        super(typeCaster);
         this.widgetToValue = widgetToValue;
     }
 

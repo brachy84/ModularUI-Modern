@@ -1,0 +1,23 @@
+{
+    "type": "panel",
+    "name": "json",
+    "padding": 5,
+    "coverChildren": true,
+    "children": [
+        {
+            "type": "widget",
+            "width": 100,
+            "height": 30,
+            "background": {
+                "type": "texture",
+                "name": "mc_button"
+            },
+            "overlay": {
+                "type": "text",
+                "text": "This is written in JSON",
+                "color": "white",
+                "shadow": true
+            }
+        }
+    ]
+}

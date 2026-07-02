@@ -104,4 +104,9 @@ public class EmptyWidget implements IWidget {
     public String getName() {
         return null;
     }
+
+    @Override
+    public IWidget copy() {
+        return new EmptyWidget();
+    }
 }
