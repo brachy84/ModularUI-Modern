@@ -1,34 +1,22 @@
 package brachy.modularui.editor;
 
 import brachy.modularui.api.GuiAxis;
-import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
-import brachy.modularui.api.widget.IDragHandle;
-import brachy.modularui.api.widget.IDraggable;
-import brachy.modularui.api.widget.IParentWidget;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.drawable.DrawableRegistry;
-import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.Rectangle;
 import brachy.modularui.screen.CustomModularScreen;
 import brachy.modularui.screen.ModularPanel;
-import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
-import brachy.modularui.theme.WidgetTheme;
-import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 import brachy.modularui.value.BoolValue;
 import brachy.modularui.value.EnumValue;
 import brachy.modularui.value.FloatValue;
 import brachy.modularui.value.IntValue;
-import brachy.modularui.widget.RecursiveDelegatingWidget;
-import brachy.modularui.widget.SingleChildWidget;
 import brachy.modularui.widget.SplitView;
 import brachy.modularui.widget.WidgetRegistry;
-import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Box;
 import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widget.sizer.Unit;
@@ -38,23 +26,21 @@ import brachy.modularui.widgets.CycleButtonWidget;
 import brachy.modularui.widgets.ListWidget;
 import brachy.modularui.widgets.PageButton;
 import brachy.modularui.widgets.PagedWidget;
-import brachy.modularui.widgets.TextWidget;
 import brachy.modularui.widgets.ToggleButton;
-import brachy.modularui.widgets.draggable.AbstractDraggable;
 import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
 import com.google.common.base.CaseFormat;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class EditorScreen extends CustomModularScreen {
 
     private ModularPanel<?> edited;
-    private WidgetWrapper editedWrapper;
-    private WidgetWrapper selectedWidget;
+    private PreviewWidgetWrapper editedWrapper;
+    @Getter private PreviewWidgetWrapper selectedWidget;
     private Flow widgetConfigurator;
     private ListWidget<IWidget, ?> widgetTree;
 
@@ -65,7 +51,7 @@ public class EditorScreen extends CustomModularScreen {
     @Override
     public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
         this.edited = new ModularPanel<>("editing").child(new ButtonWidget<>().center().size(50));
-        this.editedWrapper = new WidgetWrapper(this.edited);
+        this.editedWrapper = new PreviewWidgetWrapper(this.edited);
 
         var panel = new ModularPanel<>("editor").full().padding(4).disableThemeBackground(true).disableHoverThemeBackground(true);
         this.widgetConfigurator = Flow.col()
@@ -98,13 +84,13 @@ public class EditorScreen extends CustomModularScreen {
         this.widgetTree.scheduleResize();
     }
 
-    private IWidget addTreeViewNodes(WidgetWrapper parent) {
+    private IWidget addTreeViewNodes(PreviewWidgetWrapper parent) {
         if (!parent.hasChildren()) {
             return new TreeViewNode(parent);
         }
         var w = new CollapsableList();
         w.title(new TreeViewNode(parent));
-        for (WidgetWrapper child : parent.getTypedChildren()) {
+        for (PreviewWidgetWrapper child : parent.getTypedChildren()) {
             w.child(addTreeViewNodes(child));
         }
         return w;
@@ -494,7 +480,7 @@ public class EditorScreen extends CustomModularScreen {
         return defaultValue;
     }
 
-    public void updateSelected(WidgetWrapper wrapper) {
+    public void updateSelected(PreviewWidgetWrapper wrapper) {
         this.selectedWidget = wrapper;
         buildWidgetConfigurator();
     }
@@ -502,129 +488,5 @@ public class EditorScreen extends CustomModularScreen {
     @Override
     public int getGuiScaleOverride() {
         return 2;
-    }
-
-    public static class LibraryWidget extends TextWidget<LibraryWidget> implements IDragHandle {
-
-        private final WidgetType<?> type;
-
-        public LibraryWidget(WidgetType<?> type) {
-            super(Text.str(type.name()).color(Color.WHITE.main));
-            this.type = type;
-            size(60);
-            textAlign(Alignment.CENTER);
-        }
-
-        @Override
-        public @Nullable IDraggable createDraggable(ModularGuiContext ctx, int button) {
-            return new WidgetDraggable(this.type);
-        }
-    }
-
-    public static class WidgetDraggable extends AbstractDraggable {
-
-        private final WidgetType<?> type;
-        private final IDrawable icon;
-
-        public WidgetDraggable(WidgetType<?> type) {
-            this.type = type;
-            this.icon = Text.str(type.name());
-            getMovingArea().setSize(60, 60);
-        }
-
-        @Override
-        public void drawMovingState(ModularGuiContext context, float partialTicks) {
-            this.icon.draw(context, getMovingArea(), WidgetTheme.getDefault().theme());
-        }
-
-        @Override
-        public void onDragEnd(ModularGuiContext context) {
-            var hovered = context.getTopHovered();
-            if (hovered instanceof WidgetWrapper ww) {
-                if (ww.getDelegate() instanceof IParentWidget<?, ?> parent) {
-                    parent.addChildRaw(this.type.createNewInstance(), -1);
-                    if (ww.getScreen() instanceof EditorScreen editorScreen) {
-                        editorScreen.buildWidgetTreeView();
-                    }
-                } else if (ww.getDelegate() instanceof SingleChildWidget<?> singleChildWidget) {
-                    singleChildWidget.child(this.type.createNewInstance());
-                    if (ww.getScreen() instanceof EditorScreen editorScreen) {
-                        editorScreen.buildWidgetTreeView();
-                    }
-                }
-            }
-        }
-    }
-
-    public static class WidgetWrapper extends RecursiveDelegatingWidget<WidgetWrapper> implements Interactable {
-
-        public static final IDrawable OUTLINE = new IDrawable() {
-            @Override
-            public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
-                GuiDraw.drawBorderOutsideXYWH(context.getGraphics(), x, y, width, height, 2f, Color.RED.main);
-            }
-        };
-
-        public WidgetWrapper(IWidget delegate) {
-            super(delegate);
-        }
-
-        @Override
-        protected WidgetWrapper createChildDelegate(IWidget widget) {
-            return new WidgetWrapper(widget);
-        }
-
-        public boolean isSelected() {
-            return getScreen() instanceof EditorScreen editorScreen && editorScreen.selectedWidget == this;
-        }
-
-        @Override
-        public void drawForeground(ModularGuiContext context) {
-            if (isSelected()) {
-                context.graphicsPose().pushPose();
-                context.applyTo(context.graphicsPose());
-                OUTLINE.drawAtZero(context, getArea(), WidgetTheme.getDefault().theme());
-                context.graphicsPose().popPose();
-            }
-            super.drawForeground(context);
-        }
-
-
-        @Override
-        public @NotNull Result onMousePressed(int button) {
-            if (button == InputConstants.MOUSE_BUTTON_LEFT) {
-                if (getScreen() instanceof EditorScreen editorScreen) {
-                    editorScreen.updateSelected(this);
-                }
-                return Result.SUCCESS;
-            }
-            return Result.ACCEPT;
-        }
-    }
-
-    public static class TreeViewNode extends TextWidget<TreeViewNode> implements Interactable {
-
-        private final WidgetWrapper widget;
-
-        public TreeViewNode(WidgetWrapper wrapper) {
-            super(Text.str(wrapper.getDelegate().getTypeName()));
-            this.widget = wrapper;
-            color(Color.WHITE.main);
-            padding(2);
-        }
-
-        @Override
-        public void drawBackground(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
-            super.drawBackground(context, widgetTheme);
-            if (this.widget.isSelected()) {
-                var a = getArea();
-                GuiDraw.drawRect(context.getGraphics(), 0, 0, a.width, a.height, Color.withAlpha(Color.WHITE.main, 0.2f));
-            }
-        }
-
-        @Override
-        public @NotNull Result onMousePressed(int button) {
-            return this.widget.onMousePressed(button);
-        }
     }
 }
