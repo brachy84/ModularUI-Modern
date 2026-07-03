@@ -87,5 +87,5 @@ jobs:
             Maven version: `${{ steps.version.outputs.mod_ver }}-${{ steps.maven_version.outputs.snapshot_ver }}`
             Last commit: `${{ steps.version.outputs.last_commit }}`
           color: 0x12EFD7
-          username: "Bot that notifies D1sc0rd for a new snapshot on Maven"
-          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          username: "Bot that notifies dis gourd for a new snapshot on Maven"
+          avatar_url: https://image.freepik.com/free-photo/calabash-bottle-gourd-isolated-white_116067-484.jpg
