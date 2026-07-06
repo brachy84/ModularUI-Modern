@@ -236,7 +236,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         return Collections.unmodifiableList(this.shiftClickSlots);
     }
 
-    public void onSlotChanged(ModularSlot slot, ItemStack stack, boolean onlyAmountChanged) {}
+    public void onSlotChanged(ModularSlot slot, ItemStack oldStack, ItemStack newStack) {}
 
     @Override
     public boolean canDragTo(@NotNull Slot slot) {

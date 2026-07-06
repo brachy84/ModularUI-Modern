@@ -136,13 +136,13 @@ public class ModularSlot extends SlotItemHandler {
         }
     }
 
-    public void onSlotChangedReal(ItemStack itemStack, boolean onlyChangedAmount, boolean client, boolean init) {
+    public void onSlotChangedReal(ItemStack oldStack, ItemStack newStack, boolean client, boolean init) {
         if (this.slotGroup != null) {
             this.slotGroup.slotChanged(this);
         }
-        this.changeListener.onChange(itemStack, onlyChangedAmount, client, init);
+        this.changeListener.onChange(oldStack, newStack, client, init);
         if (!init && isInitialized()) {
-            getSyncHandler().getSyncManager().getContainer().onSlotChanged(this, itemStack, onlyChangedAmount);
+            getSyncHandler().getSyncManager().getContainer().onSlotChanged(this, oldStack, newStack);
         }
     }
 

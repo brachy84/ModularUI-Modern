@@ -62,19 +62,14 @@ public class ItemSlotSyncHandler extends SyncHandler<ItemSlotSyncHandler> {
         if (!isValid() || getSyncManager().isClient()) return;
         ItemStack itemStack = getSlot().getItem();
         if (itemStack.isEmpty() && this.lastStoredItem.isEmpty()) return;
-        boolean onlyAmountChanged = false;
-        if (init || !ItemStack.isSameItemSameTags(this.lastStoredItem, itemStack) ||
-                (onlyAmountChanged = itemStack.getCount() != this.lastStoredItem.getCount())) {
-            onSlotUpdate(itemStack, onlyAmountChanged, false, init);
-            if (onlyAmountChanged) {
-                this.lastStoredItem.setCount(itemStack.getCount());
-            } else {
-                this.lastStoredItem = itemStack.copy();
-            }
-            final boolean finalOnlyAmountChanged = onlyAmountChanged;
+        if (init || !ItemStack.matches(itemStack, this.lastStoredItem)) {
+            ItemStack oldStack = this.lastStoredItem;
+            onSlotUpdate(oldStack, itemStack, false, init);
+            this.lastStoredItem = itemStack.copy();
+
             final boolean forceSync = false;
             syncToClient(SYNC_ITEM, buffer -> {
-                buffer.writeBoolean(finalOnlyAmountChanged);
+                buffer.writeItem(oldStack);
                 buffer.writeItem(itemStack);
                 buffer.writeBoolean(init);
                 buffer.writeBoolean(forceSync);
@@ -86,8 +81,9 @@ public class ItemSlotSyncHandler extends SyncHandler<ItemSlotSyncHandler> {
     public void readOnClient(int id, FriendlyByteBuf buf) {
         if (id == SYNC_ITEM) {
             boolean onlyAmountChanged = buf.readBoolean();
+            ItemStack oldStack = buf.readItem();
             this.lastStoredItem = buf.readItem();
-            onSlotUpdate(this.lastStoredItem, onlyAmountChanged, true, buf.readBoolean());
+            onSlotUpdate(oldStack, this.lastStoredItem, true, buf.readBoolean());
             if (buf.readBoolean()) {
                 // force sync
                 this.slot.set(this.lastStoredItem.copy());
@@ -104,8 +100,8 @@ public class ItemSlotSyncHandler extends SyncHandler<ItemSlotSyncHandler> {
         }
     }
 
-    protected void onSlotUpdate(ItemStack stack, boolean onlyAmountChanged, boolean client, boolean init) {
-        getSlot().onSlotChangedReal(stack, onlyAmountChanged, client, init);
+    protected void onSlotUpdate(ItemStack oldStack, ItemStack newStack, boolean client, boolean init) {
+        getSlot().onSlotChangedReal(oldStack, newStack, client, init);
     }
 
     public void setEnabled(boolean enabled, boolean sync) {
@@ -116,15 +112,15 @@ public class ItemSlotSyncHandler extends SyncHandler<ItemSlotSyncHandler> {
     }
 
     public void forceSyncItem() {
-        boolean onlyAmountChanged = false;
-        ItemStack stack = slot.getItem();
+        ItemStack newStack = slot.getItem();
+        ItemStack oldStack = this.lastStoredItem;
         boolean init = false;
         boolean forceSync = true;
-        onSlotUpdate(stack, onlyAmountChanged, getSyncManager().isClient(), init);
-        this.lastStoredItem = stack.copy();
+        onSlotUpdate(this.lastStoredItem, newStack, getSyncManager().isClient(), init);
+        this.lastStoredItem = newStack.copy();
         syncToClient(SYNC_ITEM, buffer -> {
-            buffer.writeBoolean(onlyAmountChanged);
-            buffer.writeItem(stack);
+            buffer.writeItem(oldStack);
+            buffer.writeItem(newStack);
             buffer.writeBoolean(init);
             buffer.writeBoolean(forceSync);
         });

@@ -320,8 +320,8 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
                                                 .child(Text.str("Dynamic synced widget demo. Items act as keys to a unique storage with different amount of slots.").asWidget().scale(0.7f))
                                                 .child(new ItemSlot()
                                                         .slot(new ModularSlot(this.storageInventory0, 0)
-                                                                .changeListener(((newItem, onlyAmountChanged, client, init) -> {
-                                                                    if (client && !onlyAmountChanged) {
+                                                                .changeListener(((oldItem, newItem, client, init) -> {
+                                                                    if (client && !ItemStack.isSameItemSameTags(oldItem, newItem)) {
                                                                         dynamicSyncHandler.notifyUpdate(packet -> packet.writeItemStack(newItem, false));
                                                                     }
                                                                 }))))
