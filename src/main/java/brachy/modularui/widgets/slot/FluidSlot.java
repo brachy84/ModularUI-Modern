@@ -1,6 +1,7 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.api.ITheme;
+import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.Interactable;
@@ -17,7 +18,6 @@ import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -186,7 +186,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
             return Result.ACCEPT;
         }
-        ItemStack cursorStack = Minecraft.getInstance().player.containerMenu.getCarried();
+        ItemStack cursorStack = MCHelper.getPlayer().containerMenu.getCarried();
         if (this.syncHandler.phantom() ||
                 (!cursorStack.isEmpty() && cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {
             MouseData mouseData = MouseData.create(button);
@@ -271,7 +271,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         if (this.syncHandler.phantom()) {
             if (ingredient.getRawFluid() != Fluids.EMPTY) {
                 ingredient.setAmount(this.syncHandler.controlsAmount() ? 1000 : 1);
-                this.syncHandler.playSound(Minecraft.getInstance().player, ingredient, SoundActions.BUCKET_FILL);
+                this.syncHandler.playSound(MCHelper.getPlayer(), ingredient, SoundActions.BUCKET_FILL);
             }
             this.syncHandler.setValue(ingredient);
         }
