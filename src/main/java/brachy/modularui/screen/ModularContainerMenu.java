@@ -447,7 +447,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                     stack.setCount(stack.getMaxStackSize());
                 }
                 ItemStack remainder = transferItem(slot, stack.copy());
-                if (ItemStack.isSameItemSameComponents(remainder, stack)) return ItemStack.EMPTY;
+                if (ItemStack.matches(remainder, stack)) return ItemStack.EMPTY;
                 if (base == 0 && remainder.isEmpty()) stack = ItemStack.EMPTY;
                 else stack.setCount(base + remainder.getCount());
 
