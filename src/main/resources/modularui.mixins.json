@@ -5,20 +5,20 @@
     "package": "brachy.modularui.core.mixins",
     "compatibilityLevel": "JAVA_17",
     "client": [
-        "client.AbstractContainerMenuAccessor",
         "client.AbstractContainerScreenAccessor",
         "client.AbstractContainerScreenMixin",
         "client.MinecraftMixin",
         "client.ScreenAccessor",
-        "client.SlotAccessor",
         "client.StringSplitterAccessor",
         "emi.RecipeScreenMixin",
         "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [
+        "common.AbstractContainerMenuAccessor",
         "common.CombinedInvWrapperAccessor",
         "common.ComponentMixin",
         "common.ComponentSerializerMixin",
+        "common.SlotAccessor",
         "common.TextColorMixin"
     ],
     "injectors": {
