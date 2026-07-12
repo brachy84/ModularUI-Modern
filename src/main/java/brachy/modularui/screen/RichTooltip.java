@@ -389,7 +389,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     }
 
     public RichTooltip addFromItem(ItemStack item) {
-        if(!ModularUI.isClientSide()) return this;
+        if (!ModularUI.isClientSide()) return this;
         List<Component> lines = MCHelper.getItemToolTip(item);
         add(lines.get(0));
         if (lines.size() > 1) {
