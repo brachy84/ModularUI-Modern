@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - '1.20.1'
-      - '1.21'
+      - '1.21.1'
 
 permissions:
   contents: read
@@ -54,12 +54,13 @@ jobs:
           # each branch's commits need porting to the other branch
           case "$BRANCH" in
             1.20.1) STATUS_NAME="To Port 1.20->1.21" ;;
-            1.21)   STATUS_NAME="To Port 1.21->1.20" ;;
+            1.21.1) STATUS_NAME="To Port 1.21->1.20" ;;
             *)      STATUS_NAME="" ;;
           esac
 
           # build a markdown list item for each commit in this push, skipping any
-          # commit whose associated PR carries the "Ignore Version Sync" label
+          # commit titled "nosync:..." or whose associated PR carries the
+          # "Ignore Version Sync" label
           LINES_FILE="$(mktemp)"
           while read -r commit; do
             [ -n "$commit" ] || continue
@@ -67,6 +68,11 @@ jobs:
             short="${sha:0:7}"
             title="$(jq -r '.message' <<<"$commit" | head -n1)"
             url="$(jq -r '.url' <<<"$commit")"
+
+            if [[ "$title" == nosync:* ]]; then
+              echo "Commit $short is marked 'nosync:', skipping."
+              continue
+            fi
 
             ignored="$(gh api "repos/$REPO/commits/$sha/pulls" \
               --jq 'any(.[]; .labels[].name == "Ignore Version Sync")')"
