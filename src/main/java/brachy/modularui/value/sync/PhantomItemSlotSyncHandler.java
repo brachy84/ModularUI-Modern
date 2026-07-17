@@ -54,7 +54,8 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
             // for normal slots minecraft handles the syncing
             // for phantom slots we manually set the slot and ignore the other packet arguments
             // the set() will then invoke the onSlotChanged
-            buf.readBoolean();
+            // Must match the ItemSlotSyncHandler#checkUpdate's syncToClient() call order
+            buf.readItem();
             getSlot().set(buf.readItem());
             buf.readBoolean();
             buf.readBoolean();
