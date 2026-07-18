@@ -11,6 +11,7 @@ import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 
 import org.jetbrains.annotations.ApiStatus;
 
+@Deprecated
 @ApiStatus.Experimental
 public class RecipeScreenRenderingUtil {
 

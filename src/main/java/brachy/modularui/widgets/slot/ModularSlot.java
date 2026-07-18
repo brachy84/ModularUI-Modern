@@ -1,6 +1,6 @@
 package brachy.modularui.widgets.slot;
 
-import brachy.modularui.core.mixins.client.SlotAccessor;
+import brachy.modularui.core.mixins.common.SlotAccessor;
 import brachy.modularui.core.mixins.common.CombinedInvWrapperAccessor;
 import brachy.modularui.value.sync.ItemSlotSyncHandler;
 
@@ -136,13 +136,13 @@ public class ModularSlot extends SlotItemHandler {
         }
     }
 
-    public void onSlotChangedReal(ItemStack itemStack, boolean onlyChangedAmount, boolean client, boolean init) {
+    public void onSlotChangedReal(ItemStack oldStack, ItemStack newStack, boolean client, boolean init) {
         if (this.slotGroup != null) {
             this.slotGroup.slotChanged(this);
         }
-        this.changeListener.onChange(itemStack, onlyChangedAmount, client, init);
+        this.changeListener.onChange(oldStack, newStack, client, init);
         if (!init && isInitialized()) {
-            getSyncHandler().getSyncManager().getContainer().onSlotChanged(this, itemStack, onlyChangedAmount);
+            getSyncHandler().getSyncManager().getContainer().onSlotChanged(this, oldStack, newStack);
         }
     }
 
@@ -338,5 +338,9 @@ public class ModularSlot extends SlotItemHandler {
             throw new IllegalArgumentException("Tried to create a slot with invalid index " + index +
                     ". Valid index range is [0," + itemHandler.getSlots() + ")");
         }
+    }
+
+    public static boolean onlyAmountChanged(ItemStack a, ItemStack b) {
+        return ItemStack.isSameItemSameTags(a, b) && a.getCount() != b.getCount();
     }
 }

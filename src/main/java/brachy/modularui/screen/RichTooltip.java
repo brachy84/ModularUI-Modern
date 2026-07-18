@@ -1,5 +1,6 @@
 package brachy.modularui.screen;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.MCHelper;
@@ -388,6 +389,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     }
 
     public RichTooltip addFromItem(ItemStack item) {
+        if (!ModularUI.isClientSide()) return this;
         List<Component> lines = MCHelper.getItemToolTip(item);
         add(lines.getFirst());
         if (lines.size() > 1) {

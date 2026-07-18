@@ -39,13 +39,13 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
     }
 
     @Override
-    protected void onSlotUpdate(ItemStack stack, boolean onlyAmountChanged, boolean client, boolean init) {
-        if (!onlyAmountChanged && !stack.isEmpty()) {
+    protected void onSlotUpdate(ItemStack oldStack, ItemStack newStack, boolean client, boolean init) {
+        if (!ItemStack.isSameItemSameComponents(oldStack, newStack) && !newStack.isEmpty()) {
             // store last non-empty stack for later
-            this.lastStoredPhantomItem = stack.copy();
+            this.lastStoredPhantomItem = newStack.copy();
             this.lastStoredPhantomItem.setCount(1);
         }
-        super.onSlotUpdate(stack, onlyAmountChanged, client, init);
+        super.onSlotUpdate(oldStack, newStack, client, init);
     }
 
     @Override
@@ -54,7 +54,8 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
             // for normal slots minecraft handles the syncing
             // for phantom slots we manually set the slot and ignore the other packet arguments
             // the set() will then invoke the onSlotChanged
-            buf.readBoolean();
+            // Must match the ItemSlotSyncHandler#checkUpdate's syncToClient() call order
+            ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
             getSlot().set(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
             buf.readBoolean();
             buf.readBoolean();

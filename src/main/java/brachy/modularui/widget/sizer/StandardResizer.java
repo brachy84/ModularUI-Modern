@@ -8,7 +8,7 @@ import brachy.modularui.api.widget.IDelegatingWidget;
 import brachy.modularui.api.widget.IPositioned;
 import brachy.modularui.api.widget.IVanillaSlot;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.core.mixins.client.SlotAccessor;
+import brachy.modularui.core.mixins.common.SlotAccessor;
 import brachy.modularui.utils.TreeUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widgets.layout.IExpander;
@@ -536,6 +536,14 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
     @Override
     public boolean hasEndPos(GuiAxis axis) {
         return axis.isHorizontal() ? this.x.hasEnd() : this.y.hasEnd();
+    }
+
+    public int getFixedPixelWidth() {
+        return this.x.getFixedPixelSize();
+    }
+
+    public int getFixedPixelHeight() {
+        return this.y.getFixedPixelSize();
     }
 
     @Override

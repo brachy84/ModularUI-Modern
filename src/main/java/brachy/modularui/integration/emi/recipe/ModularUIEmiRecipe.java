@@ -12,7 +12,6 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.RichTooltip;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.resources.ResourceLocation;
 
@@ -27,8 +26,8 @@ import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Iterator;
@@ -39,7 +38,7 @@ import java.util.function.Supplier;
 public abstract class ModularUIEmiRecipe implements EmiRecipe {
 
     private static final LoadingCache<ModularUIEmiRecipe, ModularScreen> SCREEN_CACHE = CacheBuilder.newBuilder()
-            .expireAfterAccess(Duration.ofSeconds(5))
+            .expireAfterAccess(Duration.ofSeconds(1))
             .maximumSize(20)
             .build(new CacheLoader<>() {
                 @Override
@@ -48,7 +47,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                 }
             });
 
-    private final ResourceLocation recipeId;
+    @Getter private final ResourceLocation id;
     private final Supplier<IWidget> recipeUI;
 
     private boolean sizeCalculated = false;
@@ -56,41 +55,57 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
     private int displayWidth, displayHeight;
 
     public ModularUIEmiRecipe(ResourceLocation recipeId, Supplier<IWidget> recipeUI) {
-        this.recipeId = recipeId;
+        this.id = recipeId;
         this.recipeUI = recipeUI;
     }
 
-    public void onSizeCalculated(ModularScreen screen) {}
-
-    private synchronized void requireSize() {
-        if (this.sizeCalculated) return;
-        ModularScreen screen = SCREEN_CACHE.getUnchecked(this);
-        onSizeCalculated(screen);
-        this.displayWidth = EmbedHandler.getEmbedWidth(screen);
-        this.displayHeight = EmbedHandler.getEmbedHeight(screen);
+    public ModularUIEmiRecipe(ResourceLocation recipeId, int width, int height, Supplier<IWidget> recipeUI) {
+        this.id = recipeId;
+        this.recipeUI = recipeUI;
+        this.displayWidth = width;
+        this.displayHeight = height;
         this.bounds = new Bounds(0, 0, this.displayWidth, this.displayHeight);
         this.sizeCalculated = true;
     }
 
-    @Override
-    public int getDisplayWidth() {
-        requireSize();
-        return displayWidth;
+    /**
+     * Calculates the size of the recipe, if not already done. This should be called in the constructor of sub-classes.
+     * Otherwise, the size of ALL the recipes in the same category are calculated all at once, which can make the game for a few seconds.
+     */
+    protected void calculateSize() {
+        if (this.sizeCalculated) return;
+        this.sizeCalculated = true;
+        IWidget ui = this.recipeUI.get();
+        int w = ui.resizer().getFixedPixelWidth(), h = ui.resizer().getFixedPixelHeight();
+        if (w < 0 || h < 0) {
+            ModularScreen screen = createScreen(ui, this.id.getNamespace(), "emi_recipe_" + this.id.getPath());
+            w = EmbedHandler.getEmbedWidth(screen);
+            h = EmbedHandler.getEmbedHeight(screen);
+        }
+        this.displayWidth = w;
+        this.displayHeight = h;
+        this.bounds = new Bounds(0, 0, this.displayWidth, this.displayHeight);
+    }
+
+    public Bounds getBounds() {
+        calculateSize();
+        return bounds;
     }
 
     @Override
     public int getDisplayHeight() {
-        requireSize();
+        calculateSize();
         return displayHeight;
     }
 
-    public Bounds getBounds() {
-        requireSize();
-        return bounds;
+    @Override
+    public int getDisplayWidth() {
+        calculateSize();
+        return displayWidth;
     }
 
     private ModularScreen createScreen() {
-        return createScreen(this.recipeUI.get(), this.recipeId.getNamespace(), "emi_recipe_" + this.recipeId.getPath());
+        return createScreen(this.recipeUI.get(), this.id.getNamespace(), "emi_recipe_" + this.id.getPath());
     }
 
     public ModularScreen createScreen(IWidget recipeUI, String owner, String name) {
@@ -103,7 +118,10 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
                     .invisible()
                     .child(recipeUI);
         }
-        ModularScreen screen = ModularScreen.createEmbed(owner, transform(panel));
+        if (getInputs() != null && getOutputs() != null) {
+            panel = transform(panel);
+        }
+        ModularScreen screen = ModularScreen.createEmbed(owner, panel);
         screen.getContext().getUISettings().drawTooltipExternally(true);
         return screen;
     }
@@ -116,7 +134,6 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
     }
 
     public IWidget transformWidget(IWidget widget, Iterator<EmiIngredient> in, Iterator<EmiStack> out) {
-
         if (!(widget instanceof EmiRecipeViewerSlot recipeViewerSlot)) return widget;
 
         if (recipeViewerSlot.recipeSlotRole() == RecipeSlotRole.OUTPUT) {
@@ -133,11 +150,6 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         widgets.add(new UIWrapperWidget(this));
     }
 
-    @Override
-    public @Nullable ResourceLocation getId() {
-        return recipeId;
-    }
-
     public static class UIWrapperWidget extends Widget {
 
         private final ModularUIEmiRecipe recipe;
@@ -152,10 +164,9 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             ModularScreen screen = SCREEN_CACHE.getUnchecked(this.recipe);
-            EmbedHandler.drawEmbed(screen, guiGraphics, mouseX, mouseY, partialTick, r -> !(r instanceof SizedButtonWidget));
-            EmbedHandler.drawEmbedForeground(screen, guiGraphics);
+            EmbedHandler.drawEmbed(screen, graphics, partialTick, r -> !(r instanceof SizedButtonWidget));
         }
 
         @Override

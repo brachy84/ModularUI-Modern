@@ -23,7 +23,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.util.thread.SidedThreadGroups;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -116,7 +115,7 @@ public class ModularUI {
      */
     @SuppressWarnings("ConstantValue")
     public static boolean isClientThread() {
-        return isTestEnv() || (isClientSide() && Thread.currentThread().getThreadGroup() == SidedThreadGroups.CLIENT);
+        return isTestEnv() || (isClientSide() && EffectiveSide.get().isClient());
     }
 
     /**

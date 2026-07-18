@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.function.Predicate;
 
@@ -22,44 +23,40 @@ public class EmbedHandler {
         return screen.getMainPanel().getArea().height;
     }
 
-    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, r -> true);
+    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, float partialTicks) {
+        drawEmbed(screen, graphics, partialTicks, r -> true);
     }
 
-    public static void drawEmbedNoVanillaElements(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, r -> false);
+    public static void drawEmbedNoVanillaElements(ModularScreen screen, GuiGraphics graphics, float partialTicks) {
+        drawEmbed(screen, graphics, partialTicks, r -> false);
     }
 
-    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Predicate<Renderable> vanillaElementFilter) {
-        graphics.pose().pushPose();
-        screen.render(graphics, mouseX, mouseY, partialTicks);
+    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, float partialTicks, Predicate<Renderable> vanillaElementFilter) {
+        screen.getContext().reset();
+        PoseStack pose = graphics.pose();
+        var m = pose.last().pose();
+        pose.pushPose();
+        pose.setIdentity(); // reset all current transformations and only reapply them for the main panel
+        screen.getMainPanel().transform((p, stack) -> {
+            stack.multiply(m);
+        });
+
+        var defContext = ClientScreenHandler.getDefaultContext();
+        int mx = defContext.getAbsMouseX();
+        int my = defContext.getAbsMouseY();
+        screen.render(graphics, mx, my, partialTicks);
 
         if (vanillaElementFilter != null) {
             RenderSystem.disableDepthTest();
-            ClientScreenHandler.drawVanillaElements(graphics, screen.getScreenWrapper().wrappedScreen(), mouseX, mouseY, partialTicks, vanillaElementFilter);
-            RenderSystem.enableDepthTest();
+            ClientScreenHandler.drawVanillaElements(graphics, screen.getScreenWrapper().wrappedScreen(), mx, my, partialTicks, vanillaElementFilter);
         }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        graphics.pose().popPose();
-    }
-
-    public static void drawEmbedForeground(ModularScreen screen, GuiGraphics graphics) {
-        graphics.pose().pushPose();
-
-        // let us draw foreground elements separately after everything else.
-        //screen.getContext().getStencil().push(screen.getScreenArea());
-        RenderSystem.disableDepthTest();
-        Lighting.setupForFlatItems();
 
         screen.drawForeground(graphics);
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-        //screen.getContext().getStencil().pop();
-        graphics.pose().popPose();
+        pose.popPose();
     }
 
     public record EmbedWrapper(ModularScreen screen) implements IMuiScreen {

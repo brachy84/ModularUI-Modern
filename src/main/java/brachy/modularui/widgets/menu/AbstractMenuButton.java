@@ -27,8 +27,7 @@ import java.util.function.Predicate;
  *
  * @param <W> type of this widget
  */
-public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extends Widget<W>
-        implements IMenuPart, Interactable {
+public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extends Widget<W> implements IMenuPart, Interactable {
 
     /**
      * The general direction where the menu will be opened. This is just a shortcut to standard resizer calls.

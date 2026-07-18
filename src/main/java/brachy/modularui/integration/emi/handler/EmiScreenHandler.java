@@ -7,12 +7,11 @@ import brachy.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 
-import dev.emi.emi.api.EmiApi;
-
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 
+import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiDragDropHandler;
 import dev.emi.emi.api.EmiExclusionArea;
 import dev.emi.emi.api.EmiRegistry;
@@ -48,6 +47,8 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     public void register(EmiRegistry registry) {
         registry.addExclusionArea(this.clazz, this);
+        registry.addDragDropHandler(this.clazz, this);
+        registry.addStackProvider(this.clazz, this);
     }
 
     public static <T extends Screen & IMuiScreen> void register(Class<T> clazz, EmiRegistry registry) {
@@ -58,31 +59,25 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     public boolean dropStack(T screen, EmiIngredient stack, int x, int y) {
         List<GhostIngredientSlot<?>> ghostSlots = screen.screen().getContext()
                 .getRecipeViewerSettings().getGhostIngredientSlots();
-
         var stacks = stack.getEmiStacks();
         if (stacks.isEmpty()) return false;
         for (EmiStack emiStack : stacks) {
             for (GhostIngredientSlot<?> slot : ghostSlots) {
-                if (!slot.isEnabled() || !slot.getArea().contains(x, y)) {
-                    continue;
-                }
-                if (slot.ingredientHandlingOverride(emiStack)) {
-                    return true;
-                }
-                EmiStackConverter.Converter<?> converter = EmiStackConverter
-                        .getForNullable(slot.ingredientClass());
-                if (converter == null) {
-                    continue;
-                }
-                var converted = converter.convertFrom(emiStack);
-                if (converted != null) {
-                    // noinspection unchecked,rawtypes
-                    ((GhostIngredientSlot) slot).setGhostIngredient(converted);
-                    return true;
-                }
+                if (!slot.isEnabled() || !slot.getArea().contains(x, y)) continue;
+                if (slot.ingredientHandlingOverride(emiStack)) return true;
+                if (dropIntoGhostSlot(slot, emiStack)) return true;
             }
         }
         return false;
+    }
+
+    private <I> boolean dropIntoGhostSlot(GhostIngredientSlot<I> slot, EmiStack stack) {
+        EmiStackConverter.Converter<I> converter = EmiStackConverter.getForNullable(slot.ingredientClass());
+        if (converter == null) return false;
+        var converted = converter.convertFrom(stack);
+        if (converted == null) return false;
+        slot.setGhostIngredient(converted);
+        return true;
     }
 
     @Override
@@ -123,7 +118,7 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     @Override
-    public boolean isSearchFocused(){
+    public boolean isSearchFocused() {
         return EmiApi.isSearchFocused();
     }
 

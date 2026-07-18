@@ -11,21 +11,21 @@
         "client.AbstractWidgetMixin",
         "client.MinecraftMixin",
         "client.ScreenAccessor",
-        "client.SlotAccessor",
         "client.StringSplitterAccessor",
         "emi.RecipeScreenMixin",
         "jei.IngredientListOverlayAccessor"
     ],
     "mixins": [
         "common.AbstractContainerMenuAccessor",
-        "common.RegistryFriendlyByteBufMixin",
-        "common.ReloadableServerResourcesMixin",
-        "common.ServerPlayerAccessor",
-        "common.WorldLoaderMixin",
         "common.CombinedInvWrapperAccessor",
         "common.ComponentMixin",
         "common.ComponentSerializationMixin",
-        "common.TextColorMixin"
+        "common.RegistryFriendlyByteBufMixin",
+        "common.ReloadableServerResourcesMixin",
+        "common.ServerPlayerAccessor",
+        "common.SlotAccessor",
+        "common.TextColorMixin",
+        "common.WorldLoaderMixin"
     ],
     "injectors": {
         "defaultRequire": 1,
