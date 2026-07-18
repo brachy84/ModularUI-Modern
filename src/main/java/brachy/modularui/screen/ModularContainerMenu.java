@@ -392,7 +392,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 if (!fromStack.isEmpty() && !fromSlot.mayPickup(player)) return;
                 if (!hotbarStack.isEmpty() && !hotbarSlot.mayPickup(player)) return;
 
-                if (!fromStack.isEmpty() && !hotbarStack.isEmpty() && ItemStack.isSameItemSameTags(fromStack, hotbarStack)) {
+                if (!fromStack.isEmpty() && !hotbarStack.isEmpty() && ItemStack.isSameItemSameComponents(fromStack, hotbarStack)) {
                     int hotbarLimit = hotbarSlot.getMaxStackSize(fromStack);
                     if (hotbarStack.getCount() < hotbarLimit) {
                         int toMove = Math.min(fromStack.getCount(), hotbarLimit - hotbarStack.getCount());

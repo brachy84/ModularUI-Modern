@@ -341,6 +341,6 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     public static boolean onlyAmountChanged(ItemStack a, ItemStack b) {
-        return ItemStack.isSameItemSameTags(a, b) && a.getCount() != b.getCount();
+        return ItemStack.isSameItemSameComponents(a, b) && a.getCount() != b.getCount();
     }
 }
