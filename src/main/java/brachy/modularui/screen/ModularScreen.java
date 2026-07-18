@@ -356,7 +356,6 @@ public class ModularScreen implements Renderable {
         this.context.updateState(mouseX, mouseY, partialTick);
         Lighting.setupForFlatItems();
 
-        this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel<?> panel : this.panelManager.getReverseOpenPanels()) {
             this.context.updateZ(0);
@@ -385,7 +384,6 @@ public class ModularScreen implements Renderable {
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
 
-        this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel<?> panel : this.panelManager.getReverseOpenPanels()) {
             this.context.updateZ(100);
@@ -667,7 +665,8 @@ public class ModularScreen implements Renderable {
     }
 
     public boolean isClientOnly() {
-        return isOverlay() || !this.screenWrapper.isContainerScreen() || getContainer().isClientOnly();
+        return isOverlay() || getContext().getUItype() != UIType.MODULAR_SCREEN
+                || !this.screenWrapper.isContainerScreen() || getContainer().isClientOnly();
     }
 
     public ModularContainerMenu getContainer() {

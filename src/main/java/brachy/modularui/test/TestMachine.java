@@ -1,6 +1,7 @@
 package brachy.modularui.test;
 
 import brachy.modularui.ModularUI;
+import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.IUIHolder;
 import brachy.modularui.api.drawable.Text;
@@ -15,16 +16,20 @@ import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
+import brachy.modularui.utils.Color;
 import brachy.modularui.value.DoubleValue;
+import brachy.modularui.value.StringValue;
 import brachy.modularui.value.sync.BooleanSyncValue;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widget.SingleChildWidget;
+import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.ProgressWidget;
 import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.ToggleButton;
 import brachy.modularui.widgets.layout.Flow;
+import brachy.modularui.widgets.menu.DropdownWidget;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 
@@ -90,7 +95,8 @@ public class TestMachine {
 
         @Override
         public ModularPanel<?> buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-            return new ModularPanel<>("machine")
+            var panel = new ModularPanel<>("machine");
+            return panel
                     .coverChildren()
                     .invisible()
                     .child(Flow.col()
@@ -100,7 +106,7 @@ public class TestMachine {
                                     .coverChildren(176, 30)
                                     .padding(7)
                                     .widgetTheme(IThemeApi.PANEL)
-                                    .child(Recipes.buildMachineUI(this.input, this.output, new DoubleSyncValue(this::getProgress)))
+                                    .child(Recipes.buildMachineUI(panel, this.input, this.output, new DoubleSyncValue(this::getProgress).allowC2S()))
                                     .child(new ParentWidget<>()
                                             .coverChildren()
                                             .decoration()
@@ -119,7 +125,7 @@ public class TestMachine {
                                             .bottom(7)
                                             .rightRelAnchor(0, 1f)
                                             .child(new ToggleButton()
-                                                    .value(new BooleanSyncValue(() -> this.paused, v -> this.paused = v))
+                                                    .value(new BooleanSyncValue(() -> this.paused, v -> this.paused = v).allowC2S())
                                                     .overlay(true, GuiTextures.PLAY)
                                                     .overlay(false, GuiTextures.PAUSE))
                                             .name("side_options"))
@@ -260,25 +266,49 @@ public class TestMachine {
             return false;
         }
 
-        public static IWidget buildMachineUI(IItemHandler in, IItemHandler out, IDoubleValue<?> progress) {
-            return Flow.row().name("slots")
+        public static IWidget buildMachineUI(ModularPanel<?> panel, IItemHandler in, IItemHandler out, IDoubleValue<?> progress) {
+            var val = new StringValue("Option 1");
+            IPanelHandler panelHandler = IPanelHandler.simple(panel, (parent, player) -> {
+                return new ModularPanel<>("test_sub_panel").size(50).overlay(Text.str("Test"));
+            }, true);
+            return Flow.col()
                     .coverChildren()
-                    .center()
-                    .childPadding(8)
-                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
-                            .slot(new ModularSlot(in, i))
-                            .recipeRole(RecipeSlotRole.INPUT)))
-                    .child(new ProgressWidget()
-                            .value(progress)
-                            .size(20)
-                            .texture(GuiTextures.PROGRESS_ARROW, ProgressDrawable.Direction.RIGHT))
-                    .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
-                            .slot(new ModularSlot(out, i).canPut(false))
-                            .recipeRole(RecipeSlotRole.OUTPUT)));
+                    .childPadding(2)
+                    .child(new DropdownWidget<>("test_drop_down", String.class)
+                            .width(70)
+                            .height(14)
+                            .value(val)
+                            .option("Option 1")
+                            .option("Option 2")
+                            .option("Option 3")
+                            .optionToWidget((s, b) -> Text.str(s).asWidget().center().color(Color.WHITE.main).shadow(true).padding(2)))
+                    .child(new ButtonWidget<>()
+                            .size(70, 14)
+                            .overlay(Text.str("Sub panel"))
+                            .onMousePressed((ctx, button) -> {
+                                panelHandler.openPanel();
+                                return true;
+                            }))
+                    .child(Flow.row().name("slots")
+                            .coverChildren()
+                            .childPadding(8)
+                            .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
+                                    .slot(new ModularSlot(in, i))
+                                    .recipeRole(RecipeSlotRole.INPUT)))
+                            .child(new ProgressWidget()
+                                    .value(progress)
+                                    .size(20)
+                                    .texture(GuiTextures.PROGRESS_ARROW, ProgressDrawable.Direction.RIGHT))
+                            .child(SlotGroupWidget.rect(2, 2, i -> new ItemSlot()
+                                    .slot(new ModularSlot(out, i).canPut(false))
+                                    .recipeRole(RecipeSlotRole.OUTPUT))));
         }
 
         public static IWidget buildViewerUI(Recipe recipe) {
-            IWidget recipeUI = buildMachineUI(EMPTY_INFINITE_ITEM_HANDLER, EMPTY_INFINITE_ITEM_HANDLER, DoubleValue.simulateProgress(5000));
+            var panel = new ModularPanel<>("recipe_viewer_recipe")
+                    .coverChildren(60, 40)
+                    .invisible();
+            IWidget recipeUI = buildMachineUI(panel, EMPTY_INFINITE_ITEM_HANDLER, EMPTY_INFINITE_ITEM_HANDLER, DoubleValue.simulateProgress(5000));
             recipeUI.visitTransformAllChildren(w -> {
                 if (w instanceof ItemSlot slot) {
                     List<ItemStack> l = slot.getRecipeRole() == RecipeSlotRole.INPUT ? recipe.in : recipe.out;
@@ -291,7 +321,8 @@ public class TestMachine {
                 }
                 return w;
             });
-            return recipeUI;
+            return panel.child(recipeUI);
+            //return recipeUI;
         }
     }
 
@@ -309,14 +340,15 @@ public class TestMachine {
         public static class RecipeDisplay extends ModularUIEmiRecipe {
 
             private final Recipe recipe;
-            @Getter private final List<EmiIngredient> inputs;
-            @Getter private final List<EmiStack> outputs;
+            @Getter private final List<EmiIngredient> inputs = new ArrayList<>();
+            @Getter private final List<EmiStack> outputs = new ArrayList<>();
 
             public RecipeDisplay(Supplier<IWidget> widgetSupplier, Recipe recipe) {
                 super(recipe.resloc, widgetSupplier);
                 this.recipe = recipe;
-                this.inputs = recipe.in.stream().map(EmiStack::of).map(s -> (EmiIngredient) s).toList();
-                this.outputs = recipe.out.stream().map(EmiStack::of).toList();
+                recipe.in.stream().map(EmiStack::of).map(s -> (EmiIngredient) s).forEach(inputs::add);
+                recipe.out.stream().map(EmiStack::of).forEach(outputs::add);
+                calculateSize();
             }
 
             @Override

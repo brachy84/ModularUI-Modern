@@ -8,17 +8,24 @@ import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.utils.math.MathUtils;
 
+import dev.emi.emi.api.neoforge.NeoForgeEmiStack;
+
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
 
-import dev.emi.emi.api.neoforge.NeoForgeEmiStack;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -71,10 +78,17 @@ public class EmiStackConverter {
         @Override
         public @Nullable FluidStack convertFrom(EmiStack stack) {
             Fluid key = stack.getKeyOfType(Fluid.class);
-            if (key == null || key == Fluids.EMPTY) {
-                return null;
+            if (key != null && key != Fluids.EMPTY) {
+                return new FluidStack(key.builtInRegistryHolder(), MathUtils.saturatedCast(stack.getAmount()), stack.getComponentChanges());
             }
-            return new FluidStack(key.builtInRegistryHolder(), MathUtils.saturatedCast(stack.getAmount()), stack.getComponentChanges());
+            var item = ITEM.convertFrom(stack);
+            if (item != null) {
+                IFluidHandlerItem fluidHandler = item.getCapability(Capabilities.FluidHandler.ITEM);
+                if(fluidHandler != null && fluidHandler.getTanks() == 1) {
+                    return fluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+                }
+            }
+            return null;
         }
 
         private static EmiIngredient toEMIIngredient(Stream<FluidStack> stream) {

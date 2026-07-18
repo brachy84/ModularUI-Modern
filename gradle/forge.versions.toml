@@ -1,6 +1,6 @@
 [versions]
 # Recipe viewers
-emi = "1.1.22+1.21.1"
+emi = "1.1.24+1.21.1"
 
 jei = "19.25.1.328"
 

@@ -348,11 +348,13 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<RegistryFriendlyByteB
         }
     }
 
-    private void playSound(Player player, FluidStack fluid, SoundAction action) {
+    public void playSound(Player player, FluidStack fluid, SoundAction action) {
         SoundEvent sound = fluid.getFluid().getFluidType().getSound(fluid, action);
         if (sound == null) return;
-        player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(),
-                sound, SoundSource.BLOCKS, 1.0F, 1.0F);
+        // on client, it needs the player to play the sound
+        // on server the player is an exception
+        player.level().playSound(getSyncManager().isClient() ? player : null, player.getX(), player.getY() + 0.5, player.getZ(), sound,
+                SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     public FluidSlotSyncHandler controlsAmount(boolean controlsAmount) {

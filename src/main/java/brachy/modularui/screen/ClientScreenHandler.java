@@ -449,6 +449,7 @@ public class ClientScreenHandler {
 
     public static void drawScreenInternal(GuiGraphics graphics, ModularScreen muiScreen, Screen mcScreen, int mouseX, int mouseY, float partialTicks) {
         Stencil.reset();
+        muiScreen.getContext().reset();
         muiScreen.getContext().getStencil().push(muiScreen.getScreenArea());
         muiScreen.render(graphics, mouseX, mouseY, partialTicks);
         RenderSystem.disableDepthTest();
@@ -466,6 +467,7 @@ public class ClientScreenHandler {
         AbstractContainerScreenAccessor acc = (AbstractContainerScreenAccessor) mcScreen;
 
         Stencil.reset();
+        muiScreen.getContext().reset();
         muiScreen.getContext().getStencil().push(muiScreen.getScreenArea());
         mcScreen.renderBackground(graphics, mouseX, mouseY, partialTicks);
         int x = mcScreen.getGuiLeft();

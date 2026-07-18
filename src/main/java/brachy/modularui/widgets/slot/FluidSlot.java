@@ -1,6 +1,7 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.api.ITheme;
+import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.Interactable;
@@ -17,12 +18,12 @@ import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -171,7 +172,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
             return Result.ACCEPT;
         }
-        ItemStack cursorStack = Minecraft.getInstance().player.containerMenu.getCarried();
+        ItemStack cursorStack = MCHelper.getPlayer().containerMenu.getCarried();
         if (this.syncHandler.phantom() ||
                 (!cursorStack.isEmpty() && cursorStack.getCapability(Capabilities.FluidHandler.ITEM) != null)) {
             MouseData mouseData = MouseData.create(button);
@@ -254,6 +255,10 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     @Override
     public void setGhostIngredient(@NotNull FluidStack ingredient) {
         if (this.syncHandler.phantom()) {
+            if (ingredient.getFluid() != Fluids.EMPTY) {
+                ingredient.setAmount(this.syncHandler.controlsAmount() ? 1000 : 1);
+                this.syncHandler.playSound(MCHelper.getPlayer(), ingredient, SoundActions.BUCKET_FILL);
+            }
             this.syncHandler.setValue(ingredient);
         }
     }
