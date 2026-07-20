@@ -149,6 +149,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     @Override
     public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        super.drawOverlay(context, widgetTheme);
         if (isHovering()) {
             RenderSystem.colorMask(true, true, true, false);
             GuiDraw.drawRect(context.getGraphics(), 1, 1, getArea().w() - 2, getArea().h() - 2, getSlotHoverColor());
@@ -212,9 +213,8 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return this.alwaysShowFull ? 0 : getFluidTank().getCapacity();
     }
 
-    @Nullable
     public FluidStack getFluidStack() {
-        return this.syncHandler == null ? null : this.syncHandler.getValue();
+        return this.syncHandler == null ? FluidStack.EMPTY : this.syncHandler.getOrDefault(FluidStack.EMPTY);
     }
 
     public IFluidTank getFluidTank() {

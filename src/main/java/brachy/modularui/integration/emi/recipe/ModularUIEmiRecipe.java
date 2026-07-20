@@ -178,6 +178,7 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
             IWidget hovered = screen.getContext().getTopHovered();
             if (hovered instanceof ITooltip<?> tooltip && tooltip.getTooltip() != null) {
                 RichTooltip richTooltip = tooltip.getTooltip();
+                if (richTooltip.autoUpdate()) richTooltip.markDirty();
                 richTooltip.isEmpty(); // causes the tooltip to rebuild if necessary
                 IRichTextBuilder<?> richTextBuilder = richTooltip.getRichText();
                 if (richTextBuilder instanceof RichText richText) {
