@@ -1,5 +1,6 @@
 package brachy.modularui.api.drawable;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.drawable.text.DynamicComponent;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.ModularComponent;
@@ -170,6 +171,7 @@ public interface Text extends IDrawable {
 
     @Override
     default int getDefaultWidth() {
+        if (!ModularUI.isClientSide()) return 18;
         renderer.setAlignment(Alignment.TopLeft, -1, -1);
         renderer.setScale(getScale());
         renderer.setPos(0, 0);
@@ -181,6 +183,7 @@ public interface Text extends IDrawable {
 
     @Override
     default int getDefaultHeight() {
+        if (!ModularUI.isClientSide()) return 18;
         renderer.setAlignment(Alignment.TopLeft, -1, -1);
         renderer.setScale(getScale());
         renderer.setPos(0, 0);
