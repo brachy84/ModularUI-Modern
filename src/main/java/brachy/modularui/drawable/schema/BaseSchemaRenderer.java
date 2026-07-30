@@ -295,6 +295,11 @@ public class BaseSchemaRenderer implements IDrawable {
 
     @SuppressWarnings("deprecation")
     public void renderWorld(MultiBufferSource.BufferSource bufferSource, float partialTick) {
+        LevelLightEngine lightEngine = this.renderLevel.getLightEngine();
+        while (lightEngine.hasLightWork()) {
+            lightEngine.runLightUpdates();
+        }
+
         var renderResult = checkRecompile();
         if (renderResult == null) return;
 
@@ -310,10 +315,6 @@ public class BaseSchemaRenderer implements IDrawable {
         RenderSystem.setShaderFogShape(FogShape.SPHERE);
 
         lightTexture.update(this.renderLevel);
-        LevelLightEngine lightEngine = this.renderLevel.getLightEngine();
-        while (lightEngine.hasLightWork()) {
-            lightEngine.runLightUpdates();
-        }
 
         Lighting.setupLevel(RenderSystem.getModelViewMatrix());
 
