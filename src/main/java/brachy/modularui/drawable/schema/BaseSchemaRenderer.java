@@ -436,10 +436,14 @@ public class BaseSchemaRenderer implements IDrawable {
             VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
             // check if the buffer is invalid in case someone breaks it
             // noinspection ConstantValue
-            if (vertexBuffer.isInvalid() || vertexBuffer.getFormat() == null) return;
+            if (!vertexBuffer.isInvalid() && vertexBuffer.getFormat() != null) {
+                vertexBuffer.bind();
+                vertexBuffer.draw();
+            }
+        }
 
-            vertexBuffer.bind();
-            vertexBuffer.draw();
+        if (shader.CHUNK_OFFSET != null) {
+            shader.CHUNK_OFFSET.set(0f, 0f, 0f);
         }
 
         shader.clear();
