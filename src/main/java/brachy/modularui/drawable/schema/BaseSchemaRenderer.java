@@ -303,8 +303,7 @@ public class BaseSchemaRenderer implements IDrawable {
         var renderResult = checkRecompile();
         if (renderResult == null) return;
 
-        float[] fogColor = RenderSystem.getShaderFogColor(); // note: this is the live array, so copy it out
-        float prevFogRed = fogColor[0], prevFogGreen = fogColor[1], prevFogBlue = fogColor[2], prevFogAlpha = fogColor[3];
+        float[] prevFogColor = RenderSystem.getShaderFogColor().clone(); // note: this is the live array, so we clone it
         float prevFogStart = RenderSystem.getShaderFogStart();
         float prevFogEnd = RenderSystem.getShaderFogEnd();
         FogShape prevFogShape = RenderSystem.getShaderFogShape();
@@ -363,7 +362,7 @@ public class BaseSchemaRenderer implements IDrawable {
 
         Lighting.setupFor3DItems();
 
-        RenderSystem.setShaderFogColor(prevFogRed, prevFogGreen, prevFogBlue, prevFogAlpha);
+        RenderSystem.setShaderFogColor(prevFogColor[0], prevFogColor[1], prevFogColor[2], prevFogColor[3]);
         RenderSystem.setShaderFogStart(prevFogStart);
         RenderSystem.setShaderFogEnd(prevFogEnd);
         RenderSystem.setShaderFogShape(prevFogShape);
