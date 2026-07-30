@@ -298,7 +298,12 @@ public class BaseSchemaRenderer implements IDrawable {
         var renderResult = checkRecompile();
         if (renderResult == null) return;
 
-        // Essentially disable level fog
+        float[] fogColor = RenderSystem.getShaderFogColor(); // note: this is the live array, so copy it out
+        float prevFogRed = fogColor[0], prevFogGreen = fogColor[1], prevFogBlue = fogColor[2], prevFogAlpha = fogColor[3];
+        float prevFogStart = RenderSystem.getShaderFogStart();
+        float prevFogEnd = RenderSystem.getShaderFogEnd();
+        FogShape prevFogShape = RenderSystem.getShaderFogShape();
+
         RenderSystem.setShaderFogColor(1, 1, 1, 0);
         RenderSystem.setShaderFogStart(0);
         RenderSystem.setShaderFogEnd(1000);
@@ -356,11 +361,15 @@ public class BaseSchemaRenderer implements IDrawable {
         RenderSystem.enableDepthTest();
 
         Lighting.setupFor3DItems();
+
+        RenderSystem.setShaderFogColor(prevFogRed, prevFogGreen, prevFogBlue, prevFogAlpha);
+        RenderSystem.setShaderFogStart(prevFogStart);
+        RenderSystem.setShaderFogEnd(prevFogEnd);
+        RenderSystem.setShaderFogShape(prevFogShape);
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
         renderType.setupRenderState();
-        ModelBlockRenderer.enableCaching();
 
         // set up shader uniforms
         ShaderInstance shader = RenderSystem.getShader();
