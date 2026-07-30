@@ -6,8 +6,8 @@ import brachy.modularui.api.widget.ISynced;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.viewport.ModularGuiContext;
-import brachy.modularui.utils.FormattingUtil;
 import brachy.modularui.utils.TreeUtil;
+import brachy.modularui.utils.math.NumberFormat;
 import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.sizer.ResizeNode;
@@ -302,8 +302,8 @@ public class WidgetTree extends TreeUtil {
         if (WidgetTree.logResizeTime) {
             time = Util.getNanos() - time;
             ModularUI.LOGGER.info("Resized widget tree in {} ns and {} ns for full resize.",
-                    FormattingUtil.formatNumbers(time),
-                    FormattingUtil.formatNumbers(time));
+                    NumberFormat.formatNanos(time),
+                    NumberFormat.formatNanos(time));
         }
     }
 
