@@ -46,7 +46,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.FogShape;
-import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
@@ -360,6 +359,16 @@ public class BaseSchemaRenderer implements IDrawable {
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
+        if (renderResult.isEmpty(renderType)) {
+            return;
+        }
+        VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
+        // check if the buffer is invalid in case someone breaks it
+        // noinspection ConstantValue
+        if (vertexBuffer.isInvalid() || vertexBuffer.getFormat() == null) {
+            return;
+        }
+
         renderType.setupRenderState();
         ModelBlockRenderer.enableCaching();
 
@@ -375,19 +384,12 @@ public class BaseSchemaRenderer implements IDrawable {
         shader.apply();
 
         // actually draw the chunk
-        if (!renderResult.isEmpty(renderType)) {
-            if (ModularUI.Mods.isSodiumLikeLoaded()) {
-                SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
-            }
-
-            VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
-            // check if the buffer is invalid in case someone breaks it
-            // noinspection ConstantValue
-            if (!vertexBuffer.isInvalid() && vertexBuffer.getFormat() != null) {
-                vertexBuffer.bind();
-                vertexBuffer.draw();
-            }
+        if (ModularUI.Mods.isSodiumLikeLoaded()) {
+            SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
         }
+
+        vertexBuffer.bind();
+        vertexBuffer.draw();
 
         if (shader.CHUNK_OFFSET != null) {
             shader.CHUNK_OFFSET.set(0f, 0f, 0f);
