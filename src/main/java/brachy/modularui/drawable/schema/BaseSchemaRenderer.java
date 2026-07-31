@@ -43,7 +43,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.FogShape;
@@ -372,82 +371,39 @@ public class BaseSchemaRenderer implements IDrawable {
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
+        if (renderResult.isEmpty(renderType)) {
+            return;
+        }
+        VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
+        // check if the buffer is invalid in case someone breaks it
+        // noinspection ConstantValue
+        if (vertexBuffer.isInvalid() || vertexBuffer.getFormat() == null) {
+            return;
+        }
+
         renderType.setupRenderState();
 
         // set up shader uniforms
         ShaderInstance shader = RenderSystem.getShader();
         assert shader != null;
 
-        for (int i = 0; i < GlStateManager.TEXTURE_COUNT; ++i) {
-            int textureId = RenderSystem.getShaderTexture(i);
-            shader.setSampler("Sampler" + i, textureId);
-        }
-
-        if (shader.MODEL_VIEW_MATRIX != null) {
-            shader.MODEL_VIEW_MATRIX.set(RenderSystem.getModelViewMatrix());
-        }
-
-        if (shader.PROJECTION_MATRIX != null) {
-            shader.PROJECTION_MATRIX.set(RenderSystem.getProjectionMatrix());
-        }
-
-        if (shader.COLOR_MODULATOR != null) {
-            shader.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
-        }
-
-        if (shader.GLINT_ALPHA != null) {
-            shader.GLINT_ALPHA.set(RenderSystem.getShaderGlintAlpha());
-        }
-
-        if (shader.FOG_START != null) {
-            shader.FOG_START.set(RenderSystem.getShaderFogStart());
-        }
-
-        if (shader.FOG_END != null) {
-            shader.FOG_END.set(RenderSystem.getShaderFogEnd());
-        }
-
-        if (shader.FOG_COLOR != null) {
-            shader.FOG_COLOR.set(RenderSystem.getShaderFogColor());
-        }
-
-        if (shader.FOG_SHAPE != null) {
-            shader.FOG_SHAPE.set(RenderSystem.getShaderFogShape().getIndex());
-        }
-
-        if (shader.TEXTURE_MATRIX != null) {
-            shader.TEXTURE_MATRIX.set(RenderSystem.getTextureMatrix());
-        }
-
-        if (shader.GAME_TIME != null) {
-            shader.GAME_TIME.set(RenderSystem.getShaderGameTime());
-        }
-
-        if (shader.SCREEN_SIZE != null) {
-            Window window = Minecraft.getInstance().getWindow();
-            shader.SCREEN_SIZE.set((float) window.getWidth(), (float) window.getHeight());
-        }
-
+        shader.setDefaultUniforms(renderType.mode(),RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(),
+                Minecraft.getInstance().getWindow());
         if (shader.CHUNK_OFFSET != null) {
             shader.CHUNK_OFFSET.set(-camera.pos().x, -camera.pos().y, -camera.pos().z);
         }
-
-        RenderSystem.setupShaderLights(shader);
         shader.apply();
 
         // actually draw the chunk
-        if (!renderResult.isEmpty(renderType)) {
-            if (ModularUI.Mods.isSodiumLikeLoaded()) {
-                SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
-            }
+        if (ModularUI.Mods.isSodiumLikeLoaded()) {
+            SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
+        }
 
-            VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
-            // check if the buffer is invalid in case someone breaks it
-            // noinspection ConstantValue
-            if (vertexBuffer.isInvalid() || vertexBuffer.getFormat() == null) return;
+        vertexBuffer.bind();
+        vertexBuffer.draw();
 
-            vertexBuffer.bind();
-            vertexBuffer.draw();
+        if (shader.CHUNK_OFFSET != null) {
+            shader.CHUNK_OFFSET.set(0f, 0f, 0f);
         }
 
         shader.clear();
