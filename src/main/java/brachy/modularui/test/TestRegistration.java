@@ -2,14 +2,19 @@ package brachy.modularui.test;
 
 import brachy.modularui.ModularUI;
 
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -25,7 +30,7 @@ public class TestRegistration {
 
     private static Supplier<TestItem> testItemFactory() {
         if (ModularUI.Mods.CURIOS.isLoaded()) {
-            return () -> new TestCurioItem(new Item.Properties());
+            return CuriosCallWrapper.getCuriosItem();
         }
         return () -> new TestItem(new Item.Properties());
     }
@@ -41,5 +46,12 @@ public class TestRegistration {
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BE_TYPES.register(bus);
+    }
+
+    public static class CuriosCallWrapper {
+
+        public static Supplier<TestItem> getCuriosItem() {
+            return () -> new TestCurioItem(new Item.Properties());
+        }
     }
 }
