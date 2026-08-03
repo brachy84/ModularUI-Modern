@@ -10,12 +10,15 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import com.mojang.datafixers.util.Either;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A list that lazily parses a list of text-like and drawable types into a vanilla compatible types.
@@ -125,6 +128,16 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
         return line.text;
     }
 
+    private static Component ftToComponent(FormattedText ft) {
+        if (ft instanceof Component c) return c;
+        MutableComponent out = Component.empty();
+        ft.visit((style, str) -> {
+            out.append(Component.literal(str).setStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return out;
+    }
+
     @Override
     public void add(int index, Either<FormattedText, TooltipComponent> s) {
         buildUntil(index);
@@ -134,10 +147,13 @@ public class TooltipLines extends AbstractList<Either<FormattedText, TooltipComp
             lines.get(i).index++;
         }
         s.ifLeft(ft -> {
-            if (!(ft instanceof Component)) {
-                throw new IllegalArgumentException("Tooltip text must be components");
+            Component comp;
+            if(ft instanceof Component component){
+                comp = component;
+            } else {
+                comp = ftToComponent(ft);
             }
-            this.elements.add(elementIndex, ft);
+            this.elements.add(elementIndex, comp);
             this.lastElementIndex++;
         });
         // TODO support tooltip component
