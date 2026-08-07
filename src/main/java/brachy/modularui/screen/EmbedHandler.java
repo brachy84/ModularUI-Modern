@@ -11,6 +11,8 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import org.joml.Matrix4f;
+
 import java.util.function.Predicate;
 
 public class EmbedHandler {
@@ -36,8 +38,10 @@ public class EmbedHandler {
         PoseStack pose = graphics.pose();
         var m = pose.last().pose();
         screen.updateEmbedPos(Math.round(m.m30()), Math.round(m.m31()));
+        Matrix4f hostTransform = new Matrix4f().translation(-Math.round(m.m30()), -Math.round(m.m31()), 0f).mul(m);
+        screen.getMainPanel().transform((p, stack) -> stack.multiply(hostTransform));
         pose.pushPose();
-        pose.setIdentity(); // reset all current transformations and only reapply them for the main panel
+        pose.setIdentity();
 
         var defContext = ClientScreenHandler.getDefaultContext();
         int mx = defContext.getAbsMouseX();
