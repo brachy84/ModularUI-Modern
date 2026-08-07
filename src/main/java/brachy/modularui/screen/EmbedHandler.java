@@ -35,13 +35,9 @@ public class EmbedHandler {
         screen.getContext().reset();
         PoseStack pose = graphics.pose();
         var m = pose.last().pose();
+        screen.updateEmbedPos(Math.round(m.m30()), Math.round(m.m31()));
         pose.pushPose();
         pose.setIdentity(); // reset all current transformations and only reapply them for the main panel
-        for (ModularPanel<?> panel : screen.getPanelManager().getOpenPanels()) {
-            panel.transform((p, stack) -> {
-                stack.multiply(m);
-            });
-        }
 
         var defContext = ClientScreenHandler.getDefaultContext();
         int mx = defContext.getAbsMouseX();

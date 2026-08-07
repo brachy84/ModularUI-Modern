@@ -19,6 +19,7 @@ import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.ScreenResizeNode;
+import brachy.modularui.widget.sizer.Unit;
 import brachy.modularui.widgets.menu.MenuPanel;
 
 import net.minecraft.Util;
@@ -92,7 +93,9 @@ public class ModularScreen implements Renderable {
     }
 
     public static ModularScreen createEmbed(String owner, ModularPanel<?> panel, int width, int height) {
-        ModularScreen screen = new ModularScreen(UIType.EMBED, owner, c -> panel.pos(0, 0), false);
+        ModularScreen screen = new ModularScreen(UIType.EMBED, owner, c -> panel, false);
+        panel.left(screen::getEmbedX, Unit.Measure.PIXEL);
+        panel.top(screen::getEmbedY, Unit.Measure.PIXEL);
         screen.construct(new EmbedHandler.EmbedWrapper(screen));
         screen.getContext().setSettings(new UISettings());
         screen.onResize(width, height);
@@ -116,6 +119,8 @@ public class ModularScreen implements Renderable {
     private final Map<Class<?>, List<IGuiAction>> guiActionListeners = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectArrayMap<IWidget, Runnable> frameUpdates = new Object2ObjectArrayMap<>();
     @Getter private final ScreenResizeNode resizeNode = new ScreenResizeNode(this);
+    @Getter private int embedX;
+    @Getter private int embedY;
     @Getter private boolean pauseScreen = false;
     @Getter private boolean openParentOnClose = false;
 
@@ -233,6 +238,15 @@ public class ModularScreen implements Renderable {
         if (!isOverlay()) {
             this.screenWrapper.updateGuiArea(this.panelManager.getMainPanel().getArea());
         }
+    }
+
+    public void updateEmbedPos(int x, int y) {
+        if (this.panelManager.isDisposed() || (this.embedX == x && this.embedY == y)) return;
+        this.embedX = x;
+        this.embedY = y;
+        this.context.pushViewport(null, this.context.getScreenArea());
+        WidgetTree.resizeInternal(getMainPanel().resizer(), false);
+        this.context.popViewport(null);
     }
 
     /**
