@@ -36,7 +36,7 @@ legacyForge {
     }
 
     interfaceInjectionData {
-        var file = project.files('injected_interfaces/interfaces.json')
+        var file = project.file('injected_interfaces/interfaces.json')
         from(file)
         publish(file)
     }
