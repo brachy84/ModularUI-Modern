@@ -11,8 +11,8 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -53,7 +53,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onMousePressed(button);
         }
@@ -69,7 +69,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMouseTapped(int button) {
+    public @NonNull Result onMouseTapped(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onMouseTapped(button);
         }
@@ -77,7 +77,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public @NonNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onKeyPressed(keyCode, scanCode, modifiers);
         }
@@ -93,7 +93,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
+    public @NonNull Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onKeyTapped(keyCode, scanCode, modifiers);
         }

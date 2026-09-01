@@ -11,8 +11,8 @@ import brachy.modularui.widget.sizer.StandardResizer;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -65,7 +65,7 @@ public abstract class AbstractWidget implements IWidget {
      */
     @ApiStatus.Internal
     @Override
-    public final void initialise(@NotNull IWidget parent, boolean late) {
+    public final void initialise(@NonNull IWidget parent, boolean late) {
         this.timeHovered = -1;
         this.timeBelowMouse = -1;
         if (this.resizer == null) {
@@ -255,7 +255,7 @@ public abstract class AbstractWidget implements IWidget {
      * @throws IllegalStateException if {@link #isValid()} returns false
      */
     @Override
-    public @NotNull IWidget getParent() {
+    public @NonNull IWidget getParent() {
         if (!isValid()) {
             throw new IllegalStateException(this + " is not in a valid state!");
         }
@@ -291,7 +291,7 @@ public abstract class AbstractWidget implements IWidget {
      * @throws IllegalStateException if {@link #isValid()} returns false
      */
     @Override
-    public @NotNull ModularPanel<?> getPanel() {
+    public @NonNull ModularPanel<?> getPanel() {
         if (!isValid()) {
             throw new IllegalStateException(this + " is not in a valid state!");
         }
@@ -299,7 +299,7 @@ public abstract class AbstractWidget implements IWidget {
     }
 
     @Override
-    public @NotNull StandardResizer resizer() {
+    public @NonNull StandardResizer resizer() {
         return this.resizer;
     }
 

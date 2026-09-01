@@ -5,7 +5,7 @@ import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

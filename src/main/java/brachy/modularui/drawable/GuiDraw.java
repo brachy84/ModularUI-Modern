@@ -45,7 +45,7 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -679,7 +679,7 @@ public class GuiDraw {
 
     public static void drawFluidTexture(GuiGraphics graphics, FluidStack content, float x0, float y0,
                                         float width, float height, float z) {
-        if (content == null || content.isEmpty()) {
+        if (content.isEmpty()) {
             return;
         }
         Fluid fluid = content.getFluid();
@@ -696,13 +696,13 @@ public class GuiDraw {
         graphics.setColor(1f, 1f, 1f, 1f);
     }
 
-    public static void drawStandardSlotAmountText(GuiContext context, int amount, String format, Area area,
+    public static void drawStandardSlotAmountText(GuiContext context, int amount, @Nullable String format, Area area,
                                                   float z) {
         drawAmountText(context.getMuiContext(), amount, format, 0, 0, area.width, area.height, Alignment.BottomRight,
                 z);
     }
 
-    public static void drawAmountText(ModularGuiContext context, int amount, String format,
+    public static void drawAmountText(ModularGuiContext context, int amount, @Nullable String format,
                                       int x, int y, int width, int height, Alignment alignment, float z) {
         if (amount <= 1) return;
         String amountText = NumberFormat.AMOUNT_TEXT.format(amount);
@@ -721,7 +721,7 @@ public class GuiDraw {
     public static void drawScaledAlignedTextInBox(ModularGuiContext context, String amountText,
                                                   int x, int y, int width, int height,
                                                   Alignment alignment, float maxScale, float z) {
-        if (amountText == null || amountText.isEmpty()) return;
+        if (amountText.isEmpty()) return;
         // render the amount overlay
         textRenderer.setShadow(true);
         textRenderer.setScale(1f);

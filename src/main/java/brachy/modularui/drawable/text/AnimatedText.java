@@ -97,32 +97,32 @@ public class AnimatedText extends StyledText {
     }
 
     @Override
-    public @NotNull AnimatedText style(ChatFormatting formatting) {
+    public @NonNull AnimatedText style(ChatFormatting formatting) {
         return (AnimatedText) super.style(formatting);
     }
 
     @Override
-    public @NotNull AnimatedText alignment(Alignment alignment) {
+    public @NonNull AnimatedText alignment(Alignment alignment) {
         return (AnimatedText) super.alignment(alignment);
     }
 
     @Override
-    public @NotNull AnimatedText color(int color) {
+    public @NonNull AnimatedText color(int color) {
         return color(() -> color);
     }
 
     @Override
-    public @NotNull AnimatedText color(@Nullable IntSupplier color) {
+    public @NonNull AnimatedText color(@Nullable IntSupplier color) {
         return (AnimatedText) super.color(color);
     }
 
     @Override
-    public @NotNull AnimatedText scale(float scale) {
+    public @NonNull AnimatedText scale(float scale) {
         return (AnimatedText) super.scale(scale);
     }
 
     @Override
-    public @NotNull AnimatedText shadow(@Nullable Boolean shadow) {
+    public @NonNull AnimatedText shadow(@Nullable Boolean shadow) {
         return (AnimatedText) super.shadow(shadow);
     }
 }*/

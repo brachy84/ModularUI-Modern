@@ -21,8 +21,8 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -268,8 +268,8 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
 
     public interface SlotFunction {
 
-        @NotNull
-        ModularSlot apply(@NotNull PlayerMainInvWrapper playerInv, int index);
+        @NonNull
+        ModularSlot apply(@NonNull PlayerMainInvWrapper playerInv, int index);
     }
 
     public PanelSyncManager addOpenListener(Consumer<Player> listener) {

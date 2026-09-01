@@ -20,8 +20,8 @@ import brachy.modularui.widget.SingleChildWidget;
 
 import lombok.Getter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -48,7 +48,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IIntValue.class);
     }
 
@@ -133,7 +133,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.intValue = syncOrValue.castNullable(IIntValue.class);
         if (syncOrValue instanceof IEnumValue<?> enumValue) {
@@ -187,7 +187,7 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         switch (button) {
             case 0:
                 next();

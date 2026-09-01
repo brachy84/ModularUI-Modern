@@ -7,8 +7,8 @@ import brachy.modularui.value.ByteValue;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -18,19 +18,19 @@ public class ByteSyncValue extends ValueSyncHandler<Byte, ByteSyncValue> impleme
     private final ByteValue.Supplier getter;
     private final ByteValue.Consumer setter;
 
-    public ByteSyncValue(@NotNull ByteValue.Supplier getter) {
+    public ByteSyncValue(ByteValue.@NonNull Supplier getter) {
         this(getter, (ByteValue.Consumer) null);
     }
 
-    public ByteSyncValue(@NotNull ByteValue.Supplier getter, @Nullable ByteValue.Consumer setter) {
+    public ByteSyncValue(ByteValue.@NonNull Supplier getter, ByteValue.@Nullable Consumer setter) {
         this.getter = Objects.requireNonNull(getter);
         this.setter = setter;
         this.cache = getter.getByte();
     }
 
     @Contract("null, _, null, _ -> fail")
-    public ByteSyncValue(@Nullable ByteValue.Supplier clientGetter, @Nullable ByteValue.Consumer clientSetter,
-                         @Nullable ByteValue.Supplier serverGetter, @Nullable ByteValue.Consumer serverSetter) {
+    public ByteSyncValue(ByteValue.@Nullable Supplier clientGetter, ByteValue.@Nullable Consumer clientSetter,
+                         ByteValue.@Nullable Supplier serverGetter, ByteValue.@Nullable Consumer serverSetter) {
         if (clientGetter == null && serverGetter == null) {
             throw new NullPointerException("Client or server getter must not be null!");
         }
@@ -44,8 +44,8 @@ public class ByteSyncValue extends ValueSyncHandler<Byte, ByteSyncValue> impleme
         this.cache = this.getter.getByte();
     }
 
-    public ByteSyncValue(@Nullable ByteValue.Supplier clientGetter,
-                         @Nullable ByteValue.Supplier serverGetter) {
+    public ByteSyncValue(ByteValue.@Nullable Supplier clientGetter,
+                         ByteValue.@Nullable Supplier serverGetter) {
         this(clientGetter, null, serverGetter, null);
     }
 

@@ -10,6 +10,7 @@ modDevGradle = "2.0.86"
 lombok = "8.14"
 
 jetbrains-annotations = "26.0.1"
+jspecify = "1.0.0"
 renderNurse = "0.0.12"
 mixin = "0.8.7"
 evalEx = "3.6.0"
@@ -17,6 +18,7 @@ evalEx = "3.6.0"
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 minecraftForge = { module = "net.minecraftforge:forge", version.ref = "minecraftForge" }
+jspecify = {module = "org.jspecify:jspecify", version.ref = "jspecify" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 renderNurse = { module = "net.neoforged:render-nurse", version.ref = "renderNurse" }
 mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }

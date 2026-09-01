@@ -33,8 +33,8 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.ModList;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.text.DecimalFormat;
 
@@ -138,18 +138,18 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(FluidSlotSyncHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.syncHandler = syncOrValue.castNullable(FluidSlotSyncHandler.class);
     }
 
     @Override
-    public @NotNull FluidSlotSyncHandler getSyncHandler() {
+    public @NonNull FluidSlotSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("Widget is not initialised or not synced!");
         }
@@ -181,7 +181,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return theme.theme().getSlotHoverColor();
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Result onMousePressed(int button) {
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
@@ -207,7 +207,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public @NonNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == InputConstants.KEY_LSHIFT || keyCode == InputConstants.KEY_RSHIFT) {
             markTooltipDirty();
         }
@@ -267,7 +267,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     /* === Jei ghost slot === */
 
     @Override
-    public void setGhostIngredient(@NotNull FluidStack ingredient) {
+    public void setGhostIngredient(@NonNull FluidStack ingredient) {
         if (this.syncHandler.phantom()) {
             if (ingredient.getRawFluid() != Fluids.EMPTY) {
                 ingredient.setAmount(this.syncHandler.controlsAmount() ? 1000 : 1);
@@ -278,7 +278,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     @Override
-    public @Nullable FluidStack castGhostIngredientIfValid(@NotNull Object ingredient) {
+    public @Nullable FluidStack castGhostIngredientIfValid(@NonNull Object ingredient) {
         return areAncestorsEnabled() && this.syncHandler.phantom() && ingredient instanceof FluidStack fluidStack ?
                 fluidStack : null;
     }

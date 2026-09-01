@@ -7,7 +7,7 @@ import brachy.modularui.widget.sizer.Area;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

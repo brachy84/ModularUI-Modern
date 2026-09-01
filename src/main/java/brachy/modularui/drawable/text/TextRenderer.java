@@ -18,6 +18,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class TextRenderer {
         this.draw(graphics, Component.literal(text));
     }
 
-    public void draw(GuiGraphics graphics, Component text) {
+    public void draw(@Nullable GuiGraphics graphics, Component text) {
         if ((this.maxWidth <= 0 || !this.hardWrapOnBorder) && !text.getString().contains("\n'")) {
             drawSimple(graphics, text);
         } else {
@@ -77,11 +78,11 @@ public class TextRenderer {
         }
     }
 
-    public void draw(GuiGraphics graphics, List<Component> lines) {
+    public void draw(@Nullable GuiGraphics graphics, List<Component> lines) {
         drawMeasuredLines(graphics, measureLines(lines));
     }
 
-    protected void drawMeasuredLines(GuiGraphics graphics, List<Line> measuredLines) {
+    protected void drawMeasuredLines(@Nullable GuiGraphics graphics, List<Line> measuredLines) {
         float maxW = 0;
         int y0 = getStartYOfLines(measuredLines.size());
         for (Line measuredLine : measuredLines) {
@@ -96,12 +97,11 @@ public class TextRenderer {
         this.lastHeight = Math.max(0, this.lastHeight - this.scale);
     }
 
-    public void drawSimple(GuiGraphics graphics, Component text) {
+    public void drawSimple(@Nullable GuiGraphics graphics, Component text) {
         this.drawSimple(graphics, text.getVisualOrderText());
     }
 
-    public void drawSimple(GuiGraphics graphics, FormattedCharSequence text) {
-        if (getFont() == null) return;
+    public void drawSimple(@Nullable GuiGraphics graphics, FormattedCharSequence text) {
         float w = getFont().width(text) * this.scale;
         int y = getStartYOfLines(1), x = getStartX(w);
         draw(graphics, text, x, y);
@@ -265,7 +265,7 @@ public class TextRenderer {
         return this.x;
     }
 
-    protected void draw(GuiGraphics graphics, FormattedCharSequence text, float x, float y) {
+    protected void draw(@Nullable GuiGraphics graphics, FormattedCharSequence text, float x, float y) {
         if (this.simulate || graphics == null) return;
         graphics.pose().pushPose();
         graphics.pose().scale(this.scale, this.scale, 0f);

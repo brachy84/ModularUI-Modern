@@ -13,8 +13,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,7 +53,7 @@ public class JsonHelper {
         return t != null ? t : deserialize(fallback, clazz, defaultValue, keys);
     }
 
-    public static float getFloat(JsonObject json, float defaultValue, String @NotNull ... keys) {
+    public static float getFloat(JsonObject json, float defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -67,7 +67,7 @@ public class JsonHelper {
         return defaultValue;
     }
 
-    public static int getInt(JsonObject json, int defaultValue, String @NotNull ... keys) {
+    public static int getInt(JsonObject json, int defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -82,12 +82,12 @@ public class JsonHelper {
     }
 
     public static int getIntWithFallback(JsonObject json, JsonObject fallback, int defaultValue,
-                                         String @NotNull ... keys) {
+                                         String @NonNull ... keys) {
         Integer i = getBoxedInt(json, null, keys);
         return i != null ? i : getInt(fallback, defaultValue, keys);
     }
 
-    public static boolean getBoolean(JsonObject json, boolean defaultValue, String @NotNull ... keys) {
+    public static boolean getBoolean(JsonObject json, boolean defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -102,12 +102,12 @@ public class JsonHelper {
     }
 
     public static boolean getBoolWithFallback(JsonObject json, JsonObject fallback, boolean defaultValue,
-                                              String @NotNull ... keys) {
+                                              String @NonNull ... keys) {
         Boolean i = getBoxedBool(json, null, keys);
         return i != null ? i : getBoolean(fallback, defaultValue, keys);
     }
 
-    public static String getString(JsonObject json, String defaultValue, String @NotNull ... keys) {
+    public static String getString(JsonObject json, String defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -119,7 +119,7 @@ public class JsonHelper {
     }
 
     public static <T> T getObject(JsonObject json, T defaultValue, Function<JsonObject, T> factory,
-                                  String @NotNull ... keys) {
+                                  String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -134,7 +134,7 @@ public class JsonHelper {
     }
 
     public static <T> T getElement(JsonObject json, T defaultValue, Function<JsonElement, T> factory,
-                                   String @NotNull ... keys) {
+                                   String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -145,7 +145,7 @@ public class JsonHelper {
         return defaultValue;
     }
 
-    public static @Nullable Integer getBoxedInt(JsonObject json, Integer defaultValue, String @NotNull ... keys) {
+    public static @Nullable Integer getBoxedInt(JsonObject json, Integer defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -159,7 +159,7 @@ public class JsonHelper {
         return defaultValue;
     }
 
-    public static @Nullable Boolean getBoxedBool(JsonObject json, Boolean defaultValue, String @NotNull ... keys) {
+    public static @Nullable Boolean getBoxedBool(JsonObject json, Boolean defaultValue, String @NonNull ... keys) {
         if (json == null) return defaultValue;
         for (String key : keys) {
             if (json.has(key)) {
@@ -173,7 +173,7 @@ public class JsonHelper {
         return defaultValue;
     }
 
-    public static @Nullable JsonElement getJsonElement(JsonObject json, String @NotNull ... keys) {
+    public static @Nullable JsonElement getJsonElement(JsonObject json, String @NonNull ... keys) {
         if (json == null) return null;
         for (String key : keys) {
             if (json.has(key)) {

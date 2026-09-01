@@ -12,6 +12,7 @@ import net.minecraftforge.network.NetworkEvent;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,8 +20,8 @@ import org.jetbrains.annotations.ApiStatus;
 public class SyncHandlerPacket implements NetworkHandler.INetPacket {
 
     public int networkId;
-    public String panel;
-    public String key;
+    public @Nullable String panel;
+    public @Nullable String key;
     public boolean action;
     public FriendlyByteBuf packet;
 
@@ -44,9 +45,9 @@ public class SyncHandlerPacket implements NetworkHandler.INetPacket {
     @Override
     public void execute(NetworkEvent.Context handler) {
         if (handler.getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-            ModularNetwork.CLIENT.receivePacket(MCHelper.getPlayer(), this);
+            if (MCHelper.getPlayer() != null) ModularNetwork.CLIENT.receivePacket(MCHelper.getPlayer(), this);
         } else {
-            ModularNetwork.SERVER.receivePacket(handler.getSender(), this);
+            if (handler.getSender() != null) ModularNetwork.SERVER.receivePacket(handler.getSender(), this);
         }
     }
 }

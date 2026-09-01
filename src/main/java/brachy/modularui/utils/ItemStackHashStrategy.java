@@ -3,7 +3,7 @@ package brachy.modularui.utils;
 import net.minecraft.world.item.ItemStack;
 
 import it.unimi.dsi.fastutil.Hash;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 

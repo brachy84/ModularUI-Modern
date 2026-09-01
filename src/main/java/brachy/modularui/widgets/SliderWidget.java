@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @Accessors(chain = true)
 public class SliderWidget extends Widget<SliderWidget> implements Interactable {
@@ -67,12 +67,12 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDoubleValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.doubleValue = syncOrValue.castNullable(IDoubleValue.class);
     }
@@ -133,7 +133,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         int p = getContext().getMouse(this.axis);
         setValue(posToValue(p), true);
         this.dragging = true;

@@ -3,7 +3,6 @@ package brachy.modularui.drawable.schema;
 import brachy.modularui.ModularUI;
 import brachy.modularui.utils.BlockPosUtil;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -49,18 +48,14 @@ import net.minecraft.world.ticks.LevelTickAccess;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class SchemaLevel extends Level implements ISchema {
 
     private static final ResourceKey<Level> LEVEL_ID = ResourceKey.create(Registries.DIMENSION,
@@ -167,7 +162,7 @@ public class SchemaLevel extends Level implements ISchema {
     }
 
     @Override
-    public @NotNull Iterator<Map.Entry<BlockPos, BlockState>> iterator() {
+    public Iterator<Map.Entry<BlockPos, BlockState>> iterator() {
         return getFilledBlocks()
                 .map(pos -> Map.entry(pos, this.getBlockState(pos)))
                 .iterator();
@@ -281,7 +276,7 @@ public class SchemaLevel extends Level implements ISchema {
     public void gameEvent(GameEvent event, Vec3 position, GameEvent.Context context) {}
 
     @Override
-    public float getShade(@NotNull Direction direction, boolean shade) {
+    public float getShade(Direction direction, boolean shade) {
         if (!shade) {
             return 1.0f;
         } else {

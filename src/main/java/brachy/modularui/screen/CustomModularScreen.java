@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A {@link ModularScreen} which creates its panel via an overridable function for convenience.
@@ -19,7 +19,7 @@ public abstract class CustomModularScreen extends ModularScreen {
      *
      * @param owner owner of this screen (usually a mod id)
      */
-    public CustomModularScreen(@NotNull String owner) {
+    public CustomModularScreen(@NonNull String owner) {
         super(owner);
     }
 
@@ -29,7 +29,7 @@ public abstract class CustomModularScreen extends ModularScreen {
      * @param context context used to build the panel
      * @return the created panel
      */
-    @NotNull
+    @NonNull
     @ApiStatus.OverrideOnly
     public abstract ModularPanel<?> buildUI(ModularGuiContext context);
 }

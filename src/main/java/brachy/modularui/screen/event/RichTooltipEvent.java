@@ -14,7 +14,7 @@ import net.minecraftforge.eventbus.api.Event;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -80,9 +80,9 @@ public class RichTooltipEvent {
         @Getter
         private final IRichTextBuilder<?> tooltip;
 
-        public Pre(@NotNull ItemStack stack, @NotNull GuiGraphics graphics,
-                   int x, int y, int screenWidth, int screenHeight, @NotNull Font font,
-                   @NotNull List<ClientTooltipComponent> components, @NotNull ClientTooltipPositioner positioner,
+        public Pre(@NonNull ItemStack stack, @NonNull GuiGraphics graphics,
+                   int x, int y, int screenWidth, int screenHeight, @NonNull Font font,
+                   @NonNull List<ClientTooltipComponent> components, @NonNull ClientTooltipPositioner positioner,
                    IRichTextBuilder<?> tooltip) {
             super(stack, graphics, x, y, screenWidth, screenHeight, font, components, positioner);
             this.tooltip = tooltip;
@@ -94,9 +94,9 @@ public class RichTooltipEvent {
         @Getter
         private final IRichTextBuilder<?> tooltip;
 
-        public Color(@NotNull ItemStack stack, @NotNull GuiGraphics graphics,
-                     int x, int y, @NotNull Font font, int background, int borderStart, int borderEnd,
-                     @NotNull List<ClientTooltipComponent> components, IRichTextBuilder<?> tooltip) {
+        public Color(@NonNull ItemStack stack, @NonNull GuiGraphics graphics,
+                     int x, int y, @NonNull Font font, int background, int borderStart, int borderEnd,
+                     @NonNull List<ClientTooltipComponent> components, IRichTextBuilder<?> tooltip) {
             super(stack, graphics, x, y, font, background, borderStart, borderEnd, components);
             this.tooltip = tooltip;
         }

@@ -1,6 +1,5 @@
 package brachy.modularui.drawable.schema;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.SectionPos;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,16 +8,12 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * The only purpose of this vertex consumer proxy is to transform vertex positions emitted by the
  * {@link net.minecraft.client.renderer.block.LiquidBlockRenderer} into absolute coordinates. The renderer assumes it is
  * being called in the context of tessellating a chunk section (16x16x16) and emits corresponding coordinates, while we
  * batch all visible chunks in schemas together.
  */
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class LiquidVertexConsumer implements VertexConsumer {
 
     private final VertexConsumer delegate;

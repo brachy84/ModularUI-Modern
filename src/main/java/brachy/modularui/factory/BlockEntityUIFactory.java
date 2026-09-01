@@ -12,8 +12,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
 
 public class BlockEntityUIFactory extends AbstractUIFactory<PosGuiData> {
@@ -26,7 +24,7 @@ public class BlockEntityUIFactory extends AbstractUIFactory<PosGuiData> {
 
     public <T extends BlockEntity & IUIHolder<PosGuiData>> void open(Player player, T blockEntity) {
         Objects.requireNonNull(player);
-        verifyBlockEntity(MCHelper.getPlayer(), blockEntity);
+        verifyBlockEntity(player, blockEntity);
         BlockPos pos = blockEntity.getBlockPos();
         PosGuiData data = new PosGuiData(player, pos);
         GuiManager.open(this, data, (ServerPlayer) player);
@@ -53,7 +51,7 @@ public class BlockEntityUIFactory extends AbstractUIFactory<PosGuiData> {
     }
 
     @Override
-    public @NotNull IUIHolder<PosGuiData> getGuiHolder(PosGuiData data) {
+    public IUIHolder<PosGuiData> getGuiHolder(PosGuiData data) {
         return Objects.requireNonNull(castUIHolder(data.getBlockEntity()), "Found BlockEntity is not a gui holder!");
     }
 
@@ -69,7 +67,7 @@ public class BlockEntityUIFactory extends AbstractUIFactory<PosGuiData> {
     }
 
     @Override
-    public @NotNull PosGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
+    public PosGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
         return new PosGuiData(player, buffer.readBlockPos());
     }
 

@@ -39,7 +39,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -506,7 +506,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         }
 
         @Override
-        public @NotNull String getSerializedName() {
+        public @NonNull String getSerializedName() {
             return this.name;
         }
     }

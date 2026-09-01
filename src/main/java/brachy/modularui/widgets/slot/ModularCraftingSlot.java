@@ -16,8 +16,8 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -129,7 +129,7 @@ public class ModularCraftingSlot extends ModularSlot {
      * stack.
      */
     @Override
-    public @NotNull ItemStack remove(int amount) {
+    public @NonNull ItemStack remove(int amount) {
         if (this.hasItem()) {
             this.amountCrafted += Math.min(amount, this.getItem().getCount());
         }
@@ -142,7 +142,7 @@ public class ModularCraftingSlot extends ModularSlot {
      * internal count then calls onCrafting(item).
      */
     @Override
-    protected void onQuickCraft(@NotNull ItemStack stack, int amount) {
+    protected void onQuickCraft(@NonNull ItemStack stack, int amount) {
         this.amountCrafted += amount;
         this.checkTakeAchievements(stack);
     }
@@ -156,7 +156,7 @@ public class ModularCraftingSlot extends ModularSlot {
      * the itemStack passed in is the output - ie, iron ingots, and pickaxes, not ore and wood.
      */
     @Override
-    protected void checkTakeAchievements(@NotNull ItemStack stack) {
+    protected void checkTakeAchievements(@NonNull ItemStack stack) {
         if (this.amountCrafted > 0) {
             stack.onCraftedBy(getPlayer().level(), getPlayer(), this.amountCrafted);
             ForgeEventFactory.firePlayerCraftingEvent(getPlayer(), stack, this.getCraftSlots());
@@ -177,7 +177,7 @@ public class ModularCraftingSlot extends ModularSlot {
     }
 
     @Override
-    public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
+    public void onTake(@NonNull Player player, @NonNull ItemStack stack) {
         this.checkTakeAchievements(stack);
 
         ForgeHooks.setCraftingPlayer(player);

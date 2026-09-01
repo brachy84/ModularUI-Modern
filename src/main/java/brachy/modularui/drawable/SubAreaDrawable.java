@@ -10,7 +10,7 @@ import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import com.mojang.serialization.Codec;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class SubAreaDrawable extends DelegateDrawable {
 

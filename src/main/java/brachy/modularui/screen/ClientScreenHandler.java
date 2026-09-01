@@ -61,7 +61,7 @@ import net.minecraftforge.fml.common.Mod;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;

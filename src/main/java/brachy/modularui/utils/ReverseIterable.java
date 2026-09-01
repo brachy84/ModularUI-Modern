@@ -1,6 +1,6 @@
 package brachy.modularui.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +18,7 @@ public class ReverseIterable<T> implements Iterable<T> {
         this.list = list;
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Iterator<T> iterator() {
         ListIterator<T> iterator = this.list.listIterator(this.list.size());

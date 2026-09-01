@@ -25,8 +25,8 @@ import com.google.common.collect.AbstractIterator;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -146,7 +146,7 @@ public class ModularGuiContext extends GuiContext {
      *
      * @param widget widget to focus
      */
-    public void focus(@NotNull LocatedWidget widget) {
+    public void focus(@NonNull LocatedWidget widget) {
         if (this.focusedWidget.getElement() == widget.getElement()) {
             return;
         }
@@ -463,7 +463,7 @@ public class ModularGuiContext extends GuiContext {
 
     private class HoveredIterable implements Iterable<IWidget> {
 
-        @NotNull
+        @NonNull
         @Override
         public Iterator<IWidget> iterator() {
             return new AbstractIterator<>() {

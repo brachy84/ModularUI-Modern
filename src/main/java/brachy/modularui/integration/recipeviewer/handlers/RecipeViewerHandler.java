@@ -6,8 +6,8 @@ import brachy.modularui.integration.jei.handler.JeiScreenHandler;
 import brachy.modularui.integration.rei.handler.REIScreenHandler;
 import brachy.modularui.screen.ScreenWrapper;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -16,7 +16,7 @@ public abstract class RecipeViewerHandler {
 
     private static RecipeViewerHandler current = null;
 
-    @NotNull
+    @NonNull
     public static RecipeViewerHandler getCurrent() {
         if (current == null) {
             Supplier<Function<Class<ScreenWrapper>, ? extends RecipeViewerHandler>> supplier;

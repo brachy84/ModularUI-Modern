@@ -14,8 +14,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntSupplier;
@@ -33,7 +33,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     private String lastText;
     private @Nullable Supplier<Component> keySupplier;
 
-    public TextWidget(@NotNull Supplier<Component> keySupplier) {
+    public TextWidget(@NonNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
         this.key = keySupplier.get();
     }

@@ -22,7 +22,7 @@ import me.shedaniel.rei.api.client.registry.screen.ExclusionZonesProvider;
 import me.shedaniel.rei.api.client.registry.screen.OverlayDecider;
 import me.shedaniel.rei.api.client.registry.screen.ScreenRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;

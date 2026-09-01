@@ -11,7 +11,7 @@ import brachy.modularui.value.sync.InteractionSyncHandler;
 import brachy.modularui.widget.SingleChildWidget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W> implements Interactable {
 
@@ -47,12 +47,12 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(InteractionSyncHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.syncHandler = syncOrValue.castNullable(InteractionSyncHandler.class);
     }
@@ -68,7 +68,7 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         if (this.mousePressed != null && this.mousePressed.press(getContext(), button)) {
             playClickSound();
             return Result.SUCCESS;
@@ -86,7 +86,7 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
                 (this.syncHandler != null && this.syncHandler.onMouseReleased(button));
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Result onMouseTapped(int button) {
         if (this.mouseTapped != null && this.mouseTapped.press(getContext(), button)) {
@@ -101,7 +101,7 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public @NonNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.keyPressed != null && this.keyPressed.press(getContext(), modifiers)) {
             return Result.SUCCESS;
         }
@@ -117,7 +117,7 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
                 (this.syncHandler != null && this.syncHandler.onKeyReleased(keyCode, scanCode, modifiers));
     }
 
-    @NotNull
+    @NonNull
     @Override
     public Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
         if (this.keyTapped != null && this.keyTapped.press(getContext(), modifiers)) {
@@ -136,7 +136,7 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
     }
 
     @Override
-    public @NotNull InteractionSyncHandler getSyncHandler() {
+    public @NonNull InteractionSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("Widget is not initialised or not synced!");
         }

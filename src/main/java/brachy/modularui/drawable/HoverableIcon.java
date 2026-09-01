@@ -7,8 +7,8 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ public class HoverableIcon extends DelegateIcon implements IHoverable, ITooltip<
     }
 
     @Override
-    public @NotNull RichTooltip tooltip() {
+    public @NonNull RichTooltip tooltip() {
         if (this.tooltip == null) this.tooltip = new RichTooltip().parent(area -> area.set(getRenderedArea()));
         return tooltip;
     }

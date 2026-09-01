@@ -22,7 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonElement;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An object which can be drawn at any size. This is mainly used for backgrounds and overlays in
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface IDrawable {
 
-    static IDrawable of(IDrawable... drawables) {
+    static @Nullable IDrawable of(IDrawable @Nullable... drawables) {
         if (drawables == null || drawables.length == 0) {
             return null;
         } else if (drawables.length == 1) {

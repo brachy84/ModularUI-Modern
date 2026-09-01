@@ -23,8 +23,8 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Accessors(fluent = true, chain = true)
 public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlotSyncHandler> {
@@ -33,7 +33,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
     public static final int SYNC_SCROLL = 2;
     public static final int SYNC_CONTROLS_AMOUNT = 3;
 
-    private @NotNull FluidStack cache = FluidStack.EMPTY;
+    private @NonNull FluidStack cache = FluidStack.EMPTY;
     @Getter
     private final IFluidTank fluidTank;
     private final IFluidHandler fluidHandler;
@@ -62,7 +62,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
     }
 
     @Override
-    public void setValue(@NotNull FluidStack value, boolean setSource, boolean sync) {
+    public void setValue(@NonNull FluidStack value, boolean setSource, boolean sync) {
         this.cache = value.copy();
         if (setSource) {
             this.fluidTank.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);

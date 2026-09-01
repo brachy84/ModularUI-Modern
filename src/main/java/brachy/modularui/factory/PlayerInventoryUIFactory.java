@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -74,7 +74,7 @@ public class PlayerInventoryUIFactory extends AbstractUIFactory<PlayerInventoryG
     }
 
     @Override
-    public @NotNull IUIHolder<PlayerInventoryGuiData<?>> getGuiHolder(PlayerInventoryGuiData<?> data) {
+    public @NonNull IUIHolder<PlayerInventoryGuiData<?>> getGuiHolder(PlayerInventoryGuiData<?> data) {
         return Objects.requireNonNull(castUIHolder(data.getUsedItemStack().getItem()), "Item was not a gui holder!");
     }
 
@@ -90,7 +90,7 @@ public class PlayerInventoryUIFactory extends AbstractUIFactory<PlayerInventoryG
     }
 
     @Override
-    public @NotNull PlayerInventoryGuiData<?> readGuiData(Player player, FriendlyByteBuf buffer) {
+    public @NonNull PlayerInventoryGuiData<?> readGuiData(Player player, FriendlyByteBuf buffer) {
         return readContext(player, buffer, InventoryType.read(buffer));
     }
 

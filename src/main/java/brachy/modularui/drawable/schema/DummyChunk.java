@@ -6,8 +6,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DummyChunk extends LevelChunk {
 
@@ -19,7 +18,7 @@ public class DummyChunk extends LevelChunk {
         return (SchemaLevel) getLevel();
     }
 
-    public @Nullable BlockState setBlockState(@NotNull BlockPos pos, @NotNull BlockState state, boolean isMoving) {
+    public @Nullable BlockState setBlockState(BlockPos pos, BlockState state, boolean isMoving) {
         getGuidebookLevel().prepareLighting(pos);
 
         var result = super.setBlockState(pos, state, isMoving);
@@ -31,7 +30,7 @@ public class DummyChunk extends LevelChunk {
         return result;
     }
 
-    public @NotNull FullChunkStatus getFullStatus() {
+    public FullChunkStatus getFullStatus() {
         return FullChunkStatus.FULL;
     }
 }

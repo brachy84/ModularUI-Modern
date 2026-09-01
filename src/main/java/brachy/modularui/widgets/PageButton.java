@@ -11,7 +11,7 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class PageButton extends Widget<PageButton> implements Interactable {
 
@@ -38,7 +38,7 @@ public class PageButton extends Widget<PageButton> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         if (!isActive()) {
             this.controller.setPage(this.index);
             Interactable.playButtonClickSound();

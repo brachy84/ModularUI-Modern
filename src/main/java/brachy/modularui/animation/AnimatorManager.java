@@ -35,7 +35,6 @@ public class AnimatorManager {
         checkClearAnimators();
         if (lastTime > 0 && !animators.isEmpty()) {
             animators.removeIf(animator -> {
-                if (animator == null) return true;
                 if (animator.isPaused()) return false;
                 animator.advance(elapsedTime);
                 return !animator.isAnimating();

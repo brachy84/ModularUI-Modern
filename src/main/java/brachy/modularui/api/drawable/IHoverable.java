@@ -5,7 +5,7 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.widget.sizer.Area;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This marks an {@link IDrawable} as hoverable in a {@link RichText RichText}. This should not be
@@ -20,8 +20,7 @@ public interface IHoverable extends IIcon {
      */
     default void onHover() {}
 
-    @Nullable
-    default RichTooltip getTooltip() {
+    default @Nullable RichTooltip getTooltip() {
         return null;
     }
 

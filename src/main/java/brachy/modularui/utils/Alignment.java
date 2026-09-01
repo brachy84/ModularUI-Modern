@@ -11,7 +11,7 @@ import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 import java.util.Map;
@@ -141,7 +141,7 @@ public class Alignment {
         }
 
         @Override
-        public @NotNull String getSerializedName() {
+        public @NonNull String getSerializedName() {
             return this.name;
         }
     }
@@ -174,7 +174,7 @@ public class Alignment {
         }
 
         @Override
-        public @NotNull String getSerializedName() {
+        public @NonNull String getSerializedName() {
             return this.name;
         }
     }

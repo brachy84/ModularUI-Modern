@@ -3,8 +3,8 @@ package brachy.modularui.value.sync;
 import brachy.modularui.api.value.sync.IBoolSyncValue;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -14,19 +14,19 @@ import java.util.function.Supplier;
  */
 public class BinaryEnumSyncValue<T extends Enum<T>> extends EnumSyncValue<T> implements IBoolSyncValue<T> {
 
-    public BinaryEnumSyncValue(@NotNull Class<T> enumClass, @NotNull Supplier<T> getter, @Nullable Consumer<T> setter) {
+    public BinaryEnumSyncValue(@NonNull Class<T> enumClass, @NonNull Supplier<T> getter, @Nullable Consumer<T> setter) {
         super(enumClass, getter, setter);
         if (enumClass.getEnumConstants().length != 2) {
             throw new IllegalArgumentException("Enum class must have exactly two elements");
         }
     }
 
-    public BinaryEnumSyncValue(@NotNull Class<T> enumClass, @NotNull Supplier<T> getter) {
+    public BinaryEnumSyncValue(@NonNull Class<T> enumClass, @NonNull Supplier<T> getter) {
         this(enumClass, getter, (Consumer<T>) null);
     }
 
     @Contract("_, null, _, null, _ -> fail")
-    public BinaryEnumSyncValue(@NotNull Class<T> enumClass,
+    public BinaryEnumSyncValue(@NonNull Class<T> enumClass,
                                @Nullable Supplier<T> clientGetter, @Nullable Consumer<T> clientSetter,
                                @Nullable Supplier<T> serverGetter, @Nullable Consumer<T> serverSetter) {
         super(enumClass, clientGetter, clientSetter, serverGetter, serverSetter);
@@ -36,7 +36,7 @@ public class BinaryEnumSyncValue<T extends Enum<T>> extends EnumSyncValue<T> imp
     }
 
     @Contract("_, null, null -> fail")
-    public BinaryEnumSyncValue(@NotNull Class<T> enumClass,
+    public BinaryEnumSyncValue(@NonNull Class<T> enumClass,
                                @Nullable Supplier<T> clientGetter,
                                @Nullable Supplier<T> serverGetter) {
         this(enumClass, clientGetter, null, serverGetter, null);

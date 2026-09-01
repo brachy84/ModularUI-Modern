@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record TooltipComponentIcon(ClientTooltipComponent clientComponent) implements IIcon {
 

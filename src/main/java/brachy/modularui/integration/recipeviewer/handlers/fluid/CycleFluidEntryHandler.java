@@ -7,7 +7,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class CycleFluidEntryHandler implements IFluidHandler {
 
     /*
      * @Override
-     * public void setFluidInTank(int tank, @NotNull FluidStack fluidStack) {
+     * public void setFluidInTank(int tank, @NonNull FluidStack fluidStack) {
      * if (tank >= 0 && tank < entries.size()) {
      * entries.set(tank, FluidStackList.of(fluidStack));
      * unwrapped = null;

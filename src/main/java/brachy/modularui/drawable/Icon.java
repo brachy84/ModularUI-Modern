@@ -175,7 +175,7 @@ public class Icon implements IIcon {
     }
 
     public Icon margin(Box box) {
-        if (box != null && box != this.margin) {
+        if (box != this.margin) {
             Box.CODEC.copyFields(box, this.margin);
         }
         return this;

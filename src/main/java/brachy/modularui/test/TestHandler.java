@@ -38,7 +38,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +180,7 @@ public class TestHandler {
         return new CustomModularScreen(ModularUI.MOD_ID) {
 
             @Override
-            public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
+            public @NonNull ModularPanel<?> buildUI(ModularGuiContext context) {
                 return ModularPanel.defaultPanel("watermark_overlay", gui.getXSize(), gui.getYSize())
                         .pos(gui.getGuiLeft(), gui.getGuiTop())
                         .invisible()

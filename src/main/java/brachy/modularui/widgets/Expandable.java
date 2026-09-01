@@ -14,7 +14,7 @@ import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,13 +89,13 @@ public class Expandable extends Widget<Expandable> implements Interactable, IVie
     }
 
     @Override
-    @NotNull
+    @NonNull
     public List<IWidget> getChildren() {
         return currentChildren;
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         toggle();
         return Result.SUCCESS;
     }

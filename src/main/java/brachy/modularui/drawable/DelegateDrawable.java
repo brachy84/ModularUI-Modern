@@ -5,12 +5,10 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DelegateDrawable implements IDrawable {
 
-    @NotNull
     private IDrawable drawable;
 
     public DelegateDrawable(@Nullable IDrawable drawable) {
@@ -22,7 +20,6 @@ public class DelegateDrawable implements IDrawable {
         this.drawable = drawable != null ? drawable : IDrawable.EMPTY;
     }
 
-    @NotNull
     public IDrawable getWrappedDrawable() {
         return drawable;
     }

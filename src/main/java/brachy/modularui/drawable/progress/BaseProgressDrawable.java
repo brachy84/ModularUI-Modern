@@ -9,6 +9,7 @@ import brachy.modularui.widgets.ProgressWidget;
 import net.minecraft.Util;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -16,8 +17,8 @@ import java.util.function.DoubleSupplier;
 
 public abstract class BaseProgressDrawable<D extends BaseProgressDrawable<D>> implements IDrawable {
 
-    @Getter private IDrawable emptyBackground;
-    @Getter private DoubleSupplier progress;
+    @Getter private @Nullable IDrawable emptyBackground;
+    @Getter private @Nullable DoubleSupplier progress;
     @Getter protected float progressStepSize = 0;
 
     @Override
@@ -46,7 +47,7 @@ public abstract class BaseProgressDrawable<D extends BaseProgressDrawable<D>> im
      * @param progress progress supplier
      * @return this
      */
-    public D progress(DoubleSupplier progress) {
+    public D progress(@Nullable DoubleSupplier progress) {
         this.progress = progress;
         return self();
     }

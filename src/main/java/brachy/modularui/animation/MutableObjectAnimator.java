@@ -1,5 +1,7 @@
 package brachy.modularui.animation;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 public class MutableObjectAnimator<T extends IAnimatable<T>> extends Animator {
@@ -7,7 +9,7 @@ public class MutableObjectAnimator<T extends IAnimatable<T>> extends Animator {
     private final T from;
     private final T to;
     private final T animatable;
-    private Consumer<T> intermediateConsumer;
+    private @Nullable Consumer<T> intermediateConsumer;
 
     public MutableObjectAnimator(T animatable, T from, T to) {
         this.from = from;

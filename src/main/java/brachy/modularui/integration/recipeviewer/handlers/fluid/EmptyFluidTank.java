@@ -4,7 +4,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class EmptyFluidTank implements IFluidTank {
 
@@ -13,7 +13,7 @@ public class EmptyFluidTank implements IFluidTank {
     protected EmptyFluidTank() {}
 
     @Override
-    public @NotNull FluidStack getFluid() {
+    public @NonNull FluidStack getFluid() {
         return FluidStack.EMPTY;
     }
 
@@ -28,22 +28,22 @@ public class EmptyFluidTank implements IFluidTank {
     }
 
     @Override
-    public boolean isFluidValid(@NotNull FluidStack stack) {
+    public boolean isFluidValid(@NonNull FluidStack stack) {
         return false;
     }
 
     @Override
-    public int fill(@NotNull FluidStack resource, @NotNull FluidAction action) {
+    public int fill(@NonNull FluidStack resource, @NonNull FluidAction action) {
         return 0;
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+    public @NonNull FluidStack drain(int maxDrain, FluidAction action) {
         return FluidStack.EMPTY;
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public @NonNull FluidStack drain(FluidStack resource, FluidAction action) {
         return FluidStack.EMPTY;
     }
 }

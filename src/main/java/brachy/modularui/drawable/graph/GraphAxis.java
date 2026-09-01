@@ -13,6 +13,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -38,11 +39,11 @@ public class GraphAxis {
     @Getter
     public MinorTickFinder minorTickFinder = new AutoMinorTickFinder(2);
     @Getter
-    public String label;
+    public @Nullable String label;
     @Getter
     public double min, max;
     public boolean autoLimits = true;
-    public float[] data;
+    public float @Nullable [] data;
 
     public GraphAxis(GuiAxis axis) {
         this.axis = axis;

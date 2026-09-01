@@ -3,12 +3,11 @@ package brachy.modularui.animation;
 import net.minecraft.Util;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface IAnimator {
 
-    @Nullable
-    IAnimator getParent();
+    @Nullable IAnimator getParent();
 
     default void animate(boolean reverse) {
         reset(reverse);

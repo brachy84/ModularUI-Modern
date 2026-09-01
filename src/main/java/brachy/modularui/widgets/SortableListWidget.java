@@ -11,8 +11,8 @@ import brachy.modularui.widget.DraggableWidget;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
@@ -57,7 +57,7 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
             this.widgetAreaSnapshots.size(getTypeChildren().size());
             this.animators.size(getTypeChildren().size());
             @UnmodifiableView
-            @NotNull
+            @NonNull
             List<Item<T>> typeChildren = getTypeChildren();
             for (int i = 0; i < typeChildren.size(); i++) {
                 Item<T> item = typeChildren.get(i);
@@ -71,7 +71,7 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
         super.postResize();
         if (this.scheduleAnimation && !this.widgetAreaSnapshots.isEmpty()) {
             @UnmodifiableView
-            @NotNull
+            @NonNull
             List<Item<T>> typeChildren = getTypeChildren();
             for (int i = 0; i < typeChildren.size(); i++) {
                 Item<T> item = typeChildren.get(i);
@@ -183,7 +183,7 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
             }
         }
 
-        @NotNull
+        @NonNull
         @Override
         public List<IWidget> getChildren() {
             return this.children != null ? this.children : Collections.emptyList();

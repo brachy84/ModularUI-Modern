@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -63,8 +63,7 @@ public class UITexture implements IDrawable {
     public final ResourceLocation location;
     @Getter public final float u0, v0, u1, v1;
     @Getter
-    @Nullable
-    public final ColorType colorType;
+    public final @Nullable ColorType colorType;
     @Getter public final boolean nonOpaque;
 
     @Getter protected int colorOverride = 0;
@@ -290,7 +289,7 @@ public class UITexture implements IDrawable {
                 .addOpt("colorOverride", Builder::colorOverride, Builder::getColorOverride, Codec.INT, 0)
                 .build();
 
-        @Getter private ResourceLocation location;
+        @Getter private @Nullable ResourceLocation location;
         @Getter
         @Setter
         private int iw = -1, ih = -1;
@@ -298,9 +297,9 @@ public class UITexture implements IDrawable {
         @Getter private float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
         @Getter private Mode mode = Mode.FULL;
         @Getter private int bl = 0, bt = 0, br = 0, bb = 0;
-        @Getter private String name;
+        @Getter private @Nullable String name;
         @Getter private boolean tiled = false;
-        @Getter private ColorType colorType = null;
+        @Getter private @Nullable ColorType colorType = null;
         @Getter private boolean nonOpaque = false;
         @Getter private int colorOverride = 0;
 
@@ -528,7 +527,7 @@ public class UITexture implements IDrawable {
          *
          * @param name texture name
          */
-        public Builder name(String name) {
+        public Builder name(@Nullable String name) {
             this.name = name;
             return this;
         }
@@ -560,7 +559,7 @@ public class UITexture implements IDrawable {
                     .resultOrPartial(s -> {
                         throw new IllegalArgumentException(s);
                     }).map(texture -> {
-                        TextureRegistry.registerTexture(this.name, texture);
+                        if (this.name != null) TextureRegistry.registerTexture(this.name, texture);
                         return texture;
                     }).map(texture -> this.colorOverride != 0 ? texture.withColorOverride(this.colorOverride) : texture)
                     .orElseThrow();

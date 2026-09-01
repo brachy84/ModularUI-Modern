@@ -11,7 +11,7 @@ import brachy.modularui.widgets.slot.SlotGroup;
 import net.minecraft.world.inventory.Slot;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +39,7 @@ public class SortButtons extends Widget<SortButtons> {
     private final ButtonWidget<?> sortButton = new ButtonWidget<>();
     private final ButtonWidget<?> settingsButton = new ButtonWidget<>();
     @Getter
-    private final @NotNull List<IWidget> children = Arrays.asList(sortButton, settingsButton);
+    private final @NonNull List<IWidget> children = Arrays.asList(sortButton, settingsButton);
 
     public SortButtons() {
         if (false /* && ModularUI.Mods.BOGOSORTER.isLoaded() */) {

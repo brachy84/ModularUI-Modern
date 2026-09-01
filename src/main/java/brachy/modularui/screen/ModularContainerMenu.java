@@ -28,8 +28,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -148,7 +148,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void initializeContents(int stateId, List<ItemStack> items, @NotNull ItemStack carried) {
+    public void initializeContents(int stateId, List<ItemStack> items, @NonNull ItemStack carried) {
         if (this.slots.size() != items.size()) {
             ModularUI.LOGGER.error("Here are {} slots, but expected {}", this.slots.size(), items.size());
         }
@@ -188,7 +188,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Contract("_, null, null -> fail")
-    @NotNull
+    @NonNull
     @ApiStatus.Internal
     public SlotGroup validateSlotGroup(String panelName, @Nullable String slotGroupName, @Nullable SlotGroup slotGroup) {
         if (slotGroup != null) {
@@ -239,17 +239,17 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     public void onSlotChanged(ModularSlot slot, ItemStack oldStack, ItemStack newStack) {}
 
     @Override
-    public boolean canDragTo(@NotNull Slot slot) {
+    public boolean canDragTo(@NonNull Slot slot) {
         return !(slot instanceof ModularSlot modularSlot) || modularSlot.canDragIntoSlot();
     }
 
     @Override
-    public boolean stillValid(@NotNull Player playerIn) {
+    public boolean stillValid(@NonNull Player playerIn) {
         return this.settings.canPlayerInteractWithUI(playerIn);
     }
 
     @Override
-    public void clicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
+    public void clicked(int slotId, int mouseButton, @NonNull ClickType clickTypeIn, @NonNull Player player) {
         ItemStack returnable = ItemStack.EMPTY;
         Inventory inventory = player.getInventory();
 
@@ -450,7 +450,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         }
     }
 
-    protected final void superClicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
+    protected final void superClicked(int slotId, int mouseButton, @NonNull ClickType clickTypeIn, @NonNull Player player) {
         super.clicked(slotId, mouseButton, clickTypeIn, player);
     }
 
@@ -482,7 +482,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
+    public @NonNull ItemStack quickMoveStack(@NonNull Player playerIn, int index) {
         ModularSlot slot = getModularSlot(index);
         if (!slot.isPhantom()) {
             ItemStack stack = slot.getItem();

@@ -3,8 +3,8 @@ package brachy.modularui.utils.math;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class VectorUtil {
@@ -14,12 +14,12 @@ public class VectorUtil {
         return target.set(x, y, z);
     }
 
-    @NotNull
+    @NonNull
     public static Vector3f set(@Nullable Vector3f target, Vec3 vec) {
         return set(target, (float) vec.x, (float) vec.y, (float) vec.z);
     }
 
-    @NotNull
+    @NonNull
     public static Vector3f set(@Nullable Vector3f target, Vec3i vec) {
         return set(target, vec.getX(), vec.getY(), vec.getZ());
     }
@@ -39,12 +39,12 @@ public class VectorUtil {
         return target.add(x, y, z);
     }
 
-    @NotNull
+    @NonNull
     public static Vector3f vec3fAdd(@Nullable Vector3f source, @Nullable Vector3f target, Vec3i vec) {
         return vec3fAdd(source, target, vec.getX(), vec.getY(), vec.getZ());
     }
 
-    @NotNull
+    @NonNull
     public static Vector3f vec3fAdd(@Nullable Vector3f source, @Nullable Vector3f target, Vec3 vec) {
         return vec3fAdd(source, target, (float) vec.x, (float) vec.y, (float) vec.z);
     }

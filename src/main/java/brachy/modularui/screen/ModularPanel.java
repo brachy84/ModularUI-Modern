@@ -35,8 +35,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,18 +55,18 @@ import java.util.function.Supplier;
  */
 public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable {
 
-    public static ModularPanel<?> defaultPanel(@NotNull String name) {
+    public static ModularPanel<?> defaultPanel(@NonNull String name) {
         return defaultPanel(name, 176, 166);
     }
 
-    public static ModularPanel<?> defaultPanel(@NotNull String name, int width, int height) {
+    public static ModularPanel<?> defaultPanel(@NonNull String name, int width, int height) {
         return new ModularPanel<>(name).size(width, height);
     }
 
     private static final int tapTime = 200;
 
     @Getter
-    private final @NotNull String name;
+    private final @NonNull String name;
     private ModularScreen screen;
     @Setter
     private IPanelHandler panelHandler;
@@ -74,7 +74,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     private State state = State.IDLE;
     private boolean cantDisposeNow = false;
     @Getter
-    private final @NotNull ObjectList<LocatedWidget> hovering = ObjectList.create();
+    private final @NonNull ObjectList<LocatedWidget> hovering = ObjectList.create();
     private final Input keyboard = new Input();
     private final Input mouse = new Input();
 
@@ -101,13 +101,13 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     private boolean disablePanelsBelow = false;
     private boolean closeOnOutOfBoundsClick = false;
 
-    public ModularPanel(@NotNull String name) {
+    public ModularPanel(@NonNull String name) {
         this.name = Objects.requireNonNull(name, "A panels name must not be null and should be unique!");
         center();
     }
 
     @Override
-    public @NotNull W getPanel() {
+    public @NonNull W getPanel() {
         return getThis();
     }
 
@@ -125,12 +125,12 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IPanelHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         setPanelHandler(syncOrValue.castNullable(IPanelHandler.class));
     }
@@ -716,7 +716,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return null;
     }
 
-    @NotNull
+    @NonNull
     public List<LocatedWidget> getAllHoveringList(boolean debug) {
         if (this.hovering.isEmpty()) return Collections.emptyList();
         return new ArrayList<>(this.hovering);
@@ -738,7 +738,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return true;
     }
 
-    final void setPanelGuiContext(@NotNull ModularGuiContext context) {
+    final void setPanelGuiContext(@NonNull ModularGuiContext context) {
         setContext(context);
     }
 
@@ -770,7 +770,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return getScreen().getMainPanel() == this;
     }
 
-    @NotNull
+    @NonNull
     protected Animator getAnimator() {
         if (this.animator == null) {
             this.animator = new Animator()
