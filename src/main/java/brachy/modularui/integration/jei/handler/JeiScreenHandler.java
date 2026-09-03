@@ -65,8 +65,6 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public <I> List<Target<I>> getTargetsTyped(T screen, ITypedIngredient<I> ingredient, boolean doStart) {
-        currentIngredient = ingredient;
-
         List<GhostIngredientSlot<?>> ghostSlots = screen.screen().getContext()
                 .getRecipeViewerSettings().getGhostIngredientSlots();
         List<Target<I>> ghostHandlerTargets = new ArrayList<>();
@@ -77,6 +75,9 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
                 ghostHandlerTargets.add(new GhostIngredientTarget<>(slotWithType));
             }
         }
+
+        currentIngredient = ghostHandlerTargets.isEmpty() ? null : ingredient.getIngredient();
+
         return ghostHandlerTargets;
     }
 
@@ -155,7 +156,6 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (hovered instanceof IngredientProvider<?> provider) {
                 var override = provider.ingredientOverride();
                 if (override instanceof IClickableIngredient<?> clickableIngredient) {
-                    JeiScreenHandler.currentIngredient = clickableIngredient.getIngredient();
                     return Optional.of(clickableIngredient);
                 }
                 if (provider.getIngredients().isEmpty()) return Optional.empty();
@@ -163,7 +163,6 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
                 Optional<? extends IClickableIngredient<?>> ingredient = this
                         .createClickableIngredient(mapFirstIngredient(provider), hovered.getArea());
 
-                JeiScreenHandler.currentIngredient = ingredient.map(IClickableIngredient::getIngredient).orElse(null);
                 // noinspection unchecked
                 return (Optional<IClickableIngredient<?>>) ingredient;
             }
