@@ -183,7 +183,9 @@ public class ClientScreenHandler {
         }
     }
 
-    @SubscribeEvent
+    // Recipe viewers must finish an external drag before MUI handles the release over the target widget. Otherwise
+    // MUI cancels the event and JEI never gets a chance to deliver the ghost ingredient.
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onScreenMouseReleased(ScreenEvent.MouseButtonReleased.Pre event) {
         int button = event.getButton();
         defaultContext.updateMouseButton(button, false);
