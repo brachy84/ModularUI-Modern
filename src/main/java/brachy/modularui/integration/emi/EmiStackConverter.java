@@ -1,10 +1,8 @@
 package brachy.modularui.integration.emi;
 
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.*;
+import brachy.modularui.integration.recipeviewer.entry.item.*;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.utils.math.MathUtils;
 
@@ -25,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,17 +52,26 @@ public class EmiStackConverter {
         }
 
         @Override
-        public EmiIngredient convertTo(EntryList<ItemStack> stack, float chance) {
+        public EmiIngredient convertTo(EntryList<ItemStack> stack, float chance, UnaryOperator<ItemStack> mapper) {
             if (stack.isEmpty()) {
                 return EmiStack.EMPTY;
             }
             if (stack instanceof ItemStackList stackList) {
-                return toEMIIngredient(stackList.stream()).setChance(chance);
+                return toEMIIngredient(stackList.stream().map(mapper)).setChance(chance);
             } else if (stack instanceof ItemTagList tagList) {
                 return EmiIngredient.of(tagList.getEntries().stream()
-                        .map(ItemTagList.ItemTagEntry::stacks)
-                        .map(stream -> toEMIIngredient(stream))
-                        .collect(Collectors.toList()), tagList.getEntries().get(0).amount()).setChance(chance);
+                                        .map(ItemTagList.ItemTagEntry::stacks)
+                                        .map(stream -> toEMIIngredient(stream.map(mapper)))
+                                        .collect(Collectors.toList()),
+                                tagList.getEntries().get(0).amount())
+                        .setChance(chance);
+            } else if (stack instanceof ItemHolderSetList holderSetList) {
+                return EmiIngredient.of(holderSetList.getEntries().stream()
+                                        .map(ItemHolderSetList.ItemHolderSetEntry::stacks)
+                                        .map(stream -> toEMIIngredient(stream.map(mapper)))
+                                        .collect(Collectors.toList()),
+                                holderSetList.getEntries().get(0).amount())
+                        .setChance(chance);
             }
             return EmiStack.EMPTY;
         }
@@ -90,17 +98,26 @@ public class EmiStackConverter {
         }
 
         @Override
-        public EmiIngredient convertTo(EntryList<FluidStack> stack, float chance) {
+        public EmiIngredient convertTo(EntryList<FluidStack> stack, float chance, UnaryOperator<FluidStack> mapper) {
             if (stack.isEmpty()) {
                 return EmiStack.EMPTY;
             }
             if (stack instanceof FluidStackList stackList) {
-                return toEMIIngredient(stackList.stream()).setChance(chance);
+                return toEMIIngredient(stackList.stream().map(mapper)).setChance(chance);
             } else if (stack instanceof FluidTagList tagList) {
                 return EmiIngredient.of(tagList.getEntries().stream()
-                        .map(FluidTagList.FluidTagEntry::stacks)
-                        .map(stream -> toEMIIngredient(stream))
-                        .collect(Collectors.toList()), tagList.getEntries().get(0).amount()).setChance(chance);
+                                        .map(FluidTagList.FluidTagEntry::stacks)
+                                        .map(stream -> toEMIIngredient(stream.map(mapper)))
+                                        .collect(Collectors.toList()),
+                                tagList.getEntries().get(0).amount())
+                        .setChance(chance);
+            } else if (stack instanceof FluidHolderSetList holderSetList) {
+                return EmiIngredient.of(holderSetList.getEntries().stream()
+                                        .map(FluidHolderSetList.FluidHolderSetEntry::stacks)
+                                        .map(stream -> toEMIIngredient(stream.map(mapper)))
+                                        .collect(Collectors.toList()),
+                                holderSetList.getEntries().get(0).amount())
+                        .setChance(chance);
             }
             return EmiStack.EMPTY;
         }
@@ -121,15 +138,23 @@ public class EmiStackConverter {
         return Optional.ofNullable(getForNullable(clazz));
     }
 
+    public static <T> EmiIngredient convertToEmiEntry(EntryList<T> entries, float chance, UnaryOperator<T> renderMappingFunction) {
+        Converter<T> converter = getForNullable(entries.getType());
+        if (converter != null) {
+            return converter.convertTo(entries, chance, renderMappingFunction);
+        }
+        return EmiStack.EMPTY;
+    }
+
     public interface Converter<T> {
 
         @Nullable
         T convertFrom(EmiStack stack);
 
-        EmiIngredient convertTo(EntryList<T> stack, float chance);
+        EmiIngredient convertTo(EntryList<T> stack, float chance, UnaryOperator<T> mapper);
 
         default EmiIngredient convertTo(IngredientProvider<T> slot) {
-            return this.convertTo(slot.getIngredients(), slot.chance());
+            return this.convertTo(slot.getIngredients(), slot.chance(), slot.renderMappingFunction());
         }
     }
 }

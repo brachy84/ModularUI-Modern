@@ -349,7 +349,7 @@ public class ModularScreen implements Renderable {
      */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (!this.context.getUItype().isScreen) {
+        if (!this.context.getUIType().isScreen) {
             checkManualUpdate(); // embeds can't trigger frame updates the proper way
         }
         this.context.setGraphics(graphics);
@@ -664,7 +664,7 @@ public class ModularScreen implements Renderable {
     }
 
     public boolean isClientOnly() {
-        return isOverlay() || getContext().getUItype() != UIType.MODULAR_SCREEN
+        return isOverlay() || getContext().getUIType() != UIType.MODULAR_SCREEN
                 || !this.screenWrapper.isContainerScreen() || getContainer().isClientOnly();
     }
 

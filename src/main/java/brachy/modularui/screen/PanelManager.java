@@ -222,7 +222,7 @@ public class PanelManager {
      * @return if the screen was open
      */
     public boolean closeAll() {
-        if (this.state.isOpen) {
+        if (this.state.isOpen || this.state == State.INIT) {
             // any open panel will be set to closed, but will not actually be removed, so it can be reopened
             this.panels.forEach(this::finalizePanel);
             setState(State.CLOSED);
@@ -238,7 +238,7 @@ public class PanelManager {
      * @return if this screen was open
      */
     public boolean closePanelsAndScreen() {
-        if (this.state.isOpen) {
+        if (this.state.isOpen || this.state == State.INIT) {
             // create a list with non-main panels
             // looping directly over panels may cause CME
             List<ModularPanel<?>> subPanels = new ArrayList<>();
@@ -259,7 +259,7 @@ public class PanelManager {
     void closeScreen() {
         // only close the screen without closing the panels
         // this is useful when we expect the screen to reopen at some point and the sync managers are still available
-        if (this.state.isOpen) {
+        if (this.state.isOpen || this.state == State.INIT) {
             setState(State.CLOSED);
             this.screen.onClose();
         }

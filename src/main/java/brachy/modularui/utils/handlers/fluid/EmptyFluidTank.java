@@ -1,4 +1,4 @@
-package brachy.modularui.integration.recipeviewer.handlers.fluid;
+package brachy.modularui.utils.handlers.fluid;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;

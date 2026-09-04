@@ -4,6 +4,7 @@ import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.core.mixins.jei.IngredientListOverlayAccessor;
 import brachy.modularui.integration.jei.GhostIngredientTarget;
+import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
 import brachy.modularui.integration.jei.ModularUIJeiPlugin;
 import brachy.modularui.integration.jei.ModularUIJeiProperties;
 import brachy.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
@@ -24,6 +25,7 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -108,7 +110,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     @Override
-    public boolean isSearchFocused(){
+    public boolean isSearchFocused() {
         if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor){
             return accessor.getSearchField().isFocused();
         }
@@ -121,17 +123,19 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         return currentIngredient;
     }
 
-    public static class ContainerScreen<T extends AbstractContainerMenu, T1 extends AbstractContainerScreen<T> & IMuiScreen>
-            extends JeiScreenHandler<T1>
-            implements IGuiContainerHandler<T1> {
+    @Override
+    public <I> JeiRecipeViewerSlot<I, ?> createRecipeViewerSlot(Class<I> ingredientClass) {
+        return new JeiRecipeViewerSlot<>(ingredientClass);
+    }
+
+    public static class ContainerScreen<M extends AbstractContainerMenu, T extends AbstractContainerScreen<M> & IMuiScreen> extends JeiScreenHandler<T> implements IGuiContainerHandler<T> {
 
         @SuppressWarnings("unchecked")
-        public static <M extends AbstractContainerMenu,
-                T extends AbstractContainerScreen<M> & IMuiScreen> ContainerScreen<M, T> ofContainer(Class<T> clazz) {
+        public static <M extends AbstractContainerMenu, T extends AbstractContainerScreen<M> & IMuiScreen> ContainerScreen<M, T> ofContainer(Class<T> clazz) {
             return (ContainerScreen<M, T>) CACHE.computeIfAbsent(clazz, clz -> new ContainerScreen<>((Class<T>) clz));
         }
 
-        private ContainerScreen(Class<T1> clazz) {
+        private ContainerScreen(Class<T> clazz) {
             super(clazz);
         }
 
@@ -142,7 +146,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         }
 
         @Override
-        public List<Rect2i> getGuiExtraAreas(T1 screen) {
+        public @NotNull List<Rect2i> getGuiExtraAreas(T screen) {
             return screen.screen().getContext()
                     .getRecipeViewerSettings().getAllExclusionAreas()
                     .stream().map(Rectangle::asRect2i)
@@ -150,7 +154,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         }
 
         @Override
-        public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T1 screen, double mouseX, double mouseY) {
+        public @NotNull Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T screen, double mouseX, double mouseY) {
             IWidget hovered = screen.screen().getContext().getTopHovered();
             if (hovered instanceof IngredientProvider<?> provider) {
                 var override = provider.ingredientOverride();

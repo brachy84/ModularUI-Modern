@@ -35,8 +35,7 @@ public class GuiContext extends GuiViewportStack {
         return ClientScreenHandler.getBestContext();
     }
 
-    @Getter
-    private final UIType UItype;
+    private final UIType uiType;
 
     @Getter
     private final Area screenArea = new Area();
@@ -66,8 +65,8 @@ public class GuiContext extends GuiViewportStack {
     @Getter private long tick = 0;
     @Getter private int currentDrawingZ = 0;
 
-    public GuiContext(UIType UItype) {
-        this.UItype = UItype;
+    public GuiContext(UIType uiType) {
+        this.uiType = uiType;
     }
 
     public boolean isAbove(IWidget widget) {
@@ -153,6 +152,10 @@ public class GuiContext extends GuiViewportStack {
 
     public void tick() {
         this.tick += 1;
+    }
+
+    public UIType getUIType() {
+        return this.uiType;
     }
 
     /* Viewport */

@@ -1,4 +1,4 @@
-package brachy.modularui.utils;
+package brachy.modularui.utils.handlers.fluid;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;

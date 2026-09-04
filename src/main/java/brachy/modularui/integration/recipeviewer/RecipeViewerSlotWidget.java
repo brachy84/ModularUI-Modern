@@ -1,49 +1,82 @@
 package brachy.modularui.integration.recipeviewer;
 
-import brachy.modularui.ModularUI;
 import brachy.modularui.api.widget.Interactable;
-import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
-import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
+import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.rei.ReiRecipeViewerSlot;
+import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
+import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
+import brachy.modularui.screen.viewport.ModularGuiContext;
+import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.function.UnaryOperator;
+
+@Accessors(fluent = true)
 @ApiStatus.Experimental
-public abstract class RecipeViewerSlotWidget<W extends RecipeViewerSlotWidget<W>> extends Widget<W> implements Interactable {
+public abstract class RecipeViewerSlotWidget<I, W extends RecipeViewerSlotWidget<I, W>> extends Widget<W> implements Interactable {
 
-    public abstract W recipeSlotRole(RecipeSlotRole recipeSlotRole);
+    @Getter protected RecipeSlotRole recipeSlotRole = RecipeSlotRole.RENDER_ONLY;
+    protected EntryList<I> entries;
+    @Getter @Setter protected float chance = 1f;
+    @Getter @Setter protected UnaryOperator<I> renderMappingFunction = UnaryOperator.identity();
 
-    public abstract <T> W value(EntryList<T> entryList);
+    protected final Class<I> ingredientClass;
 
-    public W value(ItemStack stack) {
-        return value(ItemStackList.of(stack));
+    public RecipeViewerSlotWidget(Class<I> ingredientClass) {
+       this.ingredientClass = ingredientClass;
     }
 
-    public W value(FluidStack stack) {
-        return value(FluidStackList.of(stack));
+    public W recipeSlotRole(RecipeSlotRole recipeSlotRole) {
+        this.recipeSlotRole = recipeSlotRole;
+        if (this.entries != null) rebuildRealSlot();
+        return getThis();
     }
 
-    public abstract W chance(float chance);
-
-    public static RecipeViewerSlotWidget<?> create() {
-        if (!ModularUI.Mods.isRecipeViewerLoaded()) {
-            throw new IllegalStateException("Cannot create recipe viewer slot without a recipe viewer mod loaded.");
+    public W value(EntryList<I> entryList) {
+        this.entries = entryList;
+        if (this.entries != null) rebuildRealSlot();
+        if (this.ingredientClass == FluidStack.class) {
+            background(GuiTextures.SLOT_FLUID);
+        } else {
+            background(GuiTextures.SLOT_ITEM); // TODO other types
         }
+        return getThis();
+    }
 
-        if (ModularUI.Mods.EMI.isLoaded()) {
-            return new EmiRecipeViewerSlot();
-        } else if (ModularUI.Mods.REI.isLoaded()) {
-            return new ReiRecipeViewerSlot();
-        } else if (ModularUI.Mods.JEI.isLoaded()) {
-            return new JeiRecipeViewerSlot();
+    @SuppressWarnings("unchecked")
+    public W value(I stack) {
+        if (stack.getClass() == ItemStack.class) {
+            return value((EntryList<I>) ItemStackList.of((ItemStack) stack));
+        } else if (stack.getClass() == FluidStack.class) {
+            return value((EntryList<I>) FluidStackList.of((FluidStack) stack));
+        } else {
+            throw new IllegalArgumentException("Cannot use value(stack) with non-standard stack types! Use value(entryList) instead.");
         }
-        throw new UnsupportedOperationException("Cannot create recipe viewer slot without EMI, REI, or JEI being loaded.");
+    }
+
+    protected abstract void rebuildRealSlot();
+
+    public static <I> RecipeViewerSlotWidget<I, ?> create(Class<I> ingredientClass) {
+        return RecipeViewerHandler.getCurrent().createRecipeViewerSlot(ingredientClass);
+    }
+
+    public static <I> RecipeViewerSlotWidget<I, ?> createFrom(IngredientProvider<I> slot) {
+        return RecipeViewerSlotWidget.<I>create(slot.ingredientClass())
+                .recipeSlotRole(slot.getRecipeRole())
+                .value(slot.getIngredients())
+                .chance(slot.chance())
+                .renderMappingFunction(slot.renderMappingFunction())
+                .copyResizerOf(slot)
+                .copyVisualsOf(slot);
     }
 }

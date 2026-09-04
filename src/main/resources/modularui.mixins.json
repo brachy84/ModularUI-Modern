@@ -1,28 +1,38 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "refmap": "modularui.refmap.json",
-    "package": "brachy.modularui.core.mixins",
-    "compatibilityLevel": "JAVA_17",
-    "client": [
-        "client.AbstractContainerScreenAccessor",
-        "client.AbstractContainerScreenMixin",
-        "client.MinecraftMixin",
-        "client.ScreenAccessor",
-        "client.StringSplitterAccessor",
-        "emi.RecipeScreenMixin",
-        "jei.IngredientListOverlayAccessor"
-    ],
-    "mixins": [
-        "common.AbstractContainerMenuAccessor",
-        "common.CombinedInvWrapperAccessor",
-        "common.ComponentMixin",
-        "common.ComponentSerializerMixin",
-        "common.SlotAccessor",
-        "common.TextColorMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1,
-        "maxShiftBy": 5
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "refmap": "modularui.refmap.json",
+  "package": "brachy.modularui.core.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "brachy.modularui.core.ModularUIMixinPlugin",
+  "client": [
+    "client.AbstractContainerScreenAccessor",
+    "client.AbstractContainerScreenMixin",
+    "client.MinecraftMixin",
+    "client.ScreenAccessor",
+    "client.StringSplitterAccessor",
+    "emi.EmiRenderHelperMixin",
+    "emi.RecipeScreenMixin",
+    "jei.IngredientListOverlayAccessor",
+    "rei.DefaultDisplayViewingScreenMixin",
+    "rei.EntryWidgetAccessor"
+  ],
+  "mixins": [
+    "common.AbstractContainerMenuAccessor",
+    "common.CombinedInvWrapperAccessor",
+    "common.ComponentMixin",
+    "common.ComponentSerializerMixin",
+    "common.SlotAccessor",
+    "common.TextColorMixin",
+    "jei.RecipeGuiLogicMixin",
+    "jei.RecipeLayoutAccessor",
+    "jei.RecipeLayoutBuilderAccessor",
+    "jei.RecipeLayoutBuilderMixin",
+    "jei.RecipeLayoutMixin",
+    "jei.RecipeSlotAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "maxShiftBy": 5
+  }
 }
