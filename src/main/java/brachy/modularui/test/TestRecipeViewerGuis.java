@@ -1,5 +1,6 @@
 package brachy.modularui.test;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiCategory;
 import brachy.modularui.utils.handlers.fluid.EmptyFluidTank;
 import brachy.modularui.utils.handlers.fluid.IMultiTankFluidHandler;
 import brachy.modularui.utils.handlers.fluid.MultiTankFluidHandler;
@@ -131,7 +132,7 @@ public class TestRecipeViewerGuis {
 
     public static class EMI {
 
-        public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(ModularUI.id("machine"), EmiStack.of(TestRegistration.TEST_MACHINE_BLOCK_ITEM.get()));
+        public static final EmiRecipeCategory CATEGORY = new ModularUIEmiCategory(ModularUI.id("machine"), EmiStack.of(TestRegistration.TEST_MACHINE_BLOCK_ITEM.get()));
 
         public static void openRecipeCategory() {
             EmiApi.displayRecipeCategory(CATEGORY);
