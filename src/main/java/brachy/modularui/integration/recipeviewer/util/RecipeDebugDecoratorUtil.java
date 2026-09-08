@@ -18,6 +18,10 @@ public class RecipeDebugDecoratorUtil {
         if (!ModularUIConfig.Dev.debugUI()) {
             return;
         }
+        // DISABLE THIS; DOESN'T WORK, CRASHES WITH A CME INSTEAD.
+        if (true) {
+            return;
+        }
 
         MutableObject<ModularScreen> debugOverlay = new MutableObject<>();
 
