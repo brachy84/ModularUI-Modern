@@ -2,14 +2,12 @@ package brachy.modularui.utils;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
-import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.drawable.text.TextIcon;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import com.mojang.datafixers.util.Either;
 
@@ -181,7 +179,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     }
 
     public static ClientTooltipComponent tooltipComponentToCTC(TooltipComponent comp) {
-        if (comp instanceof ClientTooltipComponentIcon icon) return icon.getClientTooltipComponent();
+        if (comp instanceof TooltipComponentIcon icon) return icon.clientComponent();
         if (comp instanceof ClientTooltipComponent ctc) return ctc;
         return ClientTooltipComponent.create(comp);
     }

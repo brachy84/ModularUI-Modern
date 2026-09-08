@@ -1,6 +1,7 @@
 package brachy.modularui.integration.jei;
 
 import brachy.modularui.core.mixins.jei.RecipeSlotAccessor;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 
@@ -27,6 +28,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
@@ -59,10 +61,18 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         size(18, 18);
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
-            if (slotWidget != null){
-                for (Component component : slotWidget.getTooltip()){
-                    tooltip.addLine(component);
-                }
+            if (slotWidget != null) {
+                JeiTooltip builder = new JeiTooltip();
+                slotWidget.getTooltip(builder);
+                builder.getLines().forEach(line -> {
+                    line.ifLeft(l -> {
+                        if (l instanceof Component c) {
+                            tooltip.addLine(c);
+                        }
+                    }).ifRight(c -> {
+                        tooltip.addDrawableLine(new TooltipComponentIcon(c, false));
+                    });
+                });
             }
         });
     }
