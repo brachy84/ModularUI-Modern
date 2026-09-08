@@ -33,13 +33,11 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
 
-@Accessors(fluent = true, chain = true)
 public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interactable, IngredientProvider<ItemStack> {
 
     public static final int SIZE = 18;
@@ -51,9 +49,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     private ItemSlotSyncHandler syncHandler;
-    @Setter
     private RichTooltip tooltip;
-    @Getter
     @Setter
     protected UnaryOperator<ItemStack> itemHook;
 
@@ -197,6 +193,12 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
             return getItemTooltip();
         }
         return tooltip;
+    }
+
+    @Override
+    public ItemSlot tooltip(RichTooltip tooltip) {
+        this.tooltip = tooltip;
+        return this;
     }
 
     @Override

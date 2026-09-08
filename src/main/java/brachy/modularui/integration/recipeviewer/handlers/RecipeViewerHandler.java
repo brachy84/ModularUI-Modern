@@ -3,6 +3,7 @@ package brachy.modularui.integration.recipeviewer.handlers;
 import brachy.modularui.ModularUI;
 import brachy.modularui.integration.emi.handler.EmiScreenHandler;
 import brachy.modularui.integration.jei.handler.JeiScreenHandler;
+import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.rei.handler.REIScreenHandler;
 import brachy.modularui.screen.ScreenWrapper;
 
@@ -40,6 +41,8 @@ public abstract class RecipeViewerHandler {
 
     public abstract @Nullable Object getCurrentlyDragged();
 
+    public abstract <I> RecipeViewerSlotWidget<I, ?> createRecipeViewerSlot(Class<I> ingredientClass);
+
     public boolean isHoveringOver(GhostIngredientSlot<?> slot) {
         Object currentlyDragged = getCurrentlyDragged();
         if (currentlyDragged == null) {
@@ -69,6 +72,20 @@ public abstract class RecipeViewerHandler {
         @Override
         public @Nullable Object getCurrentlyDragged() {
             return null;
+        }
+
+        @Override
+        public <I> RecipeViewerSlotWidget<I, ?> createRecipeViewerSlot(Class<I> ingredientClass) {
+            class DummyRecipeViewerSlot extends RecipeViewerSlotWidget<I, DummyRecipeViewerSlot> {
+
+                DummyRecipeViewerSlot(Class<I> ingredientClass) {
+                    super(ingredientClass);
+                }
+
+                @Override
+                protected void rebuildRealSlot() {}
+            }
+            return new DummyRecipeViewerSlot(ingredientClass);
         }
     };
 }

@@ -1,4 +1,4 @@
-package brachy.modularui.integration.recipeviewer.handlers.fluid;
+package brachy.modularui.utils.handlers.fluid;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;

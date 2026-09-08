@@ -1,4 +1,4 @@
-package brachy.modularui.integration.recipeviewer.handlers.fluid;
+package brachy.modularui.utils.handlers.fluid;
 
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
 

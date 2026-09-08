@@ -12,7 +12,8 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.SlotTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
-import brachy.modularui.utils.IMultiFluidTankHandler;
+import brachy.modularui.utils.handlers.fluid.EmptyFluidTank;
+import brachy.modularui.utils.handlers.fluid.IMultiTankFluidHandler;
 import brachy.modularui.utils.LangUtil;
 import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
@@ -43,7 +44,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     public static final String UNIT_BUCKET = "B";
     public static final String UNIT_LITER = "L";
     private static final DecimalFormat TOOLTIP_FORMAT = new DecimalFormat("#.##");
-    private static final IFluidTank EMPTY = new FluidTank(0);
 
     static {
         TOOLTIP_FORMAT.setGroupingUsed(true);
@@ -218,7 +218,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     }
 
     public IFluidTank getFluidTank() {
-        return this.syncHandler == null ? EMPTY : this.syncHandler.fluidTank();
+        return this.syncHandler == null ? EmptyFluidTank.INSTANCE : this.syncHandler.fluidTank();
     }
 
     /**
@@ -233,8 +233,8 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return syncHandler(new FluidSlotSyncHandler(fluidTank));
     }
 
-    public FluidSlot syncHandler(IMultiFluidTankHandler fluidTank, int index) {
-        return syncHandler(fluidTank.getFluidTank(index));
+    public FluidSlot syncHandler(IMultiTankFluidHandler fluidTank, int index) {
+        return syncHandler(new FluidSlotSyncHandler(fluidTank, index));
     }
 
     public FluidSlot syncHandler(FluidSlotSyncHandler syncHandler) {
@@ -246,7 +246,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return syncHandler(fluidTank);
     }
 
-    public FluidSlot tank(IMultiFluidTankHandler fluidTank, int index) {
+    public FluidSlot tank(IMultiTankFluidHandler fluidTank, int index) {
         return syncHandler(fluidTank, index);
     }
 
