@@ -5,6 +5,7 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 import brachy.modularui.integration.rei.REIStackConverter;
+import brachy.modularui.integration.rei.ReiRecipeViewerSlot;
 import brachy.modularui.utils.Rectangle;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -144,7 +145,7 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     @Override
-    public boolean isSearchFocused(){
+    public boolean isSearchFocused() {
         TextField searchField = REIRuntime.getInstance().getSearchTextField();
         if (searchField != null) return searchField.isFocused();
         return false;
@@ -154,5 +155,10 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     public @Nullable Object getCurrentlyDragged() {
         if (currentIngredient == null) return null;
         return currentIngredient.get().getValue();
+    }
+
+    @Override
+    public <I> ReiRecipeViewerSlot<I> createRecipeViewerSlot(Class<I> ingredientClass) {
+        return new ReiRecipeViewerSlot<>(ingredientClass);
     }
 }

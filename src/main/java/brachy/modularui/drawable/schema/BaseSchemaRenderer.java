@@ -371,16 +371,6 @@ public class BaseSchemaRenderer implements IDrawable {
     }
 
     protected void renderBlocks(RenderCompileResults renderResult, RenderType renderType) {
-        if (renderResult.isEmpty(renderType)) {
-            return;
-        }
-        VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
-        // check if the buffer is invalid in case someone breaks it
-        // noinspection ConstantValue
-        if (vertexBuffer.isInvalid() || vertexBuffer.getFormat() == null) {
-            return;
-        }
-
         renderType.setupRenderState();
 
         // set up shader uniforms
@@ -395,12 +385,19 @@ public class BaseSchemaRenderer implements IDrawable {
         shader.apply();
 
         // actually draw the chunk
-        if (ModularUI.Mods.isSodiumLikeLoaded()) {
-            SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
-        }
+        if (!renderResult.isEmpty(renderType)) {
+            if (ModularUI.Mods.isSodiumLikeLoaded()) {
+                SodiumCompat.markSpritesAsActive(renderResult.activeFluidSprites);
+            }
 
-        vertexBuffer.bind();
-        vertexBuffer.draw();
+            VertexBuffer vertexBuffer = renderResult.getOrCreateChunkBuffers().get(renderType);
+            // check if the buffer is invalid in case someone breaks it
+            // noinspection ConstantValue
+            if (!vertexBuffer.isInvalid() && vertexBuffer.getFormat() != null) {
+                vertexBuffer.bind();
+                vertexBuffer.draw();
+            }
+        }
 
         if (shader.CHUNK_OFFSET != null) {
             shader.CHUNK_OFFSET.set(0f, 0f, 0f);

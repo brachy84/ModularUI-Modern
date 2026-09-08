@@ -1,7 +1,7 @@
 package brachy.modularui.core;
 
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -14,29 +14,48 @@ import java.util.Set;
 
 public class ModularUIMixinPlugin implements IMixinConfigPlugin {
 
-    @Override
-    public void onLoad(String mixinPackage) {}
-
-    @Override
-    public String getRefMapperConfig() {
-        return null;
-    }
-
     private static final String MIXIN_PACKAGE = "brachy.modularui.core.mixins.";
     private static final Map<String, String> MOD_COMPAT_MIXINS = new HashMap<>();
 
+    private static final String DEV_PACKAGE = "dev.";
+
     static {
-        addModCompatMixin("jei");
+        MOD_COMPAT_MIXINS.put("roughlyenoughitems", "rei.");
+        MOD_COMPAT_MIXINS.put("emi", "emi.");
+        MOD_COMPAT_MIXINS.put("jei", "jei.");
     }
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (!mixinClassName.startsWith(MIXIN_PACKAGE)) {
+            // skip checking mixins that aren't in our package
+            // this should never happen, but better safe than sorry
+            return true;
+        }
+        if (FMLLoader.getLoadingModList().hasErrors()) {
+            // stop processing mixins if we have load errors to avoid getting bad crash reports in our issues
+            return false;
+        }
+        mixinClassName = mixinClassName.substring(MIXIN_PACKAGE.length());
+
+        if (mixinClassName.startsWith(DEV_PACKAGE)) {
+            // don't load dev-only mixins in prod
+            return !FMLLoader.isProduction();
+        }
         for (var compatMod : MOD_COMPAT_MIXINS.entrySet()) {
             if (mixinClassName.startsWith(compatMod.getValue())) {
                 return isModLoaded(compatMod.getKey());
             }
         }
         return true;
+    }
+
+    @Override
+    public void onLoad(String mixinPackage) {}
+
+    @Override
+    public String getRefMapperConfig() {
+        return null;
     }
 
     @Override
@@ -53,13 +72,9 @@ public class ModularUIMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
-    private static void addModCompatMixin(String modId) {
-        MOD_COMPAT_MIXINS.put(modId, MIXIN_PACKAGE + modId);
-    }
-
     private static boolean isModLoaded(String modId) {
         if (ModList.get() == null) {
-            return LoadingModList.get().getModFileById(modId) != null;
+            return FMLLoader.getLoadingModList().getModFileById(modId) != null;
         }
         return ModList.get().isLoaded(modId);
     }
