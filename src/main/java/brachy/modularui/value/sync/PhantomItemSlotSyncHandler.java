@@ -1,6 +1,7 @@
 package brachy.modularui.value.sync;
 
 import brachy.modularui.utils.MouseData;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.widgets.slot.ModularSlot;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -149,20 +150,9 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
             return;
         }
         int oldAmount = stack.getCount();
-        if (amount < 0) {
-            amount = Math.max(0, oldAmount + amount);
-        } else {
-            if (Integer.MAX_VALUE - amount < oldAmount) {
-                amount = Integer.MAX_VALUE;
-            } else {
-                int maxSize = getSlot().getMaxStackSize();
-                if (!getSlot().isIgnoreMaxStackSize() && stack.getMaxStackSize() < maxSize) {
-                    maxSize = stack.getMaxStackSize();
-                }
-                amount = Math.min(oldAmount + amount, maxSize);
-            }
-        }
-        if (oldAmount != amount) {
+        int c = (int) MathUtils.clamp(oldAmount + (long) amount, 0, Integer.MAX_VALUE);
+        c = Math.min(c, getSlot().getMaxStackSize(stack));
+        if (oldAmount != c) {
             stack = stack.copy();
             stack.setCount(amount);
             getSlot().set(stack);
