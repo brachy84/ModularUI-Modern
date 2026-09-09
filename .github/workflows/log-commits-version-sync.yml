@@ -111,7 +111,8 @@ jobs:
           HEAD_TITLE="$(printf '%s' "$HEAD_COMMIT_MSG" | head -n1)"
           ISSUE_URL="$(gh issue create --repo "$PROJECT_REPO" \
             --title "$HEAD_TITLE" \
-            --body "$BODY")"
+            --body "$BODY" \
+            --label "$STATUS_NAME")"
           echo "Created issue $ISSUE_URL"
 
           # add it to the board
