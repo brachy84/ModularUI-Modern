@@ -21,8 +21,6 @@ import java.util.List;
  */
 public class GuiViewportStack implements IViewportStack {
 
-    private static final Vector3f sharedVec = new Vector3f();
-
     private final ObjectArrayList<TransformationMatrix> matrixPool = new ObjectArrayList<>(256);
     private final ObjectArrayList<TransformationMatrix> viewportStack = new ObjectArrayList<>();
     private final List<Area> viewportAreas = new ArrayList<>();
@@ -154,9 +152,7 @@ public class GuiViewportStack implements IViewportStack {
 
     @Override
     public void translate(float x, float y) {
-        checkViewport();
-        this.top.getMatrix().translate(vec(x, y, 0));
-        this.top.markDirty();
+        this.translate(x, y, 0.0f);
     }
 
     @Override
@@ -169,7 +165,7 @@ public class GuiViewportStack implements IViewportStack {
     @Override
     public void rotate(float angle, float x, float y, float z) {
         checkViewport();
-        this.top.getMatrix().rotate(angle, vec(x, y, z));
+        this.top.getMatrix().rotate(angle, x, y, z);
         this.top.markDirty();
     }
 
@@ -181,7 +177,7 @@ public class GuiViewportStack implements IViewportStack {
     @Override
     public void scale(float x, float y) {
         checkViewport();
-        this.top.getMatrix().scale(vec(x, y, 1f));
+        this.top.getMatrix().scale(x, y, 1.0f);
         this.top.markDirty();
     }
 
@@ -263,10 +259,5 @@ public class GuiViewportStack implements IViewportStack {
     @Override
     public TransformationMatrix peek() {
         return this.top;
-    }
-
-    private static Vector3f vec(float x, float y, float z) {
-        sharedVec.set(x, y, z);
-        return sharedVec;
     }
 }

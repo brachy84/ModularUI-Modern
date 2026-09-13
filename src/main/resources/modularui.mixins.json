@@ -12,20 +12,29 @@
         "client.MinecraftMixin",
         "client.ScreenAccessor",
         "client.StringSplitterAccessor",
+        "emi.EmiRenderHelperMixin",
         "emi.RecipeScreenMixin",
-        "jei.IngredientListOverlayAccessor"
+        "jei.IngredientListOverlayAccessor",
+        "rei.DefaultDisplayViewingScreenMixin",
+        "rei.EntryWidgetAccessor"
     ],
     "mixins": [
         "common.AbstractContainerMenuAccessor",
         "common.CombinedInvWrapperAccessor",
         "common.ComponentMixin",
         "common.ComponentSerializationMixin",
+        "common.SlotAccessor",
         "common.RegistryFriendlyByteBufMixin",
         "common.ReloadableServerResourcesMixin",
         "common.ServerPlayerAccessor",
-        "common.SlotAccessor",
         "common.TextColorMixin",
-        "common.WorldLoaderMixin"
+        "common.WorldLoaderMixin",
+        "jei.RecipeGuiLogicMixin",
+        "jei.RecipeLayoutAccessor",
+        "jei.RecipeLayoutBuilderAccessor",
+        "jei.RecipeLayoutBuilderMixin",
+        "jei.RecipeLayoutMixin",
+        "jei.RecipeSlotAccessor"
     ],
     "injectors": {
         "defaultRequire": 1,

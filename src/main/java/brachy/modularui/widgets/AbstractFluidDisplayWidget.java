@@ -141,11 +141,6 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
         return getThis();
     }
 
-    public W recipeSlotRole(RecipeSlotRole recipeRole) {
-        this.recipeRole = recipeRole;
-        return getThis();
-    }
-
     /**
      * Determines if a partially filled fluid should be drawn from the top instead of the bottom if the current fluid is
      * lighter than air.
@@ -157,11 +152,17 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     }
 
     @Override
+    public FluidStackList getIngredients() {
+        return FluidStackList.of(getFluidStack());
+    }
+
+    @Override
     public @NotNull Class<FluidStack> ingredientClass() {
         return FluidStack.class;
     }
 
-    public EntryList<FluidStack> getIngredients() {
-        return FluidStackList.of(getFluidStack());
+    public W recipeRole(RecipeSlotRole recipeRole) {
+        this.recipeRole = recipeRole;
+        return getThis();
     }
 }

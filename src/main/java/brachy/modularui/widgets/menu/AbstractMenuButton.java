@@ -3,6 +3,7 @@ package brachy.modularui.widgets.menu;
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.drawable.Text;
+import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
@@ -125,14 +126,14 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
                                 .center())
                         .widthRel(1f)
                         .height(16);
-                if (this.direction == null) Direction.DOWN.positioner.accept(this.menu.resizer());
+                if (this.direction == null) Direction.DOWN.apply(this.menu);
             }
         }
         if (!this.menu.resizer().hasParentOverride()) {
             this.menu.resizer().relative(this);
         }
         if (this.direction != null) {
-            this.direction.positioner.accept(this.menu.resizer());
+            this.direction.apply(this.menu);
         }
         this.menu.setMenuSource(this);
         return this.menu;
@@ -226,6 +227,14 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
 
         Direction(Consumer<StandardResizer> positioner) {
             this.positioner = positioner;
+        }
+
+        public void apply(IWidget widget) {
+            apply(widget.resizer());
+        }
+
+        public void apply(StandardResizer resizer) {
+            this.positioner.accept(resizer);
         }
     }
 }

@@ -2,14 +2,13 @@ package brachy.modularui.integration.emi.handler;
 
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
 import brachy.modularui.integration.emi.EmiStackConverter;
 import brachy.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.material.Fluid;
 
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiDragDropHandler;
@@ -131,13 +130,17 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (stack.isEmpty()) {
                 continue;
             }
-            if (stack.getKeyOfType(Item.class) != null) {
-                dragged.add(EmiStackConverter.ITEM.convertFrom(stack));
-            }
-            if (stack.getKeyOfType(Fluid.class) != null) {
-                dragged.add(EmiStackConverter.FLUID.convertFrom(stack));
+            for (var entry : EmiStackConverter.CONVERTERS.entrySet()) {
+                if (stack.getKeyOfType(entry.getKey()) != null) {
+                    dragged.add(entry.getValue().convertFrom(stack));
+                }
             }
         }
         return dragged;
+    }
+
+    @Override
+    public <I> EmiRecipeViewerSlot<I> createRecipeViewerSlot(Class<I> ingredientClass) {
+        return new EmiRecipeViewerSlot<>(ingredientClass);
     }
 }

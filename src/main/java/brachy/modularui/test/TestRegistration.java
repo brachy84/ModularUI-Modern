@@ -2,6 +2,7 @@ package brachy.modularui.test;
 
 import brachy.modularui.ModularUI;
 
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -20,9 +21,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Function;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class TestRegistration {
 
     // @formatter:off
@@ -33,7 +31,7 @@ public class TestRegistration {
 
     private static Function<Item.Properties, TestItem> testItemFactory() {
         if (ModularUI.Mods.CURIOS.isLoaded()) {
-            return TestCurioItem::new;
+            return CuriosCallWrapper.getCuriosItem();
         }
         return TestItem::new;
     }
@@ -62,7 +60,10 @@ public class TestRegistration {
             return new ItemStackHandler(4);
         }, TestRegistration.TEST_ITEM.get());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TestRegistration.TEST_MACHINE_BLOCK_ENTITY.get(), (machine, dir) -> {
-            return machine.getInventory();
+            return machine.getItemHandler();
+        });
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TestRegistration.TEST_MACHINE_BLOCK_ENTITY.get(), (machine, dir) -> {
+            return machine.getFluidHandler();
         });
     }
 
@@ -72,5 +73,12 @@ public class TestRegistration {
         ITEMS.register(modBus);
         BLOCKS.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);
+    }
+
+    public static class CuriosCallWrapper {
+
+        public static Function<Item.Properties, TestItem> getCuriosItem() {
+            return TestCurioItem::new;
+        }
     }
 }
