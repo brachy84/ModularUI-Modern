@@ -5,23 +5,16 @@ import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.integration.recipeviewer.util.RecipeDebugDecoratorUtil;
 import brachy.modularui.integration.rei.ReiRecipeViewerSlot;
 import brachy.modularui.screen.EmbedHandler;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.RichTooltip;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.resources.ResourceLocation;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.widgets.Tooltip;
@@ -109,7 +102,6 @@ public abstract class ModularUIReiDisplay implements Display {
         ModularScreen screen = ModularScreen.createEmbed(owner, panel);
         screen.getContext().getUISettings().drawTooltipExternally(true);
 
-        RecipeDebugDecoratorUtil.addRecipeDebugOverlays(screen);
         return screen;
     }
 

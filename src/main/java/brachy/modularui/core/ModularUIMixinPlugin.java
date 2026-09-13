@@ -1,6 +1,5 @@
 package brachy.modularui.core;
 
-import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 import org.objectweb.asm.tree.ClassNode;
