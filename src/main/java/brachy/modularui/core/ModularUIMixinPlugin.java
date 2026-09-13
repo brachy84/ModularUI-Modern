@@ -1,6 +1,5 @@
 package brachy.modularui.core;
 
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -73,9 +72,6 @@ public class ModularUIMixinPlugin implements IMixinConfigPlugin {
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     private static boolean isModLoaded(String modId) {
-        if (ModList.get() == null) {
-            return FMLLoader.getLoadingModList().getModFileById(modId) != null;
-        }
-        return ModList.get().isLoaded(modId);
+        return FMLLoader.getLoadingModList().getModFileById(modId) != null;
     }
 }

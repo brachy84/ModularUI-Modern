@@ -10,7 +10,6 @@ import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
 import brachy.modularui.integration.jei.ModularUIJeiPlugin;
 import brachy.modularui.integration.recipeviewer.RecipeViewerUtils;
-import brachy.modularui.integration.recipeviewer.util.RecipeDebugDecoratorUtil;
 import brachy.modularui.screen.EmbedHandler;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
@@ -144,7 +143,6 @@ public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
         ModularScreen screen = ModularScreen.createEmbed(owner, panel);
         screen.getContext().getUISettings().drawTooltipExternally(true);
 
-        RecipeDebugDecoratorUtil.addRecipeDebugOverlays(screen);
         return screen;
     }
 
