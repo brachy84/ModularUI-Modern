@@ -5,7 +5,6 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.integration.emi.EmiRecipeViewerSlot;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.integration.recipeviewer.util.RecipeDebugDecoratorUtil;
 import brachy.modularui.screen.EmbedHandler;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
@@ -139,7 +138,6 @@ public abstract class ModularUIEmiRecipe implements EmiRecipe {
         ModularScreen screen = ModularScreen.createEmbed(owner, panel);
         screen.getContext().getUISettings().drawTooltipExternally(true);
 
-        RecipeDebugDecoratorUtil.addRecipeDebugOverlays(screen);
         return screen;
     }
 
