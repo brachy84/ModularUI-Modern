@@ -517,7 +517,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
             SlotGroup slotGroup = Objects.requireNonNull(toSlot.getSlotGroup());
             if (slotGroup != fromSlotGroup && toSlot.isActive() && toSlot.mayPlace(fromStack)) {
                 ItemStack toStack = toSlot.getItem().copy();
-                if (!fromSlot.isPhantom() && ItemStack.isSameItemSameComponents(fromStack, toStack)) {
+                if (!fromSlot.isPhantom() && !toSlot.isPhantom() && ItemStack.isSameItemSameComponents(fromStack, toStack)) {
                     int j = toStack.getCount() + fromStack.getCount();
                     // Math.min(toSlot.getMaxStackSize(), fromStack.getMaxStackSize());
                     int maxSize = toSlot.getMaxStackSize(fromStack);

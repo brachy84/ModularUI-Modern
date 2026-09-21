@@ -11,10 +11,16 @@ neoForge {
         mappingsVersion = libs.versions.parchment.get()
     }
 
+    accessTransformers {
+        var file = project.file('src/main/resources/META-INF/accesstransformer.cfg')
+        from(file)
+        publish(file)
+    }
+
     interfaceInjectionData {
         var file = project.file('injected_interfaces/interfaces.json')
-        from file
-        publish file
+        from(file)
+        publish(file)
     }
 
     addModdingDependenciesTo(sourceSets.test)

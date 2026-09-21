@@ -9,7 +9,8 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -23,40 +24,30 @@ public class EmbedHandler {
         return screen.getMainPanel().getArea().height;
     }
 
-    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, float partialTicks) {
-        drawEmbed(screen, graphics, partialTicks, r -> true);
+    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, null, null);
     }
 
-    public static void drawEmbedNoVanillaElements(ModularScreen screen, GuiGraphics graphics, float partialTicks) {
-        drawEmbed(screen, graphics, partialTicks, r -> false);
-    }
-
-    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, float partialTicks, Predicate<Renderable> vanillaElementFilter) {
+    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks,
+                                 @Nullable Runnable beforeDraw, @Nullable Runnable afterDraw) {
         screen.getContext().reset();
-        PoseStack pose = graphics.pose();
-        var m = pose.last().pose();
-        pose.pushPose();
-        pose.setIdentity(); // reset all current transformations and only reapply them for the main panel
-        screen.getMainPanel().transform((p, stack) -> {
-            stack.multiply(m);
-        });
+        graphics.pose().pushPose();
 
-        var defContext = ClientScreenHandler.getDefaultContext();
-        int mx = defContext.getAbsMouseX();
-        int my = defContext.getAbsMouseY();
+        if (beforeDraw != null) beforeDraw.run();
+
+        int mx = screen.getContext().unTransformX(mouseX, mouseY);
+        int my = screen.getContext().unTransformY(mouseX, mouseY);
         screen.render(graphics, mx, my, partialTicks);
 
-        if (vanillaElementFilter != null) {
-            RenderSystem.disableDepthTest();
-            ClientScreenHandler.drawVanillaElements(graphics, screen.getScreenWrapper().wrappedScreen(), mx, my, partialTicks, vanillaElementFilter);
-        }
-
         screen.drawForeground(graphics);
+
+        if (afterDraw != null) afterDraw.run();
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        pose.popPose();
+
+        graphics.pose().popPose();
     }
 
     public record EmbedWrapper(ModularScreen screen) implements IMuiScreen {

@@ -1,4 +1,4 @@
-package brachy.modularui.utils;
+package brachy.modularui.utils.handlers.fluid;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntFunction;
 
-public class MultiFluidTankHandler implements IMultiFluidTankHandler {
+public class MultiTankFluidHandler implements IMultiTankFluidHandler {
 
     private final IFluidTank[] tanks;
 
-    public MultiFluidTankHandler(IFluidTank... tanks) {
+    public MultiTankFluidHandler(IFluidTank... tanks) {
         Objects.requireNonNull(tanks);
         for (IFluidTank tank : tanks) {
             Objects.requireNonNull(tank);
@@ -22,11 +22,11 @@ public class MultiFluidTankHandler implements IMultiFluidTankHandler {
         this.tanks = Arrays.copyOf(tanks, tanks.length);
     }
 
-    public MultiFluidTankHandler(int count, int capacity) {
+    public MultiTankFluidHandler(int count, int capacity) {
         this(count, i -> new FluidTank(capacity));
     }
 
-    public MultiFluidTankHandler(int count, IntFunction<IFluidTank> tankBuilder) {
+    public MultiTankFluidHandler(int count, IntFunction<IFluidTank> tankBuilder) {
         this.tanks = new IFluidTank[count];
         for (int i = 0; i < count; i++) {
             this.tanks[i] = Objects.requireNonNull(tankBuilder.apply(i));
@@ -65,7 +65,7 @@ public class MultiFluidTankHandler implements IMultiFluidTankHandler {
         FluidStack toFill = resource.copy();
         // first find tanks with matching fluid
         for (IFluidTank tank : this.tanks) {
-            if (!tank.getFluid().isEmpty() && resource.isFluidEqual(tank.getFluid())) {
+            if (!tank.getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(resource, tank.getFluid())) {
                 fillAmount -= tank.fill(toFill, action);
                 toFill.setAmount(fillAmount);
                 if (fillAmount <= 0) return resource.getAmount();
@@ -93,7 +93,7 @@ public class MultiFluidTankHandler implements IMultiFluidTankHandler {
         int drainAmount = resource.getAmount();
         for (int i = startIndex; i < this.tanks.length; i++) {
             IFluidTank tank = this.tanks[i];
-            if (tank.getFluid().isEmpty() || !resource.isFluidEqual(tank.getFluid())) continue;
+            if (tank.getFluid().isEmpty() || !FluidStack.isSameFluidSameComponents(resource, tank.getFluid())) continue;
             FluidStack d = this.tanks[i].drain(drainAmount, action);
             if (!d.isEmpty()) {
                 drainAmount -= d.getAmount();
