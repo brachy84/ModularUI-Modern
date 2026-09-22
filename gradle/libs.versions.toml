@@ -13,6 +13,7 @@ jetbrains-annotations = "26.0.1"
 renderNurse = "0.0.12"
 mixin = "0.8.7"
 evalEx = "3.6.0"
+mcdevAnnotations = "2.0.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -21,6 +22,7 @@ jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "j
 renderNurse = { module = "net.neoforged:render-nurse", version.ref = "renderNurse" }
 mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
 evalEx = { module = "com.ezylang:EvalEx", version.ref = "evalEx" }
+mcdevAnnotations = { module = "com.demonwav.mcdev:annotations", version.ref = "mcdevAnnotations" }
 
 [plugins]
 modDevGradle = { id = "net.neoforged.moddev", version.ref = "modDevGradle" }
