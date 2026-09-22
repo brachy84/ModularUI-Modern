@@ -95,7 +95,7 @@ public interface Text extends IDrawable {
      * @param key string
      * @return text key
      */
-    static ModularComponent str(@NotNull @Translatable String key) {
+    static ModularComponent str(@NotNull String key) {
         return ModularComponent.literal(key);
     }
 
