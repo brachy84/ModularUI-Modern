@@ -161,7 +161,11 @@ public class ModularUIConfig {
     }
 
     public static boolean enableTestOverlays() {
-        return ENABLE_TEST_OVERLAYS.getAsBoolean();
+        try {
+            return ENABLE_TEST_OVERLAYS.get();
+        } catch (IllegalStateException e) {
+            return false; 
+        }
     }
 
     public static boolean replaceVanillaTooltips() {
