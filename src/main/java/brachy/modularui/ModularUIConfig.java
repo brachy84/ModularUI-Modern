@@ -161,11 +161,10 @@ public class ModularUIConfig {
     }
 
     public static boolean enableTestOverlays() {
-        try {
-            return ENABLE_TEST_OVERLAYS.get();
-        } catch (IllegalStateException e) {
-            return false; 
+        if (SPEC == null || !SPEC.isLoaded()) {
+            return false;
         }
+        return ENABLE_TEST_OVERLAYS.get();
     }
 
     public static boolean replaceVanillaTooltips() {
