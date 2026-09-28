@@ -22,7 +22,6 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.function.UnaryOperator;
 
 @Accessors(fluent = true)
-@ApiStatus.Experimental
 public abstract class RecipeViewerSlotWidget<I, W extends RecipeViewerSlotWidget<I, W>> extends Widget<W> implements Interactable {
 
     @Getter protected RecipeSlotRole recipeSlotRole = RecipeSlotRole.RENDER_ONLY;

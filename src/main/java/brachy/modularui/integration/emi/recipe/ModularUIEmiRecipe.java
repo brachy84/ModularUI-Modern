@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Supplier;
 
-@ApiStatus.Experimental
 public abstract class ModularUIEmiRecipe implements EmiRecipe {
 
     private static final String SCREEN_NAME_PREFIX = "emi_recipe_";

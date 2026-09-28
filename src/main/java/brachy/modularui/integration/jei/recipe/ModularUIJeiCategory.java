@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-@ApiStatus.Experimental
 public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
 
     public static final String SCREEN_NAME_PREFIX = "jei_recipe_";
