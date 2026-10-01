@@ -6,7 +6,7 @@ import brachy.modularui.utils.Color;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class WidgetTheme {
 

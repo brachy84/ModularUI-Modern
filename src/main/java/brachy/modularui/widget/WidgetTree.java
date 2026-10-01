@@ -17,8 +17,8 @@ import net.minecraft.network.chat.Component;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -79,7 +79,7 @@ public class WidgetTree extends TreeUtil {
      * @return the first widget with matching name
      * @throws NoSuchElementException if no widget with the given name and type was found
      */
-    public static @NotNull IWidget findFirstWithName(IWidget parent, String name) {
+    public static @NonNull IWidget findFirstWithName(IWidget parent, String name) {
         IWidget w = findFirstWithNameNullable(parent, name);
         if (w == null) {
             throw new NoSuchElementException("Expected to find widget with name '" + name +
@@ -116,7 +116,7 @@ public class WidgetTree extends TreeUtil {
      * @return the first widget with matching name and class
      * @throws NoSuchElementException if no widget with the given name and type was found.
      */
-    public static <T extends IWidget> @NotNull T findFirstWithName(IWidget parent, String name, Class<T> type) {
+    public static <T extends IWidget> @NonNull T findFirstWithName(IWidget parent, String name, Class<T> type) {
         T w = findFirstWithNameNullable(parent, name, type);
         if (w == null) {
             throw new NoSuchElementException(
@@ -156,7 +156,7 @@ public class WidgetTree extends TreeUtil {
      * @throws IllegalArgumentException if the path is empty
      * @throws NoSuchElementException   if a single widget in the path could not be found
      */
-    public static @NotNull IWidget findChildAt(IWidget parent, String... path) {
+    public static @NonNull IWidget findChildAt(IWidget parent, String... path) {
         if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
         return InternalWidgetTree.findChildAt(parent, IWidget.class, path, 0, false);
     }
@@ -197,7 +197,7 @@ public class WidgetTree extends TreeUtil {
      * @throws ClassCastException       if a target widget was found, but the expected type doesn't match
      * @throws NoSuchElementException   if a single widget in the path could not be found
      */
-    public static <T extends IWidget> @NotNull T findChildAt(IWidget parent, Class<T> type, String... path) {
+    public static <T extends IWidget> @NonNull T findChildAt(IWidget parent, Class<T> type, String... path) {
         if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
         return InternalWidgetTree.findChildAt(parent, type, path, 0, false);
     }

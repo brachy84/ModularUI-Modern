@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -25,7 +24,6 @@ public interface Interactable {
      * {@link #onMouseTapped(int)} is only called if this returns {@link Result#ACCEPT} or
      * {@link Result#SUCCESS}
      */
-    @NotNull
     default Result onMousePressed(int button) {
         return Result.ACCEPT;
     }
@@ -50,7 +48,6 @@ public interface Interactable {
      * {@link Result#STOP STOP} and {@link Result#SUCCESS SUCCESS} will both stop other widgets
      * from getting tapped.
      */
-    @NotNull
     default Result onMouseTapped(int button) {
         return Result.IGNORE;
     }
@@ -65,7 +62,6 @@ public interface Interactable {
      * {@link #onKeyTapped(int, int, int)} is only called if this returns {@link Result#ACCEPT} or
      * {@link Result#SUCCESS}
      */
-    @NotNull
     default Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         return Result.IGNORE;
     }
@@ -93,7 +89,6 @@ public interface Interactable {
      * {@link Result#IGNORE} and {@link Result#ACCEPT} will both "ignore" the result and {@link Result#STOP} and
      * {@link Result#SUCCESS} will both stop other widgets from getting tapped.
      */
-    @NotNull
     default Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
         return Result.IGNORE;
     }
@@ -107,7 +102,6 @@ public interface Interactable {
      * {@link #onKeyTapped(int, int, int)} is only called if this returns {@link Result#ACCEPT} or
      * {@link Result#SUCCESS}
      */
-    @NotNull
     default Result onCharTyped(char codePoint, int modifiers) {
         return Result.IGNORE;
     }

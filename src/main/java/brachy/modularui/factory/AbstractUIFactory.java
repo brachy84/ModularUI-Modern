@@ -12,19 +12,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 public abstract class AbstractUIFactory<T extends GuiData> implements UIFactory<T> {
 
-    protected static ServerPlayer verifyServerSide(Player player) {
+    protected static ServerPlayer verifyServerSide(@Nullable Player player) {
         if (player == null) throw new NullPointerException("Can't open UI for null player!");
         if (player instanceof ServerPlayer serverPlayer) return serverPlayer;
         throw new IllegalArgumentException("Expected server player to open UI on server!");
     }
 
-    protected static LocalPlayer verifyClientSide(Player player) {
+    protected static LocalPlayer verifyClientSide(@Nullable Player player) {
         if (player == null) throw new NullPointerException("Can't open UI for null player!");
         if (player instanceof LocalPlayer localPlayer) return localPlayer;
         throw new IllegalArgumentException("Expected client player to open UI on client side!");
@@ -37,11 +37,10 @@ public abstract class AbstractUIFactory<T extends GuiData> implements UIFactory<
     }
 
     @Override
-    public final @NotNull ResourceLocation getFactoryName() {
+    public final ResourceLocation getFactoryName() {
         return this.name;
     }
 
-    @NotNull
     public abstract IUIHolder<T> getGuiHolder(T data);
 
     @Override
@@ -57,7 +56,7 @@ public abstract class AbstractUIFactory<T extends GuiData> implements UIFactory<
     }
 
     @SuppressWarnings("unchecked")
-    protected IUIHolder<T> castUIHolder(Object o) {
+    protected @Nullable IUIHolder<T> castUIHolder(@Nullable Object o) {
         if (!(o instanceof IUIHolder)) return null;
         try {
             return (IUIHolder<T>) o;

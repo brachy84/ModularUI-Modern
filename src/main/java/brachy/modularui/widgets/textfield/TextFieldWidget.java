@@ -19,7 +19,7 @@ import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -85,12 +85,12 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IStringValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.stringValue = syncOrValue.castNullable(IStringValue.class);
         if (syncOrValue instanceof ValueSyncHandler<?, ?> valueSyncHandler) {
@@ -120,7 +120,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
         }
     }
 
-    @NotNull
+    @NonNull
     public String getText() {
         if (this.handler.getText().isEmpty()) {
             return "";
@@ -131,7 +131,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
         return this.handler.getText().get(0);
     }
 
-    public void setText(@NotNull String text) {
+    public void setText(@NonNull String text) {
         if (this.handler.getText().isEmpty()) {
             this.handler.getText().add(text);
         } else {
@@ -303,7 +303,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     @Override
-    public @NotNull RichTooltip tooltip() {
+    public @NonNull RichTooltip tooltip() {
         tooltipOverride = true;
         return super.tooltip();
     }

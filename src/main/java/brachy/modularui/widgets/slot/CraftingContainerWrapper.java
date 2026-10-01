@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,24 +55,24 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     @Override
-    public @NotNull ItemStack getItem(int slot) {
+    public @NonNull ItemStack getItem(int slot) {
         if (slot < 0 || slot >= this.size) return ItemStack.EMPTY;
         return this.delegate.getStackInSlot(slot + this.startIndex);
     }
 
     @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
+    public void setItem(int slot, @NonNull ItemStack stack) {
         if (slot < 0 || slot >= this.size) return;
         this.setSlot(slot + this.startIndex, stack, true);
     }
 
-    public void setSlot(int slot, @NotNull ItemStack stack, boolean notify) {
+    public void setSlot(int slot, @NonNull ItemStack stack, boolean notify) {
         this.delegate.setStackInSlot(slot + this.startIndex, stack);
         if (notify) this.notifyContainer();
     }
 
     @Override
-    public @NotNull ItemStack removeItem(int slot, int amount) {
+    public @NonNull ItemStack removeItem(int slot, int amount) {
         if (slot < 0 || slot >= this.size || amount <= 0) return ItemStack.EMPTY;
 
         ItemStack stack = this.delegate.extractItem(slot + this.startIndex, amount, false);
@@ -84,7 +84,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+    public @NonNull ItemStack removeItemNoUpdate(int slot) {
         if (slot < 0 || slot >= this.size) return ItemStack.EMPTY;
 
         ItemStack stack = getItem(slot);
@@ -103,7 +103,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     @Override
-    public @NotNull List<ItemStack> getItems() {
+    public @NonNull List<ItemStack> getItems() {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < this.size; i++) {
             items.add(this.getItem(i));
@@ -112,7 +112,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     }
 
     @Override
-    public void fillStackedContents(@NotNull StackedContents contents) {
+    public void fillStackedContents(@NonNull StackedContents contents) {
         for (int i = 0; i < this.size; i++) {
             contents.accountStack(this.getItem(i));
         }

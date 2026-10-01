@@ -5,7 +5,7 @@ import brachy.modularui.api.widget.ResizeDragArea;
 
 import net.minecraft.client.Minecraft;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;

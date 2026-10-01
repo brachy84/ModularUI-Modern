@@ -4,8 +4,8 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class PagedWidget<W extends PagedWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public @Unmodifiable @NotNull List<IWidget> getChildren() {
+    public @Unmodifiable @NonNull List<IWidget> getChildren() {
         return this.pages;
     }
 

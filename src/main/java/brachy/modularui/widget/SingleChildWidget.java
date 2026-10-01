@@ -3,7 +3,7 @@ package brachy.modularui.widget;
 import brachy.modularui.api.widget.IWidget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +17,7 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
     private List<IWidget> list = Collections.emptyList();
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public @NonNull List<IWidget> getChildren() {
         return this.list;
     }
 

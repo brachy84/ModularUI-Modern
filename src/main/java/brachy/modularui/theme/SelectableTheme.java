@@ -6,7 +6,7 @@ import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class SelectableTheme extends WidgetTheme {
 

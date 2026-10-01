@@ -61,7 +61,7 @@ import net.minecraftforge.fml.common.Mod;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -81,10 +81,10 @@ public class ClientScreenHandler {
     private static final int DEFAULT_DEBUG_TEXT_COLOR = 0xFFAAAAAA;
     private static final int DEFAULT_DEBUG_OUTLINE_COLOR = 0xDCB42873;
 
-    private static ModularScreen currentScreen = null;
+    private static @Nullable ModularScreen currentScreen = null;
     @Getter
     private static long ticks = 0L;
-    private static IMuiScreen lastMui;
+    private static @Nullable IMuiScreen lastMui;
     private static final ObjectArrayList<IMuiScreen> muiStack = new ObjectArrayList<>(8);
 
     private static boolean debugToggleActive = false;
@@ -264,7 +264,7 @@ public class ClientScreenHandler {
         if (currentScreen != null) currentScreen.onFrameUpdate();
     }
 
-    private static void onGuiChanged(Screen oldScreen, Screen newScreen) {
+    private static void onGuiChanged(@Nullable Screen oldScreen, @Nullable Screen newScreen) {
         if (oldScreen == newScreen) return;
         defaultContext.reset();
         fpsCounter.reset();

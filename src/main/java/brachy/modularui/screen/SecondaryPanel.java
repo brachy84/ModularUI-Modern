@@ -11,6 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -20,8 +21,8 @@ public class SecondaryPanel implements IPanelHandler {
     private final ModularPanel<?> parent;
     private final IPanelBuilder provider;
     private final boolean subPanel;
-    private ModularScreen screen;
-    private ModularPanel<?> panel;
+    private @Nullable ModularScreen screen;
+    private @Nullable ModularPanel<?> panel;
     private boolean open = false;
     private boolean queueDelete = false;
 

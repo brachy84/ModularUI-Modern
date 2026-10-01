@@ -20,7 +20,7 @@ import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
@@ -75,7 +75,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public @NonNull List<IWidget> getChildren() {
         return Collections.emptyList();
     }
 
@@ -169,7 +169,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         Result result = super.onMousePressed(button);
         if (result != Result.IGNORE) {
             return Result.SUCCESS; // keep focused
@@ -219,7 +219,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public @NonNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (!isFocused()) {
             return Result.IGNORE;
         }
@@ -292,7 +292,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onCharTyped(char codePoint, int modifiers) {
+    public @NonNull Result onCharTyped(char codePoint, int modifiers) {
         if (!isFocused()) {
             return Result.IGNORE;
         }

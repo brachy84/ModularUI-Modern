@@ -9,8 +9,8 @@ import brachy.modularui.value.ShortValue;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -20,25 +20,25 @@ public class ShortSyncValue extends ValueSyncHandler<Short, ShortSyncValue> impl
     private final ShortValue.Supplier getter;
     private final ShortValue.Consumer setter;
 
-    public ShortSyncValue(@NotNull ShortValue.Supplier getter, @Nullable ShortValue.Consumer setter) {
+    public ShortSyncValue(ShortValue.@NonNull Supplier getter, ShortValue.@Nullable Consumer setter) {
         this.getter = Objects.requireNonNull(getter);
         this.setter = setter;
         this.cache = getter.getShort();
     }
 
-    public ShortSyncValue(@NotNull ShortValue.Supplier getter) {
+    public ShortSyncValue(ShortValue.@NonNull Supplier getter) {
         this(getter, (ShortValue.Consumer) null);
     }
 
     @Contract("null, null -> fail")
-    public ShortSyncValue(@Nullable ShortValue.Supplier clientGetter,
-                          @Nullable ShortValue.Supplier serverGetter) {
+    public ShortSyncValue(ShortValue.@Nullable Supplier clientGetter,
+                          ShortValue.@Nullable Supplier serverGetter) {
         this(clientGetter, null, serverGetter, null);
     }
 
     @Contract("null, _, null, _ -> fail")
-    public ShortSyncValue(@Nullable ShortValue.Supplier clientGetter, @Nullable ShortValue.Consumer clientSetter,
-                          @Nullable ShortValue.Supplier serverGetter, @Nullable ShortValue.Consumer serverSetter) {
+    public ShortSyncValue(ShortValue.@Nullable Supplier clientGetter, ShortValue.@Nullable Consumer clientSetter,
+                          ShortValue.@Nullable Supplier serverGetter, ShortValue.@Nullable Consumer serverSetter) {
         if (clientGetter == null && serverGetter == null) {
             throw new NullPointerException("Client or server getter must not be null!");
         }

@@ -6,6 +6,7 @@ import brachy.modularui.screen.ModularPanel;
 
 import it.unimi.dsi.fastutil.Hash;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class LocatedWidget extends LocatedElement<IWidget> {
 
     private static final GuiViewportStack STACK = new GuiViewportStack();
 
-    public static LocatedWidget of(IWidget widget) {
+    public static LocatedWidget of(@Nullable IWidget widget) {
         if (widget == null) {
             return EMPTY;
         }
@@ -48,9 +49,9 @@ public class LocatedWidget extends LocatedElement<IWidget> {
 
     public static final LocatedWidget EMPTY = new LocatedWidget(null, TransformationMatrix.EMPTY, null);
     @Getter
-    private final Object additionalHoverInfo;
+    private final @Nullable Object additionalHoverInfo;
 
-    public LocatedWidget(IWidget element, TransformationMatrix transformationMatrix, Object additionalHoverInfo) {
+    public LocatedWidget(@Nullable IWidget element, TransformationMatrix transformationMatrix, @Nullable Object additionalHoverInfo) {
         super(element, transformationMatrix);
         this.additionalHoverInfo = additionalHoverInfo;
     }

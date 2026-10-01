@@ -2,12 +2,14 @@ package brachy.modularui.api;
 
 import brachy.modularui.utils.ObjectList;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.function.Predicate;
 
 public interface ITreeNode<T extends ITreeNode<T>> {
 
-    T getParent();
+    @Nullable T getParent();
 
     default boolean hasParent() {
         return getParent() != null;

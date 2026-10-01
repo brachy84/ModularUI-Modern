@@ -11,7 +11,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -24,15 +25,15 @@ import java.util.function.Supplier;
 public class SchemaRenderer extends BaseSchemaRenderer {
 
     @Setter
-    protected DoubleSupplier scale;
+    protected @Nullable DoubleSupplier scale;
     @Setter
-    protected BooleanSupplier disableBER;
+    protected @Nullable BooleanSupplier disableBER;
     @Setter
-    protected Consumer<SchemaRenderer> afterRender;
+    protected @Nullable Consumer<SchemaRenderer> afterRender;
     @Setter
-    protected BiConsumer<Camera, ISchema> cameraFunc;
+    protected @Nullable BiConsumer<Camera, ISchema> cameraFunc;
     @Setter
-    protected Supplier<BlockHighlight> highlight;
+    protected @Nullable Supplier<BlockHighlight> highlight;
     @Setter
     protected boolean isometric = false;
     @Setter
@@ -78,7 +79,7 @@ public class SchemaRenderer extends BaseSchemaRenderer {
     }
 
     @Override
-    protected void onSuccessfulRayTrace(PoseStack poseStack, @NotNull BlockHitResult result) {
+    protected void onSuccessfulRayTrace(PoseStack poseStack, @NonNull BlockHitResult result) {
         if (this.highlight != null) {
             this.highlight.get().renderHighlight(poseStack, result, camera().pos());
         }

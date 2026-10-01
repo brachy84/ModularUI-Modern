@@ -25,8 +25,8 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +147,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         }
 
         @Override
-        public @NotNull List<Rect2i> getGuiExtraAreas(T screen) {
+        public @NonNull List<Rect2i> getGuiExtraAreas(T screen) {
             return screen.screen().getContext()
                     .getRecipeViewerSettings().getAllExclusionAreas()
                     .stream().map(Rectangle::asRect2i)
@@ -155,7 +155,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
         }
 
         @Override
-        public @NotNull Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T screen, double mouseX, double mouseY) {
+        public @NonNull Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T screen, double mouseX, double mouseY) {
             IWidget hovered = screen.screen().getContext().getTopHovered();
             if (hovered instanceof IngredientProvider<?> provider) {
                 var override = provider.ingredientOverride();

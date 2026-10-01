@@ -10,6 +10,7 @@ import brachy.modularui.widget.sizer.Box;
 import net.minecraft.client.gui.Font;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class KeyIcon implements IIcon {
 
     @Getter
     private final Text key;
-    private Font overrideFont;
+    private @Nullable Font overrideFont;
     private final Box margin = new Box();
     private boolean expandWidth, expandHeight;
 
@@ -30,7 +31,7 @@ public class KeyIcon implements IIcon {
     }
 
     public Font getFont() {
-        return this.overrideFont != null ? this.overrideFont : MCHelper.getFont();
+        return this.overrideFont != null ? this.overrideFont : Objects.requireNonNull(MCHelper.getFont());
     }
 
     @Override
@@ -62,7 +63,7 @@ public class KeyIcon implements IIcon {
     }
 
     @Override
-    public Box getMargin() {
+    public @Nullable Box getMargin() {
         return null;
     }
 

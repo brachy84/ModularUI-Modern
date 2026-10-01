@@ -13,7 +13,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 import net.minecraft.ChatFormatting;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -157,7 +157,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NonNull Result onMousePressed(int mouseButton) {
         if (!this.open) {
             forEachSiblingMenuButton(w -> {
                 w.closeMenu(false);

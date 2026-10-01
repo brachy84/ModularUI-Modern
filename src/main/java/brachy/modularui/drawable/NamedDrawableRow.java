@@ -8,16 +8,16 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 public class NamedDrawableRow implements IDrawable {
 
     @Getter
-    private Text name;
+    private @Nullable Text name;
     @Getter
-    private IIcon drawable;
+    private @Nullable IIcon drawable;
 
     public NamedDrawableRow() {
         this(null, null);
