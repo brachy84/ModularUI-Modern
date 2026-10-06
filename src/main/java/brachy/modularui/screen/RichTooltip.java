@@ -9,6 +9,7 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.drawable.text.TextRenderer;
+import brachy.modularui.integration.legendarytooltips.LegendaryTooltipsCompat;
 import brachy.modularui.screen.event.RichTooltipEvent;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.utils.Color;
@@ -168,6 +169,9 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines.vanillaElementHandler(), this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
         this.maxWidth = vanillaGatherEvent.getMaxWidth();
+        if (ModularUI.Mods.LEGENDARY_TOOLTIPS.isLoaded()) {
+            LegendaryTooltipsCompat.applyLayout(textLines, stack);
+        }
 
         // rich event to gather additional tooltip
         // this does not trigger vanilla event listeners
@@ -394,7 +398,13 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         if (lines.size() > 1) {
             spaceLine();
             for (int i = 1, n = lines.size(); i < n; i++) {
-                add(lines.get(i)).newLine();
+                Component line = lines.get(i);
+                // rich text skips empty text, but vanilla shows it as an empty line
+                if (line.getString().isBlank()) {
+                    emptyLine();
+                } else {
+                    add(line).newLine();
+                }
             }
         }
         return this;
