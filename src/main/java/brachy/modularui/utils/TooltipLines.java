@@ -1,9 +1,12 @@
 package brachy.modularui.utils;
 
 import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.TextLineTooltipComponent;
 import brachy.modularui.drawable.text.FontRenderHelper;
+import brachy.modularui.drawable.text.Spacer;
 import brachy.modularui.drawable.text.TextIcon;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -69,20 +72,30 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
                 continue;
             }
 
-            if (o instanceof IDrawable drawable && !(o instanceof TooltipComponent)) {
-                o = drawable.asIcon();
+            Either<Component, TooltipComponent> ownLine = null;
+            if (o instanceof ITextLine textLine) {
+                // an empty line is empty text in vanilla
+                ownLine = textLine == Spacer.LINE_SPACER ? Either.left(Text.EMPTY) :
+                        Either.right(new TextLineTooltipComponent(textLine));
+            } else {
+                if (o instanceof IDrawable drawable && !(o instanceof TooltipComponent)) {
+                    o = drawable.asIcon();
+                }
+                if (o instanceof TooltipComponent tc) {
+                    ownLine = Either.right(tc);
+                }
             }
-            if (o instanceof TooltipComponent tc) {
+            if (ownLine != null) {
                 Line line;
                 if (currentLine.isEmpty()) {
-                    // a line feed directly after a tooltip component belongs to its line
+                    // a line feed directly after an element on its own line belongs to its line
                     if (i + 1 < this.elements.size() && Text.LINE_FEED.equals(this.elements.get(i + 1))) {
                         currentLength++;
                     }
-                    line = new Line(tc, this.lastElementIndex, currentLength);
+                    line = new Line(ownLine, this.lastElementIndex, currentLength);
                     this.lastElementIndex += currentLength;
                 } else {
-                    // the tooltip component is not part of this line
+                    // the element is not part of this line
                     line = new Line(collapse(currentLine), this.lastElementIndex, currentLength - 1);
                     this.lastElementIndex += currentLength - 1;
                 }
@@ -111,14 +124,20 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     }
 
     /**
-     * @return true if a line feed must be inserted between two adjacent elements to keep them on separate lines
+     * @return true if a line feed must be inserted after this element to start a new line. Tooltip components need one
+     *         too, since the rich text renderer draws them inline.
      */
-    private static boolean needsLineFeed(Object prev, Object next) {
-        if (Text.LINE_FEED.equals(prev)) return false;
-        // text without a line feed would merge with the next line
-        if (asText(prev) != null || !(prev instanceof TooltipComponent || prev instanceof IDrawable)) return true;
-        // a line feed directly after a tooltip component belongs to its line
-        return Text.LINE_FEED.equals(next);
+    private static boolean needsLineFeed(Object prev) {
+        return !Text.LINE_FEED.equals(prev);
+    }
+
+    private static Object textToElement(Component text) {
+        // rich text skips blank text, but vanilla shows it as an empty line
+        return text.getString().isBlank() ? Spacer.LINE_SPACER : text;
+    }
+
+    private static Object tooltipComponentToElement(TooltipComponent component) {
+        return component instanceof TextLineTooltipComponent textLine ? textLine.line() : component;
     }
 
     @Override
@@ -145,7 +164,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         }
         int shift = -line.length;
         if (index > 0 && line.index < this.elements.size() &&
-                needsLineFeed(this.elements.get(line.index - 1), this.elements.get(line.index))) {
+                needsLineFeed(this.elements.get(line.index - 1))) {
             // the removed line separated the previous line from the next one
             this.elements.add(line.index, Text.LINE_FEED);
             this.lines.get(index - 1).length++;
@@ -163,9 +182,9 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     public void add(int index, Either<Component, TooltipComponent> s) {
         buildUntil(index);
         int elementIndex = index >= this.lines.size() ? this.lastElementIndex : this.lines.get(index).index;
-        Object element = s.map(c -> c, tc -> tc);
+        Object element = s.map(TooltipLines::textToElement, TooltipLines::tooltipComponentToElement);
         int inserted = 0;
-        if (index > 0 && needsLineFeed(this.elements.get(elementIndex - 1), element)) {
+        if (index > 0 && needsLineFeed(this.elements.get(elementIndex - 1))) {
             // the previous line has no line feed, so it would merge with this line
             this.elements.add(elementIndex++, Text.LINE_FEED);
             this.lines.get(index - 1).length++;

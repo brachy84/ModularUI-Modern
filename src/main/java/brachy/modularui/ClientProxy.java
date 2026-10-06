@@ -9,6 +9,7 @@ import brachy.modularui.drawable.GuiSpriteManager;
 import brachy.modularui.drawable.HoverableIcon;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.InteractableIcon;
+import brachy.modularui.drawable.TextLineTooltipComponent;
 import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.TextIcon;
@@ -88,6 +89,7 @@ public class ClientProxy extends CommonProxy {
         event.register(TextIcon.class, factory);
         event.register(ClientTooltipComponentIcon.class, ClientTooltipComponentIcon::getClientTooltipComponent);
         event.register(TooltipComponentIcon.class, TooltipComponentIcon::clientComponent);
+        event.register(TextLineTooltipComponent.class, c -> c);
     }
 
     private void onRegisterAssetReloadListeners(RegisterClientReloadListenersEvent event) {

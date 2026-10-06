@@ -180,6 +180,7 @@ public class ModularUI {
         JEI(ModIds.JEI),
         REI(ModIds.REI),
         KUBEJS(ModIds.KUBEJS),
+        LEGENDARY_TOOLTIPS(ModIds.LEGENDARY_TOOLTIPS),
         //MODNAMETOOLTIP(ModIds.MODNAMETOOLTIP)
         //NEA(ModIds.NEA),
         EMBEDDIUM(ModIds.EMBEDDIUM),
@@ -234,6 +235,7 @@ public class ModularUI {
         public static final String JEI = "jei";
         public static final String REI = "roughlyenoughitems";
         public static final String KUBEJS = "kubejs";
+        public static final String LEGENDARY_TOOLTIPS = "legendarytooltips";
         public static final String MODNAMETOOLTIP = "modnametooltip";
         public static final String NEA = "neverenoughanimations";
         public static final String IRIS = "iris";
