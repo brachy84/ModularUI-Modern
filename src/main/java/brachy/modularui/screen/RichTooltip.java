@@ -12,6 +12,7 @@ import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.event.RichTooltipEvent;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.utils.Color;
+import brachy.modularui.utils.FormattedTextTooltipLines;
 import brachy.modularui.utils.Rectangle;
 import brachy.modularui.utils.TooltipLines;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
@@ -165,10 +166,9 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         // vanilla event to gather additional tooltip
         TooltipLines textLines = copy.getAsText();
-        // convert the List<Either<Component, TooltipComponent>> to the type vanilla wants. Technically it's already valid,
-        //  but some mods (looking at you REI) want Components that they do nothing with except downcast them into FormattedText anyway.
-        @SuppressWarnings("unchecked")
-        List<Either<FormattedText, TooltipComponent>> tooltipElements = (List<Either<FormattedText, TooltipComponent>>) (List<?>) textLines;
+        // wrap the List<Either<Component, TooltipComponent>> in the type vanilla wants. Listeners may add any FormattedText,
+        //  which the wrapper converts into Components.
+        List<Either<FormattedText, TooltipComponent>> tooltipElements = new FormattedTextTooltipLines(textLines);
         // noinspection UnstableApiUsage
         var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, tooltipElements, this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;

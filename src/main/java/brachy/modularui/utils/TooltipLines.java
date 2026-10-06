@@ -152,7 +152,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     public Either<Component, TooltipComponent> set(int index, Either<Component, TooltipComponent> element) {
         Line line = lines.get(index);
         if (line.length == 1) {
-            this.elements.set(line.index, element);
+            this.elements.set(line.index, element.map(c -> c, tc -> tc));
             this.lines.set(index, new Line(element, line.index, line.length));
         } else {
             remove(index);
