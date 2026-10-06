@@ -133,11 +133,8 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         for (int i = index + 1; i < this.lines.size(); i++) {
             lines.get(i).index++;
         }
-        s.ifLeft(ft -> {
-            this.elements.add(elementIndex, ft);
-            this.lastElementIndex++;
-        });
-        // TODO support tooltip component
+        this.elements.add(elementIndex, s.map(c -> c, tc -> tc));
+        this.lastElementIndex++;
     }
 
     public void add(int index, Component s) {
