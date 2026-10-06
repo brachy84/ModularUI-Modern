@@ -13,6 +13,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import com.mojang.datafixers.util.Either;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -55,21 +56,15 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
             if (Text.LINE_FEED.equals(o)) {
                 if (currentLength == 1 && i > 0 && !Text.LINE_FEED.equals(this.elements.get(i - 1))) {
                     this.lastElementIndex++;
+                    currentLength = 0;
                     continue;
                 }
                 Line line = new Line(collapse(currentLine), this.lastElementIndex, currentLength);
                 this.lastElementIndex = i + 1;
                 return line;
             }
-            Component c = null;
-            if (o instanceof Component txt) {
-                c = txt;
-            } else if (o instanceof String str) {
-                c = Component.literal(str);
-            } else if (o instanceof TextIcon ti) {
-                c = ti.getText();
-            }
-            if (c != null && !FontRenderHelper.isEmpty(c)) {
+            Component c = asText(o);
+            if (c != null) {
                 currentLine.add(c);
                 continue;
             }
@@ -80,10 +75,15 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
             if (o instanceof TooltipComponent tc) {
                 Line line;
                 if (currentLine.isEmpty()) {
+                    // a line feed directly after a tooltip component belongs to its line
+                    if (i + 1 < this.elements.size() && Text.LINE_FEED.equals(this.elements.get(i + 1))) {
+                        currentLength++;
+                    }
                     line = new Line(tc, this.lastElementIndex, currentLength);
                     this.lastElementIndex += currentLength;
                 } else {
-                    line = new Line(collapse(currentLine), this.lastElementIndex, currentLength);
+                    // the tooltip component is not part of this line
+                    line = new Line(collapse(currentLine), this.lastElementIndex, currentLength - 1);
                     this.lastElementIndex += currentLength - 1;
                 }
                 return line;
@@ -95,6 +95,30 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
             return line;
         }
         return null;
+    }
+
+    @Nullable
+    private static Component asText(Object o) {
+        Component c = null;
+        if (o instanceof Component txt) {
+            c = txt;
+        } else if (o instanceof String str) {
+            c = Component.literal(str);
+        } else if (o instanceof TextIcon ti) {
+            c = ti.getText();
+        }
+        return c != null && !FontRenderHelper.isEmpty(c) ? c : null;
+    }
+
+    /**
+     * @return true if a line feed must be inserted between two adjacent elements to keep them on separate lines
+     */
+    private static boolean needsLineFeed(Object prev, Object next) {
+        if (Text.LINE_FEED.equals(prev)) return false;
+        // text without a line feed would merge with the next line
+        if (asText(prev) != null || !(prev instanceof TooltipComponent || prev instanceof IDrawable)) return true;
+        // a line feed directly after a tooltip component belongs to its line
+        return Text.LINE_FEED.equals(next);
     }
 
     @Override
@@ -119,10 +143,18 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         } else {
             this.elements.subList(line.index, line.index + line.length).clear();
         }
-        for (int i = index; i < lines.size(); i++) {
-            lines.get(i).index -= line.length;
+        int shift = -line.length;
+        if (index > 0 && line.index < this.elements.size() &&
+                needsLineFeed(this.elements.get(line.index - 1), this.elements.get(line.index))) {
+            // the removed line separated the previous line from the next one
+            this.elements.add(line.index, Text.LINE_FEED);
+            this.lines.get(index - 1).length++;
+            shift++;
         }
-        this.lastElementIndex -= line.length;
+        for (int i = index; i < lines.size(); i++) {
+            lines.get(i).index += shift;
+        }
+        this.lastElementIndex += shift;
 
         return line.text;
     }
@@ -131,25 +163,36 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     public void add(int index, Either<Component, TooltipComponent> s) {
         buildUntil(index);
         int elementIndex = index >= this.lines.size() ? this.lastElementIndex : this.lines.get(index).index;
-        lines.add(index, new Line(s, elementIndex, 1));
-        for (int i = index + 1; i < this.lines.size(); i++) {
-            lines.get(i).index++;
+        Object element = s.map(c -> c, tc -> tc);
+        int inserted = 0;
+        if (index > 0 && needsLineFeed(this.elements.get(elementIndex - 1), element)) {
+            // the previous line has no line feed, so it would merge with this line
+            this.elements.add(elementIndex++, Text.LINE_FEED);
+            this.lines.get(index - 1).length++;
+            inserted++;
         }
-        this.elements.add(elementIndex, s.map(c -> c, tc -> tc));
-        this.lastElementIndex++;
+        boolean hasNext = elementIndex < this.elements.size();
+        this.elements.add(elementIndex, element);
+        int length = 1;
+        if (hasNext) {
+            // separate this line from the next one
+            this.elements.add(elementIndex + 1, Text.LINE_FEED);
+            length++;
+        }
+        lines.add(index, new Line(s, elementIndex, length));
+        inserted += length;
+        for (int i = index + 1; i < this.lines.size(); i++) {
+            lines.get(i).index += inserted;
+        }
+        this.lastElementIndex += inserted;
     }
 
     @Override
     public Either<Component, TooltipComponent> set(int index, Either<Component, TooltipComponent> element) {
-        Line line = lines.get(index);
-        if (line.length == 1) {
-            this.elements.set(line.index, element.map(c -> c, tc -> tc));
-            this.lines.set(index, new Line(element, line.index, line.length));
-        } else {
-            remove(index);
-            add(index, element);
-        }
-        return line.text;
+        // remove and add take care of the line feeds between lines
+        Either<Component, TooltipComponent> old = remove(index);
+        add(index, element);
+        return old;
     }
 
     @Override
@@ -247,7 +290,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     private static class Line {
 
         private final Either<Component, TooltipComponent> text;
-        private final int length;
+        private int length;
         private int index;
 
         private Line(Either<Component, TooltipComponent> text, int index, int length) {

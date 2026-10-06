@@ -7,6 +7,7 @@ import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.DelegateIcon;
 import brachy.modularui.drawable.Icon;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.screen.viewport.GuiContext;
 
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.FormattedCharSink;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -82,6 +84,8 @@ public class RichTextCompiler {
                     continue;
                 }
                 text = key.getFormatted();
+            } else if (o instanceof TooltipComponent tc && !(o instanceof IDrawable)) {
+                o = new TooltipComponentIcon(tc);
             } else if (!(o instanceof IDrawable)) {
                 text = Component.literal(o.toString());
             }
