@@ -209,10 +209,14 @@ public class BaseSchemaRenderer implements IDrawable {
         context.getGraphics().flush();
         context.graphicsPose().pushPose();
 
-        Area area = context.getScreenArea();
-        int transformX = context.transformX(x, y) + area.x();
-        int transformY = context.transformY(x, y) + area.y();
-        this.viewport.calculateOpenGLViewportFromRectangle(transformX, transformY, width, height);
+        Matrix4f pose = context.getLastGraphicsPose();
+        Vector3f min = pose.transformPosition(x, y, 0, new Vector3f());
+        Vector3f max = pose.transformPosition(x + width, y + height, 0, new Vector3f());
+        int vx = Mth.floor(Math.min(min.x, max.x));
+        int vy = Mth.floor(Math.min(min.y, max.y));
+        int vw = Mth.ceil(Math.abs(max.x - min.x));
+        int vh = Mth.ceil(Math.abs(max.y - min.y));
+        this.viewport.calculateOpenGLViewportFromRectangle(vx, vy, vw, vh);
         this.viewport.applyViewport();
 
         onSetupCamera();
