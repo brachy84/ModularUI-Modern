@@ -154,7 +154,7 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
         c = Math.min(c, getSlot().getMaxStackSize(stack));
         if (oldAmount != c) {
             stack = stack.copy();
-            stack.setCount(amount);
+            stack.setCount(c);
             getSlot().set(stack);
         }
     }
