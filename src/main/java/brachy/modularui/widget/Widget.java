@@ -180,10 +180,6 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             }
         }
 
-        if (this.value != null && this.syncKey != null) {
-            throw new IllegalStateException(
-                    "Widget has a value and a sync key for a synced value. This is not allowed!");
-        }
         if (!getScreen().isClientOnly()) {
             initialiseSyncHandler(getScreen().getSyncManager(), late);
         }
