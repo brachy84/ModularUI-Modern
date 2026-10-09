@@ -109,6 +109,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
      */
     @Nullable
     private SyncHandler<?> syncHandler;
+    private boolean syncOrValueSet;
     // rendering
     @Getter
     private boolean disableThemeBackground = false;
@@ -180,7 +181,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             }
         }
 
-        if (this.value != null && this.syncKey != null) {
+        if (this.syncOrValueSet && this.syncKey != null) {
             throw new IllegalStateException(
                     "Widget has a value and a sync key for a synced value. This is not allowed!");
         }
@@ -205,7 +206,10 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
                 handler = syncManager.getMainPSM().getSyncHandlerFromMapKey(this.syncKey);
             }
         }
-        if (handler != null) setSyncOrValue(handler);
+        if (handler != null) {
+            setSyncOrValue(handler);
+            this.syncOrValueSet = this.syncKey != null;
+        }
         if (this.syncHandler instanceof ValueSyncHandler<?, ?> valueSyncHandler &&
                 valueSyncHandler.getChangeListener() == null) {
             valueSyncHandler.setChangeListener(this::markTooltipDirty);
@@ -863,6 +867,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         checkValidSyncOrValue(syncOrValue);
         if (syncOrValue instanceof SyncHandler<?> syncHandler) this.syncHandler = syncHandler;
         if (syncOrValue instanceof IValue<?> value) this.value = value;
+        this.syncOrValueSet |= this.syncHandler == syncOrValue || this.value == syncOrValue;
     }
 
     // -------------
