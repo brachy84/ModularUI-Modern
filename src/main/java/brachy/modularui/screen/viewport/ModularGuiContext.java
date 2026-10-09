@@ -4,16 +4,16 @@ import brachy.modularui.api.ITheme;
 import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.RecipeViewerSettings;
 import brachy.modularui.api.UIType;
+import brachy.modularui.api.widget.IDragHandle;
 import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IVanillaSlot;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.ResizeDragArea;
-import brachy.modularui.utils.CursorHandler;
-import brachy.modularui.screen.DraggablePanelWrapper;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
+import brachy.modularui.utils.CursorHandler;
 
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -260,7 +260,7 @@ public class ModularGuiContext extends GuiContext {
     @ApiStatus.Internal
     public boolean onMousePressed(int button) {
         if ((button == 0 || button == 1) && isMouseItemEmpty() && hasDraggable()) {
-            dropDraggable(true);
+            dropDraggable(false);
             return true;
         }
         return false;
@@ -280,10 +280,11 @@ public class ModularGuiContext extends GuiContext {
     @ApiStatus.Internal
     public void dropDraggable(boolean shouldCancel) {
         this.draggable.applyMatrix(this);
-        this.draggable.getElement()
-                .onDragEnd(!shouldCancel &&
-                        this.draggable.getElement().canDropHere(getAbsMouseX(), getAbsMouseY(), getTopHovered()));
-        // TODO: getTopHovered correct here?
+        if (shouldCancel) {
+            this.draggable.getElement().onDragCancel(this);
+        } else {
+            this.draggable.getElement().onDragEnd(this);
+        }
         this.draggable.getElement().setMoving(false);
         this.draggable.unapplyMatrix(this);
         this.draggable = null;
@@ -296,22 +297,14 @@ public class ModularGuiContext extends GuiContext {
         if ((button == 0 || button == 1) && isMouseItemEmpty() && !hasDraggable()) {
             IWidget widget = hovered.getElement();
             LocatedElement<IDraggable> draggable;
-            if (widget instanceof IDraggable iDraggable) {
-                draggable = new LocatedElement<>(iDraggable, hovered.getTransformationMatrix());
-            } else if (widget instanceof ModularPanel<?> panel) {
-                if (panel.isDraggable()) {
-                    if (!panel.resizer().hasFixedSize()) {
-                        throw new IllegalStateException(
-                                "Panel must have a fixed size. It can't specify left AND right or top AND bottom!");
-                    }
-                    draggable = new LocatedElement<>(new DraggablePanelWrapper(panel), TransformationMatrix.EMPTY);
-                } else {
-                    return false;
-                }
+            if (widget instanceof IDragHandle dragHandle) {
+                var d = dragHandle.createDraggable(this, button);
+                if (d == null) return false;
+                draggable = new LocatedElement<>(d, hovered.getTransformationMatrix());
             } else {
                 return false;
             }
-            if (draggable.getElement().onDragStart(button)) {
+            if (draggable.getElement().onDragStart(this, button)) {
                 draggable.getElement().setMoving(true);
                 this.draggable = draggable;
                 this.dragStartX = getAbsMouseX();
@@ -328,7 +321,7 @@ public class ModularGuiContext extends GuiContext {
     public void drawDraggable(GuiGraphics graphics) {
         if (hasDraggable()) {
             this.draggable.applyMatrix(this);
-            this.draggable.getElement().drawMovingState(graphics, this, getRenderPartialTicks());
+            this.draggable.getElement().drawMovingState(this, getRenderPartialTicks());
             this.draggable.unapplyMatrix(this);
         }
     }
@@ -349,7 +342,7 @@ public class ModularGuiContext extends GuiContext {
             this.lastDragX = getAbsMouseX();
             this.lastDragY = getAbsMouseY();
             this.draggable.applyMatrix(this);
-            this.draggable.getElement().onDrag(this.lastButton, this.lastClickTime);
+            this.draggable.getElement().onDrag(this, this.lastButton, this.lastClickTime);
             this.draggable.unapplyMatrix(this);
         }
         List<LocatedWidget> newBelowMouse = this.screen.getPanelManager().getAllHoveredWidgetsList(false);

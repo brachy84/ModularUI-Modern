@@ -1,6 +1,8 @@
 package brachy.modularui.api.drawable;
 
 import brachy.modularui.ModularUI;
+import brachy.modularui.drawable.DrawableType;
+import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.text.DynamicComponent;
 import brachy.modularui.drawable.text.KeyIcon;
 import brachy.modularui.drawable.text.ModularComponent;
@@ -242,7 +244,7 @@ public interface Text extends IDrawable {
     }
 
     @Override
-    default String getTypeName() {
-        return "text";
+    default DrawableType<ModularComponent> getType() {
+        return DrawableType.TEXT;
     }
 }

@@ -1,4 +1,4 @@
-package brachy.modularui.widget;
+package brachy.modularui.widgets.draggable;
 
 import brachy.modularui.api.layout.IViewport;
 import brachy.modularui.api.layout.IViewportStack;
@@ -8,13 +8,12 @@ import brachy.modularui.screen.DraggablePanelWrapper;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.HoveredWidgetList;
+import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
-
-import net.minecraft.client.gui.GuiGraphics;
 
 import org.jetbrains.annotations.Nullable;
 
-public class DragHandle extends Widget<DragHandle> implements IDraggable, IViewport {
+public class ProxyDraggable extends Widget<ProxyDraggable> implements IDraggable, IViewport {
 
     private IDraggable parentDraggable;
 
@@ -28,40 +27,35 @@ public class DragHandle extends Widget<DragHandle> implements IDraggable, IViewp
             }
             parent = parent.getParent();
         }
-        if (((ModularPanel) parent).isDraggable()) {
-            this.parentDraggable = new DraggablePanelWrapper((ModularPanel) parent);
+        if (((ModularPanel<?>) parent).isDraggable()) {
+            this.parentDraggable = new DraggablePanelWrapper((ModularPanel<?>) parent);
         }
     }
 
     @Override
-    public void drawMovingState(GuiGraphics graphics, ModularGuiContext context, float partialTicks) {
+    public void drawMovingState(ModularGuiContext context, float partialTicks) {
         if (this.parentDraggable != null) {
-            this.parentDraggable.drawMovingState(graphics, context, partialTicks);
+            this.parentDraggable.drawMovingState(context, partialTicks);
         }
     }
 
     @Override
-    public boolean onDragStart(int button) {
-        return this.parentDraggable != null && this.parentDraggable.onDragStart(button);
+    public boolean onDragStart(ModularGuiContext context, int button) {
+        return this.parentDraggable != null && this.parentDraggable.onDragStart(context, button);
     }
 
     @Override
-    public void onDragEnd(boolean successful) {
+    public void onDragEnd(ModularGuiContext context) {
         if (this.parentDraggable != null) {
-            this.parentDraggable.onDragEnd(successful);
+            this.parentDraggable.onDragEnd(context);
         }
     }
 
     @Override
-    public void onDrag(int mouseButton, double timeSinceLastClick) {
+    public void onDrag(ModularGuiContext context, int mouseButton, double timeSinceLastClick) {
         if (this.parentDraggable != null) {
-            this.parentDraggable.onDrag(mouseButton, timeSinceLastClick);
+            this.parentDraggable.onDrag(context, mouseButton, timeSinceLastClick);
         }
-    }
-
-    @Override
-    public boolean canDropHere(int x, int y, @Nullable IWidget widget) {
-        return this.parentDraggable != null && this.parentDraggable.canDropHere(x, y, widget);
     }
 
     @Override

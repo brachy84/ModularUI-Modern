@@ -22,6 +22,7 @@ import brachy.modularui.theme.SelectableTheme;
 import brachy.modularui.theme.ThemeBuilder;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Color;
+import brachy.modularui.widget.WidgetSerializer;
 import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widgets.layout.Flow;
 
@@ -140,15 +141,6 @@ public class TestHandler {
             if (event.getScreen() instanceof AbstractContainerScreen<?> gui) {
                 event.addOverlay(getContainerOverlayTest(gui));
             }
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onBuildPanel(BuildPanelEvent.MainPanel event) {
-        if (event.matches(ModularUI.MOD_ID, "test_tile")) {
-            Flow flow = WidgetTree.findChildAt(event.getOpeningPanel(), Flow.class, "main_col", "paged", "dynamic_sync_page", "dynamic widgets");
-            flow.addChild(Text.str("Added from Event").asWidget(), 0);
         }
     }
 

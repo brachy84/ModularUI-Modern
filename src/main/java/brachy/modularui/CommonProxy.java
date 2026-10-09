@@ -1,20 +1,15 @@
 package brachy.modularui;
 
-import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.UIFactories;
 import brachy.modularui.factory.inventory.InventoryTypes;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.network.NetworkHandler;
 import brachy.modularui.screen.ModularContainerMenu;
 import brachy.modularui.test.TestRegistration;
-import brachy.modularui.theme.ThemeManager;
+import brachy.modularui.widget.WidgetSerializer;
 
-import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
-import com.mojang.brigadier.Command;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,7 +27,6 @@ public class CommonProxy {
         modBus.addListener(this::onInit);
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(this::onRegisterDataReloadListener);
-        forgeBus.addListener(this::onRegisterCommand);
         forgeBus.addListener(this::onTick);
         forgeBus.addListener(this::onPlayerLeave);
 
@@ -67,17 +61,6 @@ public class CommonProxy {
 
     private void onRegisterDataReloadListener(AddReloadListenerEvent event) {
         ModularUI.updateFrozenRegistry(event.getRegistryAccess());
-    }
-
-    private void onRegisterCommand(RegisterCommandsEvent event) {
-        var command = Commands.literal("mui")
-                .then(Commands.literal("reload_themes")
-                        .executes(ctx -> {
-                            ThemeManager.reload();
-                            // TODO translations for this
-                            ctx.getSource().sendSuccess(() -> Component.literal("ModularUI Themes reloaded").withStyle(Text.GREEN), true);
-                            return Command.SINGLE_SUCCESS;
-                        }));
-        event.getDispatcher().register(command);
+        event.addListener(WidgetSerializer.ReloadDataListener.INSTANCE);
     }
 }

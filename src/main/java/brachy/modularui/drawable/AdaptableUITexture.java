@@ -55,6 +55,8 @@ public class AdaptableUITexture extends UITexture {
             super.draw(context, x, y, width, height);
             return;
         }
+        context.getGraphics().flush();
+        RenderSystem.disableDepthTest();
         if (this.tiled) {
             drawTiled(context, x, y, width, height);
         } else {

@@ -25,7 +25,7 @@ import org.joml.Matrix4f;
 @Accessors(fluent = true, chain = true)
 public class Rectangle implements IDrawable, IAnimatable<Rectangle> {
 
-    public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.drawableBuilder(Rectangle::new)
+    public static final MutableObjectCodec<Rectangle> CODEC = MutableObjectCodec.builder(Rectangle::new)
             .addOpt("colorTopLeft", Rectangle::colorTL, Rectangle::colorTL, Color.CODEC, Color.WHITE.main)
             .alias("colorTL", "colorLeft", "colorTop", "color")
             .addOpt("colorTopRight", Rectangle::colorTR, Rectangle::colorTR, Color.CODEC, Color.WHITE.main)
@@ -169,8 +169,8 @@ public class Rectangle implements IDrawable, IAnimatable<Rectangle> {
     }
 
     @Override
-    public String getTypeName() {
-        return "rectangle";
+    public DrawableType<Rectangle> getType() {
+        return DrawableType.RECTANGLE;
     }
 
     @Override

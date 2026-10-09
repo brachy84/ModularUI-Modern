@@ -1,4 +1,4 @@
-package brachy.modularui.utils.serialization.codec;
+package brachy.modularui.api.codec;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;

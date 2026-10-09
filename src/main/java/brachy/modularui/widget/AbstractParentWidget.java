@@ -1,5 +1,6 @@
 package brachy.modularui.widget;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.ModularPanel;
@@ -20,7 +21,7 @@ import java.util.function.UnaryOperator;
  *            added.
  * @param <W> type of this widget
  */
-public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWidget<I, W>> extends Widget<W> {
+public abstract class AbstractParentWidget<I extends IWidget, W extends AbstractParentWidget<I, W>> extends Widget<W> {
 
     private final List<I> children = new ArrayList<>();
 
@@ -51,12 +52,15 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
      */
     @UnmodifiableView
     public List<I> getTypeChildren() {
-        return children;
+        return this.children;
     }
 
     @Override
     public void visitTransformChildren(UnaryOperator<IWidget> op) {
-        visitTransformTypedChildren(child -> (I) op.apply(child));
+        visitTransformTypedChildren(child -> {
+            IWidget w = op.apply(child);
+            return canCastToType(w) ? castToType(w) : child;
+        });
     }
 
     public void visitTransformTypedChildren(UnaryOperator<I> op) {
@@ -64,10 +68,7 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
         for (int i = 0; i < children.size(); i++) {
             I current = children.get(i);
             I transformed = op.apply(children.get(i));
-            if (transformed != current) {
-                remove(i);
-                addChild(transformed, i);
-            }
+            replace(i, current, transformed);
         }
     }
 
@@ -93,6 +94,17 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
         return !canHover();
     }
 
+    protected boolean addChildRaw(IWidget child, int index, boolean silent) {
+        if (canCastToType(child)) return addChild(castToType(child), index);
+        if (!silent) ModularUI.LOGGER.error("Can't add child of type {} to {}", child.getClass().getSimpleName(), this);
+        return false;
+    }
+
+    private int wrapIndex(int i) {
+        if (i < 0) i += getChildren().size();
+        return i;
+    }
+
     protected boolean addChild(I child, int index) {
         if (child == null || child == this || getChildren().contains(child)) {
             return false;
@@ -104,15 +116,17 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
         if (!isChildValid(child)) {
             throw new IllegalArgumentException("Child '" + child + "' is not valid for parent '" + this + "'!");
         }
-        if (index < 0) {
-            index += getChildren().size() + 1;
-        }
+        if (index < 0) index += getChildren().size() + 1;
         this.children.add(index, child);
         if (isValid()) {
             child.initialise(this, true);
         }
         onChildAdd(child);
         return true;
+    }
+
+    protected boolean removeRaw(IWidget child) {
+        return canCastToType(child) && remove(castToType(child));
     }
 
     protected boolean remove(I child) {
@@ -127,9 +141,7 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
     }
 
     protected boolean remove(int index) {
-        if (index < 0) {
-            index = getChildren().size() + index + 1;
-        }
+        index = wrapIndex(index);
         I child = this.children.remove(index);
         if (isValid()) {
             child.dispose();
@@ -138,8 +150,34 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
         return true;
     }
 
+    protected boolean replaceRaw(IWidget target, IWidget replacement) {
+        return canCastToType(replacement) && replace(target, castToType(replacement));
+    }
+
+    protected boolean replace(IWidget target, I replacement) {
+        for (int i = 0; i < this.children.size(); i++) {
+            I current = this.children.get(i);
+            if (target == current) {
+                return replace(i, current, replacement);
+            }
+        }
+        return false;
+    }
+
+    protected boolean replace(int index, I replacement) {
+        return replace(index, this.children.get(wrapIndex(index)), replacement);
+    }
+
+    private boolean replace(int index, I current, I replacement) {
+        if (current == replacement) return true;
+        if (!isChildValid(replacement)) return false;
+        remove(index);
+        addChild(replacement, index);
+        return true;
+    }
+
     protected boolean removeAll() {
-        if (this.children.isEmpty()) return false;
+        if (this.children.isEmpty()) return true;
         for (I i : this.children) {
             if (isValid()) i.dispose();
             onChildRemove(i);
@@ -148,11 +186,38 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
         return true;
     }
 
+    protected boolean isChildValidRaw(IWidget child) {
+        return canCastToType(child) && isChildValid(castToType(child));
+    }
+
     protected boolean isChildValid(I child) {
         return true;
     }
 
+    protected final boolean canCastToType(IWidget widget) {
+        return widget == null || castToType(widget) != null;
+    }
+
+    protected abstract I castToType(IWidget widget);
+
     protected void onChildAdd(I child) {}
 
     protected void onChildRemove(I child) {}
+
+    @Override
+    public boolean applyModification(WidgetModification modification, IWidget childTarget) {
+        if (modification.isAdd()) {
+            addChildRaw(modification.widget().copy(), modification.index(), false);
+            return true;
+        }
+        if (modification.isRemove()) {
+            removeRaw(childTarget);
+            return true;
+        }
+        if (modification.isReplace()) {
+            replaceRaw(childTarget, modification.widget().copy());
+            return true;
+        }
+        return false;
+    }
 }

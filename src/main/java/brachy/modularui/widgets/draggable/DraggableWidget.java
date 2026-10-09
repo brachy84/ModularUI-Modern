@@ -1,13 +1,13 @@
-package brachy.modularui.widget;
+package brachy.modularui.widgets.draggable;
 
 import brachy.modularui.api.layout.IViewport;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IDraggable;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.HoveredWidgetList;
+import brachy.modularui.widget.Widget;
+import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
-
-import net.minecraft.client.gui.GuiGraphics;
 
 import lombok.Getter;
 
@@ -29,12 +29,12 @@ public class DraggableWidget<W extends DraggableWidget<W>> extends Widget<W> imp
     }
 
     @Override
-    public void drawMovingState(GuiGraphics graphics, ModularGuiContext context, float partialTicks) {
+    public void drawMovingState(ModularGuiContext context, float partialTicks) {
         WidgetTree.drawTree(this, context, true, true);
     }
 
     @Override
-    public boolean onDragStart(int mouseButton) {
+    public boolean onDragStart(ModularGuiContext context, int mouseButton) {
         if (mouseButton == 0) {
             this.realX = getContext().transformX(0, 0) - getParentArea().x;
             this.realY = getContext().transformY(0, 0) - getParentArea().y;
@@ -48,18 +48,16 @@ public class DraggableWidget<W extends DraggableWidget<W>> extends Widget<W> imp
     }
 
     @Override
-    public void onDragEnd(boolean successful) {
-        if (successful) {
-            resizer().top(getContext().getAbsMouseY() - this.relativeClickY)
-                    .left(getContext().getAbsMouseX() - this.relativeClickX);
-            this.movingArea.x = getArea().x;
-            this.movingArea.y = getArea().y;
-            scheduleResize();
-        }
+    public void onDragEnd(ModularGuiContext context) {
+        resizer().top(getContext().getAbsMouseY() - this.relativeClickY)
+                .left(getContext().getAbsMouseX() - this.relativeClickX);
+        this.movingArea.x = getArea().x;
+        this.movingArea.y = getArea().y;
+        scheduleResize();
     }
 
     @Override
-    public void onDrag(int mouseButton, double timeSinceLastClick) {
+    public void onDrag(ModularGuiContext context, int mouseButton, double timeSinceLastClick) {
         this.movingArea.x = getContext().getAbsMouseX() - this.relativeClickX;
         this.movingArea.y = getContext().getAbsMouseY() - this.relativeClickY;
     }

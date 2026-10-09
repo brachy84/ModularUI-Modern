@@ -4,6 +4,8 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.drawable.HoverableIcon;
 import brachy.modularui.drawable.InteractableIcon;
 import brachy.modularui.drawable.text.RichText;
+import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.widget.sizer.Box;
 
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -77,5 +79,29 @@ public interface IIcon extends IDrawable, TooltipComponent {
         return new InteractableIcon(this);
     }
 
-    IIcon EMPTY_2PX = EMPTY.asIcon().height(2);
+    IIcon EMPTY = new IIcon() {
+        @Override
+        public IDrawable getWrappedDrawable() {
+            return IDrawable.EMPTY;
+        }
+
+        @Override
+        public int getWidth() {
+            return 0;
+        }
+
+        @Override
+        public int getHeight() {
+            return 0;
+        }
+
+        @Override
+        public Box getMargin() {
+            return Box.ZERO;
+        }
+
+        @Override
+        public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {}
+    };
+    IIcon EMPTY_2PX = IDrawable.EMPTY.asIcon().height(2);
 }
