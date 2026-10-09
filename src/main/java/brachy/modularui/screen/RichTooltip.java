@@ -23,15 +23,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -165,12 +162,10 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         // vanilla event to gather additional tooltip
         TooltipLines textLines = copy.getAsText();
-        // convert the List<Either<Component, TooltipComponent>> to the type vanilla wants. Technically it's already valid,
-        //  but some mods (looking at you REI) want Components that they do nothing with except downcast them into FormattedText anyway.
-        @SuppressWarnings("unchecked")
-        List<Either<FormattedText, TooltipComponent>> tooltipElements = (List<Either<FormattedText, TooltipComponent>>) (List<?>) textLines;
+        // wrap the List<Either<Component, TooltipComponent>> in the type vanilla wants. Listeners may add any FormattedText,
+        //  which the wrapper converts into Components.
         // noinspection UnstableApiUsage
-        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, tooltipElements, this.maxWidth);
+        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines.vanillaElementHandler(), this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
         this.maxWidth = vanillaGatherEvent.getMaxWidth();
 

@@ -7,15 +7,17 @@ import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.drawable.text.TextIcon;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import com.mojang.datafixers.util.Either;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A list that lazily parses a list of text-like and drawable types into a vanilla compatible types.
@@ -133,26 +135,15 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         for (int i = index + 1; i < this.lines.size(); i++) {
             lines.get(i).index++;
         }
-        s.ifLeft(ft -> {
-            this.elements.add(elementIndex, ft);
-            this.lastElementIndex++;
-        });
-        // TODO support tooltip component
-    }
-
-    public void add(int index, Component s) {
-        add(index, Either.left(s));
-    }
-
-    public void add(Component s) {
-        add(size(), Either.left(s));
+        this.elements.add(elementIndex, s.map(c -> c, tc -> tc));
+        this.lastElementIndex++;
     }
 
     @Override
     public Either<Component, TooltipComponent> set(int index, Either<Component, TooltipComponent> element) {
         Line line = lines.get(index);
         if (line.length == 1) {
-            this.elements.set(line.index, element);
+            this.elements.set(line.index, element.map(c -> c, tc -> tc));
             this.lines.set(index, new Line(element, line.index, line.length));
         } else {
             remove(index);
@@ -175,6 +166,14 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
                 .toList();
     }
 
+    /**
+     * @return a view of this list with the element type vanilla/forge expects. Other mods may insert any
+     *         {@link FormattedText} into it, which is converted to a {@link Component}.
+     */
+    public List<Either<FormattedText, TooltipComponent>> vanillaElementHandler() {
+        return new VanillaElementHandler();
+    }
+
     public static ClientTooltipComponent textToCTC(Component text) {
         if (text instanceof ClientTooltipComponent ctc) return ctc;
         return ClientTooltipComponent.create(text.getVisualOrderText());
@@ -190,6 +189,59 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         if (components.isEmpty()) return Text.EMPTY;
         else if (components.size() == 1) return components.get(0);
         else return Text.comp(components.toArray(Component[]::new));
+    }
+
+    // Either is immutable, so a Component on the left is always a valid FormattedText
+    @SuppressWarnings("unchecked")
+    private static Either<FormattedText, TooltipComponent> upcast(Either<Component, TooltipComponent> either) {
+        return (Either<FormattedText, TooltipComponent>) (Either<? extends FormattedText, TooltipComponent>) either;
+    }
+
+    private static Either<Component, TooltipComponent> toComponent(Either<FormattedText, TooltipComponent> either) {
+        return either.mapLeft(TooltipLines::asComponent);
+    }
+
+    private static Component asComponent(FormattedText text) {
+        if (text instanceof Component component) return component;
+        MutableComponent out = Component.empty();
+        text.visit((style, str) -> {
+            out.append(Component.literal(str).setStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return out;
+    }
+
+    private class VanillaElementHandler extends AbstractList<Either<FormattedText, TooltipComponent>> {
+
+        @Override
+        public Either<FormattedText, TooltipComponent> get(int index) {
+            return upcast(TooltipLines.this.get(index));
+        }
+
+        @Override
+        public int size() {
+            return TooltipLines.this.size();
+        }
+
+        @Override
+        public void add(int index, Either<FormattedText, TooltipComponent> element) {
+            TooltipLines.this.add(index, toComponent(element));
+        }
+
+        @Override
+        public Either<FormattedText, TooltipComponent> set(int index, Either<FormattedText, TooltipComponent> element) {
+            return upcast(TooltipLines.this.set(index, toComponent(element)));
+        }
+
+        @Override
+        public Either<FormattedText, TooltipComponent> remove(int index) {
+            return upcast(TooltipLines.this.remove(index));
+        }
+
+        @Override
+        public void clear() {
+            TooltipLines.this.clear();
+        }
     }
 
     private static class Line {
