@@ -49,4 +49,28 @@ public interface IGuiAction {
 
         boolean drag(GuiContext context, int button, double dragX, double dragY);
     }
+
+    @FunctionalInterface
+    interface MouseEnterArea extends IGuiAction {
+
+        void enter(GuiContext context);
+    }
+
+    @FunctionalInterface
+    interface MouseLeaveArea extends IGuiAction {
+
+        void leave(GuiContext context, int timeBelowMouse);
+    }
+
+    @FunctionalInterface
+    interface MouseStartHover extends IGuiAction {
+
+        void startHover(GuiContext context);
+    }
+
+    @FunctionalInterface
+    interface MouseEndHover extends IGuiAction {
+
+        void endHover(GuiContext context, int timeHovered);
+    }
 }

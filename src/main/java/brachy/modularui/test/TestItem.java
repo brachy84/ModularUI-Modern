@@ -4,7 +4,6 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.api.IUIHolder;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.factory.PlayerInventoryGuiData;
-import brachy.modularui.factory.inventory.InventoryTypes;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
@@ -14,7 +13,6 @@ import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.slot.ItemSlot;
-import brachy.modularui.widgets.slot.ModularSlot;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -51,14 +49,6 @@ public class TestItem extends Item implements IUIHolder<PlayerInventoryGuiData<?
         syncManager.registerSlotGroup("mixer_items", 2);
         if (!(itemHandler instanceof IItemHandlerModifiable ihm)) return null;
 
-        // if the player slot is the slot with this item, then disallow any interaction
-        // if the item is not in the player inventory (curio for example), then this items slot is not on the screen,
-        // and we don't need to limit accessibility
-        if (data.getInventoryType() == InventoryTypes.PLAYER) {
-            syncManager.bindPlayerInventory(data.getPlayer(), (inv, index) -> index == data.getSlotIndex() ?
-                    new ModularSlot(inv, index).accessibility(false, false) :
-                    new ModularSlot(inv, index));
-        }
         ModularPanel<?> panel = ModularPanel.defaultPanel("knapping_gui").resizeableOnDrag(true);
         panel.child(Flow.col().margin(7)
                         .child(new ParentWidget<>().widthRel(1f).expanded()

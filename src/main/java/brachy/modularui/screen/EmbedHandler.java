@@ -10,6 +10,8 @@ import net.minecraft.client.gui.screens.Screen;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Predicate;
 
 public class EmbedHandler {
@@ -23,42 +25,28 @@ public class EmbedHandler {
     }
 
     public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, r -> true);
+        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, null, null);
     }
 
-    public static void drawEmbedNoVanillaElements(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawEmbed(screen, graphics, mouseX, mouseY, partialTicks, r -> false);
-    }
-
-    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Predicate<Renderable> vanillaElementFilter) {
-        graphics.pose().pushPose();
-        screen.render(graphics, mouseX, mouseY, partialTicks);
-
-        if (vanillaElementFilter != null) {
-            RenderSystem.disableDepthTest();
-            ClientScreenHandler.drawVanillaElements(graphics, screen.getScreenWrapper().wrappedScreen(), mouseX, mouseY, partialTicks, vanillaElementFilter);
-            RenderSystem.enableDepthTest();
-        }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        graphics.pose().popPose();
-    }
-
-    public static void drawEmbedForeground(ModularScreen screen, GuiGraphics graphics) {
+    public static void drawEmbed(ModularScreen screen, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks,
+                                 @Nullable Runnable beforeDraw, @Nullable Runnable afterDraw) {
+        screen.getContext().reset();
         graphics.pose().pushPose();
 
-        // let us draw foreground elements separately after everything else.
-        //screen.getContext().getStencil().push(screen.getScreenArea());
-        RenderSystem.disableDepthTest();
-        Lighting.setupForFlatItems();
+        if (beforeDraw != null) beforeDraw.run();
+
+        int mx = screen.getContext().unTransformX(mouseX, mouseY);
+        int my = screen.getContext().unTransformY(mouseX, mouseY);
+        screen.render(graphics, mx, my, partialTicks);
 
         screen.drawForeground(graphics);
+
+        if (afterDraw != null) afterDraw.run();
 
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        //screen.getContext().getStencil().pop();
         graphics.pose().popPose();
     }
 

@@ -7,6 +7,8 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widgets.TextWidget;
 
+import com.demonwav.mcdev.annotations.Translatable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -48,19 +50,19 @@ public class ModularComponent extends MutableComponent implements Text {
         return ModularComponent.create(new LiteralContents(text));
     }
 
-    public static ModularComponent translatable(String key) {
+    public static ModularComponent translatable(@Translatable String key) {
         return ModularComponent.create(new TranslatableContents(key, null, TranslatableContents.NO_ARGS));
     }
 
-    public static ModularComponent translatable(String key, Object... args) {
+    public static ModularComponent translatable(@Translatable String key, Object... args) {
         return ModularComponent.create(new TranslatableContents(key, null, args));
     }
 
-    public static ModularComponent translatableWithFallback(String key, @Nullable String fallback) {
+    public static ModularComponent translatableWithFallback(@Translatable String key, @Nullable String fallback) {
         return ModularComponent.create(new TranslatableContents(key, fallback, TranslatableContents.NO_ARGS));
     }
 
-    public static ModularComponent translatableWithFallback(String key, @Nullable String fallback, Object... args) {
+    public static ModularComponent translatableWithFallback(@Translatable String key, @Nullable String fallback, Object... args) {
         return ModularComponent.create(new TranslatableContents(key, fallback, args));
     }
 

@@ -1,5 +1,6 @@
 package brachy.modularui.screen;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.MCHelper;
@@ -22,12 +23,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -161,8 +165,12 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         // vanilla event to gather additional tooltip
         TooltipLines textLines = copy.getAsText();
+        // convert the List<Either<Component, TooltipComponent>> to the type vanilla wants. Technically it's already valid,
+        //  but some mods (looking at you REI) want Components that they do nothing with except downcast them into FormattedText anyway.
+        @SuppressWarnings("unchecked")
+        List<Either<FormattedText, TooltipComponent>> tooltipElements = (List<Either<FormattedText, TooltipComponent>>) (List<?>) textLines;
         // noinspection UnstableApiUsage
-        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
+        var vanillaGatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, tooltipElements, this.maxWidth);
         if (MinecraftForge.EVENT_BUS.post(vanillaGatherEvent)) return;
         this.maxWidth = vanillaGatherEvent.getMaxWidth();
 
@@ -370,16 +378,13 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     @Override
     public IRichTextBuilder<?> getRichText() {
-        return text;
+        return this.text;
     }
 
     public RichTooltip tooltipBuilder(Consumer<RichTooltip> tooltipBuilder) {
         Consumer<RichTooltip> existingBuilder = this.tooltipBuilder;
         if (existingBuilder != null && tooltipBuilder != null) {
-            this.tooltipBuilder = tooltip -> {
-                existingBuilder.accept(this);
-                tooltipBuilder.accept(this);
-            };
+            this.tooltipBuilder = existingBuilder.andThen(tooltipBuilder);
         } else {
             this.tooltipBuilder = tooltipBuilder;
         }
@@ -388,6 +393,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     }
 
     public RichTooltip addFromItem(ItemStack item) {
+        if (!ModularUI.isClientSide()) return this;
         List<Component> lines = MCHelper.getItemToolTip(item);
         add(lines.get(0));
         if (lines.size() > 1) {

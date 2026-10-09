@@ -18,7 +18,7 @@ import brachy.modularui.screen.UISettings;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Interpolation;
-import brachy.modularui.utils.MultiFluidTankHandler;
+import brachy.modularui.utils.handlers.fluid.MultiTankFluidHandler;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.DynamicLinkedSyncHandler;
 import brachy.modularui.value.sync.DynamicSyncHandler;
@@ -99,8 +99,8 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
         }
     };
     private final ItemStackHandler phantomStorage = new ItemStackHandler(3);
-    private final MultiFluidTankHandler fluidStorage = new MultiFluidTankHandler(3, 10000);
-    private final MultiFluidTankHandler phantomFluidStorage = new MultiFluidTankHandler(3, 500000);
+    private final MultiTankFluidHandler fluidStorage = new MultiTankFluidHandler(3, 10000);
+    private final MultiTankFluidHandler phantomFluidStorage = new MultiTankFluidHandler(3, 500000);
     private final ItemStackHandler craftingInventory = new ItemStackHandler(10);
     private final ItemStackHandler storageInventory0 = new ItemStackHandler(1);
     private final Map<Item, ItemStackHandler> stackHandlerMap = new Object2ObjectOpenHashMap<>();
@@ -320,8 +320,8 @@ public class TestBlockEntity extends AbstractBlockEntity implements IUIHolder<Po
                                                 .child(Text.str("Dynamic synced widget demo. Items act as keys to a unique storage with different amount of slots.").asWidget().scale(0.7f))
                                                 .child(new ItemSlot()
                                                         .slot(new ModularSlot(this.storageInventory0, 0)
-                                                                .changeListener(((newItem, onlyAmountChanged, client, init) -> {
-                                                                    if (client && !onlyAmountChanged) {
+                                                                .changeListener(((oldItem, newItem, client, init) -> {
+                                                                    if (client && !ItemStack.isSameItemSameTags(oldItem, newItem)) {
                                                                         dynamicSyncHandler.notifyUpdate(packet -> packet.writeItemStack(newItem, false));
                                                                     }
                                                                 }))))

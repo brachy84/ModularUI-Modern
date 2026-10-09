@@ -37,7 +37,7 @@ public class FluidDisplayWidget extends AbstractFluidDisplayWidget<FluidDisplayW
 
     @Override
     protected @Nullable FluidStack getFluidStack() {
-        return this.value != null ? this.value.getValue() : null;
+        return this.value != null ? this.value.getOrDefault(FluidStack.EMPTY) : FluidStack.EMPTY;
     }
 
     public FluidDisplayWidget value(IValue<FluidStack> value) {

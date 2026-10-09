@@ -367,14 +367,13 @@ public class ModularScreen implements Renderable {
      */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (!this.context.getUItype().isScreen) {
+        if (!this.context.getUIType().isScreen) {
             checkManualUpdate(); // embeds can't trigger frame updates the proper way
         }
         this.context.setGraphics(graphics);
         this.context.updateState(mouseX, mouseY, partialTick);
         Lighting.setupForFlatItems();
 
-        this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel<?> panel : this.panelManager.getReverseOpenPanels()) {
             this.context.updateZ(0);
@@ -403,7 +402,6 @@ public class ModularScreen implements Renderable {
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
 
-        this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel<?> panel : this.panelManager.getReverseOpenPanels()) {
             this.context.updateZ(100);
@@ -688,7 +686,8 @@ public class ModularScreen implements Renderable {
     }
 
     public boolean isClientOnly() {
-        return isOverlay() || !this.screenWrapper.isContainerScreen() || getContainer().isClientOnly();
+        return isOverlay() || getContext().getUIType() != UIType.MODULAR_SCREEN
+                || !this.screenWrapper.isContainerScreen() || getContainer().isClientOnly();
     }
 
     public ModularContainerMenu getContainer() {

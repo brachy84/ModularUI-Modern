@@ -35,8 +35,7 @@ public class GuiContext extends GuiViewportStack {
         return ClientScreenHandler.getBestContext();
     }
 
-    @Getter
-    private final UIType UItype;
+    private final UIType uiType;
 
     @Getter
     private final Area screenArea = new Area();
@@ -66,8 +65,8 @@ public class GuiContext extends GuiViewportStack {
     @Getter private long tick = 0;
     @Getter private int currentDrawingZ = 0;
 
-    public GuiContext(UIType UItype) {
-        this.UItype = UItype;
+    public GuiContext(UIType uiType) {
+        this.uiType = uiType;
     }
 
     public boolean isAbove(IWidget widget) {
@@ -90,20 +89,6 @@ public class GuiContext extends GuiViewportStack {
 
     @ApiStatus.Internal
     public void updateState(int mouseX, int mouseY, float partialTicks) {
-        if (this != ClientScreenHandler.getDefaultContext()) {
-            // The default context is guaranteed to have the correct mouse pos.
-            // If the screen is an embed, the given mouse pos here is likely offset.
-            // If the visual screen offset and the mouse pos match (which we can assume), then we can calculate the actual screen pos.
-            // This is useful f.e. for tooltip rendering. Otherwise, it would think there is a screen edge at 0,0 of the panel of an embed.
-            int defX = ClientScreenHandler.getDefaultContext().mouseX;
-            int defY = ClientScreenHandler.getDefaultContext().mouseY;
-            if (defX != mouseX || defY != mouseY) {
-                int dx = defX - mouseX;
-                int dy = defY - mouseY;
-                this.screenArea.x = dx;
-                this.screenArea.y = dy;
-            }
-        }
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.renderPartialTicks = partialTicks;
@@ -167,6 +152,10 @@ public class GuiContext extends GuiViewportStack {
 
     public void tick() {
         this.tick += 1;
+    }
+
+    public UIType getUIType() {
+        return this.uiType;
     }
 
     /* Viewport */

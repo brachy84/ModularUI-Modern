@@ -31,6 +31,7 @@ public class NumberFormat {
 
     public static final Params AMOUNT_TEXT = DEFAULT.copyToBuilder()
             .roundingMode(RoundingMode.DOWN)
+            .maxLength(3)
             .build();
 
     public static Params params(DecimalFormat format, int maxLength, boolean considerOnlyDecimalsForLength,
@@ -56,8 +57,8 @@ public class NumberFormat {
                 this.considerMinusForLength = considerMinusForLength;
                 this.considerSuffixForLength = considerSuffixForLength;
                 this.spaceAfterNumber = spaceAfterNumber;
-                if (!this.considerOnlyDecimalsForLength && this.maxLength < 4) {
-                    throw new IllegalArgumentException("Max length must be at least 4 characters");
+                if (!this.considerOnlyDecimalsForLength && this.maxLength < 1) {
+                    throw new IllegalArgumentException("Max length must be at least 1 character");
                 }
             }
 

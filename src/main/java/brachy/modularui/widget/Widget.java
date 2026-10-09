@@ -173,6 +173,11 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Nullable
     private Consumer<W> onUpdateListener;
 
+    private @Nullable IGuiAction.MouseEnterArea mouseEnterArea;
+    private @Nullable IGuiAction.MouseLeaveArea mouseLeaveArea;
+    private @Nullable IGuiAction.MouseStartHover mouseStartHover;
+    private @Nullable IGuiAction.MouseEndHover mouseEndHover;
+
     public Widget() {
         resizer(new StandardResizer(this));
     }
@@ -660,6 +665,42 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         }
     }
 
+    @MustBeInvokedByOverriders
+    @Override
+    public void onMouseStartHover() {
+        super.onMouseStartHover();
+        if (this.mouseStartHover != null) {
+            this.mouseStartHover.startHover(getContext());
+        }
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void onMouseEndHover() {
+        if (this.mouseEndHover != null) {
+            this.mouseEndHover.endHover(getContext(), getTicksHovered());
+        }
+        super.onMouseEndHover();
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void onMouseEnterArea() {
+        super.onMouseEnterArea();
+        if (this.mouseEnterArea != null) {
+            this.mouseEnterArea.enter(getContext());
+        }
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void onMouseLeaveArea() {
+        if (this.mouseLeaveArea != null) {
+            this.mouseLeaveArea.leave(getContext(), getTicksBelowMouse());
+        }
+        super.onMouseLeaveArea();
+    }
+
     /**
      * Registers a gui action this widget can listen to. Gui action listeners can listen to several mouse and keyboard
      * input events.
@@ -755,6 +796,26 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         boolean old = super.isEnabled() && this.lastDynamicEnabled;
         this.lastDynamicEnabled = this.dynamicEnabled.test(getThis());
         return checkNotifyParentEnabled(old);
+    }
+
+    public W onMouseEnterArea(IGuiAction.MouseEnterArea mouseEnterArea) {
+        this.mouseEnterArea = mouseEnterArea;
+        return getThis();
+    }
+
+    public W onMouseLeaveArea(IGuiAction.MouseLeaveArea mouseLeaveArea) {
+        this.mouseLeaveArea = mouseLeaveArea;
+        return getThis();
+    }
+
+    public W onMouseStartHover(IGuiAction.MouseStartHover mouseStartHover) {
+        this.mouseStartHover = mouseStartHover;
+        return getThis();
+    }
+
+    public W onMouseEndHover(IGuiAction.MouseEndHover mouseEndHover) {
+        this.mouseEndHover = mouseEndHover;
+        return getThis();
     }
 
     // ----------------
@@ -853,7 +914,11 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     public W excludeAreaInRecipeViewer(boolean val) {
         this.excludeAreaInRecipeViewer = val;
         if (isValid()) {
-            getContext().getRecipeViewerSettings().addExclusionArea(this);
+            if (this.excludeAreaInRecipeViewer) {
+                getContext().getRecipeViewerSettings().addExclusionArea(this);
+            } else {
+                getContext().getRecipeViewerSettings().removeExclusionArea(this);
+            }
         }
         return getThis();
     }
@@ -927,6 +992,47 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Override
     public WidgetType<?> getType() {
         return WidgetType.WIDGET;
+    }
+
+    /**
+     * This can be used to further configure widgets in ways not directly allowed by the builder functions.
+     * <p>
+     * For example, adding a click action to a progress widget changes from this:
+     * {@snippet lang="java":
+     *     ProgressWidget progressWidget = new ProgressWidget()
+     *            .value()
+     *            .texture();
+     *     progressWidget.listenGuiAction((IGuiAction.MousePressed) (ctx, button) -> {
+     *         if (!ctx.isMouseAbove(progressWidget)) return false;
+     *         //...
+     *         return true;
+     *     });
+     *     parentWidget.child(progressWidget)
+     *             .child()
+     *             //...
+     * }
+     * to this:
+     * {@snippet lang="java":
+     *     parentWidget.child(new ProgressWidget()
+     *             .value()
+     *             .texture()
+     *             .configure(w -> {
+     *                 w.listenGuiAction((IGuiAction.MousePressed) (ctx, button) -> {
+     *                     if (!ctx.isMouseAbove(w)) return false;
+     *                     //...
+     *                     return true;
+     *                 });
+     *             }))
+     *             .child()
+     *             //...
+     * }
+     *
+     * @param configurator the configuration function
+     * @return this
+     */
+    public W configure(Consumer<W> configurator) {
+        configurator.accept(getThis());
+        return getThis();
     }
 
     /**

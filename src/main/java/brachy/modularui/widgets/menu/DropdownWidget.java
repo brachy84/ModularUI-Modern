@@ -5,6 +5,7 @@ import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.MutableSingletonList;
+import brachy.modularui.value.sync.ValueSyncHandler;
 import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.ListWidget;
 
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A button which displays a list of options when clicked. When an option is clicked, the menu closes and the button
@@ -36,6 +38,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
     private IValue<T> value;
     private int maxListSize = 100;
     private ToWidget<T> toWidget;
+    private T displayedValue;
 
     public DropdownWidget(String panelName, Class<T> valueType) {
         super(panelName);
@@ -65,6 +68,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
         if (this.selected.hasValue()) {
             this.selected.get().dispose();
         }
+        this.displayedValue = value;
         if (updateValue && this.value != null) this.value.setValue(value);
         this.selected.set(valueToWidget(value, true));
         if (isValid()) {
@@ -101,6 +105,14 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
     protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castValueNullable(this.valueType);
+        if (syncOrValue instanceof ValueSyncHandler<?, ?> valueSyncHandler) {
+            valueSyncHandler.setChangeListener(() -> {
+                markTooltipDirty();
+                if (!Objects.equals(this.value.getValue(), this.displayedValue)) {
+                    setValue(this.value.getValue(), false);
+                }
+            });
+        }
     }
 
     /**

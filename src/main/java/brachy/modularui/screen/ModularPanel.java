@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -123,7 +124,8 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     @Getter private String themeOverride;
     private ITheme theme;
 
-    private Runnable onCloseAction;
+    private Consumer<W> onOpenAction;
+    private Consumer<W> onCloseAction;
     @Getter private boolean resizeable = false;
     /**
      * True if this panel can be dragged. Never works on the main panel.
@@ -184,7 +186,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
      * If animating is enabled and an animation is already playing this method will do nothing.
      */
     public void closeIfOpen() {
-        if (!isOpen() || !getContext().getUItype().isScreen) return;
+        if (!isOpen() || (!getContext().getUIType().isScreen && isMainPanel())) return;
         closeSubPanels();
         if (isMainPanel()) {
             // close screen and let NEA handle animation // TODO: since nea is not yet ported, it will just close the
@@ -258,7 +260,6 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
             return;
         }
         HoveredWidgetList widgetList = new HoveredWidgetList(this.hovering);
-        getContext().reset();
         GuiViewportStack stack = new GuiViewportStack();
         stack.pushViewport(null, getScreen().getScreenArea());
         stack.pushViewport(this, getArea());
@@ -290,17 +291,26 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
             getAnimator().animate();
         }
         this.state = State.OPEN;
+
+        if (this.onOpenAction != null) {
+            this.onOpenAction.accept(getThis());
+        }
     }
 
     void reopen() {
         this.state = State.OPEN;
+
+        if (this.onOpenAction != null) {
+            this.onOpenAction.accept(getThis());
+        }
     }
 
     @MustBeInvokedByOverriders
     public void onClose() {
         if (this.onCloseAction != null) {
-            this.onCloseAction.run();
+            this.onCloseAction.accept(getThis());
         }
+
         this.state = State.CLOSED;
         if (this.panelHandler != null) {
             this.panelHandler.closePanelInternal();
@@ -888,7 +898,14 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return getThis();
     }
 
-    public W onCloseAction(Runnable onCloseAction) {
+    public W onOpenAction(Consumer<W> onOpenAction) {
+        this.onOpenAction = onOpenAction;
+        if (this.isOpen()) onOpenAction.accept(getThis());
+
+        return getThis();
+    }
+
+    public W onCloseAction(Consumer<W> onCloseAction) {
         this.onCloseAction = onCloseAction;
         return getThis();
     }

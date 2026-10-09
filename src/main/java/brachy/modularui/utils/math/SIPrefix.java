@@ -11,7 +11,7 @@ public enum SIPrefix {
     Ronna('R', 27),
     Yotta('Y', 24),
     Zetta('Z', 21),
-    Exa('X', 18), // this should actually be E, but this clashes with euler's number e = 2.71...
+    Exa('X', 18), // this should actually be E, but this clashes with Euler's number e = 2.71...
     Peta('P', 15),
     Tera('T', 12),
     Giga('G', 9),

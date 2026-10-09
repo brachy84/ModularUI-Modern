@@ -1,5 +1,6 @@
 package brachy.modularui.api.drawable;
 
+import brachy.modularui.ModularUI;
 import brachy.modularui.drawable.DrawableType;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.text.DynamicComponent;
@@ -10,6 +11,8 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
+
+import com.demonwav.mcdev.annotations.Translatable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
@@ -73,7 +76,7 @@ public interface Text extends IDrawable {
      * @param key translation key
      * @return text key
      */
-    static ModularComponent lang(@NotNull String key) {
+    static ModularComponent lang(@NotNull @Translatable String key) {
         return ModularComponent.translatable(key);
     }
 
@@ -84,7 +87,7 @@ public interface Text extends IDrawable {
      * @param args translation arguments
      * @return text key
      */
-    static ModularComponent lang(@NotNull String key, @Nullable Object... args) {
+    static ModularComponent lang(@NotNull @Translatable String key, @Nullable Object... args) {
         return ModularComponent.translatable(key, args);
     }
 
@@ -172,6 +175,7 @@ public interface Text extends IDrawable {
 
     @Override
     default int getDefaultWidth() {
+        if (!ModularUI.isClientSide()) return 18;
         renderer.setAlignment(Alignment.TopLeft, -1, -1);
         renderer.setScale(getScale());
         renderer.setPos(0, 0);
@@ -183,6 +187,7 @@ public interface Text extends IDrawable {
 
     @Override
     default int getDefaultHeight() {
+        if (!ModularUI.isClientSide()) return 18;
         renderer.setAlignment(Alignment.TopLeft, -1, -1);
         renderer.setScale(getScale());
         renderer.setPos(0, 0);

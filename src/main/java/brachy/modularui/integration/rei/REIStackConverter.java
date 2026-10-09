@@ -1,10 +1,8 @@
 package brachy.modularui.integration.rei;
 
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.*;
+import brachy.modularui.integration.recipeviewer.entry.item.*;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.utils.math.MathUtils;
 
@@ -44,14 +42,11 @@ public class REIStackConverter {
         }
 
         private static EntryIngredient toREIIngredient(Stream<ItemStack> stream) {
-            return EntryIngredient.of(stream
-                    .map(EntryStacks::of)
-                    .toList());
+            return EntryIngredient.of(stream.map(EntryStacks::of).toList());
         }
 
         @Override
-        public EntryIngredient convertTo(EntryList<ItemStack> stack, float chance,
-                                         UnaryOperator<ItemStack> mapper) {
+        public EntryIngredient convertTo(EntryList<ItemStack> stack, float chance, UnaryOperator<ItemStack> mapper) {
             if (stack.isEmpty()) {
                 return EntryIngredient.empty();
             }
@@ -60,6 +55,11 @@ public class REIStackConverter {
             } else if (stack instanceof ItemTagList entryList) {
                 return EntryIngredient.of(entryList.getEntries().stream()
                         .map(ItemTagList.ItemTagEntry::stacks)
+                        .flatMap(stream -> toREIIngredient(stream.map(mapper)).stream())
+                        .collect(Collectors.toList()));
+            } else if (stack instanceof ItemHolderSetList holderSetList) {
+                return EntryIngredient.of(holderSetList.getEntries().stream()
+                        .map(ItemHolderSetList.ItemHolderSetEntry::stacks)
                         .flatMap(stream -> toREIIngredient(stream.map(mapper)).stream())
                         .collect(Collectors.toList()));
             }
@@ -91,8 +91,7 @@ public class REIStackConverter {
         }
 
         @Override
-        public EntryIngredient convertTo(EntryList<FluidStack> stack, float chance,
-                                         UnaryOperator<FluidStack> mapper) {
+        public EntryIngredient convertTo(EntryList<FluidStack> stack, float chance, UnaryOperator<FluidStack> mapper) {
             if (stack.isEmpty()) {
                 return EntryIngredient.empty();
             }
@@ -101,7 +100,12 @@ public class REIStackConverter {
             } else if (stack instanceof FluidTagList tagList) {
                 return EntryIngredient.of(tagList.getEntries().stream()
                         .map(FluidTagList.FluidTagEntry::stacks)
-                        .flatMap(val -> toREIIngredient(val.map(mapper)).stream())
+                        .flatMap(stream -> toREIIngredient(stream.map(mapper)).stream())
+                        .collect(Collectors.toList()));
+            } else if (stack instanceof FluidHolderSetList holderSetList) {
+                return EntryIngredient.of(holderSetList.getEntries().stream()
+                        .map(FluidHolderSetList.FluidHolderSetEntry::stacks)
+                        .flatMap(stream -> toREIIngredient(stream.map(mapper)).stream())
                         .collect(Collectors.toList()));
             }
             return EntryIngredient.empty();
@@ -119,8 +123,17 @@ public class REIStackConverter {
         return (Converter<T>) CONVERTERS.get(clazz);
     }
 
+
     public static <T> Optional<Converter<T>> getFor(Class<T> clazz) {
         return Optional.ofNullable(getForNullable(clazz));
+    }
+
+    public static <T> EntryIngredient convertToReiEntry(EntryList<T> entries, float chance, UnaryOperator<T> renderMappingFunction) {
+        REIStackConverter.Converter<T> converter = REIStackConverter.getForNullable(entries.getType());
+        if (converter != null) {
+            return converter.convertTo(entries, chance, renderMappingFunction);
+        }
+        return EntryIngredient.empty();
     }
 
     public interface Converter<T> {

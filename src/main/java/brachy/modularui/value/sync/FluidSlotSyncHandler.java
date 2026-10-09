@@ -1,7 +1,7 @@
 package brachy.modularui.value.sync;
 
-import brachy.modularui.utils.FluidTankHandler;
-import brachy.modularui.utils.IMultiFluidTankHandler;
+import brachy.modularui.utils.handlers.fluid.FluidTankHandler;
+import brachy.modularui.utils.handlers.fluid.IMultiTankFluidHandler;
 import brachy.modularui.utils.MouseData;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 @Accessors(fluent = true, chain = true)
 public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlotSyncHandler> {
 
+    public static final int UNKNOWN_TANK_INDEX = -1;
+
     public static final int SYNC_CLICK = 1;
     public static final int SYNC_SCROLL = 2;
     public static final int SYNC_CONTROLS_AMOUNT = 3;
@@ -37,6 +39,13 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
     @Getter
     private final IFluidTank fluidTank;
     private final IFluidHandler fluidHandler;
+    /**
+     * The index of this slot's contents in {@link #fluidHandler this.fluidHandler}.<br>
+     * Note that if this FluidSlotSyncHandler was constructed with only a fluid tank and no fluid handler, this field's value will be
+     * {@link #UNKNOWN_TANK_INDEX} so you should check that instead of assuming it's nonnegative (>=0).
+     */
+    @Accessors(fluent = false)
+    @Getter private final int tankIndex;
     @Getter
     @Setter
     private boolean canFillSlot = true, canDrainSlot = true, phantom = false;
@@ -48,11 +57,15 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
     public FluidSlotSyncHandler(IFluidTank fluidTank) {
         this.fluidTank = fluidTank;
         this.fluidHandler = FluidTankHandler.getTankFluidHandler(fluidTank);
+        this.tankIndex = UNKNOWN_TANK_INDEX;
         allowC2S();
     }
 
-    public FluidSlotSyncHandler(IMultiFluidTankHandler fluidTank, int index) {
-        this(fluidTank.getFluidTank(index));
+    public FluidSlotSyncHandler(IMultiTankFluidHandler fluidHandler, int index) {
+        this.fluidTank = fluidHandler.getFluidTank(index);
+        // use getTankFluidHandler here too so it'll always insert/extract from/to the correct slot
+        this.fluidHandler = FluidTankHandler.getTankFluidHandler(this.fluidTank);
+        this.tankIndex = index;
     }
 
     @Nullable
@@ -343,11 +356,13 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
         }
     }
 
-    private void playSound(Player player, FluidStack fluid, SoundAction action) {
+    public void playSound(Player player, FluidStack fluid, SoundAction action) {
         SoundEvent sound = fluid.getFluid().getFluidType().getSound(fluid, action);
         if (sound == null) return;
-        player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), sound, SoundSource.BLOCKS,
-                1.0F, 1.0F);
+        // on client, it needs the player to play the sound
+        // on server the player is an exception
+        player.level().playSound(getSyncManager().isClient() ? player : null, player.getX(), player.getY() + 0.5, player.getZ(), sound,
+                SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     public FluidSlotSyncHandler controlsAmount(boolean controlsAmount) {

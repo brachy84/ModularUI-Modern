@@ -85,7 +85,14 @@ public class NetworkHandler {
     public static <T extends INetPacket> void register(Class<T> cls, Function<FriendlyByteBuf, T> decode,
                                                        NetworkDirection direction) {
         INSTANCE.registerMessage(nextPacketId++, cls, INetPacket::encode, decode, (msg, ctx) -> {
-            ctx.get().enqueueWork(() -> msg.execute(ctx.get()));
+            ctx.get().enqueueWork(() -> {
+                try {
+                    msg.execute(ctx.get());
+                } catch (Exception e) {
+                    ModularUI.LOGGER.throwing(e);
+                    throw e;
+                }
+            });
             ctx.get().setPacketHandled(true);
         }, Optional.ofNullable(direction));
     }

@@ -1,6 +1,7 @@
 package brachy.modularui.value.sync;
 
 import brachy.modularui.utils.MouseData;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.widgets.slot.ModularSlot;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,13 +40,13 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
     }
 
     @Override
-    protected void onSlotUpdate(ItemStack stack, boolean onlyAmountChanged, boolean client, boolean init) {
-        if (!onlyAmountChanged && !stack.isEmpty()) {
+    protected void onSlotUpdate(ItemStack oldStack, ItemStack newStack, boolean client, boolean init) {
+        if (!ItemStack.isSameItemSameTags(oldStack, newStack) && !newStack.isEmpty()) {
             // store last non-empty stack for later
-            this.lastStoredPhantomItem = stack.copy();
+            this.lastStoredPhantomItem = newStack.copy();
             this.lastStoredPhantomItem.setCount(1);
         }
-        super.onSlotUpdate(stack, onlyAmountChanged, client, init);
+        super.onSlotUpdate(oldStack, newStack, client, init);
     }
 
     @Override
@@ -54,7 +55,8 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
             // for normal slots minecraft handles the syncing
             // for phantom slots we manually set the slot and ignore the other packet arguments
             // the set() will then invoke the onSlotChanged
-            buf.readBoolean();
+            // Must match the ItemSlotSyncHandler#checkUpdate's syncToClient() call order
+            buf.readItem();
             getSlot().set(buf.readItem());
             buf.readBoolean();
             buf.readBoolean();
@@ -148,22 +150,11 @@ public class PhantomItemSlotSyncHandler extends ItemSlotSyncHandler {
             return;
         }
         int oldAmount = stack.getCount();
-        if (amount < 0) {
-            amount = Math.max(0, oldAmount + amount);
-        } else {
-            if (Integer.MAX_VALUE - amount < oldAmount) {
-                amount = Integer.MAX_VALUE;
-            } else {
-                int maxSize = getSlot().getMaxStackSize();
-                if (!getSlot().isIgnoreMaxStackSize() && stack.getMaxStackSize() < maxSize) {
-                    maxSize = stack.getMaxStackSize();
-                }
-                amount = Math.min(oldAmount + amount, maxSize);
-            }
-        }
-        if (oldAmount != amount) {
+        int c = (int) MathUtils.clamp(oldAmount + (long) amount, 0, Integer.MAX_VALUE);
+        c = Math.min(c, getSlot().getMaxStackSize(stack));
+        if (oldAmount != c) {
             stack = stack.copy();
-            stack.setCount(amount);
+            stack.setCount(c);
             getSlot().set(stack);
         }
     }

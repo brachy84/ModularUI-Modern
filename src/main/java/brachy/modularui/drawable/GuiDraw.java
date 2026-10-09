@@ -1,6 +1,5 @@
 package brachy.modularui.drawable;
 
-import brachy.modularui.utils.MUIRenderTypes;
 import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.event.RichTooltipEvent;
@@ -8,8 +7,9 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.FormattingUtil;
+import brachy.modularui.utils.MUIRenderTypes;
 import brachy.modularui.utils.RectangleF;
+import brachy.modularui.utils.math.NumberFormat;
 import brachy.modularui.widget.sizer.Area;
 
 import net.minecraft.client.Minecraft;
@@ -705,7 +705,7 @@ public class GuiDraw {
     public static void drawAmountText(ModularGuiContext context, int amount, String format,
                                       int x, int y, int width, int height, Alignment alignment, float z) {
         if (amount <= 1) return;
-        String amountText = FormattingUtil.formatNumberReadable(amount, false);
+        String amountText = NumberFormat.AMOUNT_TEXT.format(amount);
         if (format != null) {
             amountText = format + amountText;
         }

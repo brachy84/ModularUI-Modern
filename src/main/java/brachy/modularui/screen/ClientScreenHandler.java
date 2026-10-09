@@ -183,7 +183,9 @@ public class ClientScreenHandler {
         }
     }
 
-    @SubscribeEvent
+    // Recipe viewers must finish an external drag before MUI handles the release over the target widget. Otherwise
+    // MUI cancels the event and JEI never gets a chance to deliver the ghost ingredient.
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onScreenMouseReleased(ScreenEvent.MouseButtonReleased.Pre event) {
         int button = event.getButton();
         defaultContext.updateMouseButton(button, false);
@@ -446,6 +448,7 @@ public class ClientScreenHandler {
 
     public static void drawScreenInternal(GuiGraphics graphics, ModularScreen muiScreen, Screen mcScreen, int mouseX, int mouseY, float partialTicks) {
         Stencil.reset();
+        muiScreen.getContext().reset();
         muiScreen.getContext().getStencil().push(muiScreen.getScreenArea());
         muiScreen.render(graphics, mouseX, mouseY, partialTicks);
         RenderSystem.disableDepthTest();
@@ -463,6 +466,7 @@ public class ClientScreenHandler {
         AbstractContainerScreenAccessor acc = (AbstractContainerScreenAccessor) mcScreen;
 
         Stencil.reset();
+        muiScreen.getContext().reset();
         muiScreen.getContext().getStencil().push(muiScreen.getScreenArea());
         mcScreen.renderBackground(graphics);
         int x = mcScreen.getGuiLeft();

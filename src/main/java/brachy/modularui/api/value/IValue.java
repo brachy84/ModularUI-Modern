@@ -25,6 +25,11 @@ public interface IValue<T> extends ISyncOrValue {
      */
     void setValue(@UnknownNullability T value);
 
+    default T getOrDefault(T defaultValue) {
+        T t = getValue();
+        return t != null ? t : defaultValue;
+    }
+
     Class<T> getValueType();
 
     default boolean isValueOfType(Class<?> type) {

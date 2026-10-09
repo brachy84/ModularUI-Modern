@@ -1,6 +1,7 @@
 package brachy.modularui.factory;
 
 import brachy.modularui.utils.NetworkUtils;
+import brachy.modularui.value.sync.PanelSyncManager;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -46,4 +47,6 @@ public class GuiData {
     public ItemStack getOffHandItem() {
         return this.player.getOffhandItem();
     }
+
+    public void addSyncHandlers(PanelSyncManager mainPSM) {}
 }

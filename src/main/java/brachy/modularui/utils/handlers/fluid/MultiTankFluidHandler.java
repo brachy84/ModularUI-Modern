@@ -1,4 +1,4 @@
-package brachy.modularui.utils;
+package brachy.modularui.utils.handlers.fluid;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntFunction;
 
-public class MultiFluidTankHandler implements IMultiFluidTankHandler {
+public class MultiTankFluidHandler implements IMultiTankFluidHandler {
 
     private final IFluidTank[] tanks;
 
-    public MultiFluidTankHandler(IFluidTank... tanks) {
+    public MultiTankFluidHandler(IFluidTank... tanks) {
         Objects.requireNonNull(tanks);
         for (IFluidTank tank : tanks) {
             Objects.requireNonNull(tank);
@@ -22,11 +22,11 @@ public class MultiFluidTankHandler implements IMultiFluidTankHandler {
         this.tanks = Arrays.copyOf(tanks, tanks.length);
     }
 
-    public MultiFluidTankHandler(int count, int capacity) {
+    public MultiTankFluidHandler(int count, int capacity) {
         this(count, i -> new FluidTank(capacity));
     }
 
-    public MultiFluidTankHandler(int count, IntFunction<IFluidTank> tankBuilder) {
+    public MultiTankFluidHandler(int count, IntFunction<IFluidTank> tankBuilder) {
         this.tanks = new IFluidTank[count];
         for (int i = 0; i < count; i++) {
             this.tanks[i] = Objects.requireNonNull(tankBuilder.apply(i));

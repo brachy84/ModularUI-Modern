@@ -82,6 +82,7 @@ public class GuiManager {
         PanelSyncManager syncManager = new PanelSyncManager(msm, true);
         ModularPanel<?> panel = factory.createPanel(guiData, syncManager, settings);
         WidgetTree.collectSyncValues(syncManager, panel);
+        guiData.addSyncHandlers(syncManager);
 
         // create the menu
         player.nextContainerCounter();
@@ -117,6 +118,7 @@ public class GuiManager {
         PanelSyncManager syncManager = new PanelSyncManager(msm, true);
         ModularPanel<?> panel = factory.createPanel(guiData, syncManager, settings);
         WidgetTree.collectSyncValues(syncManager, panel);
+        guiData.addSyncHandlers(syncManager);
         ModularScreen screen = factory.createScreen(guiData, panel);
         screen.getContext().setSettings(settings);
         ModularContainerMenu container = settings.hasCustomContainer() ? settings.createContainer(windowId) : factory.createContainer(windowId);

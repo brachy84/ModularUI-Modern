@@ -9,8 +9,8 @@ import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Alignment;
-import brachy.modularui.utils.FormattingUtil;
 import brachy.modularui.utils.math.MathUtils;
+import brachy.modularui.utils.math.NumberFormat;
 import brachy.modularui.utils.math.SIPrefix;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Box;
@@ -19,7 +19,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayWidget<W>> extends Widget<W> implements IngredientProvider<FluidStack> {
 
@@ -63,12 +62,10 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         super.drawOverlay(context, widgetTheme);
         FluidStack fluid = getFluidStack();
-        if (fluid != null && displayAmountText()) {
-            String s = FormattingUtil.formatNumberReadable2F(getBaseUnitAmount(fluid.getAmount()), false) +
-                    getBaseUnit();
+        if (!fluid.isEmpty() && displayAmountText()) {
+            String s = NumberFormat.format(getBaseUnitAmount(fluid.getAmount()), NumberFormat.AMOUNT_TEXT) + getBaseUnit();
             // mc doesn't consider the 1px border in item slots for amount text, but it looks weird when it touches the
-            // left border, so
-            // we only apply padding there
+            // left border, so we only apply padding there
             GuiDraw.drawScaledAlignedTextInBox(context, s, this.contentPadding.left(), 0,
                     getArea().width - this.contentPadding.left(), getArea().height, Alignment.BottomRight);
         }
@@ -76,7 +73,6 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
 
     protected abstract boolean displayAmountText();
 
-    @Nullable
     protected abstract FluidStack getFluidStack();
 
     /**
@@ -145,11 +141,6 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
         return getThis();
     }
 
-    public W recipeSlotRole(RecipeSlotRole recipeRole) {
-        this.recipeRole = recipeRole;
-        return getThis();
-    }
-
     /**
      * Determines if a partially filled fluid should be drawn from the top instead of the bottom if the current fluid is
      * lighter than air.
@@ -161,11 +152,17 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     }
 
     @Override
+    public FluidStackList getIngredients() {
+        return FluidStackList.of(getFluidStack());
+    }
+
+    @Override
     public @NotNull Class<FluidStack> ingredientClass() {
         return FluidStack.class;
     }
 
-    public EntryList<FluidStack> getIngredients() {
-        return FluidStackList.of(getFluidStack());
+    public W recipeRole(RecipeSlotRole recipeRole) {
+        this.recipeRole = recipeRole;
+        return getThis();
     }
 }

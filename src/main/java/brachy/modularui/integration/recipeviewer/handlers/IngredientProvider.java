@@ -2,6 +2,7 @@ package brachy.modularui.integration.recipeviewer.handlers;
 
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,5 +46,9 @@ public interface IngredientProvider<I> extends IWidget {
     @NotNull
     default RecipeSlotRole getRecipeRole() {
         return RecipeSlotRole.RENDER_ONLY;
+    }
+
+    default RecipeViewerSlotWidget<I, ?> toRecipeViewerSlot() {
+        return RecipeViewerSlotWidget.createFrom(this);
     }
 }

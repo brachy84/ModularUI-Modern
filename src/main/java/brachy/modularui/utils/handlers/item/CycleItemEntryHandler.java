@@ -1,4 +1,4 @@
-package brachy.modularui.integration.recipeviewer.handlers.item;
+package brachy.modularui.utils.handlers.item;
 
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;

@@ -1,6 +1,7 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.api.ITheme;
+import brachy.modularui.api.MCHelper;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.Interactable;
@@ -11,23 +12,24 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.SlotTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
-import brachy.modularui.utils.IMultiFluidTankHandler;
+import brachy.modularui.utils.handlers.fluid.EmptyFluidTank;
+import brachy.modularui.utils.handlers.fluid.IMultiTankFluidHandler;
 import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.ModList;
 
 import lombok.Getter;
@@ -43,7 +45,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     public static final String UNIT_BUCKET = "B";
     public static final String UNIT_LITER = "L";
     private static final DecimalFormat TOOLTIP_FORMAT = new DecimalFormat("#.##");
-    private static final IFluidTank EMPTY = new FluidTank(0);
 
     static {
         TOOLTIP_FORMAT.setGroupingUsed(true);
@@ -161,6 +162,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
 
     @Override
     public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        super.drawOverlay(context, widgetTheme);
         if (isHovering()) {
             RenderSystem.colorMask(true, true, true, false);
             GuiDraw.drawRect(context.getGraphics(), 1, 1, getArea().w() - 2, getArea().h() - 2, getSlotHoverColor());
@@ -184,7 +186,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
             return Result.ACCEPT;
         }
-        ItemStack cursorStack = Minecraft.getInstance().player.containerMenu.getCarried();
+        ItemStack cursorStack = MCHelper.getPlayer().containerMenu.getCarried();
         if (this.syncHandler.phantom() ||
                 (!cursorStack.isEmpty() && cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {
             MouseData mouseData = MouseData.create(button);
@@ -224,13 +226,12 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return this.alwaysShowFull ? 0 : getFluidTank().getCapacity();
     }
 
-    @Nullable
     public FluidStack getFluidStack() {
-        return this.syncHandler == null ? null : this.syncHandler.getValue();
+        return this.syncHandler == null ? FluidStack.EMPTY : this.syncHandler.getOrDefault(FluidStack.EMPTY);
     }
 
     public IFluidTank getFluidTank() {
-        return this.syncHandler == null ? EMPTY : this.syncHandler.fluidTank();
+        return this.syncHandler == null ? EmptyFluidTank.INSTANCE : this.syncHandler.fluidTank();
     }
 
     /**
@@ -245,8 +246,8 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return syncHandler(new FluidSlotSyncHandler(fluidTank));
     }
 
-    public FluidSlot syncHandler(IMultiFluidTankHandler fluidTank, int index) {
-        return syncHandler(fluidTank.getFluidTank(index));
+    public FluidSlot syncHandler(IMultiTankFluidHandler fluidTank, int index) {
+        return syncHandler(new FluidSlotSyncHandler(fluidTank, index));
     }
 
     public FluidSlot syncHandler(FluidSlotSyncHandler syncHandler) {
@@ -258,7 +259,7 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return syncHandler(fluidTank);
     }
 
-    public FluidSlot tank(IMultiFluidTankHandler fluidTank, int index) {
+    public FluidSlot tank(IMultiTankFluidHandler fluidTank, int index) {
         return syncHandler(fluidTank, index);
     }
 
@@ -267,6 +268,10 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     @Override
     public void setGhostIngredient(@NotNull FluidStack ingredient) {
         if (this.syncHandler.phantom()) {
+            if (ingredient.getRawFluid() != Fluids.EMPTY) {
+                ingredient.setAmount(this.syncHandler.controlsAmount() ? 1000 : 1);
+                this.syncHandler.playSound(MCHelper.getPlayer(), ingredient, SoundActions.BUCKET_FILL);
+            }
             this.syncHandler.setValue(ingredient);
         }
     }
