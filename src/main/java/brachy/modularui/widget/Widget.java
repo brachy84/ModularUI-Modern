@@ -37,8 +37,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,10 +160,10 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     @Nullable
     private Consumer<W> onUpdateListener;
 
-    private @Nullable IGuiAction.MouseEnterArea mouseEnterArea;
-    private @Nullable IGuiAction.MouseLeaveArea mouseLeaveArea;
-    private @Nullable IGuiAction.MouseStartHover mouseStartHover;
-    private @Nullable IGuiAction.MouseEndHover mouseEndHover;
+    private IGuiAction.@Nullable MouseEnterArea mouseEnterArea;
+    private IGuiAction.@Nullable MouseLeaveArea mouseLeaveArea;
+    private IGuiAction.@Nullable MouseStartHover mouseStartHover;
+    private IGuiAction.@Nullable MouseEndHover mouseEndHover;
 
     public Widget() {
         resizer(new StandardResizer(this));
@@ -362,7 +362,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
      * @return the tooltip object of this widget and creates a new one if there is currently none.
      */
     @Override
-    public @NotNull RichTooltip tooltip() {
+    public @NonNull RichTooltip tooltip() {
         if (this.tooltip == null) {
             this.tooltip = new RichTooltip().parent(this);
         }
@@ -834,7 +834,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
      * @throws IllegalStateException if this widget has no sync handler ({@link #isSynced()} returns false)
      */
     @Override
-    public @NotNull SyncHandler<?> getSyncHandler() {
+    public @NonNull SyncHandler<?> getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("Widget is not initialised or not synced!");
         }
@@ -862,7 +862,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     }
 
     @MustBeInvokedByOverriders
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         if (!syncOrValue.isSyncHandler() && !syncOrValue.isValueHandler()) return;
         checkValidSyncOrValue(syncOrValue);
         if (syncOrValue instanceof SyncHandler<?> syncHandler) this.syncHandler = syncHandler;

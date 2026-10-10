@@ -16,7 +16,7 @@ import brachy.modularui.widget.Widget;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements IngredientProvider<ItemStack> {
 
@@ -29,12 +29,12 @@ public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements Ingr
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isValueOfType(ItemStack.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castValueNullable(ItemStack.class);
     }
@@ -80,7 +80,7 @@ public class ItemDisplayWidget extends Widget<ItemDisplayWidget> implements Ingr
     }
 
     @Override
-    public @NotNull Class<ItemStack> ingredientClass() {
+    public @NonNull Class<ItemStack> ingredientClass() {
         return ItemStack.class;
     }
 }

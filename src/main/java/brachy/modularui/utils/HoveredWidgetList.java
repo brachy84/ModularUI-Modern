@@ -4,7 +4,7 @@ import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.viewport.LocatedWidget;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class HoveredWidgetList {
 

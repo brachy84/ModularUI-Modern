@@ -2,8 +2,8 @@ package brachy.modularui.utils;
 
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,16 +50,16 @@ public interface ObjectList<V> extends it.unimi.dsi.fastutil.objects.ObjectList<
 
     void addLast(V v);
 
-    @NotNull
+    @NonNull
     V getFirst();
 
-    @NotNull
+    @NonNull
     V getLast();
 
-    @NotNull
+    @NonNull
     V removeFirst();
 
-    @NotNull
+    @NonNull
     V removeLast();
 
     @Nullable
@@ -76,7 +76,7 @@ public interface ObjectList<V> extends it.unimi.dsi.fastutil.objects.ObjectList<
 
     void trim();
 
-    @NotNull
+    @NonNull
     V[] elements();
 
     void ensureCapacity(int minCapacity);
@@ -128,22 +128,22 @@ public interface ObjectList<V> extends it.unimi.dsi.fastutil.objects.ObjectList<
         }
 
         @Override
-        public @NotNull V getFirst() {
+        public @NonNull V getFirst() {
             return get(0);
         }
 
         @Override
-        public @NotNull V getLast() {
+        public @NonNull V getLast() {
             return get(size() - 1);
         }
 
         @Override
-        public @NotNull V removeFirst() {
+        public @NonNull V removeFirst() {
             return remove(0);
         }
 
         @Override
-        public @NotNull V removeLast() {
+        public @NonNull V removeLast() {
             return remove(size() - 1);
         }
 

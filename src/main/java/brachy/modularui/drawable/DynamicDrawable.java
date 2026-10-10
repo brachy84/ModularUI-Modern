@@ -8,6 +8,8 @@ import brachy.modularui.theme.WidgetTheme;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.Supplier;
 
 /**
@@ -15,7 +17,7 @@ import java.util.function.Supplier;
  * Return value of the supplier should be deterministic per render frame,
  * in order to apply {@link ITheme} to correct object.
  */
-public record DynamicDrawable(Supplier<IDrawable> supplier) implements IDrawable {
+public record DynamicDrawable(Supplier<@Nullable IDrawable> supplier) implements IDrawable {
 
     @OnlyIn(Dist.CLIENT)
     @Override

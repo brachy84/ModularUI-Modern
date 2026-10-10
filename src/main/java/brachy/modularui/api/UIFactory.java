@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An interface for UI factories. They are responsible for opening synced GUIs and syncing necessary data.
@@ -30,7 +30,6 @@ public interface UIFactory<D extends GuiData> {
      *
      * @return the factory name
      */
-    @NotNull
     ResourceLocation getFactoryName();
 
     /**
@@ -112,7 +111,7 @@ public interface UIFactory<D extends GuiData> {
      * @param buffer buffer
      * @return new gui data
      */
-    @NotNull
+    @NonNull
     @ApiStatus.OverrideOnly
     D readGuiData(Player player, FriendlyByteBuf buffer);
 }

@@ -3,6 +3,8 @@ package brachy.modularui.api.widget;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.widget.sizer.Area;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Implement this interface on a {@link IWidget} to allow it being resized by dragging the edges similar to windows.
  */
@@ -53,7 +55,7 @@ public interface IDragResizeable {
     /**
      * An internal method to detect if the mouse is currently hovering an area where a drag resize can be started.
      */
-    static ResizeDragArea getDragResizeCorner(IDragResizeable widget, Area area, IViewportStack stack, int x, int y) {
+    static @Nullable ResizeDragArea getDragResizeCorner(IDragResizeable widget, Area area, IViewportStack stack, int x, int y) {
         if (!widget.isCurrentlyResizable()) return null;
 
         int mx = stack.unTransformX(x, y);

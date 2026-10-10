@@ -19,6 +19,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -83,7 +85,7 @@ public class NetworkHandler {
     }
 
     public static <T extends INetPacket> void register(Class<T> cls, Function<FriendlyByteBuf, T> decode,
-                                                       NetworkDirection direction) {
+                                                       @Nullable NetworkDirection direction) {
         INSTANCE.registerMessage(nextPacketId++, cls, INetPacket::encode, decode, (msg, ctx) -> {
             ctx.get().enqueueWork(() -> {
                 try {

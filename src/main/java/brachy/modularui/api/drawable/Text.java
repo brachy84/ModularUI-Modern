@@ -19,8 +19,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -74,7 +73,7 @@ public interface Text extends IDrawable {
      * @param key translation key
      * @return text key
      */
-    static ModularComponent lang(@NotNull @Translatable String key) {
+    static ModularComponent lang(@Translatable String key) {
         return ModularComponent.translatable(key);
     }
 
@@ -85,7 +84,7 @@ public interface Text extends IDrawable {
      * @param args translation arguments
      * @return text key
      */
-    static ModularComponent lang(@NotNull @Translatable String key, @Nullable Object... args) {
+    static ModularComponent lang(@Translatable String key, Object @Nullable... args) {
         return ModularComponent.translatable(key, args);
     }
 
@@ -95,7 +94,7 @@ public interface Text extends IDrawable {
      * @param key string
      * @return text key
      */
-    static ModularComponent str(@NotNull String key) {
+    static ModularComponent str(String key) {
         return ModularComponent.literal(key);
     }
 
@@ -107,7 +106,7 @@ public interface Text extends IDrawable {
      * @param args arguments
      * @return text key
      */
-    static ModularComponent str(@NotNull String key, @Nullable Object... args) {
+    static ModularComponent str(String key, Object @Nullable... args) {
         return ModularComponent.translatableWithFallback(key, key, args);
     }
 
@@ -117,7 +116,7 @@ public interface Text extends IDrawable {
      * @param keys text keys
      * @return composed text key.
      */
-    static ModularComponent comp(@NotNull Component... keys) {
+    static ModularComponent comp(Component... keys) {
         if (keys.length == 0) {
             return ModularComponent.empty();
         }
@@ -134,7 +133,7 @@ public interface Text extends IDrawable {
      * @param supp string supplier
      * @return dynamic text key
      */
-    static DynamicComponent dynamic(@NotNull Supplier<@NotNull Component> supp) {
+    static DynamicComponent dynamic(Supplier<Component> supp) {
         return new DynamicComponent(supp);
     }
 

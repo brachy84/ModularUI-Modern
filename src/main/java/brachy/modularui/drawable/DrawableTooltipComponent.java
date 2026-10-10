@@ -11,8 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-import org.jetbrains.annotations.NotNull;
-
 public record DrawableTooltipComponent(IDrawable drawable) implements ClientTooltipComponent, TooltipComponent {
 
     @Override
@@ -27,7 +25,7 @@ public record DrawableTooltipComponent(IDrawable drawable) implements ClientTool
     }
 
     @Override
-    public int getWidth(@NotNull Font font) {
+    public int getWidth(Font font) {
         if (drawable instanceof IIcon icon) {
             return icon.getWidth();
         } else if (drawable instanceof Text key) {
@@ -38,7 +36,7 @@ public record DrawableTooltipComponent(IDrawable drawable) implements ClientTool
     }
 
     @Override
-    public void renderImage(@NotNull Font font, int x, int y, @NotNull GuiGraphics guiGraphics) {
+    public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
         GuiContext context = GuiContext.getDefault();
         GuiGraphics lastGraphics = context.getGraphics();
 

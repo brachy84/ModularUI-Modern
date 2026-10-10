@@ -10,23 +10,22 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
 
 @Accessors(fluent = true)
 @OnlyIn(Dist.CLIENT)
 public class ScreenWrapper extends Screen implements IMuiScreen {
 
     @Getter
-    private final @NotNull ModularScreen screen;
+    private final ModularScreen screen;
 
-    public ScreenWrapper(@NotNull ModularScreen screen) {
+    public ScreenWrapper(ModularScreen screen) {
         super(Component.empty());
         this.screen = screen;
         this.screen.construct(this);
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics guiGraphics) {
+    public void renderBackground(GuiGraphics guiGraphics) {
         handleDrawBackground(guiGraphics, super::renderBackground);
     }
 

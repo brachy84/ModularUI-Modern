@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3fc;
 
 import java.util.Map;
@@ -24,7 +23,7 @@ public interface ISchema extends Iterable<Map.Entry<BlockPos, BlockState>> {
         return new SchemaRenderer(this);
     }
 
-    default void forEach(@NotNull BiConsumer<BlockPos, BlockState> action) {
+    default void forEach(BiConsumer<BlockPos, BlockState> action) {
         for (var entry : this) {
             action.accept(entry.getKey(), entry.getValue());
         }

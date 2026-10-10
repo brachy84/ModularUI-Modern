@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -29,11 +30,11 @@ public class UISettings {
 
     public static final double DEFAULT_INTERACT_RANGE = 8.0;
 
-    private IntFunction<ModularContainerMenu> containerCreator;
+    private @Nullable IntFunction<ModularContainerMenu> containerCreator;
     @OnlyIn(Dist.CLIENT)
-    private GuiCreator guiSupplier;
-    private Predicate<Player> canInteractWith;
-    @Getter private String theme;
+    private @Nullable GuiCreator guiSupplier;
+    private @Nullable Predicate<Player> canInteractWith;
+    @Getter private @Nullable String theme;
     @Getter private final RecipeViewerSettings recipeViewerSettings;
     @Getter
     @Setter

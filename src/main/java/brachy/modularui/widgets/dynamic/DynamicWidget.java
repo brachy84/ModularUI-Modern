@@ -8,7 +8,7 @@ import brachy.modularui.value.sync.DynamicSyncHandler;
 import brachy.modularui.value.sync.SyncHandler;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -34,12 +34,12 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDynamicHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.dynamicHandler = syncOrValue.castNullable(IDynamicHandler.class);
         if (this.dynamicHandler != null) {
@@ -48,7 +48,7 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public @NonNull List<IWidget> getChildren() {
         return this.child;
     }
 

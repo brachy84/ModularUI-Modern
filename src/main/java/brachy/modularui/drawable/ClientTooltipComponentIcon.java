@@ -11,12 +11,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ClientTooltipComponentIcon implements IIcon {
 
     @Getter private final ClientTooltipComponent clientTooltipComponent;
-    private Font lastFont;
+    private @Nullable Font lastFont;
 
     public ClientTooltipComponentIcon(ClientTooltipComponent clientTooltipComponent) {
         this.clientTooltipComponent = clientTooltipComponent;
