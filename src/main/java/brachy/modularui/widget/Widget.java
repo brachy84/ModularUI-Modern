@@ -208,7 +208,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
         }
         if (handler != null) {
             setSyncOrValue(handler);
-            this.syncOrValueSet = this.syncKey != null;
+            this.syncOrValueSet &= this.syncKey == null;
         }
         if (this.syncHandler instanceof ValueSyncHandler<?, ?> valueSyncHandler &&
                 valueSyncHandler.getChangeListener() == null) {
