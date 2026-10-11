@@ -161,7 +161,7 @@ public class ModularUIConfig {
     }
 
     public static boolean enableTestOverlays() {
-        if (SPEC == null || !SPEC.isLoaded()) {
+        if (CONFIG == null || !CONFIG.isLoaded()) {
             return false;
         }
         return ENABLE_TEST_OVERLAYS.get();
