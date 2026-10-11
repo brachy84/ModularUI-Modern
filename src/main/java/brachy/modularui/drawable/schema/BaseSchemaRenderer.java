@@ -91,20 +91,20 @@ import java.util.function.Function;
 @Accessors(fluent = true)
 public class BaseSchemaRenderer implements IDrawable {
 
-    private static final DummyLightTexture lightTexture = new DummyLightTexture();
+    protected static final DummyLightTexture lightTexture = new DummyLightTexture();
 
     @Getter private final ISchema schema;
-    private final RenderLevel renderLevel;
-    private final Viewport viewport = new Viewport();
+    protected final RenderLevel renderLevel;
+    protected final Viewport viewport = new Viewport();
     @Getter private final Camera camera = new Camera();
     @Getter private BlockHitResult lastRayTrace = null;
     @Getter private RenderFilter renderFilter = RenderFilter.ALL;
 
-    private RenderCompileTask lastRenderCompileTask = null;
-    private final ChunkBufferBuilderPack chunkBufferBuilders;
-    private final AtomicReference<CompileStatus> compileStatus = new AtomicReference<>();
-    private final AtomicReference<RenderCompileResults> compiledRenderResult = new AtomicReference<>();
-    private boolean dirty = true;
+    protected RenderCompileTask lastRenderCompileTask = null;
+    protected final ChunkBufferBuilderPack chunkBufferBuilders;
+    protected final AtomicReference<CompileStatus> compileStatus = new AtomicReference<>();
+    protected final AtomicReference<RenderCompileResults> compiledRenderResult = new AtomicReference<>();
+    protected boolean dirty = true;
 
     // projection * model view matrix
     @Getter private final Matrix4f projection = new Matrix4f();
@@ -112,7 +112,7 @@ public class BaseSchemaRenderer implements IDrawable {
     @Setter
     private boolean captureDebugInfo;
     @Getter private final Vector3f openGLMousePos = new Vector3f();
-    private final List<Vector3f> pos = new ArrayList<>();
+    protected final List<Vector3f> pos = new ArrayList<>();
 
     public BaseSchemaRenderer(ISchema schema) {
         this.schema = schema;
