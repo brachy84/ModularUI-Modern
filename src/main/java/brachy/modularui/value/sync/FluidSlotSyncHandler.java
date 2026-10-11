@@ -66,6 +66,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
         // use getTankFluidHandler here too so it'll always insert/extract from/to the correct slot
         this.fluidHandler = FluidTankHandler.getTankFluidHandler(this.fluidTank);
         this.tankIndex = index;
+        allowC2S();
     }
 
     @Nullable
@@ -89,8 +90,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
 
     public boolean needsSync() {
         FluidStack current = this.fluidTank.getFluid();
-        if (current == this.cache) return false;
-        if (current.isEmpty() && this.cache.isEmpty()) return true;
+        if (current == this.cache || current.isEmpty() == this.cache.isEmpty()) return false;
         return !current.isFluidStackIdentical(this.cache);
     }
 
