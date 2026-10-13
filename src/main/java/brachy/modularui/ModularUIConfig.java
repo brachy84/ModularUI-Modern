@@ -132,6 +132,10 @@ public class ModularUIConfig {
         CONFIG = BUILDER.build();
     }
 
+    public static boolean isLoaded() {
+        return CONFIG != null && CONFIG.isLoaded();
+    }
+
     public static int defaultScrollSpeed() {
         return DEFAULT_SCROLL_SPEED.getAsInt();
     }
@@ -161,14 +165,11 @@ public class ModularUIConfig {
     }
 
     public static boolean enableTestOverlays() {
-        if (CONFIG == null || !CONFIG.isLoaded()) {
-            return false;
-        }
-        return ENABLE_TEST_OVERLAYS.get();
+        return isLoaded() && ENABLE_TEST_OVERLAYS.getAsBoolean();
     }
 
     public static boolean replaceVanillaTooltips() {
-        return REPLACE_VANILLA_TOOLTIPS.getAsBoolean();
+        return isLoaded() && REPLACE_VANILLA_TOOLTIPS.getAsBoolean();
     }
 
     private static String lastValue = null;
@@ -193,7 +194,7 @@ public class ModularUIConfig {
         private Dev() {}
 
         public static boolean debugUI() {
-            return ModularUI.isTestEnv() || DEBUG_UI.getAsBoolean();
+            return ModularUI.isTestEnv() || (isLoaded() && DEBUG_UI.getAsBoolean());
         }
 
         public static int textColor() {
