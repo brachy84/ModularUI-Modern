@@ -3,6 +3,7 @@ package brachy.modularui.utils.serialization.codec;
 import brachy.modularui.api.codec.IExtendedCodec;
 import brachy.modularui.api.codec.MutableDecoder;
 import brachy.modularui.api.codec.MutableMapDecoder;
+import brachy.modularui.editor.IDisplayOption;
 import brachy.modularui.editor.Option;
 
 import com.mojang.serialization.Codec;
@@ -40,6 +41,9 @@ public final class Field<T, V> implements Option<T, V> {
     @Getter
     @Setter
     private boolean writeDefault = true;
+    @Getter
+    @Setter
+    private IDisplayOption<V> display;
 
     Field(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec, Supplier<V> defaultSupplier, boolean dynamicSupplier) {
         this(name, fieldWriter, fieldReader, codec, defaultSupplier, dynamicSupplier, false);
@@ -239,6 +243,7 @@ public final class Field<T, V> implements Option<T, V> {
         field.altNames(this.altNames);
         field.encodeWhen(this.encodeWhen);
         field.writeDefault(this.writeDefault);
+        field.display(this.display);
         return field;
     }
 
@@ -248,6 +253,7 @@ public final class Field<T, V> implements Option<T, V> {
         field.altNames(this.altNames);
         field.encodeWhen(this.encodeWhen);
         field.writeDefault(this.writeDefault);
+        field.display(this.display);
         return field;
     }
 

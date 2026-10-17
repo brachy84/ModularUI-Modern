@@ -14,6 +14,7 @@ import brachy.modularui.api.widget.IPositioned;
 import brachy.modularui.api.widget.ISynced;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.editor.IDisplayOption;
 import brachy.modularui.factory.GuiData;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.UISettings;
@@ -73,11 +74,11 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     public static final MutableObjectCodec<Widget<?>> CODEC = MutableObjectCodec.<Widget<?>>builder()
             .instance(Widget::new)
             .equalityTest(Widget::areEqual)
-            .addOpt("name", Widget::name, Widget::getName, NAME_CODEC, null)
-            .addOpt("enabled", Widget::setEnabled, Widget::isEnabled, Codec.BOOL, true)
-            .addOpt("syncKey", Widget::setSyncKey, Widget::getSyncKey, Codec.STRING, null)
-            .addOpt("disableThemeBackground", Widget::disableThemeBackground, Widget::isDisableThemeBackground, Codec.BOOL, false)
-            .addOpt("disableHoverThemeBackground", Widget::disableHoverThemeBackground, Widget::isDisableHoverThemeBackground, Codec.BOOL, false)
+            .addOpt("name", Widget::name, Widget::getName, NAME_CODEC, IDisplayOption.TEXT, null)
+            .addOpt("enabled", Widget::setEnabled, Widget::isEnabled, Codec.BOOL, IDisplayOption.SWITCH, true)
+            .addOpt("syncKey", Widget::setSyncKey, Widget::getSyncKey, Codec.STRING, IDisplayOption.TEXT, null)
+            .addOpt("disableThemeBackground", Widget::disableThemeBackground, Widget::isDisableThemeBackground, Codec.BOOL, IDisplayOption.SWITCH, false)
+            .addOpt("disableHoverThemeBackground", Widget::disableHoverThemeBackground, Widget::isDisableHoverThemeBackground, Codec.BOOL, IDisplayOption.SWITCH, false)
             .addOpt("shadow", Widget::shadow, Widget::getShadow, IDrawable.CODEC, null)
             .addOpt("background", Widget::setBackground, Widget::getBackground, IDrawable.CODEC, null)
             .addOpt("backgroundOverlay", Widget::setBackground, Widget::getBackground, IDrawable.CODEC, null)
@@ -86,7 +87,7 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
             .addOpt("hoverBackgroundOverlay", Widget::setHoverBackgroundOverlay, Widget::getHoverBackground, IDrawable.CODEC, null)
             .addOpt("hoverOverlay", Widget::hoverOverlay, Widget::getHoverOverlay, IDrawable.CODEC, null)
             .addOpt("widgetTheme", Widget::widgetTheme, Widget::getWidgetThemeOverride, WidgetThemeKey.CODEC, null)
-            .addOpt("excludeAreaInRecipeViewer", Widget::excludeAreaInRecipeViewer, w -> w.excludeAreaInRecipeViewer, Codec.BOOL, false)
+            .addOpt("excludeAreaInRecipeViewer", Widget::excludeAreaInRecipeViewer, w -> w.excludeAreaInRecipeViewer, Codec.BOOL, IDisplayOption.SWITCH, false)
             .addOpt("tooltip", Widget::setTooltip, Widget::getTooltip, RichTooltip.CODEC, null)
             .addFieldsOf(StandardResizer.COMPACT_CODEC, Widget::resizer)
             .addFieldOf(Area.CODEC, Widget::getArea, "margin")

@@ -1,6 +1,7 @@
 package brachy.modularui.utils.serialization.codec;
 
 import brachy.modularui.api.codec.InstanceMapDecoder;
+import brachy.modularui.editor.IDisplayOption;
 import brachy.modularui.editor.Option;
 import brachy.modularui.editor.Options;
 import brachy.modularui.utils.EqualityTest;
@@ -366,18 +367,38 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
             return addDynOpt(name, fieldWriter, fieldReader, codec.codec(), null);
         }
 
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, MapCodec<V> codec,
+                                  @Nullable IDisplayOption<V> displayOption) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec.codec(), displayOption, null);
+        }
+
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null);
+        }
+
         /**
          * Adds a new non-optional, mutable property.
          *
          * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier)
          */
-        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec) {
-            return addDynOpt(name, fieldWriter, fieldReader, codec, null);
+        public <V> Builder<T> add(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
+                                  @Nullable IDisplayOption<V> displayOption) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, displayOption, null);
         }
 
         public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
                                      MapCodec<V> codec, @Nullable V defValue) {
             return addOpt(name, fieldWriter, fieldReader, codec.codec(), defValue);
+        }
+
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                     MapCodec<V> codec, @Nullable IDisplayOption<V> displayOption, @Nullable V defValue) {
+            return addOpt(name, fieldWriter, fieldReader, codec.codec(), displayOption, defValue);
+        }
+
+        public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
+                                     Codec<V> codec, @Nullable V defValue) {
+            return addOpt(name, fieldWriter, fieldReader, codec, null, defValue);
         }
 
         /**
@@ -387,16 +408,27 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
          * @see #addDynOpt(String, FieldWriter, FieldReader, Codec, Supplier)
          */
         public <V> Builder<T> addOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader,
-                                     Codec<V> codec, @Nullable V defValue) {
+                                     Codec<V> codec, @Nullable IDisplayOption<V> displayOption, @Nullable V defValue) {
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field encoder must not be null!");
             Objects.requireNonNull(fieldReader, "Field decoder must not be null!");
-            return addField(new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue, false));
+            return addField(new Field<>(name, fieldWriter, fieldReader, codec, () -> defValue, false)
+                    .display(displayOption));
         }
 
         public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, MapCodec<V> codec,
                                         @Nullable Supplier<V> defaultSupplier) {
             return addDynOpt(name, fieldWriter, fieldReader, codec.codec(), defaultSupplier);
+        }
+
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, MapCodec<V> codec,
+                                        @Nullable IDisplayOption<V> display, @Nullable Supplier<V> defaultSupplier) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec.codec(), display, defaultSupplier);
+        }
+
+        public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
+                                        @Nullable Supplier<V> defaultSupplier) {
+            return addDynOpt(name, fieldWriter, fieldReader, codec, null, defaultSupplier);
         }
 
         /**
@@ -406,17 +438,19 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
          * @param fieldWriter     writes a value to the field
          * @param fieldReader     reads a value from the field
          * @param codec           handles en-/decoding of a value
+         * @param display         function which creates a widget for this value in the ui editor
          * @param defaultSupplier supplier for a default value, if this is non-null, this property is marked as optional
          * @param <V>             type of value
          * @return this
          * @throws NullPointerException if name, fieldEncoder or fieldDecoder is null
          */
         public <V> Builder<T> addDynOpt(String name, FieldWriter<T, V> fieldWriter, FieldReader<T, V> fieldReader, Codec<V> codec,
-                                        @Nullable Supplier<V> defaultSupplier) {
+                                        @Nullable IDisplayOption<V> display, @Nullable Supplier<V> defaultSupplier) {
             Objects.requireNonNull(name, "Name of field must not be null!");
             Objects.requireNonNull(fieldWriter, "Field writer must not be null!");
             Objects.requireNonNull(fieldReader, "Field reader must not be null!");
             return addField(new Field<>(name, fieldWriter, fieldReader, codec, defaultSupplier, defaultSupplier != null)
+                    .display(display)
                     .encodeWhen(Field.EncodeWhen.ALWAYS));
         }
 
@@ -483,6 +517,15 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
 
         public Builder<T> alias(String... alias) {
             return doOnField(f -> f.altNames(alias));
+        }
+
+        public Builder<T> editorDisplay(IDisplayOption<?> displayOption) {
+            return doOnField(f -> setDisplay(f, displayOption));
+        }
+
+        private <V1, V2> void setDisplay(Field<T, V1> field, IDisplayOption<V2> displayOption) {
+            // praying emoji
+            field.display((IDisplayOption<V1>) displayOption);
         }
 
         private Builder<T> doOnField(Consumer<Field<T, ?>> consumer) {

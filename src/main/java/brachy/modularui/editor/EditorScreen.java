@@ -141,6 +141,7 @@ public class EditorScreen extends CustomModularScreen {
             var w = this.selectedWidget.getDelegate();
             cfg.child(Text.str(w.getTypeName()).asWidget().color(Color.WHITE.main).horizontalCenter());
             buildSizePosConfig(w);
+            buildOtherPropertyConfig(w);
             return;
         }
         cfg.child(Text.str("No widget selected").asWidget().color(Color.WHITE.main));
@@ -461,6 +462,33 @@ public class EditorScreen extends CustomModularScreen {
                                 .setNumbers()
                                 .value(new IntValue.Dynamic(() -> get(widget, box, bottomOption, 0), v -> set(widget, box, bottomOption, v)))));
         parent.child(card);
+    }
+
+    private void buildOtherPropertyConfig(IWidget widget) {
+        var cfg = this.widgetConfigurator;
+        var flow = new CollapsableList()
+                .fullWidth()
+                .coverChildrenHeight()
+                .indent(0)
+                .paddingRight(2)
+                .title(Text.str("other").asWidget());
+        cfg.child(flow);
+        var type = widget.getType();
+        for (Option<? extends IWidget, ?> o : type.getOptions()) {
+            var display = buildOption(widget, o);
+            if (display != null) {
+                flow.child(Flow.row()
+                        .fullWidth()
+                        .coverChildrenHeight()
+                        .child(Text.str(o.name()).asWidget().expanded())
+                        .child(display));
+            }
+        }
+    }
+
+    private <T1, T2> IWidget buildOption(T1 w, Option<T2, ?> option) {
+        // praying emoji
+        return option.createDisplay((T2) w);
     }
 
     private <V, I> void set(IWidget widget, Option<IWidget, I> o1, Option<I, V> o2, V value) {
