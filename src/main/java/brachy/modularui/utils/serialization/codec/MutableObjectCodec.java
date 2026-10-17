@@ -60,8 +60,12 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
         this.wrapped = wrapped;
     }
 
-    public Optional<Field<T, ?>> findField(String name) {
-        return this.fields.stream().filter(f -> f.name().equals(name)).findFirst();
+    @SuppressWarnings("unchecked")
+    public <V> Optional<Field<T, V>> findField(String name) {
+        return this.fields.stream()
+                .filter(f -> f.name().equals(name))
+                .findFirst()
+                .map(f -> (Field<T, V>) f);
     }
 
     public void forEachField(Consumer<Field<T, ?>> consumer) {
@@ -258,8 +262,8 @@ public class MutableObjectCodec<T> extends ExtendedMutableMapCodec<T> implements
     }
 
     @Override
-    public Option<T, ?> getOption(String name) {
-        return findField(name).orElse(null);
+    public <V> Option<T, V> getOption(String name) {
+        return this.<V>findField(name).orElse(null);
     }
 
     public static class Builder<T> {

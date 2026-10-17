@@ -17,6 +17,7 @@ import brachy.modularui.value.FloatValue;
 import brachy.modularui.value.IntValue;
 import brachy.modularui.widget.SplitView;
 import brachy.modularui.widget.WidgetRegistry;
+import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Box;
 import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widget.sizer.Unit;
@@ -156,15 +157,17 @@ public class EditorScreen extends CustomModularScreen {
                 .indent(0)
                 .paddingRight(2)
                 .title(Text.str("Size and Position").asWidget());
-        var type = widget.getType();
-        var left = type.getOptions().getOption("left");
-        var right = type.getOptions().getOption("right");
-        var width = type.getOptions().getOption("width");
-        var top = type.getOptions().getOption("top");
-        var bottom = type.getOptions().getOption("bottom");
-        var height = type.getOptions().getOption("height");
-        var padding = type.getOptions().getOption("padding");
-        var margin = type.getOptions().getOption("margin");
+        @SuppressWarnings("unchecked")
+        var type = (WidgetType<IWidget>) widget.getType();
+
+        Option<IWidget, Unit> left = type.getOptions().getOption("left");
+        Option<IWidget, Unit> right = type.getOptions().getOption("right");
+        Option<IWidget, Unit> width = type.getOptions().getOption("width");
+        Option<IWidget, Unit> top = type.getOptions().getOption("top");
+        Option<IWidget, Unit> bottom = type.getOptions().getOption("bottom");
+        Option<IWidget, Unit> height = type.getOptions().getOption("height");
+        Option<IWidget, Box> padding = type.getOptions().getOption("padding");
+        Option<IWidget, Box> margin = type.getOptions().getOption("margin");
 
         if (left == null || right == null || width == null || top == null || bottom == null || height == null) {
             cfg.child(Text.str("Widget codec does not have size and position fields!").style(Text.RED)
@@ -176,22 +179,22 @@ public class EditorScreen extends CustomModularScreen {
 
         cfg.child(flow);
         var r = widget.resizer();
-        posCard(flow, widget, r, GuiAxis.X, Unit.State.START, (Option<IWidget, Unit>) left);
-        posCard(flow, widget, r, GuiAxis.X, Unit.State.END, (Option<IWidget, Unit>) right);
-        sizeCard(flow, widget, r, GuiAxis.X, (Option<IWidget, Unit>) width);
-        posCard(flow, widget, r, GuiAxis.Y, Unit.State.START, (Option<IWidget, Unit>) top);
-        posCard(flow, widget, r, GuiAxis.Y, Unit.State.END, (Option<IWidget, Unit>) bottom);
-        sizeCard(flow, widget, r, GuiAxis.Y, (Option<IWidget, Unit>) height);
-        marginPaddingCard(flow, widget, r, (Option<IWidget, Box>) margin);
-        marginPaddingCard(flow, widget, r, (Option<IWidget, Box>) padding);
+        posCard(flow, widget, r, GuiAxis.X, Unit.State.START, left);
+        posCard(flow, widget, r, GuiAxis.X, Unit.State.END, right);
+        sizeCard(flow, widget, r, GuiAxis.X, width);
+        posCard(flow, widget, r, GuiAxis.Y, Unit.State.START, top);
+        posCard(flow, widget, r, GuiAxis.Y, Unit.State.END, bottom);
+        sizeCard(flow, widget, r, GuiAxis.Y, height);
+        marginPaddingCard(flow, widget, r, margin);
+        marginPaddingCard(flow, widget, r, padding);
     }
 
     private void posCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Unit.State state, Option<IWidget, Unit> unit) {
-        Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
-        Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
-        Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
-        Option<Unit, Float> anchorOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("anchor");
-        Option<Unit, Boolean> autoAnchorOption = (Option<Unit, Boolean>) Unit.FULL_CODEC.getOption("autoAnchor");
+        Option<Unit, Float> valueOption = Unit.FULL_CODEC.getOption("value");
+        Option<Unit, Unit.Measure> measureOption = Unit.FULL_CODEC.getOption("measure");
+        Option<Unit, Integer> offsetOption = Unit.FULL_CODEC.getOption("offset");
+        Option<Unit, Float> anchorOption = Unit.FULL_CODEC.getOption("anchor");
+        Option<Unit, Boolean> autoAnchorOption = Unit.FULL_CODEC.getOption("autoAnchor");
         var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name());
         var card = new CollapsableList().name(unit.name() + "_config_card")
                 .padding(1)
@@ -305,9 +308,9 @@ public class EditorScreen extends CustomModularScreen {
 
     private void sizeCard(CollapsableList parent, IWidget widget, StandardResizer resizer, GuiAxis axis, Option<IWidget, Unit> unit) {
         var state = Unit.State.SIZE;
-        Option<Unit, Float> valueOption = (Option<Unit, Float>) Unit.FULL_CODEC.getOption("value");
-        Option<Unit, Unit.Measure> measureOption = (Option<Unit, Unit.Measure>) Unit.FULL_CODEC.getOption("measure");
-        Option<Unit, Integer> offsetOption = (Option<Unit, Integer>) Unit.FULL_CODEC.getOption("offset");
+        Option<Unit, Float> valueOption = Unit.FULL_CODEC.getOption("value");
+        Option<Unit, Unit.Measure> measureOption = Unit.FULL_CODEC.getOption("measure");
+        Option<Unit, Integer> offsetOption = Unit.FULL_CODEC.getOption("offset");
         var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, unit.name());
         var card = new CollapsableList().name(unit.name() + "_config_card")
                 .padding(1)
@@ -387,10 +390,10 @@ public class EditorScreen extends CustomModularScreen {
     }
 
     private void marginPaddingCard(CollapsableList parent, IWidget widget, StandardResizer resizer, Option<IWidget, Box> box) {
-        Option<Box, Integer> leftOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("left");
-        Option<Box, Integer> rightOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("right");
-        Option<Box, Integer> topOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("top");
-        Option<Box, Integer> bottomOption = (Option<Box, Integer>) Box.FULL_CODEC.getOption("bottom");
+        Option<Box, Integer> leftOption = Box.FULL_CODEC.getOption("left");
+        Option<Box, Integer> rightOption = Box.FULL_CODEC.getOption("right");
+        Option<Box, Integer> topOption = Box.FULL_CODEC.getOption("top");
+        Option<Box, Integer> bottomOption = Box.FULL_CODEC.getOption("bottom");
         var name = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, box.name());
         var type = new IntValue(0);
         var card = new CollapsableList().name(box.name() + "_config_card")
@@ -473,9 +476,10 @@ public class EditorScreen extends CustomModularScreen {
                 .paddingRight(2)
                 .title(Text.str("other").asWidget());
         cfg.child(flow);
-        var type = widget.getType();
-        for (Option<? extends IWidget, ?> o : type.getOptions()) {
-            var display = buildOption(widget, o);
+        @SuppressWarnings("unchecked")
+        var type = (WidgetType<IWidget>) widget.getType();
+        for (Option<IWidget, ?> o : type.getOptions()) {
+            var display = o.createDisplay(widget);
             if (display != null) {
                 flow.child(Flow.row()
                         .fullWidth()
@@ -484,11 +488,6 @@ public class EditorScreen extends CustomModularScreen {
                         .child(display));
             }
         }
-    }
-
-    private <T1, T2> IWidget buildOption(T1 w, Option<T2, ?> option) {
-        // praying emoji
-        return option.createDisplay((T2) w);
     }
 
     private <V, I> void set(IWidget widget, Option<IWidget, I> o1, Option<I, V> o2, V value) {
