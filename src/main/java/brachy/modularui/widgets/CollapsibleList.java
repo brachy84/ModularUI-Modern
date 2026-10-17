@@ -14,7 +14,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableList> implements Interactable, ILayoutWidget {
+public class CollapsibleList extends AbstractParentWidget<IWidget, CollapsibleList> implements Interactable, ILayoutWidget {
 
     @Getter
     private boolean expanded = true;
@@ -26,7 +26,7 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
     @Getter private int childPadding = 2;
     @Getter private int indent = 4;
 
-    public CollapsableList() {
+    public CollapsibleList() {
         coverChildrenHeight().fullWidth();
     }
 
@@ -120,7 +120,7 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
         return Result.ACCEPT;
     }
 
-    public CollapsableList expanded(boolean expanded) {
+    public CollapsibleList expanded(boolean expanded) {
         if (this.expanded != expanded) {
             this.expanded = expanded;
             if (isValid()) {
@@ -140,24 +140,24 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
         return widget;
     }
 
-    public CollapsableList title(IWidget widget) {
+    public CollapsibleList title(IWidget widget) {
         if (this.title != null) remove(0);
         addChild(widget, 0);
         this.title = widget;
         return this;
     }
 
-    public CollapsableList child(IWidget list) {
+    public CollapsibleList child(IWidget list) {
         addChild(list, -1);
         return this;
     }
 
-    public CollapsableList collapsedIcon(IIcon icon) {
+    public CollapsibleList collapsedIcon(IIcon icon) {
         this.collapsedIcon = icon != null ? icon : IIcon.EMPTY;
         return this;
     }
 
-    public CollapsableList expandedIcon(IIcon icon) {
+    public CollapsibleList expandedIcon(IIcon icon) {
         this.expandedIcon = icon != null ? icon : IIcon.EMPTY;
         return this;
     }
@@ -170,17 +170,17 @@ public class CollapsableList extends AbstractParentWidget<IWidget, CollapsableLi
      * @param doCollapse true if disabled children should be collapsed.
      * @return this
      */
-    public CollapsableList collapseDisabledChildren(boolean doCollapse) {
+    public CollapsibleList collapseDisabledChildren(boolean doCollapse) {
         this.collapseDisabledChildren = doCollapse;
         return this;
     }
 
-    public CollapsableList childPadding(int childPadding) {
+    public CollapsibleList childPadding(int childPadding) {
         this.childPadding = childPadding;
         return this;
     }
 
-    public CollapsableList indent(int indent) {
+    public CollapsibleList indent(int indent) {
         this.indent = indent;
         return this;
     }
