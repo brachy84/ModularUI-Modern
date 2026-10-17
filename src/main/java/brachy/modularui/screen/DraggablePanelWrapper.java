@@ -6,8 +6,6 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 
-import net.minecraft.client.gui.GuiGraphics;
-
 import lombok.Getter;
 
 public class DraggablePanelWrapper implements IDraggable {
@@ -25,7 +23,7 @@ public class DraggablePanelWrapper implements IDraggable {
     }
 
     @Override
-    public void drawMovingState(GuiGraphics graphics, ModularGuiContext context, float partialTicks) {
+    public void drawMovingState(ModularGuiContext context, float partialTicks) {
         context.pushMatrix();
         transform(context);
         WidgetTree.drawTree(this.panel, context, true, true);
@@ -33,9 +31,8 @@ public class DraggablePanelWrapper implements IDraggable {
     }
 
     @Override
-    public boolean onDragStart(int button) {
+    public boolean onDragStart(ModularGuiContext context, int button) {
         if (button == 0) {
-            ModularGuiContext context = this.panel.getContext();
             this.movingArea.x = context.transformX(0, 0);
             this.movingArea.y = context.transformY(0, 0);
             this.relativeClickX = context.getAbsMouseX() - this.movingArea.x;
@@ -46,21 +43,19 @@ public class DraggablePanelWrapper implements IDraggable {
     }
 
     @Override
-    public void onDragEnd(boolean successful) {
-        if (successful) {
-            float y = this.panel.getContext().getAbsMouseY() - this.relativeClickY;
-            float x = this.panel.getContext().getAbsMouseX() - this.relativeClickX;
-            y = y / (this.panel.getScreen().getScreenArea().height - this.panel.getArea().height);
-            x = x / (this.panel.getScreen().getScreenArea().width - this.panel.getArea().width);
-            this.panel.resizer().resetPosition();
-            this.panel.resizer().relativeToScreen();
-            this.panel.resizer().topRelAnchor(y, y).leftRelAnchor(x, x);
-            this.panel.scheduleResize();
-        }
+    public void onDragEnd(ModularGuiContext context) {
+        float y = this.panel.getContext().getAbsMouseY() - this.relativeClickY;
+        float x = this.panel.getContext().getAbsMouseX() - this.relativeClickX;
+        y = y / (this.panel.getScreen().getScreenArea().height - this.panel.getArea().height);
+        x = x / (this.panel.getScreen().getScreenArea().width - this.panel.getArea().width);
+        this.panel.resizer().resetPosition();
+        this.panel.resizer().relativeToScreen();
+        this.panel.resizer().topRelAnchor(y, y).leftRelAnchor(x, x);
+        this.panel.scheduleResize();
     }
 
     @Override
-    public void onDrag(int mouseButton, double timeSinceLastClick) {
+    public void onDrag(ModularGuiContext context, int mouseButton, double timeSinceLastClick) {
         this.movingArea.x = this.panel.getContext().getAbsMouseX() - this.relativeClickX;
         this.movingArea.y = this.panel.getContext().getAbsMouseY() - this.relativeClickY;
     }

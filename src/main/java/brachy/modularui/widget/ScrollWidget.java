@@ -5,8 +5,7 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widget.scroll.HorizontalScrollData;
 import brachy.modularui.widget.scroll.VerticalScrollData;
 
-public class ScrollWidget<W extends ScrollWidget<W>> extends AbstractScrollWidget<IWidget, W>
-        implements IParentWidget<IWidget, W> {
+public class ScrollWidget<W extends ScrollWidget<W>> extends AbstractScrollWidget<IWidget, W> implements IParentWidget<IWidget, W> {
 
     public ScrollWidget() {
         super(null, null);
@@ -23,5 +22,10 @@ public class ScrollWidget<W extends ScrollWidget<W>> extends AbstractScrollWidge
     @Override
     public boolean addChild(IWidget child, int index) {
         return super.addChild(child, index);
+    }
+
+    @Override
+    public IWidget castToType(IWidget widget) {
+        return widget;
     }
 }

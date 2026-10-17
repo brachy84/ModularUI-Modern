@@ -2,8 +2,11 @@ package brachy.modularui.value;
 
 import brachy.modularui.api.value.IValue;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ObjectValue<T> implements IValue<T> {
@@ -50,6 +53,15 @@ public class ObjectValue<T> implements IValue<T> {
         private final Class<T> type;
         private final Supplier<T> getter;
         private final Consumer<T> setter;
+
+        public static <T> Dynamic<T> nullSafe(Class<T> type, Supplier<T> getter, Consumer<T> setter, Supplier<T> defaultValue, @Nullable Predicate<T> toNull) {
+            return new Dynamic<>(type, () -> {
+                var t = getter.get();
+                return t == null ? defaultValue.get() : t;
+            }, setter != null && toNull != null ? v -> {
+                setter.accept(toNull.test(v) ? null : v);
+            } : setter);
+        }
 
         public Dynamic(Class<T> type, Supplier<T> getter, Consumer<T> setter) {
             this.type = type;

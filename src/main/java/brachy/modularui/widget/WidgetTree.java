@@ -12,6 +12,8 @@ import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.sizer.ResizeNode;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 
@@ -137,12 +139,12 @@ public class WidgetTree extends TreeUtil {
      * @throws IllegalArgumentException if the path is empty
      */
     public static @Nullable IWidget findChildAtNullable(IWidget parent, String... path) {
-        if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
-        return InternalWidgetTree.findChildAt(parent, IWidget.class, path, 0, true);
+        return findChildAtOptional(parent, path).orElse(null);
     }
 
     public static Optional<IWidget> findChildAtOptional(IWidget parent, String... path) {
-        return Optional.ofNullable(findChildAtNullable(parent, path));
+        if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
+        return InternalWidgetTree.findChildAt(parent, IWidget.class, path).result();
     }
 
     /**
@@ -158,7 +160,7 @@ public class WidgetTree extends TreeUtil {
      */
     public static @NotNull IWidget findChildAt(IWidget parent, String... path) {
         if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
-        return InternalWidgetTree.findChildAt(parent, IWidget.class, path, 0, false);
+        return InternalWidgetTree.findChildAt(parent, IWidget.class, path).getOrThrow(false, s -> {});
     }
 
     /**
@@ -175,12 +177,12 @@ public class WidgetTree extends TreeUtil {
      * @throws ClassCastException       if a target widget was found, but the expected type doesn't match
      */
     public static <T extends IWidget> @Nullable T findChildAtNullable(IWidget parent, Class<T> type, String... path) {
-        if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
-        return InternalWidgetTree.findChildAt(parent, type, path, 0, true);
+        return findChildAtOptional(parent, type, path).orElse(null);
     }
 
     public static <T extends IWidget> Optional<T> findChildAtOptional(IWidget parent, Class<T> type, String... path) {
-        return Optional.ofNullable(findChildAtNullable(parent, type, path));
+        if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
+        return InternalWidgetTree.findChildAt(parent, type, path).result();
     }
 
     /**
@@ -199,7 +201,15 @@ public class WidgetTree extends TreeUtil {
      */
     public static <T extends IWidget> @NotNull T findChildAt(IWidget parent, Class<T> type, String... path) {
         if (path.length == 0) throw new IllegalArgumentException("Path to child must not be empty!");
-        return InternalWidgetTree.findChildAt(parent, type, path, 0, false);
+        return InternalWidgetTree.findChildAt(parent, type, path).getOrThrow(false, s -> {});
+    }
+
+    public static DataResult<IWidget> findChildAt(IWidget parent, String path) {
+        return InternalWidgetTree.findChildAt(parent, IWidget.class, path.split("/"));
+    }
+
+    public static DataResult<Pair<IWidget, IWidget>> findChildAndParentAt(IWidget parent, String path) {
+        return InternalWidgetTree.findChildAndParentAt(parent, IWidget.class, path.split("/"));
     }
 
     public static boolean hasSyncedValues(ModularPanel<?> panel) {

@@ -16,11 +16,13 @@ import java.util.function.UnaryOperator;
 @ApiStatus.NonExtendable
 public class BuildPanelEvent extends Event {
 
+    @Getter private final PanelIdentifier id;
     @Getter private final ModularScreen screen;
     @Getter private final ModularPanel<?> mainPanel;
     @Getter protected ModularPanel<?> openingPanel;
 
     protected BuildPanelEvent(ModularScreen screen, ModularPanel<?> openingPanel) {
+        this.id = PanelIdentifier.of(screen, openingPanel);
         this.screen = screen;
         this.mainPanel = screen.getMainPanel();
         this.openingPanel = openingPanel;

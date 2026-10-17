@@ -1,14 +1,18 @@
 package brachy.modularui.widget;
 
+import brachy.modularui.api.ITheme;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IDelegatingWidget;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.screen.viewport.ModularGuiContext;
+import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.MutableSingletonList;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 public class DelegatingWidget extends AbstractWidget implements IDelegatingWidget {
@@ -21,8 +25,10 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
     }
 
     protected void setDelegate(IWidget delegate) {
-        if (!this.delegate.isEmpty()) {
-            this.delegate.get().dispose();
+        if (this.delegate.hasValue()) {
+            if (this.delegate.hasNonNullValue()) {
+                this.delegate.get().dispose();
+            }
             this.delegate.remove();
         }
         if (delegate != null) {
@@ -39,70 +45,130 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
 
     @Override
     public @NotNull List<IWidget> getChildren() {
-        return this.delegate;
+        return getDelegate() != null ? getDelegate().getChildren() : Collections.emptyList();
     }
 
     @Override
-    public void afterInit() {
-        super.resizer().setDefaultParent(null); // remove this widget from the resize node tree
-        if (hasChildren()) {
-            getDelegate().resizer().setDefaultParentIsDelegating(true);
-            getDelegate().resizer().relative(getParent()); // add the delegated widget at the place of this widget on
-            // the resize node tree
-        }
+    public void onInit() {
+        super.onInit();
+        this.delegate.forEach(w -> {
+            w.initialise(this, false);
+        });
     }
 
     @Override
-    public void postResize() {
-        super.postResize();
-        if (getDelegate() != null) {
-            Area childArea = getDelegate().getArea();
-            Area area = super.getArea();
-            area.set(childArea);
-            area.rx = childArea.rx;
-            area.ry = childArea.ry;
-            childArea.rx = 0;
-            childArea.ry = 0;
-        }
+    public void onUpdate() {
+        super.onUpdate();
+        this.delegate.apply(IWidget::onUpdate);
+        if (getDelegate() != null) getDelegate().onUpdate();
+    }
+
+    @Override
+    public void onMouseStartHover() {
+        super.onMouseStartHover();
+        this.delegate.apply(IWidget::onMouseStartHover);
+    }
+
+    @Override
+    public void onMouseEndHover() {
+        super.onMouseEndHover();
+        this.delegate.apply(IWidget::onMouseEndHover);
+    }
+
+    @Override
+    public void onMouseEnterArea() {
+        super.onMouseEnterArea();
+        this.delegate.apply(IWidget::onMouseEnterArea);
+    }
+
+    @Override
+    public void onMouseLeaveArea() {
+        super.onMouseLeaveArea();
+        this.delegate.apply(IWidget::onMouseLeaveArea);
+    }
+
+    @Override
+    public WidgetThemeEntry<?> getWidgetTheme(ITheme theme) {
+        return this.delegate.toValue(w -> w.getWidgetTheme(theme));
+    }
+
+    @Override
+    public void drawBackground(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        this.delegate.apply(w -> w.drawBackground(context, widgetTheme));
+    }
+
+    @Override
+    public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        this.delegate.apply(w -> w.draw(context, widgetTheme));
+    }
+
+    @Override
+    public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+        this.delegate.apply(w -> w.drawOverlay(context, widgetTheme));
+    }
+
+    @Override
+    public void drawForeground(ModularGuiContext context) {
+        this.delegate.apply(w -> w.drawForeground(context));
     }
 
     @Override
     public @NotNull StandardResizer resizer() {
-        return getDelegate() != null ? getDelegate().resizer() : super.resizer();
+        return this.delegate.toValue(IWidget::resizer, super.resizer());
     }
 
     @Override
     public Area getArea() {
-        return getDelegate() != null ? getDelegate().getArea() : super.getArea();
+        return this.delegate.toValue(IWidget::getArea, super.getArea());
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return super.isEnabled() && this.delegate.toBool(IWidget::isEnabled, true);
     }
 
     @Override
     public void transform(IViewportStack stack) {
-        stack.translate(super.getArea().rx, super.getArea().ry, 0);
+        this.delegate.apply(w -> w.transform(stack));
     }
 
     @Override
     public boolean canBeSeen(IViewportStack stack) {
-        return false;
+        return this.delegate.toBool(w -> w.canBeSeen(stack), false);
     }
 
     @Override
-    public boolean requiresResize() {
-        return getDelegate() != null && getDelegate().requiresResize();
+    public boolean canHover() {
+        return this.delegate.toBool(IWidget::canHover, false);
+    }
+
+    @Override
+    public boolean canClickThrough() {
+        return this.delegate.toBool(IWidget::canClickThrough, true);
+    }
+
+    @Override
+    public boolean canHoverThrough() {
+        return this.delegate.toBool(IWidget::canHoverThrough, true);
     }
 
     @Override
     public int getDefaultWidth() {
-        return getDelegate() != null ? getDelegate().getDefaultWidth() : super.getDefaultWidth();
+        return this.delegate.toInt(IWidget::getDefaultWidth, super.getDefaultWidth());
     }
 
     @Override
     public int getDefaultHeight() {
-        return getDelegate() != null ? getDelegate().getDefaultHeight() : super.getDefaultHeight();
+        return this.delegate.toInt(IWidget::getDefaultHeight, super.getDefaultWidth());
     }
 
     @Override
     public IWidget getDelegate() {
         return delegate.getOrNull();
+    }
+
+    @Override
+    public IWidget copy() {
+        return new DelegatingWidget(this.delegate.hasNonNullValue() ? this.delegate.get().copy() : null);
     }
 }
