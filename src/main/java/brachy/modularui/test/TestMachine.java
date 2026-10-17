@@ -61,8 +61,8 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public class TestMachine {
         }
 
         @Override
-        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        public @NonNull <T> LazyOptional<T> getCapability(@NonNull Capability<T> cap, @Nullable Direction side) {
             if (cap == ForgeCapabilities.ITEM_HANDLER) {
                 return this.items.cast();
             } else if (cap == ForgeCapabilities.FLUID_HANDLER) {

@@ -1,6 +1,6 @@
 package brachy.modularui.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +62,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull Iterator<T> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return new Iterator<>() {
 
             private byte cursor = 0;
@@ -89,7 +89,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull Object @NotNull [] toArray() {
+    public @NonNull Object @NonNull [] toArray() {
         if (!this.hasValue) return new Object[0];
         Object[] o = new Object[1];
         o[0] = this.value;
@@ -97,7 +97,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull <T1> T1 @NotNull [] toArray(@NotNull T1 @NotNull [] a) {
+    public @NonNull <T1> T1 @NonNull [] toArray(@NonNull T1 @NonNull [] a) {
         if (!this.hasValue) return a;
         if (a.length == 0) a = Arrays.copyOf(a, 1);
         a[0] = (T1) this.value;
@@ -122,7 +122,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public boolean containsAll(@NotNull Collection<?> c) {
+    public boolean containsAll(@NonNull Collection<?> c) {
         int s = c.size();
         if (s > 1 || (s == 1 != this.hasValue)) return false;
         if (!this.hasValue) return true;
@@ -131,7 +131,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(@NotNull Collection<? extends T> c) {
+    public boolean addAll(@NonNull Collection<? extends T> c) {
         if (this.hasValue || c.isEmpty()) return false;
         if (c instanceof List<?> l) {
             add((T) l.get(0));
@@ -148,13 +148,13 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(int index, @NotNull Collection<? extends T> c) {
+    public boolean addAll(int index, @NonNull Collection<? extends T> c) {
         verifyIndex(index, false);
         return addAll(c);
     }
 
     @Override
-    public boolean removeAll(@NotNull Collection<?> c) {
+    public boolean removeAll(@NonNull Collection<?> c) {
         if (!this.hasValue || c.isEmpty()) return false;
         if (c instanceof List<?> l) {
             return remove(l.get(0));
@@ -163,7 +163,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public boolean retainAll(@NotNull Collection<?> c) {
+    public boolean retainAll(@NonNull Collection<?> c) {
         if (!this.hasValue || c.contains(this.value)) return false;
         remove();
         return true;
@@ -213,7 +213,7 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull ListIterator<T> listIterator() {
+    public @NonNull ListIterator<T> listIterator() {
         return new ListIterator<T>() {
 
             private byte cursor = 0;
@@ -273,13 +273,13 @@ public class MutableSingletonList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull ListIterator<T> listIterator(int index) {
+    public @NonNull ListIterator<T> listIterator(int index) {
         verifyIndex(index, false);
         return listIterator();
     }
 
     @Override
-    public @NotNull List<T> subList(int fromIndex, int toIndex) {
+    public @NonNull List<T> subList(int fromIndex, int toIndex) {
         if (fromIndex < 0 || toIndex > 1 || toIndex < fromIndex) throw new IndexOutOfBoundsException();
         return new MutableSingletonList<>(this.value);
     }

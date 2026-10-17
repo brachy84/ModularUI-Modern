@@ -2,12 +2,14 @@ package brachy.modularui.api.widget;
 
 import net.minecraft.world.inventory.Slot;
 
+import org.jspecify.annotations.Nullable;
+
 public interface IDelegatingWidget extends IWidget, IVanillaSlot {
 
     IWidget getDelegate();
 
     @Override
-    default Slot getVanillaSlot() {
+    default @Nullable Slot getVanillaSlot() {
         return getDelegate() instanceof IVanillaSlot vanillaSlot ? vanillaSlot.getVanillaSlot() : null;
     }
 

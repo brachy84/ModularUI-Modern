@@ -12,7 +12,7 @@ import brachy.modularui.widget.AbstractParentWidget;
 import brachy.modularui.widget.WidgetTree;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         if (button == 0 || button == 1) {
             setExpanded(!this.expanded);
             return Result.SUCCESS;

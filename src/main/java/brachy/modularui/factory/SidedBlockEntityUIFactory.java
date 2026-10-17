@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -61,7 +61,7 @@ public class SidedBlockEntityUIFactory extends AbstractUIFactory<SidedPosGuiData
     }
 
     @Override
-    public @NotNull IUIHolder<SidedPosGuiData> getGuiHolder(SidedPosGuiData data) {
+    public @NonNull IUIHolder<SidedPosGuiData> getGuiHolder(SidedPosGuiData data) {
         return Objects.requireNonNull(castUIHolder(data.getBlockEntity()), "Found BlockEntity is not a gui holder!");
     }
 
@@ -78,7 +78,7 @@ public class SidedBlockEntityUIFactory extends AbstractUIFactory<SidedPosGuiData
     }
 
     @Override
-    public @NotNull SidedPosGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
+    public @NonNull SidedPosGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
         return new SidedPosGuiData(player, buffer.readBlockPos(), Direction.from3DDataValue(buffer.readByte()));
     }
 }

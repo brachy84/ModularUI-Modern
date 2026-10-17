@@ -12,7 +12,7 @@ import brachy.modularui.widget.sizer.Area;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DragHandle extends Widget<DragHandle> implements IDraggable, IViewport {
 

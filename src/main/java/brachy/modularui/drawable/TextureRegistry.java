@@ -4,7 +4,7 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class TextureRegistry {
         }
     }
 
-    public static synchronized void registerTexture(String name, UITexture texture) {
+    public static synchronized void registerTexture(@Nullable String name, UITexture texture) {
         String current = REVERSE_TEXTURES.get(texture);
         if (current != null) {
             if (name != null && !current.equals(name)) {
@@ -60,13 +60,11 @@ public class TextureRegistry {
         registerTexture(name, texture);
     }
 
-    @Nullable
-    public static UITexture getTexture(String s) {
+    public static @Nullable UITexture getTexture(String s) {
         return TEXTURES.get(s);
     }
 
-    @Nullable
-    public static String getTextureId(UITexture texture) {
+    public static @Nullable String getTextureId(UITexture texture) {
         return REVERSE_TEXTURES.get(texture);
     }
 }

@@ -8,8 +8,8 @@ import brachy.modularui.utils.serialization.network.IByteBufSerializer;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -25,10 +25,10 @@ public abstract class GenericCollectionSyncHandler<T, C extends Collection<T>, S
     private final EqualityTest<T> equals;
     private final ICopy<T> copy;
 
-    protected GenericCollectionSyncHandler(@NotNull Supplier<C> getter,
+    protected GenericCollectionSyncHandler(@NonNull Supplier<C> getter,
                                            @Nullable Consumer<C> setter,
-                                           @NotNull IByteBufDeserializer<T> deserializer,
-                                           @NotNull IByteBufSerializer<T> serializer,
+                                           @NonNull IByteBufDeserializer<T> deserializer,
+                                           @NonNull IByteBufSerializer<T> serializer,
                                            @Nullable EqualityTest<T> equals,
                                            @Nullable ICopy<T> copy) {
         this.getter = getter;

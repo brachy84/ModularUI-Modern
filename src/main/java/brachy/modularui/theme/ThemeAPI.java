@@ -7,8 +7,8 @@ import brachy.modularui.utils.serialization.json.JsonBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class ThemeAPI implements IThemeApi {
     }
 
     @Override
-    public @NotNull ITheme getTheme(String id) {
+    public @NonNull ITheme getTheme(String id) {
         return this.themes.getOrDefault(id, getDefaultTheme());
     }
 

@@ -2,10 +2,12 @@ package brachy.modularui.factory.inventory;
 
 import net.minecraft.world.item.ItemStack;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A function to visit a slot in a player bound inventory.
  */
-public interface InventoryVisitor<T> {
+public interface InventoryVisitor<T extends @Nullable Object> {
 
     /**
      * Called on visiting a slot in a player bound inventory.

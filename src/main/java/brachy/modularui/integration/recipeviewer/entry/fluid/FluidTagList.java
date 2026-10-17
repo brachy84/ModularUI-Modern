@@ -8,8 +8,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public final class FluidTagList implements FluidEntryList {
     @Getter
     private final List<FluidTagEntry> entries = new ArrayList<>();
 
-    public static FluidTagList of(@NotNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
+    public static FluidTagList of(@NonNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
         var list = new FluidTagList();
         list.add(tag, amount, nbt);
         return list;
@@ -30,7 +30,7 @@ public final class FluidTagList implements FluidEntryList {
         entries.add(entry);
     }
 
-    public void add(@NotNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
+    public void add(@NonNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
         add(new FluidTagEntry(tag, amount, nbt));
     }
 
@@ -46,7 +46,7 @@ public final class FluidTagList implements FluidEntryList {
                 .toList();
     }
 
-    public record FluidTagEntry(@NotNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
+    public record FluidTagEntry(@NonNull TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbt) {
 
         public Stream<FluidStack> stacks() {
             return BuiltInRegistries.FLUID.getTag(tag).map(HolderSet.ListBacked::stream).orElseGet(Stream::empty)

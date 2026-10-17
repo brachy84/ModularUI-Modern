@@ -16,8 +16,8 @@ import brachy.modularui.widget.scroll.VerticalScrollData;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A scrollable parent widget. Children can be added.
@@ -99,7 +99,7 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public @NonNull Result onMousePressed(int button) {
         ModularGuiContext context = getContext();
         if (this.scroll.mouseClicked(context)) {
             return Result.SUCCESS;

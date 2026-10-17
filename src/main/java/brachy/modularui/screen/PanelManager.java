@@ -11,8 +11,7 @@ import brachy.modularui.widget.WidgetTree;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class PanelManager {
     private static final int DISPOSAL_CAPACITY = 1 << 4;
 
     @Getter
-    private final @NotNull ModularScreen screen;
+    private final ModularScreen screen;
     /**
      * At least one panel must exist always exist.
      * If this panel is closed, all panels will close.
@@ -48,7 +47,7 @@ public class PanelManager {
     private boolean dirty = false;
     private State state = State.INIT;
 
-    public PanelManager(@NotNull ModularScreen screen, ModularPanel<?> panel) {
+    public PanelManager(ModularScreen screen, ModularPanel<?> panel) {
         this.screen = screen;
         this.mainPanel = Objects.requireNonNull(panel, "Main panel must not be null!");
     }
@@ -88,7 +87,6 @@ public class PanelManager {
         }
     }
 
-    @NotNull
     public List<LocatedWidget> getAllHoveredWidgetsList(boolean debug) {
         for (ModularPanel<?> panel : this.panels) {
             if (panel.isAnyHovered()) {
@@ -141,7 +139,6 @@ public class PanelManager {
         return false;
     }
 
-    @NotNull
     public ModularPanel<?> getMainPanel() {
         if (isDisposed()) {
             throw new IllegalStateException("Screen has been disposed");
@@ -155,7 +152,6 @@ public class PanelManager {
      * @return last opened panel
      * @throws IndexOutOfBoundsException if the current state is {@link State#DISPOSED}
      */
-    @NotNull
     public ModularPanel<?> getTopMostPanel() {
         return this.panels.get(0);
     }
@@ -183,7 +179,7 @@ public class PanelManager {
     }
 
     @ApiStatus.Internal
-    public void openPanel(@NotNull ModularPanel<?> panel, @NotNull IPanelHandler panelHandler) {
+    public void openPanel(ModularPanel<?> panel, IPanelHandler panelHandler) {
         IPanelHandler existing = this.panelHandlerMap.get(panel.getName());
         if (existing == null) {
             this.panelHandlerMap.put(panel.getName(), panelHandler);
@@ -196,7 +192,7 @@ public class PanelManager {
         openPanel(panel, true);
     }
 
-    public void closePanel(@NotNull ModularPanel<?> panel) {
+    public void closePanel(ModularPanel<?> panel) {
         if (!hasOpenPanel(panel)) {
             throw new IllegalArgumentException("Panel '" + panel.getName() + "' is open in this screen!");
         }
@@ -342,25 +338,25 @@ public class PanelManager {
         return index;
     }
 
-    public void pushUp(@NotNull ModularPanel<?> panel) {
+    public void pushUp(ModularPanel<?> panel) {
         int index = getPanelIndexOrFail(panel, "push up");
         if (index == 0) return;
         movePanel(index, index - 1);
     }
 
-    public void pushDown(@NotNull ModularPanel<?> panel) {
+    public void pushDown(ModularPanel<?> panel) {
         int index = getPanelIndexOrFail(panel, "push down");
         if (index == this.panels.size() - 1) return;
         movePanel(index, index + 1);
     }
 
-    public void pushToTop(@NotNull ModularPanel<?> window) {
+    public void pushToTop(ModularPanel<?> window) {
         int index = getPanelIndexOrFail(window, "push to top");
         if (index == 0) return;
         movePanel(index, 0);
     }
 
-    public void pushToBottom(@NotNull ModularPanel<?> window) {
+    public void pushToBottom(ModularPanel<?> window) {
         int index = getPanelIndexOrFail(window, "push to bottom");
         if (index == this.panels.size() - 1) return;
         movePanel(index, -1);
@@ -436,14 +432,12 @@ public class PanelManager {
         return false;
     }
 
-    @NotNull
     @UnmodifiableView
     public List<ModularPanel<?>> getOpenPanels() {
         checkDirty();
         return this.panelsView;
     }
 
-    @NotNull
     @UnmodifiableView
     public Iterable<ModularPanel<?>> getReverseOpenPanels() {
         checkDirty();

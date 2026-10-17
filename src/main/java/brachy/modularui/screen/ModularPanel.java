@@ -35,8 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,45 +55,45 @@ import java.util.function.Supplier;
  */
 public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> implements IViewport, IDragResizeable {
 
-    public static ModularPanel<?> defaultPanel(@NotNull String name) {
+    public static ModularPanel<?> defaultPanel(String name) {
         return defaultPanel(name, 176, 166);
     }
 
-    public static ModularPanel<?> defaultPanel(@NotNull String name, int width, int height) {
+    public static ModularPanel<?> defaultPanel(String name, int width, int height) {
         return new ModularPanel<>(name).size(width, height);
     }
 
     private static final int tapTime = 200;
 
     @Getter
-    private final @NotNull String name;
-    private ModularScreen screen;
+    private final String name;
+    private @Nullable ModularScreen screen;
     @Setter
-    private IPanelHandler panelHandler;
+    private @Nullable IPanelHandler panelHandler;
     @Getter
     private State state = State.IDLE;
     private boolean cantDisposeNow = false;
     @Getter
-    private final @NotNull ObjectList<LocatedWidget> hovering = ObjectList.create();
+    private final ObjectList<LocatedWidget> hovering = ObjectList.create();
     private final Input keyboard = new Input();
     private final Input mouse = new Input();
 
     // drag resizing
-    private IDragResizeable currentResizing = null;
-    private LocatedWidget currentResizingWidget = null;
-    private ResizeDragArea draggingDragArea = null;
+    private @Nullable IDragResizeable currentResizing = null;
+    private @Nullable LocatedWidget currentResizingWidget = null;
+    private @Nullable ResizeDragArea draggingDragArea = null;
     private final Area startArea = new Area();
     private int dragX, dragY;
 
     private final List<IPanelHandler> clientSubPanels = new ArrayList<>();
     private boolean invisible = false;
-    private Animator animator;
+    private @Nullable Animator animator;
 
-    private String themeOverride;
-    private ITheme theme;
+    private @Nullable String themeOverride;
+    private @Nullable ITheme theme;
 
-    private Consumer<W> onOpenAction;
-    private Consumer<W> onCloseAction;
+    private @Nullable Consumer<W> onOpenAction;
+    private @Nullable Consumer<W> onCloseAction;
     private boolean resizeable = false;
     /**
      * True if this panel can be dragged. Never works on the main panel.
@@ -103,13 +102,13 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     private boolean disablePanelsBelow = false;
     private boolean closeOnOutOfBoundsClick = false;
 
-    public ModularPanel(@NotNull String name) {
+    public ModularPanel(String name) {
         this.name = Objects.requireNonNull(name, "A panels name must not be null and should be unique!");
         center();
     }
 
     @Override
-    public @NotNull W getPanel() {
+    public W getPanel() {
         return getThis();
     }
 
@@ -127,12 +126,12 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IPanelHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         setPanelHandler(syncOrValue.castNullable(IPanelHandler.class));
     }
@@ -697,7 +696,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     }
 
     @Override
-    public ModularScreen getScreen() {
+    public @Nullable ModularScreen getScreen() {
         if (!isValid()) {
             throw new IllegalStateException();
         }
@@ -727,7 +726,6 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return null;
     }
 
-    @NotNull
     public List<LocatedWidget> getAllHoveringList(boolean debug) {
         if (this.hovering.isEmpty()) return Collections.emptyList();
         return new ArrayList<>(this.hovering);
@@ -749,7 +747,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return true;
     }
 
-    final void setPanelGuiContext(@NotNull ModularGuiContext context) {
+    final void setPanelGuiContext(ModularGuiContext context) {
         setContext(context);
     }
 
@@ -781,7 +779,6 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         return getScreen().getMainPanel() == this;
     }
 
-    @NotNull
     protected Animator getAnimator() {
         if (this.animator == null) {
             this.animator = new Animator()
@@ -915,8 +912,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
     private static class Input {
 
         private final ObjectList<Interactable> acceptedInteractions = ObjectList.create();
-        @Nullable
-        private LocatedWidget lastPressed;
+        private @Nullable LocatedWidget lastPressed;
         private boolean held;
         private long time;
         private int lastButton;
@@ -950,7 +946,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
             return this.lastButton == button && getTimeSinceEvent() <= tapTime;
         }
 
-        private boolean isWidget(IWidget widget) {
+        private boolean isWidget(@Nullable IWidget widget) {
             return this.lastPressed != null && this.lastPressed.getElement() == widget;
         }
 
@@ -958,7 +954,7 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
             return isWidget(widget.getElement());
         }
 
-        private void pressed(LocatedWidget pressed, int button) {
+        private void pressed(@Nullable LocatedWidget pressed, int button) {
             if (!this.held) {
                 this.lastPressed = pressed;
                 if (this.lastPressed != null) {

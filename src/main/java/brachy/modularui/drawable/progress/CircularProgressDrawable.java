@@ -15,6 +15,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import lombok.Getter;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A progress texture which translates the progress into a circular angle. This works with any {@link brachy.modularui.api.drawable.IDrawable}.
@@ -109,7 +110,7 @@ public class CircularProgressDrawable extends AbstractProgressDrawable<CircularP
         }, x, y, width, height);
     }
 
-    public CircularProgressDrawable direction(Direction direction) {
+    public CircularProgressDrawable direction(@Nullable Direction direction) {
         this.direction = direction == null ? Direction.CW : direction;
         return this;
     }

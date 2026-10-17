@@ -17,7 +17,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -55,7 +55,7 @@ public abstract class SyncHandler<S extends SyncHandler<S>> implements ISyncOrVa
      * @param id             an internal denominator to identify this package
      * @param bufferConsumer the package builder
      */
-    public final void syncToClient(int id, @NotNull IPacketWriter bufferConsumer) {
+    public final void syncToClient(int id, @NonNull IPacketWriter bufferConsumer) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         buffer.writeVarInt(id);
         bufferConsumer.write(buffer);
@@ -69,7 +69,7 @@ public abstract class SyncHandler<S extends SyncHandler<S>> implements ISyncOrVa
      * @param bufferConsumer the package builder
      */
     @OnlyIn(Dist.CLIENT)
-    public final void syncToServer(int id, @NotNull IPacketWriter bufferConsumer) {
+    public final void syncToServer(int id, @NonNull IPacketWriter bufferConsumer) {
         if (!isAllowC2S()) {
             ModularUI.LOGGER.throwing(Level.WARN, new SecurityException("Sync handler is unable to send packets to server!"));
             return;
@@ -86,7 +86,7 @@ public abstract class SyncHandler<S extends SyncHandler<S>> implements ISyncOrVa
      * @param id             an internal denominator to identify this package
      * @param bufferConsumer the package builder
      */
-    public final void sync(int id, @NotNull IPacketWriter bufferConsumer) {
+    public final void sync(int id, @NonNull IPacketWriter bufferConsumer) {
         if (getSyncManager().isClient() && !isAllowC2S()) {
             ModularUI.LOGGER.throwing(Level.WARN, new SecurityException("Sync handler is unable to send packets to server!"));
             return;

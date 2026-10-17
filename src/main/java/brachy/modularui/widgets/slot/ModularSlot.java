@@ -21,8 +21,8 @@ import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -111,7 +111,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack stack) {
+    public boolean mayPlace(@NonNull ItemStack stack) {
         return this.canPut && !stack.isEmpty() && this.filter.test(stack) && super.mayPlace(stack);
     }
 
@@ -125,7 +125,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public int getMaxStackSize(@NotNull ItemStack stack) {
+    public int getMaxStackSize(@NonNull ItemStack stack) {
         return this.ignoreMaxStackSize ? getMaxStackSize() : super.getMaxStackSize(stack);
     }
 
@@ -158,7 +158,7 @@ public class ModularSlot extends SlotItemHandler {
         return this.isEnabled();
     }
 
-    public @NotNull ItemSlotSyncHandler getSyncHandler() {
+    public @NonNull ItemSlotSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("ModularSlot is not yet initialized");
         }
@@ -170,7 +170,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean isSameInventory(@NotNull Slot other) {
+    public boolean isSameInventory(@NonNull Slot other) {
         return other instanceof SlotItemHandler slotItemHandler && slotItemHandler.getItemHandler() == this.getItemHandler();
     }
 

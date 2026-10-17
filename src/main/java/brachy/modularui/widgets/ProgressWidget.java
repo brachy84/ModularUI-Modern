@@ -10,7 +10,7 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.DoubleValue;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.DoubleSupplier;
 
@@ -26,12 +26,12 @@ public class ProgressWidget extends Widget<ProgressWidget> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDoubleValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castNullable(IDoubleValue.class);
         if (this.value != null && this.progress != null) {

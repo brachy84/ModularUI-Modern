@@ -18,7 +18,7 @@ import brachy.modularui.widget.sizer.Box;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayWidget<W>> extends Widget<W> implements IngredientProvider<FluidStack> {
 
@@ -157,7 +157,7 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
     }
 
     @Override
-    public @NotNull Class<FluidStack> ingredientClass() {
+    public @NonNull Class<FluidStack> ingredientClass() {
         return FluidStack.class;
     }
 

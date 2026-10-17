@@ -9,7 +9,7 @@ import brachy.modularui.value.sync.ValueSyncHandler;
 import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.ListWidget;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
     }
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public @NonNull List<IWidget> getChildren() {
         return selected;
     }
 
@@ -97,12 +97,12 @@ public class DropdownWidget<T, W extends DropdownWidget<T, W>> extends AbstractM
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         return syncOrValue.isValueOfType(this.valueType);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(@NonNull ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castValueNullable(this.valueType);
         if (syncOrValue instanceof ValueSyncHandler<?, ?> valueSyncHandler) {
