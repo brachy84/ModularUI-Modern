@@ -202,6 +202,12 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
     }
 
     @Override
+    public void dispose() {
+        closeMenu(false);
+        super.dispose();
+    }
+
+    @Override
     public boolean isSelfOrChildHovered() {
         if (isBelowMouse()) return true;
         if (!isOpen() || this.menu == null) return false;
