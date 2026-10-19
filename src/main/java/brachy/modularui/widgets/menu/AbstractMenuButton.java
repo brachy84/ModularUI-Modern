@@ -5,6 +5,7 @@ import brachy.modularui.api.ITheme;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.api.widget.Interactable;
+import brachy.modularui.screen.SecondaryPanel;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.WidgetTree;
@@ -204,6 +205,10 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
     @Override
     public void dispose() {
         closeMenu(false);
+        if (this.panelHandler instanceof SecondaryPanel secondaryPanel) {
+            secondaryPanel.dispose();
+        }
+        this.panelHandler = null;
         super.dispose();
     }
 

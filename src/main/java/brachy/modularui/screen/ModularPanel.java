@@ -807,6 +807,10 @@ public class ModularPanel<W extends ModularPanel<W>> extends ParentWidget<W> imp
         }
     }
 
+    void unregisterSubPanel(IPanelHandler handler) {
+        this.clientSubPanels.remove(handler);
+    }
+
     void closeClientSubPanels() {
         for (IPanelHandler handler : this.clientSubPanels) {
             if (handler.isSubPanel()) {

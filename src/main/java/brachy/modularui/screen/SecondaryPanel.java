@@ -100,6 +100,16 @@ public class SecondaryPanel implements IPanelHandler {
         this.open = true;
     }
 
+    @ApiStatus.Internal
+    public void dispose() {
+        closePanel();
+        this.parent.unregisterSubPanel(this);
+        if (this.screen != null) {
+            this.screen.getPanelManager().removePanelHandler(this);
+        }
+        this.panel = null;
+    }
+
     @OnlyIn(Dist.CLIENT)
     private ModularPanel<?> buildPanel() {
         return Objects.requireNonNull(this.provider.build(this.screen.getMainPanel(), MCHelper.getPlayer()));
