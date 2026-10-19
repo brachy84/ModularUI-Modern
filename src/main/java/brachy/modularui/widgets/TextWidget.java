@@ -6,14 +6,21 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Alignment;
+import brachy.modularui.utils.Color;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.WidgetTree;
+import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Box;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
+
+import net.minecraft.util.ExtraCodecs;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +30,19 @@ import java.util.function.Supplier;
 
 public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
+    public static final MutableObjectCodec<TextWidget<?>> CODEC = MutableObjectCodec.<TextWidget<?>>builder()
+            .instance(TextWidget::new)
+            .equalityTest(TextWidget::areEqual)
+            .addFieldsOf(Widget.CODEC, w -> w)
+            .add("text", TextWidget::value, TextWidget::getKey, ExtraCodecs.COMPONENT)
+            .addOpt("alignment", TextWidget::textAlign, TextWidget::getAlignment, Alignment.CODEC, Alignment.CenterLeft)
+            .addOpt("color", TextWidget::color, TextWidget::getColorValue, Color.CODEC, null)
+            .addOpt("shadow", TextWidget::shadow, TextWidget::isShadow, Codec.BOOL, null)
+            .addOpt("scale", TextWidget::scale, TextWidget::getScale, Codec.FLOAT, 1f)
+            .addOpt("maxWidth", TextWidget::maxWidth, TextWidget::getMaxWidth, Codec.INT, -1)
+            .addUnencodableOpt("keySupplier", TextWidget::value, TextWidget::getKeySupplier, null)
+            .build();
+
     @Getter private Component key;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private IntSupplier color = null;
@@ -31,7 +51,7 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
     @Getter private int maxWidth = -1;
 
     private String lastText;
-    private @Nullable Supplier<Component> keySupplier;
+    @Getter private @Nullable Supplier<Component> keySupplier;
 
     public TextWidget(@NotNull Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
@@ -45,6 +65,10 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     public TextWidget(String key) {
         this(Text.str(key));
+    }
+
+    private TextWidget() {
+        this(Text.EMPTY);
     }
 
     @Override
@@ -153,6 +177,21 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
         return true;
     }
 
+    public Integer getColorValue() {
+        return this.color != null ? this.color.getAsInt() : null;
+    }
+
+    @Override
+    public WidgetType<?> getType() {
+        return WidgetType.TEXT;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public W copyExact() {
+        return (W) CODEC.copy(this);
+    }
+
     @Deprecated
     public W alignment(Alignment alignment) {
         return textAlign(alignment);
@@ -165,6 +204,10 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     public W color(int color) {
         return color(() -> color);
+    }
+
+    public W color(Integer color) {
+        return color(color == null ? null : () -> color);
     }
 
     public W color(@Nullable IntSupplier color) {
@@ -195,5 +238,21 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     public Boolean isShadow() {
         return this.getTextShadow();
+    }
+
+    public boolean isEqual(TextWidget<?> o) {
+        return super.isEqual(o) &&
+                Objects.equals(this.key, o.key) &&
+                Objects.equals(this.keySupplier, o.keySupplier) &&
+                Objects.equals(this.alignment, o.alignment) &&
+                Objects.equals(this.color, o.color) &&
+                Objects.equals(this.textShadow, o.textShadow) &&
+                Float.compare(this.scale, o.scale) == 0 &&
+                this.maxWidth == o.maxWidth;
+    }
+
+    public static boolean areEqual(TextWidget<?> a, TextWidget<?> b) {
+        if (a == null || b == null) return a == b;
+        return a.isEqual(b);
     }
 }

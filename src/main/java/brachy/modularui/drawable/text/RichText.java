@@ -7,6 +7,8 @@ import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.layout.IViewportStack;
+import brachy.modularui.drawable.DrawableType;
+import brachy.modularui.drawable.Icon;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
@@ -61,7 +63,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     };
     public static final Codec<Object> RICH_ELEMENT_CODEC = Codec.of(RICH_ELEMENT_ENCODER, RICH_ELEMENT_DECODER);
 
-    public static final MutableObjectCodec<RichText> CODEC = MutableObjectCodec.drawableBuilder(RichText::new)
+    public static final MutableObjectCodec<RichText> CODEC = MutableObjectCodec.builder(RichText::new)
             .addOpt("alignment", RichText::alignment, RichText::getAlignment, Alignment.CODEC, Alignment.CenterLeft)
             .addOpt("scale", RichText::scale, RichText::getScale, Codec.FLOAT, 1f)
             .addOpt("color", RichText::textColor, RichText::getColor, CodecUtil.wrapNullsafe(Codec.INT), null)
@@ -426,6 +428,11 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
             return o;
         }
         return null;
+    }
+
+    @Override
+    public DrawableType<RichText> getType() {
+        return DrawableType.RICH_TEXT;
     }
 
     public RichText copy() {
