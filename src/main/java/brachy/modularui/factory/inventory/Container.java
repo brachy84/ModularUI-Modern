@@ -4,10 +4,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A {@link InventoryType} implementation for {@link net.minecraft.world.Container Container}.
  */
-public abstract class Container extends InventoryType<Void> {
+public abstract class Container extends InventoryType<@Nullable Void> {
 
     public Container(String id) {
         super(id);
@@ -16,12 +18,12 @@ public abstract class Container extends InventoryType<Void> {
     public abstract net.minecraft.world.Container getInventory(Player player);
 
     @Override
-    public ItemStack getStackInSlot(Player player, Void context, int index) {
+    public ItemStack getStackInSlot(Player player, @Nullable Void context, int index) {
         return getInventory(player).getItem(index);
     }
 
     @Override
-    public void setStackInSlot(Player player, Void context, int index, ItemStack stack) {
+    public void setStackInSlot(Player player, @Nullable Void context, int index, ItemStack stack) {
         getInventory(player).setItem(index, stack);
     }
 
@@ -37,7 +39,7 @@ public abstract class Container extends InventoryType<Void> {
      * @return if the visitor function returned true on a slot
      */
     @Override
-    public boolean visitAll(Player player, InventoryVisitor<Void> visitor) {
+    public boolean visitAll(Player player, InventoryVisitor<@Nullable Void> visitor) {
         for (int i = 0, n = getSlotCount(player); i < n; ++i) {
             ItemStack stackInSlot = getStackInSlot(player, null, i);
             if (visitor.visit(this, null, i, stackInSlot)) {
@@ -48,7 +50,7 @@ public abstract class Container extends InventoryType<Void> {
     }
 
     @Override
-    public void writeContext(FriendlyByteBuf byteBuf, Void context) {}
+    public void writeContext(FriendlyByteBuf byteBuf, @Nullable Void context) {}
 
     @Override
     public Void readContext(FriendlyByteBuf byteBuf) {

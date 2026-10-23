@@ -6,7 +6,7 @@ import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.utils.Color;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class TextFieldTheme extends WidgetTheme {
 

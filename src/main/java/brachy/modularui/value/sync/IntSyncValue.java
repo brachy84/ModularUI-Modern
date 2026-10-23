@@ -8,8 +8,7 @@ import brachy.modularui.api.value.sync.IStringSyncValue;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntConsumer;
@@ -19,15 +18,15 @@ public class IntSyncValue extends ValueSyncHandler<Integer, IntSyncValue> implem
 
     private int cache;
     private final IntSupplier getter;
-    private final IntConsumer setter;
+    private final @Nullable IntConsumer setter;
 
-    public IntSyncValue(@NotNull IntSupplier getter, @Nullable IntConsumer setter) {
+    public IntSyncValue(IntSupplier getter, @Nullable IntConsumer setter) {
         this.getter = Objects.requireNonNull(getter);
         this.setter = setter;
         this.cache = getter.getAsInt();
     }
 
-    public IntSyncValue(@NotNull IntSupplier getter) {
+    public IntSyncValue(IntSupplier getter) {
         this(getter, (IntConsumer) null);
     }
 

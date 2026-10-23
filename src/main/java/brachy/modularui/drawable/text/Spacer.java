@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public class Spacer implements ITextLine {
 
@@ -45,7 +46,7 @@ public class Spacer implements ITextLine {
                      int availableHeight) {}
 
     @Override
-    public Object getHoveringElement(Font font, int x, int y) {
+    public @Nullable Object getHoveringElement(Font font, int x, int y) {
         return null;
     }
 }

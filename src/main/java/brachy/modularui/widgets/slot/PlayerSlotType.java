@@ -9,6 +9,8 @@ import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 
+import org.jspecify.annotations.Nullable;
+
 public enum PlayerSlotType {
 
     HOTBAR,
@@ -16,7 +18,7 @@ public enum PlayerSlotType {
     OFFHAND,
     ARMOR;
 
-    public static PlayerSlotType getPlayerSlotType(Slot slot) {
+    public static @Nullable PlayerSlotType getPlayerSlotType(Slot slot) {
         int index = slot.getSlotIndex();
         if (index < 0 || index > 40) return null;
         if (slot instanceof SlotItemHandler slotItemHandler) {

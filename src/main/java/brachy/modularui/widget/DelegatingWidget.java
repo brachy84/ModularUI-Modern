@@ -7,7 +7,7 @@ import brachy.modularui.utils.MutableSingletonList;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
         resizer(new StandardResizer(this));
     }
 
-    protected void setDelegate(IWidget delegate) {
+    protected void setDelegate(@Nullable IWidget delegate) {
         if (!this.delegate.isEmpty()) {
             this.delegate.get().dispose();
             this.delegate.remove();
@@ -38,7 +38,7 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
     protected void onChangeDelegate(IWidget delegate) {}
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public List<IWidget> getChildren() {
         return this.delegate;
     }
 
@@ -67,7 +67,7 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
     }
 
     @Override
-    public @NotNull StandardResizer resizer() {
+    public StandardResizer resizer() {
         return getDelegate() != null ? getDelegate().resizer() : super.resizer();
     }
 
@@ -102,7 +102,7 @@ public class DelegatingWidget extends AbstractWidget implements IDelegatingWidge
     }
 
     @Override
-    public IWidget getDelegate() {
+    public @Nullable IWidget getDelegate() {
         return delegate.getOrNull();
     }
 }

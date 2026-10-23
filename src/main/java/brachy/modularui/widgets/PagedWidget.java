@@ -4,8 +4,7 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.function.IntConsumer;
 public class PagedWidget<W extends PagedWidget<W>> extends Widget<W> {
 
     @Getter private final List<IWidget> pages = new ArrayList<>();
-    @Getter private IWidget currentPage;
+    @Getter private @Nullable IWidget currentPage;
     @Getter private int currentPageIndex = 0;
 
     @Nullable private IntConsumer onPageChange;
@@ -67,7 +66,7 @@ public class PagedWidget<W extends PagedWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public @Unmodifiable @NotNull List<IWidget> getChildren() {
+    public @Unmodifiable List<IWidget> getChildren() {
         return this.pages;
     }
 
@@ -91,7 +90,7 @@ public class PagedWidget<W extends PagedWidget<W>> extends Widget<W> {
 
     public static class Controller {
 
-        private PagedWidget<?> pagedWidget;
+        private @Nullable PagedWidget<?> pagedWidget;
 
         public boolean isInitialised() {
             return this.pagedWidget != null && this.pagedWidget.isValid();

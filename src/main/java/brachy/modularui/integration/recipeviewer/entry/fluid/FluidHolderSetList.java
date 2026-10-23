@@ -6,8 +6,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public final class FluidHolderSetList implements FluidEntryList {
     @Getter
     private final List<FluidHolderSetEntry> entries = new ArrayList<>();
 
-    public static FluidHolderSetList of(@NotNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
+    public static FluidHolderSetList of(@NonNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
         var list = new FluidHolderSetList();
         list.add(set, amount, nbt);
         return list;
@@ -28,7 +28,7 @@ public final class FluidHolderSetList implements FluidEntryList {
         entries.add(entry);
     }
 
-    public void add(@NotNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
+    public void add(@NonNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
         add(new FluidHolderSetEntry(set, amount, nbt));
     }
 
@@ -44,7 +44,7 @@ public final class FluidHolderSetList implements FluidEntryList {
                 .toList();
     }
 
-    public record FluidHolderSetEntry(@NotNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
+    public record FluidHolderSetEntry(@NonNull HolderSet<Fluid> set, int amount, @Nullable CompoundTag nbt) {
 
         public Stream<FluidStack> stacks() {
             return set.stream().map(holder -> new FluidStack(holder.get(), amount, nbt));

@@ -17,8 +17,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 import com.mojang.serialization.Codec;
 
 import com.google.common.base.CharMatcher;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,9 +56,8 @@ public interface IWidget extends ITreeNode<IWidget> {
     /**
      * @return the parent of this widget
      */
-    @NotNull
     @Override
-    IWidget getParent();
+    @Nullable IWidget getParent();
 
     @Override
     default boolean hasParent() {
@@ -69,12 +67,12 @@ public interface IWidget extends ITreeNode<IWidget> {
     /**
      * @return the context the current screen
      */
-    ModularGuiContext getContext();
+    @Nullable ModularGuiContext getContext();
 
     /**
      * @return the panel this widget is in
      */
-    @NotNull ModularPanel<?> getPanel();
+    @Nullable ModularPanel<?> getPanel();
 
     /**
      * @return the area this widget occupies
@@ -230,7 +228,7 @@ public interface IWidget extends ITreeNode<IWidget> {
      * @param parent the parent this element belongs to
      * @param late   true if this is called some time after the widget tree of the parent has been initialised
      */
-    void initialise(@NotNull IWidget parent, boolean late);
+    void initialise(IWidget parent, boolean late);
 
     /**
      * Invalidates this element.
@@ -298,7 +296,6 @@ public interface IWidget extends ITreeNode<IWidget> {
     /**
      * @return all children of this widget
      */
-    @NotNull
     @Override
     default List<IWidget> getChildren() {
         return Collections.emptyList();
@@ -332,10 +329,9 @@ public interface IWidget extends ITreeNode<IWidget> {
     /**
      * @return resizer of this widget
      */
-    @NotNull
-    StandardResizer resizer();
+    @Nullable StandardResizer resizer();
 
-    default IWidget resizerBuilder(Consumer<StandardResizer> builder) {
+    default IWidget resizerBuilder(Consumer<@Nullable StandardResizer> builder) {
         builder.accept(resizer());
         return this;
     }
@@ -376,12 +372,11 @@ public interface IWidget extends ITreeNode<IWidget> {
         do {
             if (!parent.isEnabled()) return false;
             parent = parent.getParent();
-        } while (parent.hasParent());
+        } while (parent != null && parent.hasParent());
         return true;
     }
 
-    @Nullable
-    String getName();
+    @Nullable String getName();
 
     /**
      * The type name of this widget. This is used for codecs.
@@ -396,11 +391,11 @@ public interface IWidget extends ITreeNode<IWidget> {
         return name.equals(getName());
     }
 
-    default boolean isType(Class<? extends IWidget> type) {
+    default boolean isType(Class<? extends @Nullable IWidget> type) {
         return type.isAssignableFrom(getClass());
     }
 
-    default boolean isNameAndType(String name, Class<? extends IWidget> type) {
+    default boolean isNameAndType(String name, Class<? extends @Nullable IWidget> type) {
         return isName(name) && isType(type);
     }
 }

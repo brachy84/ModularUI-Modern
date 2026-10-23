@@ -5,6 +5,8 @@ import brachy.modularui.utils.serialization.codec.FieldReader;
 
 import com.mojang.serialization.Codec;
 
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,10 +17,10 @@ public class WidgetThemeKeyBuilder<T extends WidgetTheme> {
 
     private final String id;
     private final Class<T> type;
-    private T defaultTheme;
-    private T defaultHoverTheme;
+    private @Nullable T defaultTheme;
+    private @Nullable T defaultHoverTheme;
     private final List<WidgetThemeField<T, ?>> fields = new ArrayList<>();
-    private WidgetThemeKey<?> parser;
+    private @Nullable WidgetThemeKey<?> parser;
 
     public WidgetThemeKeyBuilder(String id, Class<T> type) {
         this.id = id;

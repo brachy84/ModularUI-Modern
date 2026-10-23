@@ -11,7 +11,7 @@ import com.google.common.collect.Iterables;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +40,7 @@ public class CycleDrawable implements IDrawable {
     }
 
     public CycleDrawable(Iterable<IDrawable> drawables) {
+        //noinspection NullableProblems
         this(Iterables.toArray(drawables, IDrawable.class));
     }
 
@@ -75,6 +76,7 @@ public class CycleDrawable implements IDrawable {
     }
 
     public CycleDrawable drawables(Iterable<IDrawable> drawables) {
+        //noinspection NullableProblems
         return drawables(Iterables.toArray(drawables, IDrawable.class));
     }
 

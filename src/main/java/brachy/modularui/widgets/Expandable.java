@@ -14,7 +14,7 @@ import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,9 +28,9 @@ public class Expandable extends Widget<Expandable> implements Interactable, IVie
     private final List<IWidget> children = Arrays.asList(normalView, expandedView);
     private List<IWidget> currentChildren = children;
     @Getter private boolean expanded = false;
-    private Area areaSnapshot;
-    @Getter private Animator animator;
-    @Getter private BiConsumer<Rectangle, Boolean> stencilTransform;
+    private @Nullable Area areaSnapshot;
+    @Getter private @Nullable Animator animator;
+    @Getter private @Nullable BiConsumer<Rectangle, Boolean> stencilTransform;
     @Getter private int animationDuration = 300;
     @Getter private IInterpolation interpolation = Interpolation.SINE_OUT;
 
@@ -89,13 +89,12 @@ public class Expandable extends Widget<Expandable> implements Interactable, IVie
     }
 
     @Override
-    @NotNull
     public List<IWidget> getChildren() {
         return currentChildren;
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         toggle();
         return Result.SUCCESS;
     }

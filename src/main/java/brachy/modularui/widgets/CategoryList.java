@@ -12,7 +12,7 @@ import brachy.modularui.widget.AbstractParentWidget;
 import brachy.modularui.widget.WidgetTree;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,8 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     private final List<CategoryList> subCategories = new ArrayList<>();
     @Getter private boolean expanded = false;
     private int totalHeight = 0;
-    private IDrawable expandedOverlay;
-    private IDrawable collapsedOverlay;
+    private @Nullable IDrawable expandedOverlay;
+    private @Nullable IDrawable collapsedOverlay;
 
     @Override
     public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
@@ -67,7 +67,7 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         if (button == 0 || button == 1) {
             setExpanded(!this.expanded);
             return Result.SUCCESS;

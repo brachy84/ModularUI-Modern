@@ -1,6 +1,5 @@
 package brachy.modularui.drawable.schema;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -27,13 +26,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class RenderLevel implements LevelTimeAccess {
 
     @Getter private final ISchema schema;
@@ -49,9 +45,8 @@ public class RenderLevel implements LevelTimeAccess {
         this.thread = Thread.currentThread();
     }
 
-    @Nullable
     @Override
-    public BlockEntity getBlockEntity(BlockPos pos) {
+    public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
         BlockState state = this.level.getBlockState(pos);
         if (!this.renderFilter.shouldRender(pos, state)) {
             return null;

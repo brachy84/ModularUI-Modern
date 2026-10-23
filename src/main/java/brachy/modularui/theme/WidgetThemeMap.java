@@ -1,11 +1,12 @@
 package brachy.modularui.theme;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import org.jspecify.annotations.Nullable;
 
 public class WidgetThemeMap extends Object2ObjectLinkedOpenHashMap<WidgetThemeKey<?>, WidgetThemeEntry<?>> {
 
     @Override
-    public WidgetThemeEntry<?> put(WidgetThemeKey<?> widgetThemeKey, WidgetThemeEntry<?> widgetTheme) {
+    public @Nullable WidgetThemeEntry<?> put(WidgetThemeKey<?> widgetThemeKey, WidgetThemeEntry<?> widgetTheme) {
         if (widgetThemeKey != widgetTheme.key()) {
             throw new IllegalArgumentException(widgetThemeKey.getFullName() + " is not compatible with " +
                     widgetTheme.key().getFullName());

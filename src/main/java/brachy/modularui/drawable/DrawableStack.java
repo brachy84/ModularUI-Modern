@@ -10,14 +10,17 @@ import com.mojang.serialization.Codec;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A stack of {@link IDrawable} backed by an array which are drawn on top of each other.
  */
-public record DrawableStack(IDrawable... drawables) implements IDrawable {
+public record DrawableStack(@Nullable IDrawable... drawables) implements IDrawable {
 
     public static final Codec<IDrawable> CODEC = ExtraCodecs.lazyInitializedCodec(() ->
             CodecUtil.checkedEncoder(IDrawable.CODEC.listOf().xmap(DrawableStack::fromList, DrawableStack::toList),
@@ -26,18 +29,18 @@ public record DrawableStack(IDrawable... drawables) implements IDrawable {
     public static final IDrawable[] EMPTY_BACKGROUND = {};
     public static final DrawableStack EMPTY = new DrawableStack(EMPTY_BACKGROUND);
 
-    public static IDrawable fromList(List<IDrawable> list) {
+    public static @Nullable IDrawable fromList(List<IDrawable> list) {
         return IDrawable.of(list.toArray(IDrawable[]::new));
     }
 
     public static List<IDrawable> toList(IDrawable drawable) {
         if (drawable instanceof DrawableStack stack) {
-            return List.of(stack.drawables);
+            return Arrays.stream(stack.drawables).filter(Objects::nonNull).toList();
         }
         return Collections.singletonList(drawable);
     }
 
-    public DrawableStack(IDrawable... drawables) {
+    public DrawableStack(@Nullable IDrawable @Nullable... drawables) {
         this.drawables = drawables == null || drawables.length == 0 ? EMPTY_BACKGROUND : drawables;
     }
 

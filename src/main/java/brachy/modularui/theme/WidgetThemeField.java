@@ -6,6 +6,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.RecordBuilder;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,7 @@ public record WidgetThemeField<T extends WidgetTheme, V>(String name, Class<V> t
         }
     }
 
-    <J> V decode(DynamicOps<J> ops, Map<String, J> map, List<String> errors) {
+    <J> @Nullable V decode(DynamicOps<J> ops, Map<String, J> map, List<String> errors) {
         J element = map.get(name());
         if (element == null) {
             if (!map.containsKey(name())) {

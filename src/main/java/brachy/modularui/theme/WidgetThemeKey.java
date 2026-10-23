@@ -9,13 +9,13 @@ import com.mojang.serialization.JsonOps;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
 
-public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetThemeKey<?>> {
+public class WidgetThemeKey<T extends @Nullable WidgetTheme> implements Comparable<WidgetThemeKey<?>> {
 
     private static final Map<String, WidgetThemeKey<?>> KEYS = new Object2ReferenceOpenHashMap<>();
     public static final Codec<WidgetThemeKey<?>> CODEC = CodecUtil.chainedCodec(CodecUtil.nullCodec(), ExtraCodecs.stringResolverCodec(WidgetThemeKey::getFullName, KEYS::get));
@@ -133,7 +133,7 @@ public class WidgetThemeKey<T extends WidgetTheme> implements Comparable<WidgetT
     }
 
     @Override
-    public int compareTo(@NotNull WidgetThemeKey<?> o) {
+    public int compareTo(@NonNull WidgetThemeKey<?> o) {
         if (o == this) return 0;
         int i = Boolean.compare(isSubWidgetTheme(), o.isSubWidgetTheme());
         if (i != 0) return i;

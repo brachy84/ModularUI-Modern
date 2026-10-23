@@ -5,6 +5,8 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.widget.sizer.Box;
 
+import org.jspecify.annotations.Nullable;
+
 public class DelegateIcon implements IIcon {
 
     private IIcon icon;
@@ -24,7 +26,7 @@ public class DelegateIcon implements IIcon {
     }
 
     @Override
-    public Box getMargin() {
+    public @Nullable Box getMargin() {
         return this.icon.getMargin();
     }
 

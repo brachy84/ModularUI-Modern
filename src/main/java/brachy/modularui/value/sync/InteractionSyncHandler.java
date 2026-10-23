@@ -7,15 +7,17 @@ import brachy.modularui.utils.MouseData;
 
 import net.minecraft.network.FriendlyByteBuf;
 
+import org.jspecify.annotations.Nullable;
+
 public class InteractionSyncHandler extends SyncHandler<InteractionSyncHandler> {
 
-    private IServerMouseAction mousePressed;
-    private IServerMouseAction mouseReleased;
-    private IServerMouseAction mouseTapped;
-    private IServerMouseAction mouseScroll;
-    private IServerKeyboardAction keyPressed;
-    private IServerKeyboardAction keyReleased;
-    private IServerKeyboardAction keyTapped;
+    private @Nullable IServerMouseAction mousePressed;
+    private @Nullable IServerMouseAction mouseReleased;
+    private @Nullable IServerMouseAction mouseTapped;
+    private @Nullable IServerMouseAction mouseScroll;
+    private @Nullable IServerKeyboardAction keyPressed;
+    private @Nullable IServerKeyboardAction keyReleased;
+    private @Nullable IServerKeyboardAction keyTapped;
 
     public InteractionSyncHandler() {
         allowC2S();

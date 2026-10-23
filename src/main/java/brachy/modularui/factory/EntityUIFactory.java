@@ -8,8 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
 
 public class EntityUIFactory extends AbstractUIFactory<EntityGuiData> {
@@ -36,7 +34,7 @@ public class EntityUIFactory extends AbstractUIFactory<EntityGuiData> {
     }
 
     @Override
-    public @NotNull IUIHolder<EntityGuiData> getGuiHolder(EntityGuiData guiData) {
+    public IUIHolder<EntityGuiData> getGuiHolder(EntityGuiData guiData) {
         return Objects.requireNonNull(castUIHolder(guiData.getGuiHolder()), "Found Entity is not a gui holder!");
     }
 
@@ -46,7 +44,7 @@ public class EntityUIFactory extends AbstractUIFactory<EntityGuiData> {
     }
 
     @Override
-    public @NotNull EntityGuiData readGuiData(Player entityPlayer, FriendlyByteBuf packetBuffer) {
+    public EntityGuiData readGuiData(Player entityPlayer, FriendlyByteBuf packetBuffer) {
         return new EntityGuiData(entityPlayer, entityPlayer.level().getEntity(packetBuffer.readInt()));
     }
 

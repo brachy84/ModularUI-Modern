@@ -8,7 +8,7 @@ import brachy.modularui.value.sync.DynamicSyncHandler;
 import brachy.modularui.value.sync.SyncHandler;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  */
 public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
 
-    private IDynamicHandler dynamicHandler;
+    private @Nullable IDynamicHandler dynamicHandler;
     private final MutableSingletonList<IWidget> child = new MutableSingletonList<>();
 
     @Override
@@ -34,12 +34,12 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDynamicHandler.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.dynamicHandler = syncOrValue.castNullable(IDynamicHandler.class);
         if (this.dynamicHandler != null) {
@@ -48,11 +48,11 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
     }
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public List<IWidget> getChildren() {
         return this.child;
     }
 
-    private void updateChild(IWidget widget) {
+    private void updateChild(@Nullable IWidget widget) {
         if (!this.child.isEmpty()) {
             this.child.get().dispose();
         }
@@ -90,7 +90,7 @@ public class DynamicWidget<W extends DynamicWidget<W>> extends Widget<W> {
      * @param child initial child
      * @return this
      */
-    public W initialChild(IWidget child) {
+    public W initialChild(@Nullable IWidget child) {
         if (isValid()) throw new IllegalStateException("Can only set initial child before the widget is initialised.");
         if (child != null) this.child.set(child);
         return getThis();

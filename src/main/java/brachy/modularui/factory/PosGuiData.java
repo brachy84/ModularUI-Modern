@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * See {@link GuiData} for an explanation for what this is for.
@@ -17,7 +17,7 @@ public class PosGuiData extends GuiData {
 
     private final BlockPos blockPos;
 
-    public PosGuiData(@NotNull Player player, BlockPos blockPos) {
+    public PosGuiData(Player player, BlockPos blockPos) {
         super(player);
         this.blockPos = blockPos;
     }
@@ -46,7 +46,7 @@ public class PosGuiData extends GuiData {
         return Math.sqrt(getSquaredDistance(entity));
     }
 
-    public BlockEntity getBlockEntity() {
+    public @Nullable BlockEntity getBlockEntity() {
         return getLevel().getBlockEntity(this.blockPos);
     }
 }

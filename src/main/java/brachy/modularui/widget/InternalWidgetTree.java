@@ -13,6 +13,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import com.google.common.base.Joiner;
 import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +26,8 @@ public class InternalWidgetTree {
 
     @Contract("_,_,_,_,false -> !null")
     @SuppressWarnings("unchecked")
-    static <T extends IWidget> T findChildAt(IWidget parent, Class<T> type, String[] path, int index,
-                                             boolean nullable) {
+    static <T extends @Nullable IWidget> T findChildAt(IWidget parent, Class<T> type, String[] path, int index,
+                                                       boolean nullable) {
         String current = path[index];
         boolean isLast = index == path.length - 1;
         for (IWidget widget : parent.getChildren()) {

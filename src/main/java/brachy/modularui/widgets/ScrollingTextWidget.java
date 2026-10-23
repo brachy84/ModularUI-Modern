@@ -13,14 +13,15 @@ import brachy.modularui.utils.Interpolation;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public class ScrollingTextWidget extends TextWidget<ScrollingTextWidget> {
 
-    private TextRenderer.Line line;
+    private TextRenderer.@Nullable Line line;
     @Getter private float progress = 0;
-    @Getter private IAnimator animator;
-    @Getter private Animator forward;
-    @Getter private Animator backward;
+    @Getter private @Nullable IAnimator animator;
+    @Getter private @Nullable Animator forward;
+    @Getter private @Nullable Animator backward;
 
     private int speed = 15;
 

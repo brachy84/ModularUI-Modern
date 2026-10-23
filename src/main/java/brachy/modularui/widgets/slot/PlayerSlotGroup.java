@@ -2,11 +2,13 @@ package brachy.modularui.widgets.slot;
 
 import net.minecraft.world.inventory.Slot;
 
+import org.jspecify.annotations.Nullable;
+
 public class PlayerSlotGroup extends SlotGroup {
 
     public static final String NAME = "player_inventory";
 
-    private Slot mainInvSlot;
+    private @Nullable Slot mainInvSlot;
 
     public PlayerSlotGroup(String name) {
         super(name, 9, PLAYER_INVENTORY_PRIO, true);

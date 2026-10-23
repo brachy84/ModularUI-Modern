@@ -17,6 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Scrollable area
@@ -29,10 +30,10 @@ public class ScrollArea extends Area {
 
     @Getter
     @Setter
-    private HorizontalScrollData scrollX;
+    private @Nullable HorizontalScrollData scrollX;
     @Getter
     @Setter
-    private VerticalScrollData scrollY;
+    private @Nullable VerticalScrollData scrollY;
     @Getter
     private final ScrollPadding scrollPadding = new ScrollPadding();
     @Getter
@@ -63,7 +64,7 @@ public class ScrollArea extends Area {
         this.scrollY = null;
     }
 
-    public ScrollData getScrollData(GuiAxis axis) {
+    public @Nullable ScrollData getScrollData(GuiAxis axis) {
         return axis.isVertical() ? this.scrollY : this.scrollX;
     }
 

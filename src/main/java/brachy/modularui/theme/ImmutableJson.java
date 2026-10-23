@@ -3,6 +3,7 @@ package brachy.modularui.theme;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,7 +14,7 @@ public class ImmutableJson {
 
     private final Map<String, JsonElement> json;
 
-    public static ImmutableJson of(JsonObject json) {
+    public static ImmutableJson of(@Nullable JsonObject json) {
         if (json == null || json.asMap().isEmpty()) {
             return EMPTY;
         }

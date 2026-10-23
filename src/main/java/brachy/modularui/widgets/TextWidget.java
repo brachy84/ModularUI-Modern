@@ -14,8 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.IntSupplier;
@@ -25,15 +24,15 @@ public class TextWidget<W extends TextWidget<W>> extends Widget<W> {
 
     @Getter private Component key;
     @Getter private Alignment alignment = Alignment.CenterLeft;
-    @Getter private IntSupplier color = null;
-    @Getter private Boolean textShadow = null;
+    @Getter private @Nullable IntSupplier color = null;
+    @Getter private @Nullable Boolean textShadow = null;
     @Getter private float scale = 1f;
     @Getter private int maxWidth = -1;
 
-    private String lastText;
+    private @Nullable String lastText;
     private @Nullable Supplier<Component> keySupplier;
 
-    public TextWidget(@NotNull Supplier<Component> keySupplier) {
+    public TextWidget(Supplier<Component> keySupplier) {
         this.keySupplier = keySupplier;
         this.key = keySupplier.get();
     }

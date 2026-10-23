@@ -4,6 +4,8 @@ import brachy.modularui.api.widget.IPositioned;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widgets.ListWidget;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 /**
@@ -22,7 +24,7 @@ public class ContextMenuButton<W extends ContextMenuButton<W>> extends AbstractM
     }
 
     @Override
-    protected Menu<?> createMenu() {
+    protected @Nullable Menu<?> createMenu() {
         // menu is created by the user with the setter
         return null;
     }

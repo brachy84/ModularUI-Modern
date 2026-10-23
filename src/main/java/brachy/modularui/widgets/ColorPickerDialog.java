@@ -16,6 +16,7 @@ import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
 
@@ -166,7 +167,7 @@ public class ColorPickerDialog extends Dialog<Integer, ColorPickerDialog> {
                 .sliderSize(2, 8);
     }
 
-    private IWidget createAlphaSlider(String s) {
+    private @Nullable IWidget createAlphaSlider(String s) {
         return controlAlpha ? Flow.row()
                 .widthRel(1f).height(12)
                 .child(Text.str("A: ").asWidget().heightRel(1f))
