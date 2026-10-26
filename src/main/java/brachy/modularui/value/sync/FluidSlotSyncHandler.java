@@ -90,7 +90,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack, FluidSlot
 
     public boolean needsSync() {
         FluidStack current = this.fluidTank.getFluid();
-        if (current == this.cache || current.isEmpty() == this.cache.isEmpty()) return false;
+        if (current == this.cache || (current.isEmpty() && this.cache.isEmpty())) return false;
         return !current.isFluidStackIdentical(this.cache);
     }
 
