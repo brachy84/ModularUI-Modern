@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntSupplier;
 
@@ -35,7 +36,7 @@ public class DimensionSizer {
     private final GuiAxis axis;
 
     private final Unit p1 = new Unit(), p2 = new Unit();
-    @Getter(AccessLevel.PRIVATE) private Unit start, end, size;
+    @Getter(AccessLevel.PRIVATE) private @Nullable Unit start, end, size;
     private Unit next = p1;
 
     @Getter
@@ -412,7 +413,7 @@ public class DimensionSizer {
      * @param newState the new unit type for the found unit
      * @return a used or unused unit.
      */
-    private Unit getNext(IWidget widget, Unit.State newState) {
+    private Unit getNext(@Nullable IWidget widget, Unit.State newState) {
         Unit ret = this.next;
         Unit other = ret == this.p1 ? this.p2 : this.p1;
         if (ret.state != Unit.State.UNUSED) {
@@ -433,28 +434,28 @@ public class DimensionSizer {
         return ret;
     }
 
-    protected Unit getStart(IWidget widget) {
+    protected Unit getStart(@Nullable IWidget widget) {
         if (this.start == null) {
             this.start = getNext(widget, Unit.State.START);
         }
         return this.start;
     }
 
-    protected Unit getEnd(IWidget widget) {
+    protected Unit getEnd(@Nullable IWidget widget) {
         if (this.end == null) {
             this.end = getNext(widget, Unit.State.END);
         }
         return this.end;
     }
 
-    protected Unit getSize(IWidget widget) {
+    protected Unit getSize(@Nullable IWidget widget) {
         if (this.size == null) {
             this.size = getNext(widget, Unit.State.SIZE);
         }
         return this.size;
     }
 
-    private void setStart(Unit unit) {
+    private void setStart(@Nullable Unit unit) {
         if (unit == null) {
             if (this.start != null) {
                 this.start.reset();
@@ -468,7 +469,7 @@ public class DimensionSizer {
         if (this.start != unit) getStart(null).copyPropertiesOf(unit);
     }
 
-    private void setEnd(Unit unit) {
+    private void setEnd(@Nullable Unit unit) {
         if (unit == null) {
             if (this.end != null) {
                 this.end.reset();
@@ -482,7 +483,7 @@ public class DimensionSizer {
         if (this.end != unit) getEnd(null).copyPropertiesOf(unit);
     }
 
-    private void setSize(Unit unit) {
+    private void setSize(@Nullable Unit unit) {
         if (unit == null) {
             if (this.size != null) {
                 this.size.reset();

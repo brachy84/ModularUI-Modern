@@ -7,8 +7,7 @@ import brachy.modularui.utils.serialization.network.IByteBufSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
@@ -19,9 +18,9 @@ public class GenericSetSyncHandler<T> extends GenericCollectionSyncHandler<T, Se
 
     private final Set<T> cache = new ObjectOpenHashSet<T>();
 
-    public GenericSetSyncHandler(@NotNull Supplier<Set<T>> getter, @Nullable Consumer<Set<T>> setter,
-                                 @NotNull IByteBufDeserializer<T> deserializer,
-                                 @NotNull IByteBufSerializer<T> serializer,
+    public GenericSetSyncHandler(Supplier<Set<T>> getter, @Nullable Consumer<Set<T>> setter,
+                                 IByteBufDeserializer<T> deserializer,
+                                 IByteBufSerializer<T> serializer,
                                  @Nullable ICopy<T> copy) {
         super(getter, setter, deserializer, serializer, null, copy);
         setCache(getter.get());

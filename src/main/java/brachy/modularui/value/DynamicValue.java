@@ -2,7 +2,7 @@ package brachy.modularui.value;
 
 import brachy.modularui.api.value.IValue;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

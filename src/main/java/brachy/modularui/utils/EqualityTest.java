@@ -1,6 +1,6 @@
 package brachy.modularui.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public interface EqualityTest<T> {
      * @param t2 second object
      * @return true if objects are equal
      */
-    boolean areEqual(@NotNull T t1, @NotNull T t2);
+    boolean areEqual(@NonNull T t1, @NonNull T t2);
 
     /**
      * Wraps a {@link EqualityTest} function to accept nullable parameters.

@@ -8,7 +8,7 @@ import brachy.modularui.widget.sizer.Box;
 
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link IDrawable} with a fixed size.
@@ -18,8 +18,7 @@ public interface IIcon extends IDrawable, TooltipComponent {
     /**
      * @return the drawable this icon wraps or null if it doesn't wrap anything
      */
-    @Nullable
-    IDrawable getWrappedDrawable();
+    @Nullable IDrawable getWrappedDrawable();
 
     /**
      * @return width of this icon or 0 if the width should be dynamic
@@ -48,7 +47,7 @@ public interface IIcon extends IDrawable, TooltipComponent {
     /**
      * @return the margin of this icon. Only used if width or height is 0
      */
-    Box getMargin();
+    @Nullable Box getMargin();
 
     default IDrawable getRootDrawable() {
         IDrawable drawable = this;

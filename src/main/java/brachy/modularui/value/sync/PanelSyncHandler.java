@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -29,9 +29,9 @@ public final class PanelSyncHandler extends SyncHandler<PanelSyncHandler> implem
 
     private final IPanelBuilder panelBuilder;
     private final boolean subPanel;
-    private String panelName;
-    private ModularPanel<?> openedPanel;
-    private PanelSyncManager syncManager;
+    private @Nullable String panelName;
+    private @Nullable ModularPanel<?> openedPanel;
+    private @Nullable PanelSyncManager syncManager;
     private boolean open = false;
 
     /**
@@ -201,7 +201,6 @@ public final class PanelSyncHandler extends SyncHandler<PanelSyncHandler> implem
          * @param syncHandler the sync handler that sync opening and closing of this panel
          * @return the created panel
          */
-        @NotNull
-        ModularPanel<?> buildUI(@NotNull PanelSyncManager syncManager, @NotNull IPanelHandler syncHandler);
+        ModularPanel<?> buildUI(PanelSyncManager syncManager, IPanelHandler syncHandler);
     }
 }

@@ -6,6 +6,7 @@ import brachy.modularui.widget.DelegatingWidget;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -15,7 +16,7 @@ public class TransformWidget extends DelegatingWidget {
 
     private final Matrix4f constTransform = new Matrix4f();
     private boolean hasConstTransform = false;
-    private Consumer<IViewportStack> transform;
+    private @Nullable Consumer<IViewportStack> transform;
 
     public TransformWidget(IWidget child) {
         super(child);

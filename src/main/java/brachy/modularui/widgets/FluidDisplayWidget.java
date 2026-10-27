@@ -8,8 +8,7 @@ import brachy.modularui.value.ObjectValue;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
@@ -20,12 +19,12 @@ public class FluidDisplayWidget extends AbstractFluidDisplayWidget<FluidDisplayW
     @Getter private boolean displayAmount = true;
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isValueOfType(FluidStack.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castValueNullable(FluidStack.class);
     }

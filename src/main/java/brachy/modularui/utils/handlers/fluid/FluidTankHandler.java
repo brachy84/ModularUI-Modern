@@ -4,7 +4,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class FluidTankHandler implements IFluidHandler {
 
@@ -27,7 +27,7 @@ public class FluidTankHandler implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public @NonNull FluidStack drain(FluidStack resource, FluidAction action) {
         FluidStack currentFluid = this.fluidTank.getFluid();
         if (currentFluid.isEmpty() || !currentFluid.isFluidEqual(resource)) {
             return FluidStack.EMPTY;
@@ -36,7 +36,7 @@ public class FluidTankHandler implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+    public @NonNull FluidStack drain(int maxDrain, FluidAction action) {
         return this.fluidTank.drain(maxDrain, action);
     }
 
@@ -46,7 +46,7 @@ public class FluidTankHandler implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
+    public @NonNull FluidStack getFluidInTank(int tank) {
         return this.fluidTank.getFluid();
     }
 
@@ -56,7 +56,7 @@ public class FluidTankHandler implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, @NonNull FluidStack stack) {
         return this.fluidTank.isFluidValid(stack);
     }
 }

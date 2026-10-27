@@ -17,7 +17,6 @@ import brachy.modularui.screen.OpenScreenEvent;
 import brachy.modularui.screen.event.RichTooltipEvent;
 import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.screen.viewport.ModularGuiContext;
-import brachy.modularui.theme.ReloadThemeEvent;
 import brachy.modularui.theme.SelectableTheme;
 import brachy.modularui.theme.ThemeBuilder;
 import brachy.modularui.theme.WidgetTheme;
@@ -38,7 +37,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class TestHandler {
         }
     }.asIcon().height(3);
 
-    private static List<ItemStack> allItems = null;
+    private static @Nullable List<ItemStack> allItems = null;
 
     public static ItemStack getRandomItem() {
         if (allItems == null) {
@@ -180,7 +179,7 @@ public class TestHandler {
         return new CustomModularScreen(ModularUI.MOD_ID) {
 
             @Override
-            public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
+            public ModularPanel<?> buildUI(ModularGuiContext context) {
                 return ModularPanel.defaultPanel("watermark_overlay", gui.getXSize(), gui.getYSize())
                         .pos(gui.getGuiLeft(), gui.getGuiTop())
                         .invisible()

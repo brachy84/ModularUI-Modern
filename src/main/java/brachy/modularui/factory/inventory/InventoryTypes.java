@@ -13,7 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,13 +29,15 @@ public final class InventoryTypes {
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
         if (event.getAction() == InputConstants.PRESS && event.getKey() == InputConstants.KEY_NUMPAD2) {
-            InventoryTypes.visitAll(MCHelper.getPlayer(), (type, context, index, stackInSlot) -> {
-                if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof TestItem) {
-                    UIFactories.playerInventory().openClient(type, context, index);
-                    return true;
-                }
-                return false;
-            });
+            if (MCHelper.getPlayer() != null) {
+                InventoryTypes.visitAll(MCHelper.getPlayer(), (type, context, index, stackInSlot) -> {
+                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof TestItem) {
+                        UIFactories.playerInventory().openClient(type, context, index);
+                        return true;
+                    }
+                    return false;
+                });
+            }
         }
     }
 
@@ -103,5 +105,5 @@ public final class InventoryTypes {
         return Collections.unmodifiableCollection(inventoryTypes.values());
     }
 
-    public record SlotFindResult<T>(InventoryType<T> type, T context, int slot) {}
+    public record SlotFindResult<T extends @Nullable Object>(InventoryType<T> type, T context, int slot) {}
 }

@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A way of finding and setting an item in an inventory, that is owned by a player. This includes the normal player
@@ -23,7 +24,7 @@ import lombok.Getter;
  *            server.
  * @see InventoryTypes InventoryTypes for default implementations
  */
-public abstract class InventoryType<T> {
+public abstract class InventoryType<T extends @Nullable Object> {
 
     @Getter
     private final String id;
@@ -141,7 +142,7 @@ public abstract class InventoryType<T> {
         return getFromId(NetworkUtils.readStringSafe(buf));
     }
 
-    public static InventoryType<?> getFromId(String id) {
+    public static InventoryType<?> getFromId(@Nullable String id) {
         return InventoryTypes.inventoryTypes.get(id);
     }
 }

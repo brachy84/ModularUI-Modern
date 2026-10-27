@@ -14,7 +14,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 import net.minecraft.ChatFormatting;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -35,7 +35,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
      * The general direction where the menu will be opened. This is just a shortcut to standard resizer calls.
      * If this is null you can customize the position yourself.
      */
-    protected Direction direction = Direction.DOWN;
+    protected @Nullable Direction direction = Direction.DOWN;
     /**
      * If this is true, the menu can be opened when the mouse hovers this button. The menu will automatically close,
      * when the button AND
@@ -49,7 +49,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
      * also returns a null value, a default menu is created. The menu can be set at any time with
      * {@link #setMenu(Menu)}.
      */
-    private Menu<?> menu;
+    private @Nullable Menu<?> menu;
     /**
      * true if the menu is currently open (soft or hard)
      */
@@ -58,7 +58,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
      * true if the menu is currently soft open (opened by hovering)
      */
     @Getter private boolean softOpen; // state, soft means opened by hovering
-    private IPanelHandler panelHandler;
+    private @Nullable IPanelHandler panelHandler;
     private final String panelName;
 
     /**
@@ -140,14 +140,14 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
         return this.menu;
     }
 
-    protected void setMenu(Menu<?> menu) {
+    protected void setMenu(@Nullable Menu<?> menu) {
         this.menu = menu;
         if (this.panelHandler != null) {
             this.panelHandler.deleteCachedPanel();
         }
     }
 
-    protected abstract Menu<?> createMenu();
+    protected abstract @Nullable Menu<?> createMenu();
 
     private IPanelHandler getPanelHandler() {
         if (this.panelHandler == null) {
@@ -158,7 +158,7 @@ public abstract class AbstractMenuButton<W extends AbstractMenuButton<W>> extend
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public Result onMousePressed(int mouseButton) {
         if (!this.open) {
             forEachSiblingMenuButton(w -> {
                 w.closeMenu(false);

@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -36,9 +36,9 @@ public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
     // This is used to detect if
     private final Set<String> panelHistory = new ObjectOpenHashSet<>();
     @Getter
-    private PanelSyncManager mainPSM;
+    private @Nullable PanelSyncManager mainPSM;
     @Getter
-    private ModularContainerMenu menu;
+    private @Nullable ModularContainerMenu menu;
     @Getter
     private final boolean client;
     private State state = State.INIT;

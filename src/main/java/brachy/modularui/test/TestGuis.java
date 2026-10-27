@@ -17,7 +17,6 @@ import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.drawable.Rectangle;
-import brachy.modularui.drawable.SchemaRenderer;
 import brachy.modularui.drawable.UITexture;
 import brachy.modularui.drawable.graph.GraphDrawable;
 import brachy.modularui.drawable.progress.CircularProgressDrawable;
@@ -73,7 +72,6 @@ import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 import java.lang.reflect.InvocationTargetException;
@@ -114,7 +112,7 @@ public class TestGuis extends CustomModularScreen {
      * This makes it very convenient to add and test test-screens without having to swap out the screen that the diamond item opens.
      */
     @Override
-    public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
+    public ModularPanel<?> buildUI(ModularGuiContext context) {
         // collect all test from all build methods in this class via reflection
         List<Method> uiMethods = new ArrayList<>();
         for (Method method : TestGuis.class.getDeclaredMethods()) {
@@ -182,7 +180,7 @@ public class TestGuis extends CustomModularScreen {
                 .overlay(Text.str(text));
     }
 
-    public static @NotNull ModularPanel<?> buildToggleGridListUI() {
+    public static ModularPanel<?> buildToggleGridListUI() {
         boolean[][] states = new boolean[4][16];
         // we need to do this to attach the theme since we have no screen, yet
         // normally you have either UISettings or a ModularScreen at build to set it directly
@@ -208,7 +206,7 @@ public class TestGuis extends CustomModularScreen {
 
     }
 
-    public static @NotNull ModularPanel<?> buildPendulumAnimationUI() {
+    public static ModularPanel<?> buildPendulumAnimationUI() {
         IWidget widget = GuiTextures.MUI_LOGO.asWidget().size(20).pos(65, 65);
         Animator animator = new Animator()
                 .bounds(0, 1)
@@ -229,7 +227,7 @@ public class TestGuis extends CustomModularScreen {
                         }));
     }
 
-    public static @NotNull ModularPanel<?> buildPostTheLogAnimationUI() {
+    public static ModularPanel<?> buildPostTheLogAnimationUI() {
         Animator post = new Animator().curve(Interpolation.SINE_IN).duration(300).bounds(-35, 0);
         Animator the = new Animator().curve(Interpolation.SINE_IN).duration(300).bounds(-20, 0);
         Animator extraordinary = new Animator().curve(Interpolation.SINE_IN).duration(300).bounds(53, 0);
@@ -271,7 +269,7 @@ public class TestGuis extends CustomModularScreen {
                                 })));
     }
 
-    /*public static @NotNull ModularPanel<?> buildSpriteAndEntityUI() {
+    /*public static @NonNull ModularPanel<?> buildSpriteAndEntityUI() {
         TextureAtlasSprite sprite = SpriteHelper.getSpriteOfBlockState(GameObjectHelper.getBlockState("minecraft", "command_block"), EnumFacing.UP);
         // SpriteHelper.getSpriteOfItem(new ItemStack(Items.DIAMOND));
         Entity entity = FakeEntity.create(EntityDragon.class);
@@ -315,7 +313,7 @@ public class TestGuis extends CustomModularScreen {
                 }.asWidget().alignX(0.5f).bottom(10).size(100, 75));
     }*/
 
-    public static @NotNull ModularPanel<?> buildRichTextUI() {
+    public static ModularPanel<?> buildRichTextUI() {
         IntValue integer = new IntValue(0);
         return new ModularPanel<>("main")
                 .size(176, 190)
@@ -376,7 +374,7 @@ public class TestGuis extends CustomModularScreen {
                         ));
     }
 
-    public static @NotNull ModularPanel<?> buildWorldSchemaUI() {
+    public static ModularPanel<?> buildWorldSchemaUI() {
         /*TrackedDummyWorld world = new TrackedDummyWorld();
         world.addBlock(new BlockPos(0, 0, 0), new BlockInfo(Blocks.DIAMOND_BLOCK.getDefaultState()));
         world.addBlock(new BlockPos(0, 1, 0), new BlockInfo(Blocks.BEDROCK.getDefaultState()));
@@ -447,7 +445,7 @@ public class TestGuis extends CustomModularScreen {
                                 })));
     }
 
-    public static @NotNull ModularPanel<?> buildSearchTest() {
+    public static ModularPanel<?> buildSearchTest() {
         StringValue searchValue = new StringValue("");
         return ModularPanel.defaultPanel("search", 130, 200)
                 .child(Flow.column()
@@ -481,7 +479,7 @@ public class TestGuis extends CustomModularScreen {
                                 })));
     }
 
-    public static @NotNull ModularPanel<?> buildColorTheoryUI() {
+    public static ModularPanel<?> buildColorTheoryUI() {
         List<Pair<Integer, Float>> colors = new ArrayList<>();
         for (ColorShade shade : ColorShade.getAll()) {
             for (int c : shade) {
@@ -566,7 +564,7 @@ public class TestGuis extends CustomModularScreen {
                         .child(correctedGradient.asWidget().widthRel(1f).height(10)));
     }
 
-    public static @NotNull ModularPanel<?> buildViewportTransformUI() {
+    public static ModularPanel<?> buildViewportTransformUI() {
         return new TestPanel("viewport_transform")
                 .child(new Widget<>()
                         .center()
@@ -622,7 +620,7 @@ public class TestGuis extends CustomModularScreen {
                 );
     }
 
-    public static @NotNull ModularPanel<?> buildGraphUI() {
+    public static ModularPanel<?> buildGraphUI() {
         double[] x = DAM.linspace(-25, 25, 200);
         // sin(x) / x
         double[] y1 = DAM.div(DAM.sin(x, null), x, null);
@@ -634,7 +632,7 @@ public class TestGuis extends CustomModularScreen {
                         .plot(x, y1));
     }
 
-    public static @NotNull ModularPanel<?> buildAspectRatioUI() {
+    public static ModularPanel<?> buildAspectRatioUI() {
         return new ModularPanel<>("aspect_ratio")
                 .coverChildren()
                 .padding(10)
@@ -656,7 +654,7 @@ public class TestGuis extends CustomModularScreen {
                 .overlay();
     }
 
-    public static @NotNull ModularPanel<?> buildWrappedFlowUI() {
+    public static ModularPanel<?> buildWrappedFlowUI() {
         IntList colors = new IntArrayList(LIGHT_COLORS);
         Random rnd = new Random();
         int minRectSize = 10;
@@ -692,7 +690,7 @@ public class TestGuis extends CustomModularScreen {
         return new Rectangle().color(c);
     }
 
-    public static @NotNull ModularPanel<?> buildMachineLikeUI() {
+    public static ModularPanel<?> buildMachineLikeUI() {
         return new ModularPanel<>("machine_like")
                 .coverChildren()
                 .padding(7)
@@ -746,7 +744,7 @@ public class TestGuis extends CustomModularScreen {
                         .name("side_options"));
     }
 
-    public static @NotNull ModularPanel<?> buildProgressUI() {
+    public static ModularPanel<?> buildProgressUI() {
         Random rnd = new Random();
         return new ModularPanel<>("progress")
                 .coverChildren()

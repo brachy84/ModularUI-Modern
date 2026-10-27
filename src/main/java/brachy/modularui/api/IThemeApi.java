@@ -22,9 +22,8 @@ import com.mojang.serialization.Codec;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -144,7 +143,6 @@ public interface IThemeApi {
      * @param id id of the theme
      * @return the found theme or {@link #getDefaultTheme()} if no theme was found
      */
-    @NotNull
     ITheme getTheme(String id);
 
     /**

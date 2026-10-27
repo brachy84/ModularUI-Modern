@@ -20,7 +20,7 @@ import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
@@ -55,17 +55,17 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     protected TextFieldRenderer renderer = new TextFieldRenderer(this.handler);
     protected Alignment textAlignment = Alignment.CenterLeft;
     @Getter
-    protected List<String> lastText;
+    protected @Nullable List<String> lastText;
     protected int scrollOffset = 0;
     @Getter protected float scale = 1f;
     @Getter protected boolean focusOnGuiOpen;
     private int cursorTimer;
     protected long lastClickTime = 0;
 
-    @Getter protected Integer textColor;
-    @Getter protected Integer markedColor;
-    @Getter protected Component hintText = null;
-    @Getter protected Integer hintTextColor;
+    @Getter protected @Nullable Integer textColor;
+    @Getter protected @Nullable Integer markedColor;
+    @Getter protected @Nullable Component hintText = null;
+    @Getter protected @Nullable Integer hintTextColor;
 
     public BaseTextFieldWidget() {
         super(new HorizontalScrollData(false, 4), null);
@@ -75,7 +75,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public List<IWidget> getChildren() {
         return Collections.emptyList();
     }
 
@@ -169,7 +169,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         Result result = super.onMousePressed(button);
         if (result != Result.IGNORE) {
             return Result.SUCCESS; // keep focused
@@ -219,7 +219,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (!isFocused()) {
             return Result.IGNORE;
         }
@@ -292,7 +292,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onCharTyped(char codePoint, int modifiers) {
+    public Result onCharTyped(char codePoint, int modifiers) {
         if (!isFocused()) {
             return Result.IGNORE;
         }

@@ -24,7 +24,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +52,7 @@ public class FontRenderHelper {
      * @param c formatting character
      * @return formatting for character or null
      */
-    @Nullable
-    public static ChatFormatting getForCharacter(char c) {
+    public static @Nullable ChatFormatting getForCharacter(char c) {
         if (c < min || c > max) return null;
         return formattingMap[c - min];
     }

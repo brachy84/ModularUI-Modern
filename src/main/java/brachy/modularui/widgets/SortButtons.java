@@ -11,7 +11,7 @@ import brachy.modularui.widgets.slot.SlotGroup;
 import net.minecraft.world.inventory.Slot;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,14 +32,14 @@ public class SortButtons extends Widget<SortButtons> {
         // }
     }
 
-    @Getter private String slotGroupName;
-    @Getter private SlotGroup slotGroup;
+    @Getter private @Nullable String slotGroupName;
+    @Getter private @Nullable SlotGroup slotGroup;
 
     @Getter private boolean horizontal = true;
     private final ButtonWidget<?> sortButton = new ButtonWidget<>();
     private final ButtonWidget<?> settingsButton = new ButtonWidget<>();
     @Getter
-    private final @NotNull List<IWidget> children = Arrays.asList(sortButton, settingsButton);
+    private final List<IWidget> children = Arrays.asList(sortButton, settingsButton);
 
     public SortButtons() {
         if (false /* && ModularUI.Mods.BOGOSORTER.isLoaded() */) {
@@ -74,7 +74,7 @@ public class SortButtons extends Widget<SortButtons> {
         }
     }
 
-    public SlotGroup findFirstSlotGroup() {
+    public @Nullable SlotGroup findFirstSlotGroup() {
         if (!isValid()) return null;
         if (this.slotGroup != null) return this.slotGroup;
         SlotGroupWidget sgw = findSlotGroupParent();

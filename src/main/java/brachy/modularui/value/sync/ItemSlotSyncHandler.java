@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Wraps a slot and handles interactions for phantom slots.
@@ -23,7 +23,7 @@ public class ItemSlotSyncHandler extends SyncHandler<ItemSlotSyncHandler> {
     @Nullable
     @Getter
     private final PlayerSlotType playerSlotType;
-    private ItemStack lastStoredItem;
+    private ItemStack lastStoredItem = ItemStack.EMPTY;
     private boolean registered = false;
 
     public ItemSlotSyncHandler(ModularSlot slot) {

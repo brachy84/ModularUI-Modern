@@ -11,13 +11,13 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 public class PageButton extends Widget<PageButton> implements Interactable {
 
     @Getter private final int index;
     private final PagedWidget.Controller controller;
-    private IDrawable inactiveTexture = null;
+    private @Nullable IDrawable inactiveTexture = null;
     @Getter private boolean invert = false;
 
     public PageButton(int index, PagedWidget.Controller controller) {
@@ -38,7 +38,7 @@ public class PageButton extends Widget<PageButton> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         if (!isActive()) {
             this.controller.setPage(this.index);
             Interactable.playButtonClickSound();
@@ -48,7 +48,7 @@ public class PageButton extends Widget<PageButton> implements Interactable {
     }
 
     @Override
-    public IDrawable getBackground() {
+    public @Nullable IDrawable getBackground() {
         return isActive() || this.inactiveTexture == null ? super.getBackground() : this.inactiveTexture;
     }
 

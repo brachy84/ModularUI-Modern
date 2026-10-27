@@ -18,7 +18,7 @@ import com.mojang.serialization.Codec;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.DoubleSupplier;

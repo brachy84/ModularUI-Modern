@@ -8,8 +8,8 @@ import brachy.modularui.utils.Color;
 import brachy.modularui.utils.Rectangle;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An interface for compat with recipe viewers' ghost slots.
@@ -27,7 +27,7 @@ public interface GhostIngredientSlot<I> extends IWidget {
      *
      * @param ingredient ingredient to put
      */
-    void setGhostIngredient(@NotNull I ingredient);
+    void setGhostIngredient(@NonNull I ingredient);
 
     /**
      * Tries to cast an ingredient to the type of this slot.
@@ -38,7 +38,7 @@ public interface GhostIngredientSlot<I> extends IWidget {
      * @return cast ingredient or null
      */
     @Nullable
-    I castGhostIngredientIfValid(@NotNull Object ingredient);
+    I castGhostIngredientIfValid(@NonNull Object ingredient);
 
     /**
      * @return the class of the ingredient this slot expects

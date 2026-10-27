@@ -8,7 +8,7 @@ import brachy.modularui.widgets.dynamic.IDynamicHandler;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,10 +22,10 @@ import java.util.function.Supplier;
  */
 public class DynamicLinkedSyncHandler<S extends ValueSyncHandler<?, ?>> extends SyncHandler<DynamicLinkedSyncHandler<S>> implements IDynamicHandler {
 
-    private IWidgetProvider<S> widgetProvider;
-    private Consumer<IWidget> onWidgetUpdate;
+    private @Nullable IWidgetProvider<S> widgetProvider;
+    private @Nullable Consumer<IWidget> onWidgetUpdate;
 
-    private IWidget lastRejectedWidget;
+    private @Nullable IWidget lastRejectedWidget;
 
     private final S linkedValue;
 
@@ -56,7 +56,7 @@ public class DynamicLinkedSyncHandler<S extends ValueSyncHandler<?, ?>> extends 
         notifyUpdate(false);
     }
 
-    private IWidget parseWidget() {
+    private @Nullable IWidget parseWidget() {
         getSyncManager().allowTemporarySyncHandlerRegistration(true);
         IWidget widget = this.widgetProvider.createWidget(getSyncManager(), this.linkedValue);
         getSyncManager().allowTemporarySyncHandlerRegistration(false);

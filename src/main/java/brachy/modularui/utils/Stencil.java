@@ -16,7 +16,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -56,11 +56,11 @@ public class Stencil {
         RenderSystem.stencilMask(0x00);
     }
 
-    public void push(@NotNull Rectangle area) {
+    public void push(@NonNull Rectangle area) {
         push(area.x, area.y, area.width, area.height);
     }
 
-    public void pushAtZero(@NotNull Rectangle area) {
+    public void pushAtZero(@NonNull Rectangle area) {
         push(0, 0, area.width, area.height);
     }
 

@@ -27,6 +27,7 @@ import com.mojang.serialization.Encoder;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
             Spacer.CODEC_MAP.codec(), Codec.STRING, IDrawable.CODEC);
     private static final Encoder<Object> RICH_ELEMENT_ENCODER = new Encoder<>() {
         @Override
-        public <T> DataResult<T> encode(Object input, DynamicOps<T> ops, T prefix) {
+        public <T> DataResult<T> encode(@Nullable Object input, DynamicOps<T> ops, T prefix) {
             if (input == null) return DataResult.success(ops.empty());
             if (input instanceof ModularComponent v) {
                 if (v == Text.LINE_FEED) {
@@ -70,15 +71,15 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
             .build();
 
     private final List<Object> elements = new ArrayList<>();
-    private TooltipLines componentList;
+    private @Nullable TooltipLines componentList;
     @Getter private Alignment alignment = Alignment.CenterLeft;
     @Getter private float scale = 1f;
-    @Getter private Integer color = null;
-    @Getter private Boolean shadow = null;
+    @Getter private @Nullable Integer color = null;
+    @Getter private @Nullable Boolean shadow = null;
 
     private int cursor = 0;
     private boolean cursorLocked = false;
-    private List<ITextLine> cachedText;
+    private @Nullable List<ITextLine> cachedText;
 
     private boolean verified = false;
 
@@ -93,7 +94,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this.componentList;
     }
 
-    private void setElements(List<Object> elements) {
+    private void setElements(List<@Nullable Object> elements) {
         clearText();
         elements.stream().filter(Objects::nonNull).map(o -> {
             if (o instanceof String s) {
@@ -219,7 +220,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this;
     }
 
-    public RichText textColor(Integer color) {
+    public RichText textColor(@Nullable Integer color) {
         this.color = color;
         return this;
     }
@@ -236,7 +237,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this;
     }
 
-    public RichText textShadow(Boolean shadow) {
+    public RichText textShadow(@Nullable Boolean shadow) {
         this.shadow = shadow;
         return this;
     }
@@ -250,7 +251,7 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
     }
 
     @Override
-    public RichText replace(Pattern regex, UnaryOperator<Text> function) {
+    public RichText replace(Pattern regex, UnaryOperator<@Nullable Text> function) {
         int i = findNextText(this.cursor, true, s -> regex.matcher(s).find());
         if (i >= 0) {
             this.cursor = i;
@@ -412,11 +413,11 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
      * @param context the viewport stack with transformation to this widget
      * @return hovered element or null
      */
-    public Object getHoveringElement(GuiContext context) {
+    public @Nullable Object getHoveringElement(GuiContext context) {
         return getHoveringElement(context.getFont(), context.getMouseX(), context.getMouseY());
     }
 
-    public Object getHoveringElement(Font fr, int x, int y) {
+    public @Nullable Object getHoveringElement(Font fr, int x, int y) {
         if (this.cachedText == null) return null;
 
         for (ITextLine line : this.cachedText) {
@@ -458,9 +459,9 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return Objects.hash(elements, alignment, scale, color, shadow);
     }
 
-    public static void verifyListElements(List<Object> elements) {
+    public static void verifyListElements(List<@Nullable Object> elements) {
         List<String> errors = new ArrayList<>();
-        Set<Class<?>> errored = new ObjectOpenHashSet<>();
+        Set<@Nullable Class<?>> errored = new ObjectOpenHashSet<>();
         for (Object o : elements) {
             if (o == null) {
                 if (!errored.contains(null)) {

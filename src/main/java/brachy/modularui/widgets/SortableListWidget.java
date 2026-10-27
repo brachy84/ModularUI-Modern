@@ -11,8 +11,7 @@ import brachy.modularui.widget.DraggableWidget;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collections;
@@ -23,8 +22,8 @@ import java.util.function.Predicate;
 
 public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget.Item<T>, SortableListWidget<T>> {
 
-    private Consumer<List<T>> onChange;
-    private Consumer<Item<T>> onRemove;
+    private @Nullable Consumer<List<T>> onChange;
+    private @Nullable Consumer<Item<T>> onRemove;
     private int timeSinceLastMove = 0;
     private boolean scheduleAnimation = false;
     private final ObjectList<Area> widgetAreaSnapshots = ObjectList.create();
@@ -57,7 +56,6 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
             this.widgetAreaSnapshots.size(getTypeChildren().size());
             this.animators.size(getTypeChildren().size());
             @UnmodifiableView
-            @NotNull
             List<Item<T>> typeChildren = getTypeChildren();
             for (int i = 0; i < typeChildren.size(); i++) {
                 Item<T> item = typeChildren.get(i);
@@ -71,7 +69,6 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
         super.postResize();
         if (this.scheduleAnimation && !this.widgetAreaSnapshots.isEmpty()) {
             @UnmodifiableView
-            @NotNull
             List<Item<T>> typeChildren = getTypeChildren();
             for (int i = 0; i < typeChildren.size(); i++) {
                 Item<T> item = typeChildren.get(i);
@@ -183,7 +180,6 @@ public class SortableListWidget<T> extends ListValueWidget<T, SortableListWidget
             }
         }
 
-        @NotNull
         @Override
         public List<IWidget> getChildren() {
             return this.children != null ? this.children : Collections.emptyList();

@@ -66,9 +66,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -97,13 +98,13 @@ public class BaseSchemaRenderer implements IDrawable {
     protected final RenderLevel renderLevel;
     protected final Viewport viewport = new Viewport();
     @Getter private final Camera camera = new Camera();
-    @Getter private BlockHitResult lastRayTrace = null;
+    @Getter private @Nullable BlockHitResult lastRayTrace = null;
     @Getter private RenderFilter renderFilter = RenderFilter.ALL;
 
-    protected RenderCompileTask lastRenderCompileTask = null;
+    protected @Nullable RenderCompileTask lastRenderCompileTask = null;
     protected final ChunkBufferBuilderPack chunkBufferBuilders;
-    protected final AtomicReference<CompileStatus> compileStatus = new AtomicReference<>();
-    protected final AtomicReference<RenderCompileResults> compiledRenderResult = new AtomicReference<>();
+    protected final AtomicReference<@Nullable CompileStatus> compileStatus = new AtomicReference<>();
+    protected final AtomicReference<@Nullable RenderCompileResults> compiledRenderResult = new AtomicReference<>();
     protected boolean dirty = true;
 
     // projection * model view matrix
@@ -170,8 +171,9 @@ public class BaseSchemaRenderer implements IDrawable {
                             this.chunkBufferBuilders.clearAll();
                         }
                         if (status == CompileStatus.SUCCESS) {
-                            if (this.compiledRenderResult.get() != null) {
-                                this.compiledRenderResult.get().clearBuffer();
+                            var renderCompileResults = compiledRenderResult.get();
+                            if (renderCompileResults != null) {
+                                renderCompileResults.clearBuffer();
                             }
                             this.compiledRenderResult.set(result);
                         }
@@ -183,8 +185,9 @@ public class BaseSchemaRenderer implements IDrawable {
 
     public void dispose() {
         cancelCompilation();
-        if (this.compiledRenderResult.get() != null) {
-            this.compiledRenderResult.get().clearBuffer();
+        var result = compiledRenderResult.get();
+        if (result != null) {
+            result.clearBuffer();
             this.compiledRenderResult.set(null);
         }
         this.compileStatus.set(CompileStatus.DISABLED);
@@ -279,7 +282,7 @@ public class BaseSchemaRenderer implements IDrawable {
     }
 
     ///  called each draw tick
-    private RenderCompileResults checkRecompile() {
+    private @Nullable RenderCompileResults checkRecompile() {
         var status = this.compileStatus.get();
         if (status == CompileStatus.DISABLED) return null; // disabled, no-op
 
@@ -624,7 +627,7 @@ public class BaseSchemaRenderer implements IDrawable {
     protected void onRendered() {}
 
     @ApiStatus.OverrideOnly
-    protected void onSuccessfulRayTrace(PoseStack poseStack, @NotNull BlockHitResult result) {}
+    protected void onSuccessfulRayTrace(PoseStack poseStack, @NonNull BlockHitResult result) {}
 
     @ApiStatus.OverrideOnly
     protected void onRayTraceFailed() {}
@@ -651,7 +654,7 @@ public class BaseSchemaRenderer implements IDrawable {
      */
     public void updateRenderFilter(RenderFilter renderFilter) {
         notifyRecompile();
-        this.renderFilter = renderFilter != null ? renderFilter : RenderFilter.ALL;
+        this.renderFilter = renderFilter;
     }
 
     @Override
@@ -824,13 +827,13 @@ public class BaseSchemaRenderer implements IDrawable {
     protected static class RenderCompileResults {
 
         protected CompileStatus status = CompileStatus.COMPILING;
-        protected final List<BlockEntity> blockEntities = new ArrayList<>();
+        protected final List<@Nullable BlockEntity> blockEntities = new ArrayList<>();
         protected final Map<RenderType, BufferBuilder.RenderedBuffer> renderedLayers = new Reference2ObjectArrayMap<>();
         protected final Set<TextureAtlasSprite> activeFluidSprites = new HashSet<>();
         protected final Set<RenderType> hasBlocks = new ObjectArraySet<>(RenderType.chunkBufferLayers().size());
-        private Map<RenderType, VertexBuffer> chunkBuffers = getOrCreateChunkBuffers();
+        private @Nullable Map<RenderType, VertexBuffer> chunkBuffers = getOrCreateChunkBuffers();
 
-        protected @NotNull Map<RenderType, VertexBuffer> getOrCreateChunkBuffers() {
+        protected Map<RenderType, VertexBuffer> getOrCreateChunkBuffers() {
             if (this.chunkBuffers == null || this.chunkBuffers.isEmpty()) {
                 List<RenderType> chunkRenderTypes = RenderType.chunkBufferLayers();
                 this.chunkBuffers = new Reference2ObjectLinkedOpenHashMap<>();

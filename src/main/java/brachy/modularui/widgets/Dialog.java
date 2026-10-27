@@ -5,6 +5,7 @@ import brachy.modularui.screen.ModularPanel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ public class Dialog<T, W extends Dialog<T, W>> extends ModularPanel<W> {
 
     @Getter
     @Setter
-    private Consumer<T> resultConsumer;
+    private @Nullable Consumer<T> resultConsumer;
 
     public Dialog(String name) {
         super(name);

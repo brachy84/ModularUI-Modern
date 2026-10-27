@@ -8,8 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
@@ -17,16 +16,16 @@ import java.util.function.BooleanSupplier;
 public class BooleanSyncValue extends ValueSyncHandler<Boolean, BooleanSyncValue> implements IBoolSyncValue<Boolean>, IStringSyncValue<Boolean> {
 
     private final BooleanSupplier getter;
-    private final BooleanConsumer setter;
+    private final @Nullable BooleanConsumer setter;
     private boolean cache;
 
-    public BooleanSyncValue(@NotNull BooleanSupplier getter, @Nullable BooleanConsumer setter) {
+    public BooleanSyncValue(BooleanSupplier getter, @Nullable BooleanConsumer setter) {
         this.getter = Objects.requireNonNull(getter);
         this.setter = setter;
         this.cache = getter.getAsBoolean();
     }
 
-    public BooleanSyncValue(@NotNull BooleanSupplier getter) {
+    public BooleanSyncValue(BooleanSupplier getter) {
         this(getter, (BooleanConsumer) null);
     }
 
@@ -63,7 +62,7 @@ public class BooleanSyncValue extends ValueSyncHandler<Boolean, BooleanSyncValue
     }
 
     @Override
-    public void setValue(@NotNull Boolean value, boolean setSource, boolean sync) {
+    public void setValue(Boolean value, boolean setSource, boolean sync) {
         setBoolValue(value, setSource, sync);
     }
 

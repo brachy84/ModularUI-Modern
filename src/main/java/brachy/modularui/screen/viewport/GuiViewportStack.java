@@ -7,7 +7,7 @@ import brachy.modularui.widget.sizer.Area;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -24,8 +24,8 @@ public class GuiViewportStack implements IViewportStack {
     private final ObjectArrayList<TransformationMatrix> matrixPool = new ObjectArrayList<>(256);
     private final ObjectArrayList<TransformationMatrix> viewportStack = new ObjectArrayList<>();
     private final List<Area> viewportAreas = new ArrayList<>();
-    private TransformationMatrix top;
-    private TransformationMatrix topViewport;
+    private @Nullable TransformationMatrix top;
+    private @Nullable TransformationMatrix topViewport;
 
     @Override
     public void reset() {
@@ -40,7 +40,7 @@ public class GuiViewportStack implements IViewportStack {
     }
 
     @Override
-    public void pushViewport(IViewport viewport, Area area) {
+    public void pushViewport(@Nullable IViewport viewport, Area area) {
         Matrix4f parent = this.top == null ? null : this.top.getMatrix();
         Area child = getCurrentViewportArea();
         child.set(area);
@@ -84,7 +84,7 @@ public class GuiViewportStack implements IViewportStack {
     }
 
     @Override
-    public void popViewport(IViewport viewport) {
+    public void popViewport(@Nullable IViewport viewport) {
         if (this.top == null || !this.top.isViewportMatrix() || this.top.getViewport() != viewport) {
             String name;
             if (this.top == null) {
@@ -104,6 +104,7 @@ public class GuiViewportStack implements IViewportStack {
 
     @Override
     public void popMatrix() {
+        assert this.top != null;
         if (this.top.isViewportMatrix()) {
             throw new IllegalStateException("Tried to pop viewport matrix, but at the top is a normal matrix.");
         }
@@ -120,6 +121,7 @@ public class GuiViewportStack implements IViewportStack {
     }
 
     public void pop(TransformationMatrix transformationMatrix) {
+        assert this.top != null;
         if (this.top.getWrapped() != transformationMatrix) {
             throw new IllegalArgumentException();
         }
@@ -158,6 +160,7 @@ public class GuiViewportStack implements IViewportStack {
     @Override
     public void translate(float x, float y, float z) {
         checkViewport();
+        assert this.top != null;
         this.top.getMatrix().translate(x, y, z);
         this.top.markDirty();
     }
@@ -165,6 +168,7 @@ public class GuiViewportStack implements IViewportStack {
     @Override
     public void rotate(float angle, float x, float y, float z) {
         checkViewport();
+        assert this.top != null;
         this.top.getMatrix().rotate(angle, x, y, z);
         this.top.markDirty();
     }

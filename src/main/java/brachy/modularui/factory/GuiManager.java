@@ -38,7 +38,6 @@ import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class GuiManager {
         FACTORIES.put(name, factory);
     }
 
-    public static @NotNull UIFactory<?> getFactory(ResourceLocation name) {
+    public static UIFactory<?> getFactory(ResourceLocation name) {
         UIFactory<?> factory = FACTORIES.get(name);
         if (factory == null) throw new NoSuchElementException("No UI factory for name '" + name + "' found!");
         return factory;
@@ -72,7 +71,7 @@ public class GuiManager {
         return FACTORIES.containsKey(name);
     }
 
-    public static <T extends GuiData> void open(@NotNull UIFactory<T> factory, @NotNull T guiData, ServerPlayer player) {
+    public static <T extends GuiData> void open(UIFactory<T> factory, T guiData, ServerPlayer player) {
         if (player instanceof FakePlayer || openedContainers.contains(player)) return;
         openedContainers.add(player);
         // create panel, collect sync handlers and create menu
@@ -109,8 +108,8 @@ public class GuiManager {
 
     @ApiStatus.Internal
     @OnlyIn(Dist.CLIENT)
-    public static <T extends GuiData> void openFromClient(int windowId, int networkId, @NotNull UIFactory<T> factory,
-                                                          @NotNull FriendlyByteBuf data, @NotNull LocalPlayer player) {
+    public static <T extends GuiData> void openFromClient(int windowId, int networkId, UIFactory<T> factory,
+                                                          FriendlyByteBuf data, LocalPlayer player) {
         T guiData = factory.readGuiData(player, data);
         UISettings settings = new UISettings();
         settings.defaultCanInteractWith(factory, guiData);
@@ -136,7 +135,7 @@ public class GuiManager {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static <T extends GuiData> void openFromClient(@NotNull UIFactory<T> factory, @NotNull T guiData) {
+    public static <T extends GuiData> void openFromClient(UIFactory<T> factory, T guiData) {
         // notify server to open the gui
         // server will send packet back to actually open the gui
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());

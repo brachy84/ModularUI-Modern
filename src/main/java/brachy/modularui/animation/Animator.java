@@ -4,6 +4,7 @@ import brachy.modularui.api.drawable.IInterpolation;
 import brachy.modularui.utils.Interpolation;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.DoubleConsumer;
@@ -19,8 +20,8 @@ public class Animator extends BaseAnimator<Animator> implements IAnimator {
     private int duration = 250;
     @Getter
     private IInterpolation curve = Interpolation.LINEAR;
-    private DoublePredicate onUpdate;
-    private Runnable onFinish;
+    private @Nullable DoublePredicate onUpdate;
+    private @Nullable Runnable onFinish;
 
     private int progress = 0;
 
@@ -180,7 +181,7 @@ public class Animator extends BaseAnimator<Animator> implements IAnimator {
      * @param onUpdate update function
      * @return this
      */
-    public Animator onUpdate(DoublePredicate onUpdate) {
+    public Animator onUpdate(@Nullable DoublePredicate onUpdate) {
         this.onUpdate = onUpdate;
         return this;
     }
@@ -205,7 +206,7 @@ public class Animator extends BaseAnimator<Animator> implements IAnimator {
      * @param onFinish finish function
      * @return this
      */
-    public Animator onFinish(Runnable onFinish) {
+    public Animator onFinish(@Nullable Runnable onFinish) {
         this.onFinish = onFinish;
         return this;
     }

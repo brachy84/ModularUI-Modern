@@ -45,8 +45,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -120,10 +119,9 @@ public class ModularScreen implements Renderable {
     @Getter private boolean openParentOnClose = false;
 
     @Getter
-    @Nullable
-    private String themeOverride;
-    private ITheme currentTheme;
-    @Getter private IMuiScreen screenWrapper;
+    private @Nullable String themeOverride;
+    private @Nullable ITheme currentTheme;
+    @Getter private  @Nullable IMuiScreen screenWrapper;
     /**
      * true if this is an overlay for another screen
      */
@@ -137,7 +135,7 @@ public class ModularScreen implements Renderable {
      * @param owner     owner of this screen (usually a mod id)
      * @param mainPanel main panel of this screen
      */
-    public ModularScreen(@NotNull String owner, @NotNull ModularPanel<?> mainPanel) {
+    public ModularScreen(String owner, ModularPanel<?> mainPanel) {
         this(owner, context -> mainPanel);
     }
 
@@ -147,7 +145,7 @@ public class ModularScreen implements Renderable {
      * @param owner            owner of this screen (usually a mod id)
      * @param mainPanelCreator function which creates the main panel of this screen
      */
-    public ModularScreen(String owner, @NotNull Function<ModularGuiContext, ModularPanel<?>> mainPanelCreator) {
+    public ModularScreen(String owner, Function<ModularGuiContext, ModularPanel<?>> mainPanelCreator) {
         this(UIType.MODULAR_SCREEN, owner, Objects.requireNonNull(mainPanelCreator, "The main panel function must not be null!"), false);
     }
 
@@ -165,7 +163,7 @@ public class ModularScreen implements Renderable {
     /**
      * Intended for use in {@link CustomModularScreen}
      */
-    ModularScreen(@NotNull String owner) {
+    ModularScreen(String owner) {
         this(UIType.MODULAR_SCREEN, owner, null, false);
     }
 
@@ -348,7 +346,7 @@ public class ModularScreen implements Renderable {
      * Do not call, only override!
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!this.context.getUIType().isScreen) {
             checkManualUpdate(); // embeds can't trigger frame updates the proper way
         }
@@ -659,7 +657,7 @@ public class ModularScreen implements Renderable {
         return this.context.getScreenArea();
     }
 
-    public @NotNull ScreenRectangle getMainRectangle() {
+    public ScreenRectangle getMainRectangle() {
         return this.panelManager.getMainPanel().getArea().toScreenRectangle();
     }
 
@@ -778,7 +776,7 @@ public class ModularScreen implements Renderable {
      * @param theme id of theme to use
      * @return this for builder like usage
      */
-    public ModularScreen useTheme(String theme) {
+    public ModularScreen useTheme(@Nullable String theme) {
         this.themeOverride = theme;
         this.currentTheme = IThemeApi.get().getThemeForScreen(this, this.themeOverride);
         return this;

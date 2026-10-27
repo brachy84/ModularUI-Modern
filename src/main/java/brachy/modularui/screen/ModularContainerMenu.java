@@ -28,8 +28,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import java.util.Objects;
 
 public class ModularContainerMenu extends AbstractContainerMenu {
 
-    public static ModularContainerMenu getCurrent(Player player) {
+    public static @Nullable ModularContainerMenu getCurrent(Player player) {
         if (player.containerMenu instanceof ModularContainerMenu container) {
             return container;
         }
@@ -47,18 +46,18 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Getter
-    private Player player;
-    private ModularSyncManager syncManager;
+    private @Nullable Player player;
+    private @Nullable ModularSyncManager syncManager;
     private boolean init = true;
     // all phantom slots (inventory doesn't contain phantom slots)
     private final List<ModularSlot> phantomSlots = new ArrayList<>();
     private final List<ModularSlot> shiftClickSlots = new ArrayList<>();
     @Getter
-    private GuiData guiData;
-    private UISettings settings;
+    private @Nullable GuiData guiData;
+    private @Nullable UISettings settings;
 
     @OnlyIn(Dist.CLIENT)
-    private ModularScreen optionalScreen;
+    private @Nullable ModularScreen optionalScreen;
 
     public ModularContainerMenu(int containerId) {
         super(ModularUIMenuTypes.MODULAR_CONTAINER.get(), containerId);
@@ -148,7 +147,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void initializeContents(int stateId, List<ItemStack> items, @NotNull ItemStack carried) {
+    public void initializeContents(int stateId, List<ItemStack> items, ItemStack carried) {
         if (this.slots.size() != items.size()) {
             ModularUI.LOGGER.error("Here are {} slots, but expected {}", this.slots.size(), items.size());
         }
@@ -188,7 +187,6 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Contract("_, null, null -> fail")
-    @NotNull
     @ApiStatus.Internal
     public SlotGroup validateSlotGroup(String panelName, @Nullable String slotGroupName, @Nullable SlotGroup slotGroup) {
         if (slotGroup != null) {
@@ -239,17 +237,17 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     public void onSlotChanged(ModularSlot slot, ItemStack oldStack, ItemStack newStack) {}
 
     @Override
-    public boolean canDragTo(@NotNull Slot slot) {
+    public boolean canDragTo(Slot slot) {
         return !(slot instanceof ModularSlot modularSlot) || modularSlot.canDragIntoSlot();
     }
 
     @Override
-    public boolean stillValid(@NotNull Player playerIn) {
+    public boolean stillValid(Player playerIn) {
         return this.settings.canPlayerInteractWithUI(playerIn);
     }
 
     @Override
-    public void clicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
+    public void clicked(int slotId, int mouseButton, ClickType clickTypeIn, Player player) {
         ItemStack returnable = ItemStack.EMPTY;
         Inventory inventory = player.getInventory();
 
@@ -450,11 +448,11 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         }
     }
 
-    protected final void superClicked(int slotId, int mouseButton, @NotNull ClickType clickTypeIn, @NotNull Player player) {
+    protected final void superClicked(int slotId, int mouseButton, ClickType clickTypeIn, Player player) {
         super.clicked(slotId, mouseButton, clickTypeIn, player);
     }
 
-    protected Slot findPlayerSlot(Player player, int index) {
+    protected @Nullable Slot findPlayerSlot(Player player, int index) {
         if (player == this.player || Objects.equals(player.getEncodeId(), this.player.getEncodeId())) {
             // if we want a slot of the player who opened the ui, we can just use the slot group
             SlotGroup slotGroup = this.syncManager.getSlotGroup(PlayerSlotGroup.NAME);
@@ -468,7 +466,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         return findExternalPlayerSlot(player, index);
     }
 
-    protected Slot findExternalPlayerSlot(Player player, int index) {
+    protected @Nullable Slot findExternalPlayerSlot(Player player, int index) {
         // go through all slots and find a slot with a matching player and index
         for (Slot slot : this.slots) {
             Player slotPlayer = ModularSlot.getPlayerSlotPlayer(slot);
@@ -482,7 +480,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ModularSlot slot = getModularSlot(index);
         if (!slot.isPhantom()) {
             ItemStack stack = slot.getItem();
@@ -509,7 +507,6 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     }
 
     protected ItemStack transferItem(ModularSlot fromSlot, ItemStack fromStack) {
-        @Nullable
         SlotGroup fromSlotGroup = fromSlot.getSlotGroup();
         // in first iteration only insert into non-empty, non-phantom slots
         for (ModularSlot toSlot : getShiftClickSlots()) {

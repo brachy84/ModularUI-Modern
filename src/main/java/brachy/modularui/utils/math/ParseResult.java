@@ -2,7 +2,7 @@ package brachy.modularui.utils.math;
 
 import com.ezylang.evalex.BaseException;
 import com.ezylang.evalex.data.EvaluationValue;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ParseResult {
 
@@ -13,11 +13,11 @@ public class ParseResult {
         return new ParseResult(result, null);
     }
 
-    public static ParseResult failure(@NotNull BaseException error) {
+    public static ParseResult failure(@NonNull BaseException error) {
         return failure(null, error);
     }
 
-    public static ParseResult failure(EvaluationValue value, @NotNull BaseException error) {
+    public static ParseResult failure(EvaluationValue value, @NonNull BaseException error) {
         return new ParseResult(value, error);
     }
 
