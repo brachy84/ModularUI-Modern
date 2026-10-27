@@ -21,7 +21,7 @@ import java.util.Objects;
 @Accessors(fluent = true, chain = true)
 public class CycleDrawable implements IDrawable {
 
-    public static final MutableObjectCodec<CycleDrawable> CODEC = MutableObjectCodec.drawableBuilder(CycleDrawable::new)
+    public static final MutableObjectCodec<CycleDrawable> CODEC = MutableObjectCodec.builder(() -> new CycleDrawable())
             .addOpt("drawables", CycleDrawable::drawables, CycleDrawable::getListDrawables, IDrawable.CODEC.listOf(), Collections.emptyList())
             .addOpt("cycleTime", CycleDrawable::cycleTime, CycleDrawable::cycleTime, Codec.INT, 1000)
             .build();

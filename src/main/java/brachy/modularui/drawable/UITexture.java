@@ -9,6 +9,7 @@ import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -32,8 +33,7 @@ public class UITexture implements IDrawable {
 
     public static final MapCodec<UITexture> CODEC_FROM_BUILDER = Builder.CODEC.flatXmap(Builder::buildForCodec, t -> DataResult.success(t.toBuilder()));
     public static final Codec<UITexture> CODEC_FROM_NAME = ExtraCodecs.stringResolverCodec(TextureRegistry::getTextureId, TextureRegistry::getTexture);
-    public static final MapCodec<UITexture> CODEC = IDrawable.CODECS.register("texture",
-            CodecUtil.chainedMapCodec(CODEC_FROM_NAME.fieldOf("name"), CODEC_FROM_BUILDER));
+    public static final MapCodec<UITexture> CODEC = CodecUtil.chainedMapCodec(CODEC_FROM_NAME.fieldOf("name"), CODEC_FROM_BUILDER);
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", ColorType.DEFAULT);
     public static final FileToIdConverter GUI_TEXTURE_ID_CONVERTER = new FileToIdConverter("textures/gui", ".png");
@@ -192,6 +192,8 @@ public class UITexture implements IDrawable {
     }
 
     public void draw(GuiContext context, float x, float y, float width, float height) {
+        context.getGraphics().flush();
+        RenderSystem.disableDepthTest();
         GuiDraw.drawTexture(context.getLastGraphicsPose(), this.location, x, y, x + width, y + height, this.u0, this.v0,
                 this.u1, this.v1);
     }
@@ -221,8 +223,8 @@ public class UITexture implements IDrawable {
     }
 
     @Override
-    public String getTypeName() {
-        return "texture";
+    public DrawableType<UITexture> getType() {
+        return DrawableType.TEXTURE;
     }
 
     public Builder toBuilder() {

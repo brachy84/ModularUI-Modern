@@ -7,8 +7,10 @@ import brachy.modularui.api.widget.IGuiAction;
 import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.theme.WidgetThemeEntry;
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
 import brachy.modularui.value.sync.InteractionSyncHandler;
 import brachy.modularui.widget.SingleChildWidget;
+import brachy.modularui.widget.WidgetType;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +30,11 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
                     return false;
                 });
     }
+
+    public static final MutableObjectCodec<ButtonWidget<?>> CODEC = MutableObjectCodec.<ButtonWidget<?>>builder()
+            .instance(ButtonWidget::new)
+            .addFieldsOf(SingleChildWidget.CODEC, w -> w)
+            .build();
 
     @Getter private boolean playClickSound = true;
     @Getter private Runnable clickSound;
@@ -141,6 +148,11 @@ public class ButtonWidget<W extends ButtonWidget<W>> extends SingleChildWidget<W
             throw new IllegalStateException("Widget is not initialised or not synced!");
         }
         return syncHandler;
+    }
+
+    @Override
+    public WidgetType<?> getType() {
+        return WidgetType.BUTTON;
     }
 
     public W onMousePressed(IGuiAction.MousePressed mousePressed) {

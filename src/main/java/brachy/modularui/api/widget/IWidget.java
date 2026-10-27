@@ -7,16 +7,19 @@ import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
-import brachy.modularui.utils.FormattingUtil;
 import brachy.modularui.utils.ObjectList;
 import brachy.modularui.utils.Stencil;
-import brachy.modularui.utils.serialization.codec.CodecRegistry;
+import brachy.modularui.utils.serialization.codec.CodecUtil;
+import brachy.modularui.widget.EmptyWidget;
+import brachy.modularui.widget.WidgetModification;
+import brachy.modularui.widget.WidgetRegistry;
+import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
-import com.google.common.base.CharMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,24 +33,14 @@ import java.util.function.UnaryOperator;
  */
 public interface IWidget extends ITreeNode<IWidget> {
 
-    CodecRegistry<IWidget> CODECS = new CodecRegistry<>();
-    Codec<IWidget> CODEC = Codec.STRING.dispatch("widget", IWidget::getTypeName, CODECS::getNullableCodec);
-
-    String WIDGET_TRANSLATION_KEY_FORMAT = "widget.%s.name";
-    /**
-     * This char matcher is used to remove any non-{@code [a-z0-9_.-]} characters in translation keys.
-     * In essence, it
-     */
-    CharMatcher DISALLOWED_TRANSLATION_KEY_CHARS = CharMatcher.inRange('a', 'z')
-            .or(CharMatcher.inRange('0', '9'))
-            .or(CharMatcher.anyOf("-_."))
-            .negate();
-
-    default String getTranslationId() {
-        String className = FormattingUtil.toLowerCaseUnderscore(this.getClass().getSimpleName());
-        className = DISALLOWED_TRANSLATION_KEY_CHARS.removeFrom(className);
-        return WIDGET_TRANSLATION_KEY_FORMAT.formatted(className);
-    }
+    Codec<IWidget> CODEC_EMPTY_NONE = Codec.STRING.flatXmap(s -> {
+        if (s == null || s.equals("empty") || s.equals("null")) return DataResult.success(new EmptyWidget());
+        return DataResult.error(() -> "Only valid options are empty and null");
+    }, d -> {
+        if (d instanceof EmptyWidget) return DataResult.success("empty");
+        return DataResult.error(() -> "Only works for empty");
+    });
+    Codec<IWidget> CODEC = CodecUtil.chainedCodec(WidgetRegistry.INSTANCE.dispatchCodec.codec(), CODEC_EMPTY_NONE);
 
     /**
      * @return the screen this element is in
@@ -87,7 +80,8 @@ public interface IWidget extends ITreeNode<IWidget> {
      * @return parent area
      */
     default Area getParentArea() {
-        return getParent().getArea();
+        var p = getParent();
+        return IDelegatingWidget.isDelegating(p, this) ? p.getParentArea() : p.getArea();
     }
 
     /**
@@ -402,5 +396,15 @@ public interface IWidget extends ITreeNode<IWidget> {
 
     default boolean isNameAndType(String name, Class<? extends IWidget> type) {
         return isName(name) && isType(type);
+    }
+
+    default WidgetType<?> getType() {
+        return null;
+    }
+
+    IWidget copy();
+
+    default boolean applyModification(WidgetModification modification, IWidget childTarget) {
+        return false;
     }
 }
