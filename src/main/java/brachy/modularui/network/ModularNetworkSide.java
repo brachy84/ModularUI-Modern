@@ -7,6 +7,7 @@ import brachy.modularui.network.packets.CloseGuiPacket;
 import brachy.modularui.network.packets.ReopenGuiPacket;
 import brachy.modularui.network.packets.SyncHandlerPacket;
 import brachy.modularui.screen.ModularContainerMenu;
+import brachy.modularui.utils.sides.SidedAccessHelper;
 import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.value.sync.SyncHandler;
 
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
@@ -84,7 +86,7 @@ public abstract class ModularNetworkSide {
         ModularSyncManager msm = syncHandler.getSyncManager().getModularSyncManager();
         if (!inverseActiveScreens.containsKey(msm)) return;
         int id = inverseActiveScreens.getInt(msm);
-        sendPacket(new SyncHandlerPacket(id, panel, syncHandler.getKey(), false, writer), player);
+        sendPacket(new SyncHandlerPacket(id, panel, syncHandler.getKey(), false, snapshotWriter(writer)), player);
     }
 
     @ApiStatus.Internal
@@ -92,7 +94,20 @@ public abstract class ModularNetworkSide {
                                  IPacketWriter<? super RegistryFriendlyByteBuf> writer, Player player) {
         if (!inverseActiveScreens.containsKey(msm)) return;
         int id = inverseActiveScreens.getInt(msm);
-        sendPacket(new SyncHandlerPacket(id, panel, key, true, writer), player);
+        sendPacket(new SyncHandlerPacket(id, panel, key, true, snapshotWriter(writer)), player);
+    }
+
+    private IPacketWriter<? super RegistryFriendlyByteBuf> snapshotWriter(
+            IPacketWriter<? super RegistryFriendlyByteBuf> writer) {
+        RegistryFriendlyByteBuf buffer = SidedAccessHelper.makeRegistryByteBuf(Unpooled.buffer());
+        try {
+            writer.write(buffer);
+            byte[] payload = new byte[buffer.readableBytes()];
+            buffer.getBytes(buffer.readerIndex(), payload);
+            return target -> target.writeBytes(payload);
+        } finally {
+            buffer.release();
+        }
     }
 
     @ApiStatus.Internal

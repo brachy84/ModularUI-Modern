@@ -33,7 +33,7 @@ public class DummyChunkSource extends ChunkSource {
      *
      * @return {@code true} if any chunks were removed.
      */
-    public boolean clear() {
+    public synchronized boolean clear() {
         if (this.chunks.isEmpty()) {
             return false;
         }
@@ -51,7 +51,7 @@ public class DummyChunkSource extends ChunkSource {
     }
 
     @Override
-    public @Nullable ChunkAccess getChunk(int chunkX, int chunkZ, @NotNull ChunkStatus requiredStatus, boolean load) {
+    public synchronized @Nullable ChunkAccess getChunk(int chunkX, int chunkZ, @NotNull ChunkStatus requiredStatus, boolean load) {
         ChunkPos pos = new ChunkPos(chunkX, chunkZ);
         return chunks.computeIfAbsent(pos.toLong(), posLong1 -> {
             DummyChunk newChunk = new DummyChunk(level, pos);
@@ -61,7 +61,7 @@ public class DummyChunkSource extends ChunkSource {
     }
 
     @Override
-    public boolean hasChunk(int chunkX, int chunkZ) {
+    public synchronized boolean hasChunk(int chunkX, int chunkZ) {
         return true;
     }
 
@@ -74,7 +74,7 @@ public class DummyChunkSource extends ChunkSource {
     }
 
     @Override
-    public int getLoadedChunksCount() {
+    public synchronized int getLoadedChunksCount() {
         return chunks.size();
     }
 }
