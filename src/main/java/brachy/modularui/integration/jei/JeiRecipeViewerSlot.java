@@ -19,6 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.Getter;
 import lombok.Setter;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
@@ -166,8 +167,7 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
             }
         }
 
-        recipeSlot.modularui$setAllIngredients(allIngredients);
-        recipeSlot.modularui$setDisplayIngredients(focusedIngredients);
+        JeiRecipeSlotCompat.replaceIngredients(recipeSlot, allIngredients, focusedIngredients);
     }
 
     @Override
@@ -214,8 +214,9 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
         if (recipeName != null) {
             RecipeType<T> recipeType = recipeCategory.getRecipeType();
-            OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
+            IRecipeSlotRichTooltipCallback callback = JeiRecipeSlotCompat.createOutputSlotTooltipCallback(recipeName, recipeType);
             slot.modularui$getTooltipCallbacks().add(callback);
         }
     }
 }
+

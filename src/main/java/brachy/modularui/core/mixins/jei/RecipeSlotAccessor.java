@@ -1,11 +1,9 @@
 package brachy.modularui.core.mixins.jei;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -26,11 +24,5 @@ public interface RecipeSlotAccessor {
     @Accessor("tooltipCallbacks")
     List<IRecipeSlotRichTooltipCallback> modularui$getTooltipCallbacks();
 
-    @Accessor("allIngredients")
-    @Mutable
-    void modularui$setAllIngredients(List<@Nullable ITypedIngredient<?>> allIngredients);
-
-    @Accessor("displayIngredients")
-    @Mutable
-    void modularui$setDisplayIngredients(List<@Nullable ITypedIngredient<?>> displayIngredients);
 }
+
