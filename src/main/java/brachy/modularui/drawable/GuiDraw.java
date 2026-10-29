@@ -709,22 +709,22 @@ public class GuiDraw {
         if (format != null) {
             amountText = format + amountText;
         }
-        drawScaledAlignedTextInBox(context, amountText, x, y, width, height, alignment, 1f, z);
+        drawScaledAlignedTextInBox(context, amountText, x, y, width, height, alignment, 1f, 1f, z);
     }
 
     public static void drawScaledAlignedTextInBox(ModularGuiContext context, String amountText,
                                                   int x, int y, int width, int height,
                                                   Alignment alignment) {
-        drawScaledAlignedTextInBox(context, amountText, x, y, width, height, alignment, 1f, 0.0f);
+        drawScaledAlignedTextInBox(context, amountText, x, y, width, height, alignment, 1f, 1f, 0.0f);
     }
 
     public static void drawScaledAlignedTextInBox(ModularGuiContext context, String amountText,
                                                   int x, int y, int width, int height,
-                                                  Alignment alignment, float maxScale, float z) {
+                                                  Alignment alignment, float scale, float maxScale, float z) {
         if (amountText == null || amountText.isEmpty()) return;
         // render the amount overlay
         textRenderer.setShadow(true);
-        textRenderer.setScale(1f);
+        textRenderer.setScale(scale);
         textRenderer.setColor(Color.WHITE.main);
         textRenderer.setAlignment(alignment, width, height);
         textRenderer.setPos(x, y);
@@ -736,7 +736,7 @@ public class GuiDraw {
             textRenderer.setSimulate(true);
             textRenderer.draw(context.getGraphics(), amountText);
             textRenderer.setSimulate(false);
-            textRenderer.setScale(Math.min(maxScale, width / textRenderer.getLastWidth()));
+            textRenderer.setScale(Math.min(scale, width / textRenderer.getLastWidth()));
         }
         context.graphicsPose().translate(0, 0, 100 + z);
         textRenderer.draw(context.getGraphics(), amountText);

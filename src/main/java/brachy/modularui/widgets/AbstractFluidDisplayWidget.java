@@ -1,9 +1,9 @@
 package brachy.modularui.widgets;
 
+import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.integration.recipeviewer.entry.EntryList;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.screen.viewport.ModularGuiContext;
@@ -66,8 +66,9 @@ public abstract class AbstractFluidDisplayWidget<W extends AbstractFluidDisplayW
             String s = NumberFormat.format(getBaseUnitAmount(fluid.getAmount()), NumberFormat.AMOUNT_TEXT) + getBaseUnit();
             // mc doesn't consider the 1px border in item slots for amount text, but it looks weird when it touches the
             // left border, so we only apply padding there
-            GuiDraw.drawScaledAlignedTextInBox(context, s, this.contentPadding.left(), 0,
-                    getArea().width - this.contentPadding.left(), getArea().height, Alignment.BottomRight);
+            GuiDraw.drawScaledAlignedTextInBox(context, s, this.contentPadding.left() - 1, -1,
+                    getArea().width - this.contentPadding.left(), getArea().height - this.contentPadding.bottom(), Alignment.BottomRight,
+                    ModularUIConfig.FLUID_SLOT_TEXT_SCALE.get().floatValue(), 1f, 0.0f);
         }
     }
 
