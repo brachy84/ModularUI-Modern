@@ -121,13 +121,13 @@ public abstract class ModularNetwork {
         }
 
         @Override
-        public void sendSyncHandlerPacket(String panel, SyncHandler<?> syncHandler, IPacketWriter<? super RegistryFriendlyByteBuf> writer, Player player) {
-            get(player).sendSyncHandlerPacket(panel, syncHandler, writer, player);
+        public void sendSyncHandlerPacket(String panel, SyncHandler<?> syncHandler, RegistryFriendlyByteBuf packet, Player player) {
+            get(player).sendSyncHandlerPacket(panel, syncHandler, packet, player);
         }
 
         @Override
-        public void sendActionPacket(ModularSyncManager msm, String panel, String key, IPacketWriter<? super RegistryFriendlyByteBuf> writer, Player player) {
-            get(player).sendActionPacket(msm, panel, key, writer, player);
+        public void sendActionPacket(ModularSyncManager msm, String panel, String key, RegistryFriendlyByteBuf packet, Player player) {
+            get(player).sendActionPacket(msm, panel, key, packet, player);
         }
 
         @Override
