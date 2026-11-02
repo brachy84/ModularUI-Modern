@@ -81,7 +81,7 @@ public class JsonBuilder {
 
     public JsonBuilder addAllOf(JsonObject json) {
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            this.json.add(entry.getKey(), entry.getValue());
+            this.json.add(entry.getKey(), entry.getValue().deepCopy());
         }
         return this;
     }
