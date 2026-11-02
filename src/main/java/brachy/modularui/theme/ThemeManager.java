@@ -384,8 +384,9 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
 
             if (!definedHover && definedStandard) {
                 // marker to use the standard theme background on hover
-                rawWidgetThemeJson.addProperty(IThemeApi.BACKGROUND, "none");
-                widgetThemeHoverJson = rawWidgetThemeJson;
+                // copy first, rawWidgetThemeJson is shared with the java registered default theme
+                widgetThemeHoverJson = rawWidgetThemeJson.deepCopy();
+                widgetThemeHoverJson.addProperty(IThemeApi.BACKGROUND, "none");
             }
 
             // only inherit from the widget theme if it was actually defined, otherwise use parent
