@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -39,6 +40,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -67,6 +69,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -76,6 +79,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -578,7 +582,24 @@ public class BaseSchemaRenderer implements IDrawable {
         Vector3f target = screenToWorldPos(m, this.openGLMousePos);
         this.openGLMousePos.z = d;
 
-        ClipContext context = new ClipContext(new Vec3(worldPos), new Vec3(target),
+        Vec3 from = new Vec3(worldPos);
+        Vec3 to = new Vec3(target);
+
+        RenderCompileResults results = this.compiledRenderResult.get();
+        AABB bounds = results != null ? results.bounds : null;
+        if (bounds != null) {
+            bounds = bounds.inflate(1);
+            Optional<Vec3> entry = bounds.contains(from) ? Optional.of(from) : bounds.clip(from, to);
+            Optional<Vec3> exit = bounds.contains(to) ? Optional.of(to) : bounds.clip(to, from);
+            if (entry.isEmpty() || exit.isEmpty()) {
+                Vec3 dir = to.subtract(from);
+                return BlockHitResult.miss(to, Direction.getNearest(dir.x, dir.y, dir.z), BlockPos.containing(to));
+            }
+            from = entry.get();
+            to = exit.get();
+        }
+
+        ClipContext context = new ClipContext(from, to,
                 ClipContext.Block.OUTLINE,
                 ClipContext.Fluid.ANY, null);
         return this.renderLevel.clip(context);
@@ -700,12 +721,22 @@ public class BaseSchemaRenderer implements IDrawable {
             Set<RenderType> startedBuffers = new ReferenceArraySet<>(RenderType.chunkBufferLayers().size());
 
             ModelBlockRenderer.enableCaching();
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+            int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
             for (var blockEntry : BaseSchemaRenderer.this.schema) {
                 if (!BaseSchemaRenderer.this.renderFilter.shouldRender(blockEntry.getKey(), blockEntry.getValue())) {
                     continue;
                 }
                 BlockPos pos = blockEntry.getKey();
                 BlockState blockState = blockEntry.getValue();
+                if (!blockState.isAir()) {
+                    minX = Math.min(minX, pos.getX());
+                    minY = Math.min(minY, pos.getY());
+                    minZ = Math.min(minZ, pos.getZ());
+                    maxX = Math.max(maxX, pos.getX());
+                    maxY = Math.max(maxY, pos.getY());
+                    maxZ = Math.max(maxZ, pos.getZ());
+                }
                 FluidState fluidState = blockState.getFluidState();
 
                 if (blockState.hasBlockEntity()) {
@@ -776,6 +807,9 @@ public class BaseSchemaRenderer implements IDrawable {
                 }
             }
             ModelBlockRenderer.clearCache();
+            if (minX <= maxX) {
+                compileResults.bounds = new AABB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
+            }
 
             if (this.isCanceled.get()) {
                 compileResults.renderedLayers.values().forEach(BufferBuilder.RenderedBuffer::release);
@@ -828,6 +862,7 @@ public class BaseSchemaRenderer implements IDrawable {
         protected final Map<RenderType, BufferBuilder.RenderedBuffer> renderedLayers = new Reference2ObjectArrayMap<>();
         protected final Set<TextureAtlasSprite> activeFluidSprites = new HashSet<>();
         protected final Set<RenderType> hasBlocks = new ObjectArraySet<>(RenderType.chunkBufferLayers().size());
+        protected @Nullable AABB bounds = null;
         private Map<RenderType, VertexBuffer> chunkBuffers = getOrCreateChunkBuffers();
 
         protected @NotNull Map<RenderType, VertexBuffer> getOrCreateChunkBuffers() {
