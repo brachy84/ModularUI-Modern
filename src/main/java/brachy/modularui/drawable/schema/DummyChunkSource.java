@@ -37,6 +37,10 @@ public class DummyChunkSource extends ChunkSource {
         });
     }
 
+    public @Nullable DummyChunk getChunkIfPresent(int chunkX, int chunkZ) {
+        return chunks.get(ChunkPos.asLong(chunkX, chunkZ));
+    }
+
     @Override
     public boolean hasChunk(int chunkX, int chunkZ) {
         return true;
