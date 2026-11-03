@@ -347,6 +347,30 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
     }
 
     @Override
+    public <T extends SyncHandler<?>> T getOrCreateSyncHandler(String name, int id, Supplier<T> supplier) {
+        SyncHandler<?> syncHandler = findSyncHandlerNullable(name, id);
+        if (syncHandler == null) {
+            if (isLocked() && !this.allowSyncHandlerRegistration) {
+                // registration is locked, and we don't have permission to temporarily bypass lock
+                throw new IllegalStateException("SyncHandlers must be registered during panel building. The only exceptions is via a DynamicSyncHandler and sync functions!");
+            }
+            T t = supplier.get();
+            boolean l = this.locked;
+            this.locked = false; // bypass possible lock
+            putSyncValue(name, id, t);
+            this.locked = l;
+            return t;
+        }
+        try {
+            //noinspection unchecked
+            return (T) syncHandler;
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("SyncHandler for key " + makeSyncKey(name, id) +
+                    " is of wrong type " + syncHandler.getClass(), e);
+        }
+    }
+
+    @Override
     public SlotGroup getSlotGroup(String name) {
         return this.slotGroups.get(name);
     }
@@ -355,7 +379,7 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
         return this.slotGroups.values();
     }
 
-    public @Nullable SyncHandler getSyncHandlerFromMapKey(String mapKey) {
+    public @Nullable SyncHandler<?> getSyncHandlerFromMapKey(String mapKey) {
         return this.syncHandlers.get(mapKey);
     }
 

@@ -206,6 +206,11 @@ public class ModularSyncManager implements ISyncRegistrar<ModularSyncManager> {
     }
 
     @Override
+    public <T extends SyncHandler<?>> T getOrCreateSyncHandler(String name, int id, Supplier<T> supplier) {
+        return this.mainPSM.getOrCreateSyncHandler(name, id, supplier);
+    }
+
+    @Override
     public @Nullable SyncHandler<?> findSyncHandlerNullable(String name, int id) {
         return this.mainPSM.findSyncHandlerNullable(name, id);
     }
