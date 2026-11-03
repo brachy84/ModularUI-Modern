@@ -77,7 +77,7 @@ public class ModularSlot extends SlotItemHandler {
      * @param itemHandler item handler of the slot
      * @param index       slot index in the item handler
      */
-    public ModularSlot(IItemHandler itemHandler, int index) {
+    public ModularSlot(IItemHandlerModifiable itemHandler, int index) {
         super(itemHandler, index, Integer.MIN_VALUE, Integer.MIN_VALUE);
         validateIndex(itemHandler, index);
         if (isPlayerInvWrapper(itemHandler)) {
@@ -85,7 +85,7 @@ public class ModularSlot extends SlotItemHandler {
         }
     }
 
-    protected ModularSlot(IItemHandler itemHandler, int index, Player player) {
+    protected ModularSlot(IItemHandlerModifiable itemHandler, int index, Player player) {
         super(itemHandler, index, Integer.MIN_VALUE, Integer.MIN_VALUE);
         validateIndex(itemHandler, index);
         if (!isPlayerInvWrapper(itemHandler)) {
@@ -108,6 +108,11 @@ public class ModularSlot extends SlotItemHandler {
 
     public boolean isInitialized() {
         return this.syncHandler != null;
+    }
+
+    @Override
+    public @NotNull IItemHandlerModifiable getItemHandler() {
+        return (IItemHandlerModifiable) super.getItemHandler();
     }
 
     @Override

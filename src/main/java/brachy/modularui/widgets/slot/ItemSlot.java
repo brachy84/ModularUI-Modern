@@ -284,12 +284,10 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
                 }
                 GuiDraw.drawStandardSlotAmountText(context, amount, format, getArea(), z);
 
-                int cachedCount = slotStack.getCount();
-                slotStack.setCount(1); // required to not render the amount overlay
+                // count of 1 is required to not render the amount overlay
                 // render other overlays like durability bar
-                context.getGraphics().renderItemDecorations(((ScreenAccessor) guiScreen).getFont(), slotStack, 1, 1,
-                        null);
-                slotStack.setCount(cachedCount);
+                context.getGraphics().renderItemDecorations(((ScreenAccessor) guiScreen).getFont(),
+                        slotStack.copyWithCount(1), 1, 1, null);
                 RenderSystem.disableDepthTest();
             }
         }
