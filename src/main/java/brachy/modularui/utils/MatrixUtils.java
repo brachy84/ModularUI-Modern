@@ -29,8 +29,6 @@ import java.security.InvalidParameterException;
 import java.util.Objects;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class MatrixUtils {
 
     @SuppressWarnings("UnstableApiUsage")

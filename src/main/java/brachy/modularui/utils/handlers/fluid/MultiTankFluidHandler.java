@@ -4,8 +4,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-import org.jspecify.annotations.NonNull;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntFunction;
@@ -39,7 +37,7 @@ public class MultiTankFluidHandler implements IMultiTankFluidHandler {
     }
 
     @Override
-    public @NonNull FluidStack getFluidInTank(int tank) {
+    public FluidStack getFluidInTank(int tank) {
         return getFluidTank(tank).getFluid();
     }
 
@@ -49,7 +47,7 @@ public class MultiTankFluidHandler implements IMultiTankFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NonNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         return getFluidTank(tank).isFluidValid(stack);
     }
 
@@ -83,12 +81,12 @@ public class MultiTankFluidHandler implements IMultiTankFluidHandler {
     }
 
     @Override
-    public @NonNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public FluidStack drain(FluidStack resource, FluidAction action) {
         if (resource.isEmpty()) return FluidStack.EMPTY;
         return drain(0, resource, action);
     }
 
-    private @NonNull FluidStack drain(int startIndex, FluidStack resource, FluidAction action) {
+    private FluidStack drain(int startIndex, FluidStack resource, FluidAction action) {
         if (startIndex >= this.tanks.length) return FluidStack.EMPTY;
         int drainAmount = resource.getAmount();
         for (int i = startIndex; i < this.tanks.length; i++) {

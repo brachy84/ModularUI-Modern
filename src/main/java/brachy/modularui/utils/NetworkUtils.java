@@ -15,7 +15,7 @@ public class NetworkUtils {
 
     public static final Consumer<FriendlyByteBuf> EMPTY_PACKET = buffer -> {};
 
-    public static boolean isClient(Player player) {
+    public static boolean isClient(@Nullable Player player) {
         if (player == null) return ModularUI.isClientThread();
         return player.level().isClientSide;
     }

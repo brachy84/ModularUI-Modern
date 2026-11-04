@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -80,7 +79,6 @@ public class ColorShade implements IntIterable {
         return this.brighter.length;
     }
 
-    @NonNull
     @Override
     public IntIterator iterator() {
         return IntIterators.wrap(this.all);

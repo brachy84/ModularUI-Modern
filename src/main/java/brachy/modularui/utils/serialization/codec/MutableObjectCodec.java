@@ -298,13 +298,13 @@ public class MutableObjectCodec<T> extends MapCodec<T> implements MutableMapDeco
     public static class Builder<T> {
 
         private final Object2ReferenceLinkedOpenHashMap<String, Field<T, ?>> fields = new Object2ReferenceLinkedOpenHashMap<>();
-        private InstanceMapDecoder<T> instanceDecoder;
-        private UnaryOperator<T> baseCopy;
-        private CodecRegistry<T> registry;
-        private String[] names;
-        private Codec<T> wrapped;
+        private @Nullable InstanceMapDecoder<T> instanceDecoder;
+        private @Nullable UnaryOperator<T> baseCopy;
+        private @Nullable CodecRegistry<T> registry;
+        private String @Nullable[] names;
+        private @Nullable Codec<T> wrapped;
 
-        private Field<T, ?> lastField;
+        private @Nullable Field<T, ?> lastField;
 
         /**
          * Sets the instance decoder. This is needed when parsing from JSON. The decoder should create a new instance

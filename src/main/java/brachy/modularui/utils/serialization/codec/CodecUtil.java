@@ -12,6 +12,7 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class CodecUtil {
         return nullCodec(decoder, Objects::isNull);
     }
 
-    public static <A> Codec<A> nullCodec(Supplier<A> decoder, Predicate<A> nullTester) {
+    public static <A extends @Nullable Object> Codec<A> nullCodec(Supplier<A> decoder, Predicate<A> nullTester) {
         return new Codec<>() {
             @Override
             public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {

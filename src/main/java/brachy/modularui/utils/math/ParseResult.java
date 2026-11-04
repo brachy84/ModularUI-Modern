@@ -2,26 +2,26 @@ package brachy.modularui.utils.math;
 
 import com.ezylang.evalex.BaseException;
 import com.ezylang.evalex.data.EvaluationValue;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ParseResult {
 
-    private final EvaluationValue result;
-    private final BaseException error;
+    private final @Nullable EvaluationValue result;
+    private final @Nullable BaseException error;
 
     public static ParseResult success(EvaluationValue result) {
         return new ParseResult(result, null);
     }
 
-    public static ParseResult failure(@NonNull BaseException error) {
+    public static ParseResult failure(BaseException error) {
         return failure(null, error);
     }
 
-    public static ParseResult failure(EvaluationValue value, @NonNull BaseException error) {
+    public static ParseResult failure(@Nullable EvaluationValue value, BaseException error) {
         return new ParseResult(value, error);
     }
 
-    private ParseResult(EvaluationValue result, BaseException error) {
+    private ParseResult(@Nullable EvaluationValue result, @Nullable BaseException error) {
         this.result = result;
         this.error = error;
     }
@@ -38,15 +38,15 @@ public class ParseResult {
         return this.result != null;
     }
 
-    public EvaluationValue getResult() {
+    public @Nullable EvaluationValue getResult() {
         return result;
     }
 
-    public BaseException getError() {
+    public @Nullable BaseException getError() {
         return error;
     }
 
-    public String getErrorMessage() {
+    public @Nullable String getErrorMessage() {
         return isFailure() ?
                 String.format("%s for Token %s at %d:%d",
                         this.error.getMessage(), this.error.getTokenString(),

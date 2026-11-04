@@ -23,7 +23,7 @@ public final class Field<T, V> {
     @Getter private final FieldWriter<T, V> fieldWriter;
     @Getter private final FieldReader<T, V> fieldReader;
     @Getter private final Codec<V> codec;
-    @Getter private final Supplier<V> defaultSupplier;
+    @Getter private final @Nullable Supplier<V> defaultSupplier;
     @Getter private final boolean dynamicSupplier;
     @Getter
     @Setter

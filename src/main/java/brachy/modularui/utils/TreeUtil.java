@@ -8,7 +8,6 @@ import brachy.modularui.widget.sizer.ResizeNode;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Streams;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -283,7 +282,7 @@ public class TreeUtil {
      * @param test   test which the widget has to pass
      * @return the first matching widget
      */
-    public static <T extends ITreeNode<T>> T findFirst(T parent, @NonNull Predicate<T> test) {
+    public static <T extends ITreeNode<T>> T findFirst(T parent, Predicate<T> test) {
         return foreachChildWithResult(parent, w -> {
             if (test.test(w)) {
                 return w;

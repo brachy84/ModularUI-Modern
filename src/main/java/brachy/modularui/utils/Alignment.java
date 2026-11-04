@@ -11,7 +11,7 @@ import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class Alignment {
     public static final Codec<Alignment> CODEC = CodecUtil.chainedCodec(CODEC_OF_NAME, CODEC_OF_INSTANCE);
 
     @Getter public final float x, y;
-    @Getter(AccessLevel.PRIVATE) private final String name;
+    @Getter(AccessLevel.PRIVATE) private final @Nullable String name;
 
     public static final Alignment TopLeft = new Alignment(0, 0, "TopLeft");
     public static final Alignment TopCenter = new Alignment(0.5f, 0, "TopCenter");
@@ -61,7 +61,7 @@ public class Alignment {
         this(x, y, null);
     }
 
-    private Alignment(float x, float y, String name) {
+    private Alignment(float x, float y, @Nullable String name) {
         this.x = x;
         this.y = y;
         this.name = name;
@@ -141,7 +141,7 @@ public class Alignment {
         }
 
         @Override
-        public @NonNull String getSerializedName() {
+        public String getSerializedName() {
             return this.name;
         }
     }
@@ -174,7 +174,7 @@ public class Alignment {
         }
 
         @Override
-        public @NonNull String getSerializedName() {
+        public String getSerializedName() {
             return this.name;
         }
     }

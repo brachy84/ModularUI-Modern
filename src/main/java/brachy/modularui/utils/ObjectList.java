@@ -2,7 +2,6 @@ package brachy.modularui.utils;
 
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -50,33 +49,24 @@ public interface ObjectList<V> extends it.unimi.dsi.fastutil.objects.ObjectList<
 
     void addLast(V v);
 
-    @NonNull
     V getFirst();
 
-    @NonNull
     V getLast();
 
-    @NonNull
     V removeFirst();
 
-    @NonNull
     V removeLast();
 
-    @Nullable
-    V peekFirst();
+    @Nullable V peekFirst();
 
-    @Nullable
-    V pollFirst();
+    @Nullable V pollFirst();
 
-    @Nullable
-    V peekLast();
+    @Nullable V peekLast();
 
-    @Nullable
-    V pollLast();
+    @Nullable V pollLast();
 
     void trim();
 
-    @NonNull
     V[] elements();
 
     void ensureCapacity(int minCapacity);
@@ -128,42 +118,42 @@ public interface ObjectList<V> extends it.unimi.dsi.fastutil.objects.ObjectList<
         }
 
         @Override
-        public @NonNull V getFirst() {
+        public V getFirst() {
             return get(0);
         }
 
         @Override
-        public @NonNull V getLast() {
+        public V getLast() {
             return get(size() - 1);
         }
 
         @Override
-        public @NonNull V removeFirst() {
+        public V removeFirst() {
             return remove(0);
         }
 
         @Override
-        public @NonNull V removeLast() {
+        public V removeLast() {
             return remove(size() - 1);
         }
 
         @Override
-        public V peekFirst() {
+        public @Nullable V peekFirst() {
             return isEmpty() ? null : getFirst();
         }
 
         @Override
-        public V pollFirst() {
+        public @Nullable V pollFirst() {
             return isEmpty() ? null : removeFirst();
         }
 
         @Override
-        public V peekLast() {
+        public @Nullable V peekLast() {
             return isEmpty() ? null : getLast();
         }
 
         @Override
-        public V pollLast() {
+        public @Nullable V pollLast() {
             return isEmpty() ? null : removeLast();
         }
     }

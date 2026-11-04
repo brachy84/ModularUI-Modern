@@ -1,10 +1,12 @@
 package brachy.modularui.utils.memoization;
 
 import com.google.common.base.Suppliers;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Duration;
 import java.util.function.Supplier;
 
+@NullMarked
 public final class Memoizer {
 
     /**

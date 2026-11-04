@@ -1,13 +1,17 @@
 package brachy.modularui.utils.memoization;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.Supplier;
 
+@NullMarked
 public class MemoizedSupplier<T> implements Supplier<T> {
 
     protected final Supplier<T> delegate;
     protected long timeToLiveNanos;
 
-    protected volatile T value = null;
+    protected volatile @Nullable T value = null;
     private volatile long lastAccessNanos;
 
     protected MemoizedSupplier(Supplier<T> delegate, long timeToLiveNanos) {

@@ -1,5 +1,7 @@
 package brachy.modularui.utils.math;
 
+import org.jspecify.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -92,7 +94,7 @@ public class NumberFormat {
 
     public static class ParamsBuilder {
 
-        private DecimalFormat format;
+        private @Nullable DecimalFormat format;
         private int maxLength;
         private boolean considerOnlyDecimalsForLength;
         private boolean considerDecimalSeparatorForLength;
