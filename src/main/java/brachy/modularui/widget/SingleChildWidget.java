@@ -3,7 +3,7 @@ package brachy.modularui.widget;
 import brachy.modularui.api.widget.IWidget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.function.UnaryOperator;
 public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W> {
 
     @Getter
-    private IWidget child;
+    private @Nullable IWidget child;
     private List<IWidget> list = Collections.emptyList();
 
     @Override
-    public @NotNull List<IWidget> getChildren() {
+    public List<IWidget> getChildren() {
         return this.list;
     }
 
@@ -25,7 +25,7 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
         this.list = this.child == null ? Collections.emptyList() : Collections.singletonList(this.child);
     }
 
-    public W child(IWidget child) {
+    public W child(@Nullable IWidget child) {
         if (child == this || this.child == child) {
             return getThis();
         }
@@ -44,7 +44,7 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
         return getThis();
     }
 
-    protected void onChildAdd(IWidget child) {}
+    protected void onChildAdd(@Nullable IWidget child) {}
 
     @Override
     public boolean visitChildren(Predicate<IWidget> visitor) {

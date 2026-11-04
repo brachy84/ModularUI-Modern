@@ -10,19 +10,20 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.util.FormattedCharSequence;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class ComposedLine implements ITextLine {
 
-    private final List<Object> elements;
+    private final List<@Nullable Object> elements;
     @Getter
     private final int width;
     private final int height;
 
     private float lastX, lastY;
 
-    public ComposedLine(List<Object> elements, int width, int height) {
+    public ComposedLine(List<@Nullable Object> elements, int width, int height) {
         this.elements = elements;
         this.width = width;
         this.height = height;
@@ -59,7 +60,7 @@ public class ComposedLine implements ITextLine {
     }
 
     @Override
-    public Object getHoveringElement(Font font, int x, int y) {
+    public @Nullable Object getHoveringElement(Font font, int x, int y) {
         int h0 = getHeight(font);
         if (y < lastY || y > lastY + h0) return null; // is not hovering vertically
         if (x < lastX || x > lastX + getWidth()) return Boolean.FALSE; // is not hovering horizontally

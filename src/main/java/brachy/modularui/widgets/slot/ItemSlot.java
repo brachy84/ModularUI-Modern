@@ -33,8 +33,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
 
@@ -48,8 +47,8 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
         return phantom ? new PhantomItemSlot() : new ItemSlot();
     }
 
-    private ItemSlotSyncHandler syncHandler;
-    private RichTooltip tooltip;
+    private @Nullable ItemSlotSyncHandler syncHandler;
+    private @Nullable RichTooltip tooltip;
     @Setter
     protected UnaryOperator<ItemStack> itemHook;
 
@@ -71,12 +70,12 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue instanceof ItemSlotSyncHandler;
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.syncHandler = syncOrValue.castOrThrow(ItemSlotSyncHandler.class);
     }
@@ -141,7 +140,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         ClientScreenHandler.clickSlot(getScreen(), getSlot());
         return Result.SUCCESS;
     }
@@ -172,14 +171,14 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull ItemSlotSyncHandler getSyncHandler() {
+    public ItemSlotSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("Widget is not initialised!");
         }
         return this.syncHandler;
     }
 
-    public RichTooltip getItemTooltip() {
+    public @Nullable RichTooltip getItemTooltip() {
         return super.getTooltip();
     }
 
@@ -202,7 +201,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull RichTooltip tooltip() {
+    public RichTooltip tooltip() {
         if (this.tooltip == null) {
             this.tooltip = new RichTooltip().parent(this);
         }
@@ -302,7 +301,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull Class<ItemStack> ingredientClass() {
+    public Class<ItemStack> ingredientClass() {
         return ItemStack.class;
     }
 

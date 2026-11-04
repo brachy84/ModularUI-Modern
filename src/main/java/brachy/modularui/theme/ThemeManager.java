@@ -27,7 +27,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,8 +63,8 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     }
 
     @Override
-    protected @NotNull Map<String, List<ResourceLocation>> prepare(ResourceManager resourceManager,
-                                                                   ProfilerFiller profiler) {
+    protected Map<String, List<ResourceLocation>> prepare(ResourceManager resourceManager,
+                                                          ProfilerFiller profiler) {
         ModularUI.LOGGER.info("Reloading Themes...");
         ThemeAPI.INSTANCE.onReload();
 
@@ -119,8 +118,8 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     }
 
     @Override
-    protected void apply(@NotNull Map<String, List<ResourceLocation>> themes,
-                         @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected void apply(Map<String, List<ResourceLocation>> themes,
+                         ResourceManager resourceManager, ProfilerFiller profiler) {
         Map<String, ThemeJson> themeMap = new Object2ObjectOpenHashMap<>();
         profiler.startTick();
 
@@ -219,7 +218,7 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     }
 
     private static ThemeJson loadThemeJson(String id, List<ResourceLocation> paths,
-                                           @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+                                           ResourceManager resourceManager, ProfilerFiller profiler) {
         List<JsonObject> jsons = new ArrayList<>();
         boolean override = false;
         for (ResourceLocation path : paths) {

@@ -21,9 +21,9 @@ import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +108,6 @@ public class ArraySchema implements ISchema {
         return BlockPos.ZERO;
     }
 
-    @NotNull
     @Override
     public Iterator<Map.Entry<BlockPos, BlockState>> iterator() {
         return new AbstractIterator<>() {
@@ -118,7 +117,7 @@ public class ArraySchema implements ISchema {
             private int x = 0, y = 0, z = -1;
 
             @Override
-            protected Map.Entry<BlockPos, BlockState> computeNext() {
+            protected Map.@Nullable Entry<BlockPos, BlockState> computeNext() {
                 BlockState state;
                 while (true) {
                     if (++z >= blocks[x][y].length) {
@@ -163,6 +162,7 @@ public class ArraySchema implements ISchema {
         private final Char2ObjectMap<BlockState> blockMap = new Char2ObjectOpenHashMap<>();
 
         public Builder() {
+            blockMap.defaultReturnValue(Blocks.AIR.defaultBlockState());
             blockMap.put(' ', Blocks.AIR.defaultBlockState());
             blockMap.put('#', Blocks.AIR.defaultBlockState());
         }
@@ -253,7 +253,7 @@ public class ArraySchema implements ISchema {
                         char zChar = yRow.charAt(z);
                         BlockState state = this.blockMap.get(zChar);
                         // null -> any allowed -> don't need to check
-                        if (state == null || state.isAir()) continue;
+                        if (state.isAir()) continue;
                         blocks[x][y][z] = state;
                     }
                 }

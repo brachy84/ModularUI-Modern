@@ -5,7 +5,6 @@ import brachy.modularui.api.ISyncedAction;
 import net.minecraft.network.FriendlyByteBuf;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 public class SyncedAction {
 
@@ -21,7 +20,7 @@ public class SyncedAction {
         this.executeServer = executeServer;
     }
 
-    public boolean invoke(boolean client, @NotNull FriendlyByteBuf packet) {
+    public boolean invoke(boolean client, FriendlyByteBuf packet) {
         if (isExecute(client)) {
             this.action.invoke(packet);
             return true;

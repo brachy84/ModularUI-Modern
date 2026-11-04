@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -78,7 +77,6 @@ public class MapSchema implements ISchema {
         return center;
     }
 
-    @NotNull
     @Override
     public Iterator<Map.Entry<BlockPos, BlockState>> iterator() {
         return new AbstractIterator<>() {

@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class AdaptableUITexture extends UITexture {
     /**
      * Use {@link UITexture#builder()} with {@link Builder#adaptable(int, int)}
      */
-    AdaptableUITexture(ResourceLocation location, float u0, float v0, float u1, float v1, ColorType colorType, boolean nonOpaque,
+    AdaptableUITexture(ResourceLocation location, float u0, float v0, float u1, float v1, @Nullable ColorType colorType, boolean nonOpaque,
                        int colorOverride, int imageWidth, int imageHeight, int bl, int bt, int br, int bb, boolean tiled) {
         super(location, u0, v0, u1, v1, colorType, nonOpaque, colorOverride);
         this.imageWidth = imageWidth;

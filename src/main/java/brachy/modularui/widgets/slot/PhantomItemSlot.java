@@ -10,12 +10,11 @@ import brachy.modularui.value.sync.PhantomItemSlotSyncHandler;
 
 import net.minecraft.world.item.ItemStack;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<ItemStack> {
 
-    private PhantomItemSlotSyncHandler syncHandler;
+    private @Nullable PhantomItemSlotSyncHandler syncHandler;
 
     @Override
     public void onInit() {
@@ -24,12 +23,12 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue instanceof PhantomItemSlotSyncHandler;
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.syncHandler = syncOrValue.castOrThrow(PhantomItemSlotSyncHandler.class);
     }
@@ -45,7 +44,7 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         MouseData mouseData = MouseData.create(button);
         this.syncHandler.syncToServer(PhantomItemSlotSyncHandler.SYNC_CLICK, mouseData::writeToPacket);
         return Result.SUCCESS;
@@ -69,12 +68,12 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     }
 
     @Override
-    public void setGhostIngredient(@NotNull ItemStack ingredient) {
+    public void setGhostIngredient(ItemStack ingredient) {
         this.syncHandler.updateFromClient(ingredient);
     }
 
     @Override
-    public @Nullable ItemStack castGhostIngredientIfValid(@NotNull Object ingredient) {
+    public @Nullable ItemStack castGhostIngredientIfValid(Object ingredient) {
         return areAncestorsEnabled() &&
                 this.syncHandler.isPhantom() &&
                 ingredient instanceof ItemStack itemStack &&
@@ -82,7 +81,6 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     }
 
     @Override
-    @NotNull
     public PhantomItemSlotSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("Widget is not initialised!");

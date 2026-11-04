@@ -2,17 +2,18 @@ package brachy.modularui.screen.viewport;
 
 import it.unimi.dsi.fastutil.Hash;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 public class LocatedElement<T> {
 
     @Getter
-    private final T element;
+    private final @Nullable T element;
     @Getter
     private final TransformationMatrix transformationMatrix;
 
-    public LocatedElement(T element, TransformationMatrix transformationMatrix) {
+    public LocatedElement(@Nullable T element, TransformationMatrix transformationMatrix) {
         this.element = element;
         this.transformationMatrix = new TransformationMatrix(transformationMatrix, null);
     }

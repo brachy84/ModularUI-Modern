@@ -21,8 +21,7 @@ import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -53,7 +52,7 @@ public class ModularSlot extends SlotItemHandler {
     @Getter
     private boolean phantom = false;
 
-    private ItemSlotSyncHandler syncHandler = null;
+    private @Nullable ItemSlotSyncHandler syncHandler = null;
 
     public static ModularSlot playerSlot(PlayerInvWrapper inv, int index, Player player) {
         return new ModularSlot(inv, index, player);
@@ -111,7 +110,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack stack) {
+    public boolean mayPlace(ItemStack stack) {
         return this.canPut && !stack.isEmpty() && this.filter.test(stack) && super.mayPlace(stack);
     }
 
@@ -125,7 +124,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public int getMaxStackSize(@NotNull ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return this.ignoreMaxStackSize ? getMaxStackSize() : super.getMaxStackSize(stack);
     }
 
@@ -158,7 +157,7 @@ public class ModularSlot extends SlotItemHandler {
         return this.isEnabled();
     }
 
-    public @NotNull ItemSlotSyncHandler getSyncHandler() {
+    public ItemSlotSyncHandler getSyncHandler() {
         if (this.syncHandler == null) {
             throw new IllegalStateException("ModularSlot is not yet initialized");
         }
@@ -170,7 +169,7 @@ public class ModularSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean isSameInventory(@NotNull Slot other) {
+    public boolean isSameInventory(Slot other) {
         return other instanceof SlotItemHandler slotItemHandler && slotItemHandler.getItemHandler() == this.getItemHandler();
     }
 
@@ -179,7 +178,7 @@ public class ModularSlot extends SlotItemHandler {
      *
      * @param filter the predicate to test on every item
      */
-    public ModularSlot filter(Predicate<ItemStack> filter) {
+    public ModularSlot filter(@Nullable Predicate<ItemStack> filter) {
         this.filter = filter != null ? filter : stack -> true;
         return this;
     }
@@ -190,7 +189,7 @@ public class ModularSlot extends SlotItemHandler {
      *
      * @param changeListener change listener that should be called on a change
      */
-    public ModularSlot changeListener(IOnSlotChanged changeListener) {
+    public ModularSlot changeListener(@Nullable IOnSlotChanged changeListener) {
         this.changeListener = changeListener != null ? changeListener : IOnSlotChanged.DEFAULT;
         return this;
     }
@@ -260,7 +259,7 @@ public class ModularSlot extends SlotItemHandler {
      *
      * @param slotGroup slot group
      */
-    public ModularSlot slotGroup(SlotGroup slotGroup) {
+    public ModularSlot slotGroup(@Nullable SlotGroup slotGroup) {
         if (this.slotGroup == slotGroup) return this;
         if (this.slotGroup != null) {
             this.slotGroup.removeSlot(this);
@@ -304,7 +303,7 @@ public class ModularSlot extends SlotItemHandler {
         return slot.container instanceof Inventory inv ? inv.player : null;
     }
 
-    public static Player getPlayerSlotPlayer(SlotItemHandler slot) {
+    public static @Nullable Player getPlayerSlotPlayer(SlotItemHandler slot) {
         if (slot.getItemHandler() instanceof PlayerInvWrapper inv) {
             for (IItemHandlerModifiable ih : ((CombinedInvWrapperAccessor) inv).getItemHandler()) {
                 if (ih instanceof PlayerMainInvWrapper mainInv) {

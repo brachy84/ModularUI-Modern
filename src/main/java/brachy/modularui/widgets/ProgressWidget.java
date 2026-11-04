@@ -10,14 +10,14 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.value.DoubleValue;
 import brachy.modularui.widget.Widget;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.DoubleSupplier;
 
 public class ProgressWidget extends Widget<ProgressWidget> {
 
-    private BaseProgressDrawable<?> progress;
-    private IDoubleValue<?> value;
+    private @Nullable BaseProgressDrawable<?> progress;
+    private @Nullable IDoubleValue<?> value;
 
     public ProgressWidget() {}
 
@@ -26,12 +26,12 @@ public class ProgressWidget extends Widget<ProgressWidget> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDoubleValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.value = syncOrValue.castNullable(IDoubleValue.class);
         if (this.value != null && this.progress != null) {

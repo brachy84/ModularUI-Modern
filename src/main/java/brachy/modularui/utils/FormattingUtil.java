@@ -5,7 +5,6 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -40,7 +39,6 @@ public class FormattingUtil {
         return checkNumbers(string, SMALL_DOWN_NUMBER_BASE);
     }
 
-    @NotNull
     private static String checkNumbers(String string, int startIndex) {
         char[] charArray = string.toCharArray();
         for (int i = 0; i < charArray.length; i++) {
@@ -188,12 +186,10 @@ public class FormattingUtil {
         return NUMBER_FORMAT.format(number);
     }
 
-    @NotNull
     public static String formatNumber2Places(float number) {
         return DECIMAL_FORMAT_2F.format(number);
     }
 
-    @NotNull
     public static String formatNumber2Places(double number) {
         return DECIMAL_FORMAT_2F.format(number);
     }

@@ -3,8 +3,6 @@ package brachy.modularui.utils.handlers.fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import org.jetbrains.annotations.NotNull;
-
 public class CombinedFluidHandlerWrapper implements IFluidHandler {
 
     private final IFluidHandler[] handlers;
@@ -23,7 +21,7 @@ public class CombinedFluidHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
+    public FluidStack getFluidInTank(int tank) {
         int index = 0;
         for (IFluidHandler handler : handlers) {
             if (tank - index < handler.getTanks()) {
@@ -47,7 +45,7 @@ public class CombinedFluidHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
         int index = 0;
         for (IFluidHandler handler : handlers) {
             if (tank - index < handler.getTanks()) {
@@ -71,7 +69,7 @@ public class CombinedFluidHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public FluidStack drain(FluidStack resource, FluidAction action) {
         if (resource.isEmpty()) return FluidStack.EMPTY;
         var copied = resource.copy();
         for (IFluidHandler handler : handlers) {
@@ -84,7 +82,7 @@ public class CombinedFluidHandlerWrapper implements IFluidHandler {
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+    public FluidStack drain(int maxDrain, FluidAction action) {
         if (maxDrain == 0) return FluidStack.EMPTY;
         FluidStack totalDrained = null;
         for (IFluidHandler handler : handlers) {

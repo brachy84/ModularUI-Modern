@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -291,7 +291,7 @@ public class TextFieldHandler {
         onChanged();
     }
 
-    private Point insert(List<String> text, List<String> insertion) {
+    private @Nullable Point insert(List<String> text, List<String> insertion) {
         if (insertion.isEmpty() || (insertion.size() > 1 && text.size() + insertion.size() - 1 > this.maxLines)) {
             return null;
         }

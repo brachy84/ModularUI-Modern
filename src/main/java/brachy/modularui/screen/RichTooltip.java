@@ -39,7 +39,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -64,8 +64,8 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     private Consumer<Area> parent;
     @Setter
     @Getter
-    private Pos pos = null;
-    private Consumer<RichTooltip> tooltipBuilder;
+    private @Nullable Pos pos = null;
+    private @Nullable Consumer<RichTooltip> tooltipBuilder;
     @Getter
     @Setter
     private int showUpTimer = 0;
@@ -139,7 +139,6 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         if (this.maxWidth <= 0) {
             this.maxWidth = Integer.MAX_VALUE;
         }
-        if (stack == null) stack = ItemStack.EMPTY;
         if (!this.appliedMargin) {
             if (this.titleMargin > 0) {
                 this.text.insertTitleMargin(this.titleMargin);
@@ -496,16 +495,16 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
         public static final Codec<Pos> CODEC = StringRepresentable.fromEnum(Pos::values);
 
-        public final GuiAxis axis;
+        public final @Nullable GuiAxis axis;
         public final String name;
 
-        Pos(GuiAxis axis) {
+        Pos(@Nullable GuiAxis axis) {
             this.axis = axis;
             this.name = name().toLowerCase(Locale.ENGLISH);
         }
 
         @Override
-        public @NotNull String getSerializedName() {
+        public String getSerializedName() {
             return this.name;
         }
     }

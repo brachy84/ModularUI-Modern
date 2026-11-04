@@ -5,8 +5,8 @@ import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
 
@@ -32,7 +32,7 @@ public interface IngredientProvider<I> extends IWidget {
     /**
      * @return the class of the ingredient this slot contains
      */
-    @NotNull
+    @NonNull
     Class<I> ingredientClass();
 
     /**
@@ -43,7 +43,7 @@ public interface IngredientProvider<I> extends IWidget {
         return null;
     }
 
-    @NotNull
+    @NonNull
     default RecipeSlotRole getRecipeRole() {
         return RecipeSlotRole.RENDER_ONLY;
     }

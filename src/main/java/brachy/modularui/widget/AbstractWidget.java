@@ -11,8 +11,7 @@ import brachy.modularui.widget.sizer.StandardResizer;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -23,9 +22,9 @@ public abstract class AbstractWidget implements IWidget {
 
     // gui context
     private boolean valid = false;
-    private IWidget parent = null;
-    private ModularPanel<?> panel = null;
-    private ModularGuiContext context = null;
+    private @Nullable IWidget parent = null;
+    private @Nullable ModularPanel<?> panel = null;
+    private @Nullable ModularGuiContext context = null;
 
     @Nullable
     private String name;
@@ -34,7 +33,7 @@ public abstract class AbstractWidget implements IWidget {
     private int timeBelowMouse = -1;
 
     private final Area area = new Area();
-    private StandardResizer resizer;
+    private @Nullable StandardResizer resizer;
 
     /**
      * Returns the screen of the panel of this widget is being opened in.
@@ -65,7 +64,7 @@ public abstract class AbstractWidget implements IWidget {
      */
     @ApiStatus.Internal
     @Override
-    public final void initialise(@NotNull IWidget parent, boolean late) {
+    public final void initialise(IWidget parent, boolean late) {
         this.timeHovered = -1;
         this.timeBelowMouse = -1;
         if (this.resizer == null) {
@@ -255,7 +254,7 @@ public abstract class AbstractWidget implements IWidget {
      * @throws IllegalStateException if {@link #isValid()} returns false
      */
     @Override
-    public @NotNull IWidget getParent() {
+    public @Nullable IWidget getParent() {
         if (!isValid()) {
             throw new IllegalStateException(this + " is not in a valid state!");
         }
@@ -269,7 +268,7 @@ public abstract class AbstractWidget implements IWidget {
      * @throws IllegalStateException if {@link #isValid()} returns false
      */
     @Override
-    public ModularGuiContext getContext() {
+    public @Nullable ModularGuiContext getContext() {
         if (!isValid()) {
             throw new IllegalStateException(this + " is not in a valid state!");
         }
@@ -291,7 +290,7 @@ public abstract class AbstractWidget implements IWidget {
      * @throws IllegalStateException if {@link #isValid()} returns false
      */
     @Override
-    public @NotNull ModularPanel<?> getPanel() {
+    public @Nullable ModularPanel<?> getPanel() {
         if (!isValid()) {
             throw new IllegalStateException(this + " is not in a valid state!");
         }
@@ -299,11 +298,11 @@ public abstract class AbstractWidget implements IWidget {
     }
 
     @Override
-    public @NotNull StandardResizer resizer() {
+    public @Nullable StandardResizer resizer() {
         return this.resizer;
     }
 
-    protected final StandardResizer rawResizer() {
+    protected final @Nullable StandardResizer rawResizer() {
         return this.resizer;
     }
 

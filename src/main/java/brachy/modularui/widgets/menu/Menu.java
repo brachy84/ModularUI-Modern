@@ -6,9 +6,11 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.ParentWidget;
 
+import org.jspecify.annotations.Nullable;
+
 public class Menu<W extends Menu<W>> extends ParentWidget<W> implements IMenuPart {
 
-    private AbstractMenuButton<?> menuSource;
+    private @Nullable AbstractMenuButton<?> menuSource;
 
     void setMenuSource(AbstractMenuButton<?> source) {
         this.menuSource = source;

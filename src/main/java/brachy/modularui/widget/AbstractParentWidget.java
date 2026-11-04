@@ -6,7 +6,6 @@ import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widgets.VoidWidget;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
      */
     @SuppressWarnings("unchecked")
     @UnmodifiableView
-    @NotNull
     @Override
     public List<IWidget> getChildren() {
         return (List<IWidget>) this.children;

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class SimpleUIFactory extends AbstractUIFactory<GuiData> {
 
     private final Supplier<IUIHolder<GuiData>> guiHolderSupplier;
-    private IUIHolder<GuiData> guiHolder;
+    private @Nullable IUIHolder<GuiData> guiHolder;
 
     /**
      * Creates a simple gui factory.
@@ -63,12 +63,12 @@ public class SimpleUIFactory extends AbstractUIFactory<GuiData> {
     public void writeGuiData(GuiData guiData, FriendlyByteBuf buffer) {}
 
     @Override
-    public @NotNull GuiData readGuiData(Player player, FriendlyByteBuf buffer) {
+    public GuiData readGuiData(Player player, FriendlyByteBuf buffer) {
         return new GuiData(player);
     }
 
     @Override
-    public @NotNull IUIHolder<GuiData> getGuiHolder(GuiData data) {
+    public IUIHolder<GuiData> getGuiHolder(GuiData data) {
         if (this.guiHolder == null) {
             this.guiHolder = this.guiHolderSupplier.get();
             Objects.requireNonNull(this.guiHolder, "IUIHolder must not be null");

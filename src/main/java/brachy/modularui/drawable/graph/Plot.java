@@ -13,6 +13,7 @@ import net.minecraft.util.Mth;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public class Plot {
 
@@ -35,7 +36,7 @@ public class Plot {
     @Getter
     int color;
 
-    private float[] vertexBuffer; // screen coords need to be way less accurate than graph coords, so float is fine
+    private float @Nullable [] vertexBuffer; // screen coords need to be way less accurate than graph coords, so float is fine
     private boolean dirty = true;
 
     public void redraw() {
@@ -147,10 +148,12 @@ public class Plot {
     }
 
     private int storePoints(int index, GraphView view, float sx, float sy, float ox, float oy) {
-        this.vertexBuffer[index++] = sx - ox;
-        this.vertexBuffer[index++] = sy - oy;
-        this.vertexBuffer[index++] = sx + ox;
-        this.vertexBuffer[index++] = sy + oy;
+        if (this.vertexBuffer != null){
+            this.vertexBuffer[index++] = sx - ox;
+            this.vertexBuffer[index++] = sy - oy;
+            this.vertexBuffer[index++] = sx + ox;
+            this.vertexBuffer[index++] = sy + oy;
+        }
         return index;
     }
 
@@ -173,8 +176,10 @@ public class Plot {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         var pose = graphics.pose().last().pose();
         var buffer = graphics.bufferSource().getBuffer(MUIRenderTypes.guiTriangleStrip());
-        for (int i = 0; i < this.vertexBuffer.length; i += 2) {
-            buffer.vertex(pose, this.vertexBuffer[i], this.vertexBuffer[i + 1], 0).color(r, g, b, a).endVertex();
+        if (this.vertexBuffer != null) {
+            for (int i = 0; i < this.vertexBuffer.length; i += 2) {
+                buffer.vertex(pose, this.vertexBuffer[i], this.vertexBuffer[i + 1], 0).color(r, g, b, a).endVertex();
+            }
         }
     }
 

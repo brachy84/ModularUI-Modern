@@ -23,16 +23,16 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 @Accessors(chain = true)
 public class SliderWidget extends Widget<SliderWidget> implements Interactable {
 
-    @Getter private IDoubleValue<?> doubleValue;
+    @Getter private @Nullable IDoubleValue<?> doubleValue;
     private IDrawable stopperDrawable = new Rectangle().color(Color.withAlpha(Color.WHITE.main, 0.4f));
     private IDrawable handleDrawable = GuiTextures.BUTTON_CLEAN;
     @Getter private GuiAxis axis = GuiAxis.X;
-    @Getter private DoubleList stopper;
+    @Getter private @Nullable DoubleList stopper;
     @Getter private int stopperWidth = 2, stopperHeight = 4;
     private final Unit sliderWidth = new Unit(), sliderHeight = new Unit();
     @Getter private final Area sliderArea = new Area();
@@ -67,12 +67,12 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IDoubleValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.doubleValue = syncOrValue.castNullable(IDoubleValue.class);
     }
@@ -133,7 +133,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         int p = getContext().getMouse(this.axis);
         setValue(posToValue(p), true);
         this.dragging = true;

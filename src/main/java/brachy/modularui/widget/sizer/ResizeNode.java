@@ -5,15 +5,15 @@ import brachy.modularui.api.ITreeNode;
 import brachy.modularui.api.layout.IResizeable;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 
-    private ResizeNode defaultParent;
-    private ResizeNode parentOverride;
+    private @Nullable ResizeNode defaultParent;
+    private @Nullable ResizeNode parentOverride;
     private final List<ResizeNode> children = new ArrayList<>();
     private boolean defaultParentIsDelegating = false;
     private boolean requiresResize = true;
@@ -25,7 +25,7 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
     }
 
     @Override
-    public ResizeNode getParent() {
+    public @Nullable ResizeNode getParent() {
         return parentOverride != null ? parentOverride : defaultParent;
     }
 
@@ -85,7 +85,7 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
         this.children.clear();
     }
 
-    private boolean removeFromParent(ResizeNode parent, ResizeNode parent2, ResizeNode replacement) {
+    private boolean removeFromParent(@Nullable ResizeNode parent, @Nullable ResizeNode parent2, @Nullable ResizeNode replacement) {
         if (parent != null) {
             if (parent == replacement) return true;
             parent.children.remove(this);
@@ -102,7 +102,7 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
     }
 
     @ApiStatus.Internal
-    public void setDefaultParent(ResizeNode resizeNode) {
+    public void setDefaultParent(@Nullable ResizeNode resizeNode) {
         // ModularUI.LOGGER.info("Set default parent of {} to {}. Current: default: {}, override: {}", this, resizeNode,
         // this.defaultParent, this.parentOverride);
         if (resizeNode == this) throw new IllegalArgumentException("Tried to set itself as default parent in " + this);
@@ -113,7 +113,7 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
         }
     }
 
-    protected void setParentOverride(ResizeNode resizeNode) {
+    protected void setParentOverride(@Nullable ResizeNode resizeNode) {
         // ModularUI.LOGGER.info("Set override parent of {} to {}. Current: default: {}, override: {}", this, resizeNode,
         // this.defaultParent, this.parentOverride);
         if (resizeNode == this) throw new IllegalArgumentException("Tried to set itself as parent override in " + this);
@@ -137,7 +137,7 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 
     @Override
     public void initResizing(boolean onOpen) {
-        if (this.defaultParentIsDelegating && this.parentOverride != null) {
+        if (this.defaultParentIsDelegating && this.parentOverride != null && this.defaultParent != null) {
             this.defaultParent.initResizing(onOpen);
         }
     }
@@ -150,13 +150,13 @@ public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 
     public void onResized() {
         this.requiresResize = false;
-        if (this.defaultParentIsDelegating && this.parentOverride != null) {
+        if (this.defaultParentIsDelegating && this.parentOverride != null && this.defaultParent != null) {
             this.defaultParent.onResized();
         }
     }
 
     public void postFullResize() {
-        if (this.defaultParentIsDelegating && this.parentOverride != null) {
+        if (this.defaultParentIsDelegating && this.parentOverride != null && this.defaultParent != null) {
             this.defaultParent.postFullResize();
         }
     }

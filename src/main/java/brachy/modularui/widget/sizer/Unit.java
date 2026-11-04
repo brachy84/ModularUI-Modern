@@ -10,7 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class Unit {
     private boolean autoAnchor;
     private float value;
     @Getter(AccessLevel.PRIVATE)
-    private DoubleSupplier valueSupplier;
+    private @Nullable DoubleSupplier valueSupplier;
     @Getter
     @Setter
     private Measure measure;
@@ -153,7 +153,7 @@ public class Unit {
         }
 
         @Override
-        public @NotNull String getSerializedName() {
+        public String getSerializedName() {
             return this.name;
         }
     }
@@ -181,7 +181,7 @@ public class Unit {
 
 
         @Override
-        public @NotNull String getSerializedName() {
+        public String getSerializedName() {
             return this.name;
         }
     }

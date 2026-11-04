@@ -8,8 +8,7 @@ import brachy.modularui.api.value.sync.IStringSyncValue;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.LongConsumer;
@@ -18,16 +17,16 @@ import java.util.function.LongSupplier;
 public class LongSyncValue extends ValueSyncHandler<Long, LongSyncValue> implements ILongSyncValue<Long>, IIntSyncValue<Long>, IStringSyncValue<Long> {
 
     private final LongSupplier getter;
-    private final LongConsumer setter;
+    private final @Nullable LongConsumer setter;
     private long cache;
 
-    public LongSyncValue(@NotNull LongSupplier getter, @Nullable LongConsumer setter) {
+    public LongSyncValue(LongSupplier getter, @Nullable LongConsumer setter) {
         this.getter = Objects.requireNonNull(getter);
         this.setter = setter;
         this.cache = getter.getAsLong();
     }
 
-    public LongSyncValue(@NotNull LongSupplier getter) {
+    public LongSyncValue(LongSupplier getter) {
         this(getter, (LongConsumer) null);
     }
 

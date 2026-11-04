@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
@@ -15,7 +15,7 @@ public class NetworkUtils {
 
     public static final Consumer<FriendlyByteBuf> EMPTY_PACKET = buffer -> {};
 
-    public static boolean isClient(Player player) {
+    public static boolean isClient(@Nullable Player player) {
         if (player == null) return ModularUI.isClientThread();
         return player.level().isClientSide;
     }

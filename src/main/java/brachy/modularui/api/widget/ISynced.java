@@ -6,7 +6,6 @@ import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.value.sync.SyncHandler;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Marks a widget as synced
@@ -42,7 +41,7 @@ public interface ISynced<W extends IWidget> {
      * @param syncOrValue a sync handler or a value, but never null
      * @return if the value or sync handler is valid for this class
      */
-    default boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    default boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return false;
     }
 
@@ -71,7 +70,6 @@ public interface ISynced<W extends IWidget> {
      * @return the sync handler of this widget
      * @throws IllegalStateException if this widget has no valid sync handler
      */
-    @NotNull
     SyncHandler<?> getSyncHandler();
 
     /**

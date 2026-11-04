@@ -5,7 +5,7 @@ import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -18,11 +18,11 @@ public class TransformationMatrix {
     public static final TransformationMatrix EMPTY = new TransformationMatrix(null);
 
     @Getter
-    private TransformationMatrix wrapped;
+    private @Nullable TransformationMatrix wrapped;
     @Getter
-    private IViewport viewport;
+    private @Nullable IViewport viewport;
     @Getter
-    private Area area;
+    private @Nullable Area area;
     @Getter
     private final Matrix4f matrix = new Matrix4f();
     private final Matrix4f invertedMatrix = new Matrix4f();
@@ -61,11 +61,11 @@ public class TransformationMatrix {
         return construct(null, null, parent, false);
     }
 
-    TransformationMatrix construct(IViewport viewport, Area area, @Nullable Matrix4f parent) {
+    TransformationMatrix construct(@Nullable IViewport viewport, Area area, @Nullable Matrix4f parent) {
         return construct(viewport, area, parent, true);
     }
 
-    private TransformationMatrix construct(IViewport viewport, Area area, @Nullable Matrix4f parent, boolean isViewport) {
+    private TransformationMatrix construct(@Nullable IViewport viewport, @Nullable Area area, @Nullable Matrix4f parent, boolean isViewport) {
         checkInUse();
         this.wrapped = null;
         this.viewport = viewport;

@@ -3,20 +3,21 @@ package brachy.modularui.widgets.dynamic;
 import brachy.modularui.api.widget.IWidget;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class DynamicHandler implements IDynamicHandler {
 
-    private Supplier<IWidget> widgetProvider;
-    private Consumer<IWidget> onWidgetUpdate;
+    private @Nullable Supplier<IWidget> widgetProvider;
+    private @Nullable Consumer<IWidget> onWidgetUpdate;
 
-    private IWidget lastRejectedWidget;
+    private @Nullable IWidget lastRejectedWidget;
 
     @ApiStatus.Internal
     @Override
-    public void attachDynamicWidgetListener(Consumer<IWidget> onWidgetUpdate) {
+    public void attachDynamicWidgetListener(@Nullable Consumer<IWidget> onWidgetUpdate) {
         if (this.onWidgetUpdate == null && onWidgetUpdate != null && this.lastRejectedWidget != null) {
             onWidgetUpdate.accept(this.lastRejectedWidget);
             this.lastRejectedWidget = null;

@@ -4,24 +4,25 @@ import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractTheme implements ITheme {
 
     @Getter
     private final String id;
     @Getter
-    private final ITheme parentTheme;
+    private final @Nullable ITheme parentTheme;
 
-    private WidgetThemeEntry<WidgetTheme> fallback;
-    private WidgetThemeEntry<WidgetTheme> panel;
-    private WidgetThemeEntry<WidgetTheme> button;
-    private WidgetThemeEntry<WidgetTheme> scrollbar;
-    private WidgetThemeEntry<SlotTheme> itemSlot;
-    private WidgetThemeEntry<SlotTheme> fluidSlot;
-    private WidgetThemeEntry<TextFieldTheme> textField;
-    private WidgetThemeEntry<SelectableTheme> toggleButtonTheme;
+    private @Nullable WidgetThemeEntry<WidgetTheme> fallback;
+    private @Nullable WidgetThemeEntry<WidgetTheme> panel;
+    private @Nullable WidgetThemeEntry<WidgetTheme> button;
+    private @Nullable WidgetThemeEntry<WidgetTheme> scrollbar;
+    private @Nullable WidgetThemeEntry<SlotTheme> itemSlot;
+    private @Nullable WidgetThemeEntry<SlotTheme> fluidSlot;
+    private @Nullable WidgetThemeEntry<TextFieldTheme> textField;
+    private @Nullable WidgetThemeEntry<SelectableTheme> toggleButtonTheme;
 
-    protected AbstractTheme(String id, ITheme parentTheme) {
+    protected AbstractTheme(String id, @Nullable ITheme parentTheme) {
         this.id = id;
         this.parentTheme = parentTheme;
     }

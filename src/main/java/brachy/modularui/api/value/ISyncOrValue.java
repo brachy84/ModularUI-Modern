@@ -3,8 +3,8 @@ package brachy.modularui.api.value;
 import brachy.modularui.value.sync.SyncHandler;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An interface that is implemented on {@link IValue} and {@link SyncHandler
@@ -36,7 +36,6 @@ public interface ISyncOrValue {
      * @param syncOrValue sync handler or value
      * @return a non-null representation of the given sync handler or value
      */
-    @NotNull
     static ISyncOrValue orEmpty(@Nullable ISyncOrValue syncOrValue) {
         return syncOrValue != null ? syncOrValue : EMPTY;
     }
@@ -60,9 +59,8 @@ public interface ISyncOrValue {
      * @param <T>  type to cast to
      * @return this cast sync handler or value
      */
-    @Nullable
     @SuppressWarnings("unchecked")
-    default <T> T castNullable(Class<T> type) {
+    default <T> @Nullable T castNullable(Class<T> type) {
         return type.isAssignableFrom(getClass()) ? (T) this : null;
     }
 
@@ -75,8 +73,7 @@ public interface ISyncOrValue {
      * @param <V>       expected type of the containing value
      * @return a {@link IValue IValue&lt;V&gt;} if types match or null
      */
-    @Nullable
-    default <V> IValue<V> castValueNullable(Class<V> valueType) {
+    default <V> @Nullable IValue<V> castValueNullable(Class<V> valueType) {
         return null;
     }
 

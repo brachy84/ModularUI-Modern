@@ -11,22 +11,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class MCHelper {
 
     @SuppressWarnings("DataFlowIssue")
-    @Nullable
     @SideOnly(Side.CLIENT)
-    public static Minecraft getMc() {
+    public static @Nullable Minecraft getMc() {
         return Minecraft.getInstance();
     }
 
-    @Nullable
     @SideOnly(Side.CLIENT)
-    public static Player getPlayer() {
+    public static @Nullable Player getPlayer() {
         return getMc() == null ? null : getMc().player;
     }
 
@@ -55,21 +53,22 @@ public class MCHelper {
         }
     }
 
-    public static void setScreen(Screen screen) {
+    public static void setScreen(@Nullable Screen screen) {
         if (screen == null) {
             closeScreen();
         } else {
-            getMc().setScreen(screen);
+            Minecraft mc = getMc();
+            if (mc != null) mc.setScreen(screen);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public static Screen getCurrentScreen() {
+    public static @Nullable Screen getCurrentScreen() {
         return getMc() == null ? null : getMc().screen;
     }
 
     @SideOnly(Side.CLIENT)
-    public static Font getFont() {
+    public static  @Nullable Font getFont() {
         return getMc() == null ? null : getMc().font;
     }
 

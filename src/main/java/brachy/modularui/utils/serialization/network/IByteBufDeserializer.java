@@ -2,12 +2,14 @@ package brachy.modularui.utils.serialization.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A function to read an object from a {@link FriendlyByteBuf}.
  *
  * @param <T> object type
  */
-public interface IByteBufDeserializer<T> {
+public interface IByteBufDeserializer<T extends @Nullable Object> {
 
     /**
      * Reads the object from the buffer.

@@ -9,20 +9,20 @@ import brachy.modularui.screen.viewport.GuiContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 @Accessors(fluent = true, chain = true)
 public class InteractableIcon extends DelegateIcon implements Interactable {
 
-    private IGuiAction.MousePressed mousePressed;
-    private IGuiAction.MouseReleased mouseReleased;
-    private IGuiAction.MousePressed mouseTapped;
-    private IGuiAction.MouseScroll mouseScroll;
-    private IGuiAction.KeyPressed keyPressed;
-    private IGuiAction.KeyReleased keyReleased;
-    private IGuiAction.KeyPressed keyTapped;
+    private IGuiAction.@Nullable MousePressed mousePressed;
+    private IGuiAction.@Nullable MouseReleased mouseReleased;
+    private IGuiAction.@Nullable MousePressed mouseTapped;
+    private IGuiAction.@Nullable MouseScroll mouseScroll;
+    private IGuiAction.@Nullable KeyPressed keyPressed;
+    private IGuiAction.@Nullable KeyReleased keyReleased;
+    private IGuiAction.@Nullable KeyPressed keyTapped;
     @Setter
     public boolean playClickSound = true;
 
@@ -45,7 +45,7 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         if (this.mousePressed != null && this.mousePressed.press(getContext(), button)) {
             playClickSound();
             return Result.SUCCESS;
@@ -58,7 +58,6 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
         return this.mouseReleased != null && this.mouseReleased.release(getContext(), button);
     }
 
-    @NotNull
     @Override
     public Result onMouseTapped(int button) {
         if (this.mouseTapped != null && this.mouseTapped.press(getContext(), button)) {
@@ -69,7 +68,7 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.keyPressed != null && this.keyPressed.press(getContext(), modifiers)) {
             return Result.SUCCESS;
         }
@@ -81,7 +80,6 @@ public class InteractableIcon extends DelegateIcon implements Interactable {
         return this.keyReleased != null && this.keyReleased.release(getContext(), keyCode, scanCode, modifiers);
     }
 
-    @NotNull
     @Override
     public Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
         if (this.keyTapped != null && this.keyTapped.press(getContext(), modifiers)) {

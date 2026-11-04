@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(libs.jetbrains.annotations)
+    implementation(libs.jspecify)
     compileOnly(libs.mcdevAnnotations)
 
     testImplementation 'org.hamcrest:hamcrest:2.2'

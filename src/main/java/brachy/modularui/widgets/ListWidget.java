@@ -19,6 +19,7 @@ import brachy.modularui.widgets.layout.SimpleFlow;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,13 +36,13 @@ import java.util.function.IntFunction;
 public class ListWidget<I extends IWidget, W extends ListWidget<I, W>> extends AbstractScrollWidget<I, W>
         implements ILayoutWidget, IParentWidget<I, W> {
 
-    @Getter private ScrollData scrollData;
-    @Getter private IIcon childSeparator;
+    @Getter private @Nullable ScrollData scrollData;
+    @Getter private @Nullable IIcon childSeparator;
     private final IntList separatorPositions = new IntArrayList();
     @Getter private boolean collapseDisabledChildren = true;
     @Getter private boolean wrapTight = false;
     @Getter private Alignment.CrossAxis crossAxisAlignment = Alignment.CrossAxis.CENTER;
-    private Unit mainAxisMaxSize;
+    private @Nullable Unit mainAxisMaxSize;
     /**
      * Whether the children list should be laid out in reverse.
      */

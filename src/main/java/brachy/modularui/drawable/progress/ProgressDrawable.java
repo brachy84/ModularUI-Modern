@@ -6,6 +6,7 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A standard progress drawable which can display a progress bar with any {@link brachy.modularui.api.drawable.IDrawable}
@@ -51,7 +52,7 @@ public class ProgressDrawable extends AbstractProgressDrawable<ProgressDrawable>
      * @param direction direction
      * @return this
      */
-    public ProgressDrawable direction(Direction direction) {
+    public ProgressDrawable direction(@Nullable Direction direction) {
         this.direction = direction == null ? Direction.RIGHT : direction;
         return this;
     }

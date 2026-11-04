@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.util.FormattedCharSequence;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 public class TextLine implements ITextLine {
 
@@ -35,7 +36,7 @@ public class TextLine implements ITextLine {
     }
 
     @Override
-    public Object getHoveringElement(Font font, int x, int y) {
+    public @Nullable Object getHoveringElement(Font font, int x, int y) {
         if (y < lastY || y > lastY + getHeight(font)) return null;
         // not hovering, but we know that nothing else is hovered either
         if (x < lastX || x > lastX + getWidth()) return Boolean.FALSE;

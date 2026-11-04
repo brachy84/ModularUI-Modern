@@ -6,8 +6,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public final class ItemHolderSetList implements ItemEntryList {
     @Getter
     private final List<ItemHolderSetEntry> entries = new ArrayList<>();
 
-    public static ItemHolderSetList of(@NotNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
+    public static ItemHolderSetList of(@NonNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
         var list = new ItemHolderSetList();
         list.add(set, amount, nbt);
         return list;
@@ -28,7 +28,7 @@ public final class ItemHolderSetList implements ItemEntryList {
         entries.add(entry);
     }
 
-    public void add(@NotNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
+    public void add(@NonNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
         add(new ItemHolderSetEntry(set, amount, nbt));
     }
 
@@ -44,7 +44,7 @@ public final class ItemHolderSetList implements ItemEntryList {
                 .toList();
     }
 
-    public record ItemHolderSetEntry(@NotNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
+    public record ItemHolderSetEntry(@NonNull HolderSet<Item> set, int amount, @Nullable CompoundTag nbt) {
 
         public Stream<ItemStack> stacks() {
             return set.stream().map(holder -> ItemTagList.stackWithTag(holder, amount, nbt));

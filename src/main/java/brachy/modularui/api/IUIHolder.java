@@ -9,6 +9,8 @@ import brachy.modularui.value.sync.PanelSyncManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * An interface to implement on {@link net.minecraft.world.level.block.entity.BlockEntity} or
  * {@link net.minecraft.world.item.Item}.
@@ -36,5 +38,5 @@ public interface IUIHolder<T extends GuiData> {
      * @param syncManager sync handler where widget sync handlers should be registered
      * @param settings    settings which apply to the whole ui and not just this panel
      */
-    ModularPanel<?> buildUI(T data, PanelSyncManager syncManager, UISettings settings);
+    @Nullable ModularPanel<?> buildUI(T data, PanelSyncManager syncManager, UISettings settings);
 }

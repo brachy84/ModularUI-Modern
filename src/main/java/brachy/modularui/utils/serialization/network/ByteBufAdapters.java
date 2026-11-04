@@ -15,8 +15,7 @@ import com.mojang.serialization.Codec;
 import net.minecraftforge.fluids.FluidStack;
 
 import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,7 +60,7 @@ public class ByteBufAdapters {
         }
 
         @Override
-        public boolean areEqual(byte @NotNull [] t1, byte @NotNull [] t2) {
+        public boolean areEqual(byte[] t1, byte[] t2) {
             if (t1.length != t2.length) return false;
             for (int i = 0; i < t1.length; i++) {
                 if (t1[i] != t2[i]) return false;
@@ -83,7 +82,7 @@ public class ByteBufAdapters {
         }
 
         @Override
-        public boolean areEqual(long @NotNull [] t1, long @NotNull [] t2) {
+        public boolean areEqual(long[] t1, long[] t2) {
             if (t1.length != t2.length) return false;
             for (int i = 0; i < t1.length; i++) {
                 if (t1[i] != t2[i]) return false;
@@ -105,7 +104,7 @@ public class ByteBufAdapters {
         }
 
         @Override
-        public boolean areEqual(@NotNull BigInteger t1, @NotNull BigInteger t2) {
+        public boolean areEqual(BigInteger t1, BigInteger t2) {
             return t1.equals(t2);
         }
     };
@@ -124,13 +123,13 @@ public class ByteBufAdapters {
         }
 
         @Override
-        public boolean areEqual(@NotNull BigDecimal t1, @NotNull BigDecimal t2) {
+        public boolean areEqual(BigDecimal t1, BigDecimal t2) {
             return t1.equals(t2);
         }
     };
 
-    public static <T> IByteBufAdapter<T> makeAdapter(@NotNull IByteBufDeserializer<T> deserializer,
-                                                     @NotNull IByteBufSerializer<T> serializer,
+    public static <T> IByteBufAdapter<T> makeAdapter(IByteBufDeserializer<T> deserializer,
+                                                     IByteBufSerializer<T> serializer,
                                                      @Nullable EqualityTest<T> tester) {
         return new IByteBufAdapter<>() {
 
@@ -145,19 +144,19 @@ public class ByteBufAdapters {
             }
 
             @Override
-            public boolean areEqual(@NotNull T t1, @NotNull T t2) {
+            public boolean areEqual(T t1, T t2) {
                 return tester != null ? tester.areEqual(t1, t2) : Objects.equals(t1, t2);
             }
         };
     }
 
-    public static <T> IByteBufAdapter<T> makeMemberAdapter(@NotNull IByteBufDeserializer<T> deserializer,
-                                                           @NotNull IByteBufMemberSerializer<T> memberSerializer,
+    public static <T> IByteBufAdapter<T> makeMemberAdapter(IByteBufDeserializer<T> deserializer,
+                                                           IByteBufMemberSerializer<T> memberSerializer,
                                                            @Nullable EqualityTest<T> comparator) {
         return makeAdapter(deserializer, memberSerializer.asBasic(), comparator);
     }
 
-    public static <T> IByteBufAdapter<T> makeAdapterFromCodec(@NotNull Codec<T> codec, @NotNull EqualityTest<T> equals) {
+    public static <T> IByteBufAdapter<T> makeAdapterFromCodec(Codec<T> codec, EqualityTest<T> equals) {
         return new IByteBufAdapter<>() {
 
             @Override
@@ -171,7 +170,7 @@ public class ByteBufAdapters {
             }
 
             @Override
-            public boolean areEqual(@NotNull T t1, @NotNull T t2) {
+            public boolean areEqual(T t1, T t2) {
                 return equals.areEqual(t1, t2);
             }
         };

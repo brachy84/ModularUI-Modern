@@ -19,7 +19,7 @@ import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -39,10 +39,10 @@ import java.util.regex.Pattern;
 @Accessors(chain = true)
 public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
-    @Getter private IStringValue<?> stringValue;
+    @Getter private @Nullable IStringValue<?> stringValue;
     private Function<String, String> validator = val -> val;
     @Getter private boolean numbers = false;
-    @Getter private String mathFailMessage = null;
+    @Getter private @Nullable String mathFailMessage = null;
     @Getter private double defaultNumber = 0;
     @Getter private boolean tooltipOverride = false;
     @Getter private boolean autoUpdateOnChange = false;
@@ -85,12 +85,12 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     @Override
-    public boolean isValidSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    public boolean isValidSyncOrValue(ISyncOrValue syncOrValue) {
         return syncOrValue.isTypeOrEmpty(IStringValue.class);
     }
 
     @Override
-    protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
+    protected void setSyncOrValue(ISyncOrValue syncOrValue) {
         super.setSyncOrValue(syncOrValue);
         this.stringValue = syncOrValue.castNullable(IStringValue.class);
         if (syncOrValue instanceof ValueSyncHandler<?, ?> valueSyncHandler) {
@@ -120,7 +120,6 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
         }
     }
 
-    @NotNull
     public String getText() {
         if (this.handler.getText().isEmpty()) {
             return "";
@@ -131,7 +130,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
         return this.handler.getText().get(0);
     }
 
-    public void setText(@NotNull String text) {
+    public void setText(String text) {
         if (this.handler.getText().isEmpty()) {
             this.handler.getText().add(text);
         } else {
@@ -303,7 +302,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     @Override
-    public @NotNull RichTooltip tooltip() {
+    public RichTooltip tooltip() {
         tooltipOverride = true;
         return super.tooltip();
     }

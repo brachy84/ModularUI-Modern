@@ -14,7 +14,6 @@ import net.minecraft.util.Mth;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -61,7 +60,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         return Result.SUCCESS;
     }
 

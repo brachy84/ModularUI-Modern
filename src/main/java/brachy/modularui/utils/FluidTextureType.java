@@ -7,6 +7,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.function.BiFunction;
 
 public enum FluidTextureType {
@@ -26,9 +28,9 @@ public enum FluidTextureType {
 
     private static final ResourceLocation WATER_STILL = new ResourceLocation("minecraft", "block/water_still");
 
-    private final BiFunction<IClientFluidTypeExtensions, FluidStack, ResourceLocation> mapper;
+    private final BiFunction<IClientFluidTypeExtensions, FluidStack, @Nullable ResourceLocation> mapper;
 
-    FluidTextureType(BiFunction<IClientFluidTypeExtensions, FluidStack, ResourceLocation> mapper) {
+    FluidTextureType(BiFunction<IClientFluidTypeExtensions, FluidStack, @Nullable ResourceLocation> mapper) {
         this.mapper = mapper;
     }
 

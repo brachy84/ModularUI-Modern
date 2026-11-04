@@ -9,8 +9,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class ItemTagList implements ItemEntryList {
     @Getter
     private final List<ItemTagEntry> entries = new ArrayList<>();
 
-    public static ItemTagList of(@NotNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
+    public static ItemTagList of(@NonNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
         var list = new ItemTagList();
         list.add(tag, amount, nbt);
         return list;
@@ -31,7 +31,7 @@ public final class ItemTagList implements ItemEntryList {
         entries.add(entry);
     }
 
-    public void add(@NotNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
+    public void add(@NonNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
         add(new ItemTagEntry(tag, amount, nbt));
     }
 
@@ -47,7 +47,7 @@ public final class ItemTagList implements ItemEntryList {
                 .toList();
     }
 
-    public record ItemTagEntry(@NotNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
+    public record ItemTagEntry(@NonNull TagKey<Item> tag, int amount, @Nullable CompoundTag nbt) {
 
         public Stream<ItemStack> stacks() {
             return BuiltInRegistries.ITEM.getTag(tag).map(HolderSet.ListBacked::stream).orElseGet(Stream::empty)

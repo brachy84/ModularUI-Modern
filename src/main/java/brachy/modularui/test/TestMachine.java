@@ -61,8 +61,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +90,7 @@ public class TestMachine {
         }
 
         @Override
-        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
             if (cap == ForgeCapabilities.ITEM_HANDLER) {
                 return this.items.cast();
             } else if (cap == ForgeCapabilities.FLUID_HANDLER) {
@@ -331,7 +330,7 @@ public class TestMachine {
             }
         });
 
-        public static Recipe findRecipe(IItemHandler inputItems, IFluidHandler inputFluids, @Nullable Recipe lastRecipe) {
+        public static @Nullable Recipe findRecipe(IItemHandler inputItems, IFluidHandler inputFluids, @Nullable Recipe lastRecipe) {
             if (lastRecipe != null && lastRecipe.startRecipe(inputItems, inputFluids, true)) return lastRecipe;
             for (Recipe recipe : list) {
                 if (recipe.startRecipe(inputItems, inputFluids, true)) {

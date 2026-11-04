@@ -6,6 +6,7 @@ import brachy.modularui.utils.Color;
 import brachy.modularui.utils.serialization.json.JsonBuilder;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A json builder with helper methods to make building themes in java easier.
@@ -18,7 +19,7 @@ public class ThemeBuilder<B extends ThemeBuilder<B>> extends JsonBuilder {
     @Getter
     private final String id;
     @Getter
-    private String parent;
+    private @Nullable String parent;
 
     public ThemeBuilder(String id) {
         this.id = id;

@@ -5,12 +5,14 @@ import brachy.modularui.screen.viewport.GuiContext;
 import brachy.modularui.theme.WidgetTheme;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 public abstract class AbstractProgressDrawable<D extends AbstractProgressDrawable<D>> extends BaseProgressDrawable<D> {
 
-    @Getter private IDrawable filledTexture;
+    @Getter
+    private @Nullable IDrawable filledTexture;
 
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {

@@ -11,15 +11,14 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.Widget;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextBuilder<RichTextWidget>, Interactable {
 
     private final RichText text = new RichText();
-    private Consumer<RichText> builder;
+    private @Nullable Consumer<RichText> builder;
     private boolean dirty = false;
     @Getter private boolean autoUpdate = false;
 
@@ -53,7 +52,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMousePressed(int button) {
+    public Result onMousePressed(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onMousePressed(button);
         }
@@ -69,7 +68,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMouseTapped(int button) {
+    public Result onMouseTapped(int button) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onMouseTapped(button);
         }
@@ -77,7 +76,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public Result onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onKeyPressed(keyCode, scanCode, modifiers);
         }
@@ -93,7 +92,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
+    public Result onKeyTapped(int keyCode, int scanCode, int modifiers) {
         if (getHoveredElement() instanceof Interactable interactable) {
             return interactable.onKeyTapped(keyCode, scanCode, modifiers);
         }

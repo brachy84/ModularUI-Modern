@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,10 +77,10 @@ public class SlotGroupWidget extends ParentWidget<SlotGroupWidget> {
         return slots.size(w * 18, h * 18);
     }
 
-    @Getter private String slotGroupName;
-    @Getter private SlotGroup slotGroup;
+    @Getter private @Nullable String slotGroupName;
+    @Getter private @Nullable SlotGroup slotGroup;
     private boolean sortButtonsAdded = false;
-    private Consumer<SortButtons> sortButtonsEditor;
+    private @Nullable Consumer<SortButtons> sortButtonsEditor;
 
     @Override
     public void onInit() {
@@ -181,11 +182,11 @@ public class SlotGroupWidget extends ParentWidget<SlotGroupWidget> {
 
     public static class Builder {
 
-        private String syncKey;
+        private @Nullable String syncKey;
         private final List<String> matrix = new ArrayList<>();
-        private final Char2ObjectMap<Object> keys = new Char2ObjectOpenHashMap<>();
-        private String slotGroupName;
-        private SlotGroup slotGroup;
+        private final Char2ObjectMap<@Nullable Object> keys = new Char2ObjectOpenHashMap<>();
+        private @Nullable String slotGroupName;
+        private @Nullable SlotGroup slotGroup;
 
         private Builder() {
             this.keys.put(' ', null);

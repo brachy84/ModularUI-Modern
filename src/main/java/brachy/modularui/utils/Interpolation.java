@@ -5,7 +5,7 @@ import brachy.modularui.api.drawable.IInterpolation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Check out <a href=https://easings.net/en>this website</a> to find your desired interpolation method.
@@ -306,11 +306,11 @@ public enum Interpolation implements IInterpolation, StringRepresentable {
     }
 
     @Override
-    public @NotNull String getSerializedName() {
+    public String getSerializedName() {
         return this.name;
     }
 
-    public static Interpolation getForName(String name) {
+    public static @Nullable Interpolation getForName(String name) {
         for (Interpolation interpolation : values()) {
             if (interpolation.name.equals(name)) {
                 return interpolation;

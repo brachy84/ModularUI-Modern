@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * GuiData that finds an item in a player bound inventory. This can be the hotbar, main inventory, armor slots, offhand
@@ -19,9 +20,9 @@ import lombok.Getter;
  * @param <T> Type of the context. Usually {@link Void}. User will usually use <?>.
  */
 @Getter
-public class PlayerInventoryGuiData<T> extends GuiData {
+public class PlayerInventoryGuiData<T extends @Nullable Object> extends GuiData {
 
-    public static <T> PlayerInventoryGuiData<T> of(Player player, InventoryType<T> inventoryType, T context, int slotIndex) {
+    public static <T extends @Nullable Object> PlayerInventoryGuiData<T> of(Player player, InventoryType<T> inventoryType, T context, int slotIndex) {
         return new PlayerInventoryGuiData<>(player, inventoryType, context, slotIndex);
     }
 

@@ -25,8 +25,7 @@ import com.google.common.collect.AbstractIterator;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -59,10 +58,10 @@ public class ModularGuiContext extends GuiContext {
      * the hovered widget (widget directly below the mouse)
      */
     private List<LocatedWidget> hovered = Collections.emptyList();
-    private LocatedWidget resizeable = null;
+    private @Nullable LocatedWidget resizeable = null;
     private final HoveredIterable hoveredWidgets;
 
-    private LocatedElement<IDraggable> draggable;
+    private @Nullable LocatedElement<IDraggable> draggable;
     private int dragStartX = 0, dragStartY = 0;
     private int lastButton = -1;
     private long lastClickTime = 0;
@@ -70,7 +69,7 @@ public class ModularGuiContext extends GuiContext {
 
     public List<Consumer<ModularGuiContext>> postRenderCallbacks = new ArrayList<>();
 
-    private UISettings settings;
+    private @Nullable UISettings settings;
 
     private final Iterable<IWidget> hoveredIterable = () -> new AbstractIterator<>() {
 
@@ -146,7 +145,7 @@ public class ModularGuiContext extends GuiContext {
      *
      * @param widget widget to focus
      */
-    public void focus(@NotNull LocatedWidget widget) {
+    public void focus(LocatedWidget widget) {
         if (this.focusedWidget.getElement() == widget.getElement()) {
             return;
         }
@@ -333,7 +332,7 @@ public class ModularGuiContext extends GuiContext {
         }
     }
 
-    private static boolean isStillHovered(List<LocatedWidget> newHovered, LocatedWidget lw) {
+    private static boolean isStillHovered(@Nullable List<LocatedWidget> newHovered, LocatedWidget lw) {
         if (newHovered == null) return false;
         for (LocatedWidget hovered : newHovered) {
             if (hovered.getElement() == lw.getElement()) {
@@ -384,7 +383,7 @@ public class ModularGuiContext extends GuiContext {
         ResizeDragArea newResizeDragArea = null;
         List<LocatedWidget> newHovered = new ArrayList<>();
         for (LocatedWidget lw : belowMouse) {
-            if (!lw.getElement().isValid()) continue;
+            if (lw.getElement() == null || !lw.getElement().isValid()) continue;
             if (lw.getElement().canHover()) {
                 newHovered.add(lw);
                 if (!lw.getElement().isHovering()) {
@@ -411,7 +410,7 @@ public class ModularGuiContext extends GuiContext {
         return newHovered.isEmpty() ? Collections.emptyList() : newHovered;
     }
 
-    private void checkHoverEnd(List<LocatedWidget> newList, List<LocatedWidget> oldList, Consumer<IWidget> onHoverEnd) {
+    private void checkHoverEnd(@Nullable List<LocatedWidget> newList, List<LocatedWidget> oldList, Consumer<@Nullable IWidget> onHoverEnd) {
         if (!oldList.isEmpty()) {
             for (LocatedWidget lw : oldList) {
                 if (!isStillHovered(newList, lw)) {
@@ -463,17 +462,16 @@ public class ModularGuiContext extends GuiContext {
 
     private class HoveredIterable implements Iterable<IWidget> {
 
-        @NotNull
         @Override
         public Iterator<IWidget> iterator() {
             return new AbstractIterator<>() {
 
                 private final Iterator<ModularPanel<?>> panelIt = ModularGuiContext.this.getScreen()
                         .getPanelManager().getOpenPanels().iterator();
-                private Iterator<LocatedWidget> widgetIt;
+                private @Nullable Iterator<LocatedWidget> widgetIt;
 
                 @Override
-                protected IWidget computeNext() {
+                protected @Nullable IWidget computeNext() {
                     while (widgetIt == null || !widgetIt.hasNext()) {
                         if (!panelIt.hasNext()) return endOfData();
                         widgetIt = panelIt.next().getHovering().iterator();

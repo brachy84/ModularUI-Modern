@@ -8,26 +8,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@NullMarked
 public class CycleItemEntryHandler implements IItemHandlerModifiable {
 
     @Getter
     private final List<ItemEntryList> entries;
-    private List<List<ItemStack>> unwrapped = null;
+    private @Nullable List<@Nullable List<ItemStack>> unwrapped = null;
 
     public CycleItemEntryHandler(List<ItemEntryList> entries) {
         this.entries = new ArrayList<>(entries);
     }
 
-    public List<List<ItemStack>> getUnwrapped() {
+    public List<@Nullable List<ItemStack>> getUnwrapped() {
         if (unwrapped == null) {
             unwrapped = entries.stream()
                     .map(CycleItemEntryHandler::getStacksNullable)

@@ -8,13 +8,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import org.jspecify.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.Map;
 
-public class CuriosHandler extends InventoryType<String> {
+public class CuriosHandler extends InventoryType<@Nullable String> {
 
     public static final CuriosHandler INSTANCE = new CuriosHandler();
 
@@ -33,20 +34,20 @@ public class CuriosHandler extends InventoryType<String> {
     }
 
     @Override
-    public ItemStack getStackInSlot(Player player, String context, int index) {
+    public ItemStack getStackInSlot(Player player, @Nullable String context, int index) {
         return getCuriosHandler(player).getStacksHandler(context)
                 .map(stacksHandler -> stacksHandler.getStacks().getStackInSlot(index))
                 .orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public void setStackInSlot(Player player, String context, int index, ItemStack stack) {
+    public void setStackInSlot(Player player, @Nullable String context, int index, ItemStack stack) {
         getCuriosHandler(player).getStacksHandler(context)
                 .ifPresent(stacksHandler -> stacksHandler.getStacks().setStackInSlot(index, stack));
     }
 
     @Override
-    public boolean visitAll(Player player, InventoryVisitor<String> visitor) {
+    public boolean visitAll(Player player, InventoryVisitor<@Nullable String> visitor) {
         Map<String, ICurioStacksHandler> handlers = getCuriosHandler(player).getCurios();
         for (ICurioStacksHandler handler : handlers.values()) {
             IItemHandlerModifiable itemHandler = handler.getStacks();
@@ -60,12 +61,12 @@ public class CuriosHandler extends InventoryType<String> {
     }
 
     @Override
-    public void writeContext(FriendlyByteBuf byteBuf, String context) {
+    public void writeContext(FriendlyByteBuf byteBuf, @Nullable String context) {
         NetworkUtils.writeStringSafe(byteBuf, context);
     }
 
     @Override
-    public String readContext(FriendlyByteBuf byteBuf) {
+    public @Nullable String readContext(FriendlyByteBuf byteBuf) {
         return NetworkUtils.readStringSafe(byteBuf);
     }
 }

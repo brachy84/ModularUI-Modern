@@ -12,7 +12,7 @@ import com.ezylang.evalex.data.EvaluationValue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class MathUtils {
 
     public static final float PI = (float) Math.PI;

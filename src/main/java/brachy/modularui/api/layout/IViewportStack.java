@@ -6,7 +6,7 @@ import brachy.modularui.widget.sizer.Area;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -213,6 +213,5 @@ public interface IViewportStack {
     /**
      * @return the top matrix or null if stack is empty
      */
-    @Nullable
-    TransformationMatrix peek();
+    @Nullable TransformationMatrix peek();
 }

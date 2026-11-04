@@ -19,7 +19,8 @@ import net.minecraft.util.FormattedCharSink;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,11 @@ public class RichTextCompiler {
 
     private static final FormattedCharSequence SPACE = FormattedCharSequence.codepoint(' ', Style.EMPTY);
 
-    private Font fr;
+    private @Nullable Font fr;
     private int maxWidth;
 
-    private List<ITextLine> lines;
-    private List<Object> currentLine;
+    private List<ITextLine> lines = new ArrayList<>();
+    private List<Object> currentLine = new ArrayList<>();
     private float x, h;
     private final LineBreakFinder lineBreakFinder = new LineBreakFinder();
 
@@ -50,7 +51,7 @@ public class RichTextCompiler {
         return lines;
     }
 
-    public void reset(Font fr, int maxWidth) {
+    public void reset(@Nullable Font fr, int maxWidth) {
         this.fr = fr != null ? fr : Minecraft.getInstance().font;
         this.maxWidth = maxWidth > 0 ? maxWidth : Integer.MAX_VALUE;
         this.lines = new ArrayList<>();
@@ -185,7 +186,7 @@ public class RichTextCompiler {
 
     private void addLineElement(FormattedCharSequence fcs) {
         if (this.currentLine.isEmpty() && fcs == SPACE) return;
-        this.x += this.fr.width(fcs);
+        if (this.fr != null) this.x += this.fr.width(fcs);
         this.h = Math.max(this.h, this.fr.lineHeight);
         this.currentLine.add(fcs);
     }
@@ -256,7 +257,7 @@ public class RichTextCompiler {
         }
 
         @Override
-        public boolean accept(int positionInCurrentSequence, @NotNull Style style, int codePoint) {
+        public boolean accept(int positionInCurrentSequence, @NonNull Style style, int codePoint) {
             this.styleChanged = false;
             int i = positionInCurrentSequence;
             switch (codePoint) {
