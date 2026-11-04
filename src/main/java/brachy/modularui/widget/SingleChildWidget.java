@@ -48,7 +48,7 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
 
     @Override
     public boolean visitChildren(Predicate<IWidget> visitor) {
-        return visitor.test(this.child);
+        return this.child == null || visitor.test(this.child);
     }
 
     @Override

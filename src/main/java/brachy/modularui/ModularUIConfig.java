@@ -72,6 +72,10 @@ public class ModularUIConfig {
             .comment("Debug outline color. Prefix Hex values with a #. Common colors can be referred by their name.")
             .translation("config.modularui.debugOutlineColor")
             .define("debugOutlineColor", "#DCB42873");
+    public static final DoubleValue FLUID_SLOT_TEXT_SCALE = BUILDER
+            .comment("The scale of the text in fluid slots. Defaults to 0.5")
+            .translation("config.modularui.fluidSlotTextScale")
+            .defineInRange("fluidSlotTextScale", 0.5f, 0, 1);
 
     static {
         BUILDER.pop().push("dev");
