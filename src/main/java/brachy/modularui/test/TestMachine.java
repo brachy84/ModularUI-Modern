@@ -372,7 +372,7 @@ public class TestMachine {
             return false;
         }
 
-        public static IWidget buildMachineUI(ModularPanel<?> panel, IItemHandler inItems, IItemHandler outItems,
+        public static IWidget buildMachineUI(ModularPanel<?> panel, IItemHandlerModifiable inItems, IItemHandlerModifiable outItems,
                                              IMultiTankFluidHandler inFluids, IMultiTankFluidHandler outFluids, IDoubleValue<?> progress,
                                              final boolean isRecipeViewerUI) {
             var val = new StringValue("Option 1");

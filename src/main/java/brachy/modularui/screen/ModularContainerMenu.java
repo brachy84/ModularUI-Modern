@@ -283,7 +283,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
             } else {
                 Slot clickedSlot = getSlot(slotId);
 
-                ItemStack slotStack = clickedSlot.getItem();
+                ItemStack slotStack = clickedSlot.getItem().copy();
                 ItemStack heldStack = this.getCarried();
 
                 if (slotStack.isEmpty()) {
@@ -380,13 +380,18 @@ public class ModularContainerMenu extends AbstractContainerMenu {
             }
 
             broadcastChanges();
-        } else if (clickTypeIn == ClickType.SWAP && mouseButton >= 0 && mouseButton < 9) {
+        } else if (clickTypeIn == ClickType.SWAP &&
+                ((mouseButton >= 0 && mouseButton < 9) || mouseButton == Inventory.SLOT_OFFHAND)) {
             // minecraft does not check if the hotbar slot can actually take and put items
             Slot hotbarSlot = findPlayerSlot(player, mouseButton); // mouseButton is the slot index here
+            if (hotbarSlot == null && mouseButton == Inventory.SLOT_OFFHAND) {
+                // the offhand is usually not bound as a slot, but it still needs to respect stack size limits
+                hotbarSlot = new Slot(inventory, Inventory.SLOT_OFFHAND, 0, 0);
+            }
             if (hotbarSlot != null && slotId >= 0) {
                 Slot fromSlot = getSlot(slotId);
-                ItemStack fromStack = fromSlot.getItem();
-                ItemStack hotbarStack = hotbarSlot.getItem();
+                ItemStack fromStack = fromSlot.getItem().copy();
+                ItemStack hotbarStack = hotbarSlot.getItem().copy();
 
                 if (!fromStack.isEmpty() && !hotbarSlot.mayPlace(fromStack)) return;
                 if (!hotbarStack.isEmpty() && !fromSlot.mayPlace(hotbarStack)) return;
@@ -399,8 +404,8 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                         int toMove = Math.min(fromStack.getCount(), hotbarLimit - hotbarStack.getCount());
                         hotbarStack.grow(toMove);
                         fromStack.shrink(toMove);
-                        hotbarSlot.setChanged();
-                        fromSlot.setChanged();
+                        hotbarSlot.set(hotbarStack);
+                        fromSlot.set(fromStack);
                     }
                     return;
                 }
@@ -415,23 +420,23 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 }
                 if (hotbarStack.isEmpty() && !fromStack.isEmpty()) {
                     int moveAmt = hotbarSlot.getMaxStackSize(fromStack);
-                    fromStack.shrink(moveAmt);
                     hotbarStack = fromStack.copyWithCount(moveAmt);
-                    fromSlot.setChanged();
+                    fromStack.shrink(moveAmt);
+                    fromSlot.set(fromStack);
                     hotbarSlot.setByPlayer(hotbarStack);
                 } else if (fromStack.isEmpty() && !hotbarStack.isEmpty()) {
                     int moveAmt = fromSlot.getMaxStackSize(hotbarStack);
                     fromStack = hotbarStack.copyWithCount(moveAmt);
                     hotbarStack.shrink(moveAmt);
                     fromSlot.setByPlayer(fromStack);
-                    hotbarSlot.setChanged();
+                    hotbarSlot.set(hotbarStack);
                 }
             }
         } else if (clickTypeIn == ClickType.THROW && getCarried().isEmpty() && slotId >= 0) {
             Slot slot = getSlot(slotId);
 
             if (slot.hasItem() && slot.mayPickup(player)) {
-                ItemStack stackInSlot = slot.getItem();
+                ItemStack stackInSlot = slot.getItem().copy();
                 int amountToDrop = 1;
                 // mouseButton 1 is CTRL+Q
                 if (mouseButton == 1) {
@@ -441,8 +446,8 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 if (amountToDrop > 0) {
                     ItemStack droppedStack = stackInSlot.copyWithCount(amountToDrop);
                     stackInSlot.shrink(amountToDrop);
+                    slot.set(stackInSlot);
                     player.drop(droppedStack, true);
-                    slot.setChanged();
                 }
             }
         } else {

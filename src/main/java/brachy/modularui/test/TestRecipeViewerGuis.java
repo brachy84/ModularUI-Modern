@@ -48,7 +48,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import org.jetbrains.annotations.NotNullByDefault;
@@ -62,7 +62,7 @@ import java.util.function.Supplier;
 @NotNullByDefault
 public class TestRecipeViewerGuis {
 
-    private static final IItemHandler EMPTY_INFINITE_ITEM_HANDLER = new EmptyHandler() {
+    private static final IItemHandlerModifiable EMPTY_INFINITE_ITEM_HANDLER = new EmptyHandler() {
         @Override
         public int getSlots() {
             return Integer.MAX_VALUE; // pls don't iterate UwU
