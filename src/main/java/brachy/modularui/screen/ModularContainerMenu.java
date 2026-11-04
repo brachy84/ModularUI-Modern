@@ -380,9 +380,14 @@ public class ModularContainerMenu extends AbstractContainerMenu {
             }
 
             broadcastChanges();
-        } else if (clickTypeIn == ClickType.SWAP && mouseButton >= 0 && mouseButton < 9) {
+        } else if (clickTypeIn == ClickType.SWAP &&
+                ((mouseButton >= 0 && mouseButton < 9) || mouseButton == Inventory.SLOT_OFFHAND)) {
             // minecraft does not check if the hotbar slot can actually take and put items
             Slot hotbarSlot = findPlayerSlot(player, mouseButton); // mouseButton is the slot index here
+            if (hotbarSlot == null && mouseButton == Inventory.SLOT_OFFHAND) {
+                // the offhand is usually not bound as a slot, but it still needs to respect stack size limits
+                hotbarSlot = new Slot(inventory, Inventory.SLOT_OFFHAND, 0, 0);
+            }
             if (hotbarSlot != null && slotId >= 0) {
                 Slot fromSlot = getSlot(slotId);
                 ItemStack fromStack = fromSlot.getItem().copy();
