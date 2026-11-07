@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -145,9 +146,10 @@ public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
         return screen;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ApiStatus.OverrideOnly
     public IWidget transformWidget(IRecipeExtrasBuilder builder, IWidget widget) {
-        if (!(widget instanceof JeiRecipeViewerSlot<?, ?> recipeViewerSlot)) return widget;
+        if (!(widget instanceof JeiRecipeViewerSlot recipeViewerSlot)) return widget;
 
         if (builder instanceof RecipeLayoutAccessor accessor) {
             recipeViewerSlot.setCycler(accessor.modularui$getCycleTicker());
@@ -158,7 +160,7 @@ public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
         // the JEI slot should also always exist as it's created in the same method
         IRecipeSlotDrawable slot = builder.getRecipeSlots().findSlotByName(name).orElseThrow();
 
-        recipeViewerSlot.setSlotWidget(slot);
+        recipeViewerSlot.setSlotWidget(slot, builder instanceof IRecipeLayoutDrawable<?> drawable ? drawable : null);
         builder.addSlottedWidget(recipeViewerSlot, List.of(slot));
 
         return recipeViewerSlot;
