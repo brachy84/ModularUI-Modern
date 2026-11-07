@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.Getter;
 import lombok.Setter;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
@@ -30,12 +31,14 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.library.gui.ingredients.ICycler;
+import mezz.jei.library.gui.ingredients.RecipeSlotIngredients;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +55,7 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
 
     @Setter private IRecipeCategory<T> recipeCategory;
     @Setter private T recipe;
+    private IRecipeLayoutDrawable<T> recipeLayout;
 
     @Setter private IIngredientManager ingredientManager;
 
@@ -77,8 +81,9 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         });
     }
 
-    public void setSlotWidget(IRecipeSlotDrawable slotWidget) {
+    public void setSlotWidget(IRecipeSlotDrawable slotWidget, @Nullable IRecipeLayoutDrawable<T> recipeLayout) {
         this.slotWidget = slotWidget;
+        this.recipeLayout = recipeLayout;
         if (this.entries != null) rebuildRealSlot();
     }
 
@@ -126,10 +131,10 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
     // Mostly copied from RecipeSlotBuilder#build
     private void replaceSlotIngredients(RecipeSlotAccessor recipeSlot, RecipeIngredientRole ingredientRole) {
         if (this.ingredientManager == null) {
-            if (ModularUIJeiPlugin.jeiHelpers == null) {
+            if (!ModularUIJeiPlugin.hasJeiHelpers()) {
                 return;
             }
-            this.ingredientManager = ModularUIJeiPlugin.jeiHelpers.getIngredientManager();
+            this.ingredientManager = ModularUIJeiPlugin.getJeiHelpers().getIngredientManager();
         }
 
         final DisplayIngredientAcceptor ingredients = new DisplayIngredientAcceptor(this.ingredientManager);
@@ -154,7 +159,7 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         }
 
         IntSet focusMatches = ingredients.getMatches(this.focuses, ingredientRole);
-        List<ITypedIngredient<?>> focusedIngredients = null;
+        List<@Nullable ITypedIngredient<?>> focusedIngredients = null;
         if (!focusMatches.isEmpty()) {
             focusedIngredients = new ArrayList<>();
             for (IntIterator iterator = focusMatches.iterator(); iterator.hasNext(); ) {
@@ -166,18 +171,17 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
             }
         }
 
-        recipeSlot.modularui$setAllIngredients(allIngredients);
-        recipeSlot.modularui$setDisplayIngredients(focusedIngredients);
+        recipeSlot.modularui$setIngredients(new RecipeSlotIngredients(
+                allIngredients,
+                focusedIngredients,
+                recipeSlot::modularui$invokeOnDisplayOverridesChanged
+        ));
     }
 
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         if (this.slotWidget == null) return;
-
-        this.slotWidget.draw(context.getGraphics());
-        if (isHovering()){
-            slotWidget.drawHoverOverlays(context.getGraphics());
-        }
+        this.slotWidget.draw(context.getGraphics(), isHovering());
     }
 
 /*
@@ -211,10 +215,12 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
 
     // copied from RecipeLayoutBuilder#addOutputSlotTooltipCallback
     private void addOutputSlotTooltipCallback(RecipeSlotAccessor slot) {
-        ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
-        if (recipeName != null) {
+        ResourceLocation recipeId = recipeCategory.getRegistryName(recipe);
+        List<ResourceLocation> sourceRecipeIds = recipeLayout != null ? recipeLayout.getSourceRecipeIds() : Collections.emptyList();
+
+        if (recipeId != null || !sourceRecipeIds.isEmpty()) {
             RecipeType<T> recipeType = recipeCategory.getRecipeType();
-            OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
+            OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeId, sourceRecipeIds, recipeType);
             slot.modularui$getTooltipCallbacks().add(callback);
         }
     }

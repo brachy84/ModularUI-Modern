@@ -2,7 +2,6 @@ package brachy.modularui.integration.jei.handler;
 
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.core.mixins.jei.IngredientListOverlayAccessor;
 import brachy.modularui.integration.jei.GhostIngredientTarget;
 import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
 import brachy.modularui.integration.jei.ModularUIJeiPlugin;
@@ -18,13 +17,16 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +68,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     @Override
-    public <I> @NotNull List<Target<I>> getTargetsTyped(T screen, @NotNull ITypedIngredient<I> ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargetsTyped(T screen, ITypedIngredient<I> ingredient, boolean doStart) {
         List<GhostIngredientSlot<?>> ghostSlots = screen.screen().getContext()
                 .getRecipeViewerSettings().getGhostIngredientSlots();
         List<Target<I>> ghostHandlerTargets = new ArrayList<>();
@@ -95,6 +97,33 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     @Override
+    public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory factory, T screen,
+                                                                              double mouseX, double mouseY) {
+        IWidget hovered = screen.screen().getContext().getTopHovered();
+        if (hovered instanceof IngredientProvider<?> provider) {
+            var override = provider.ingredientOverride();
+            if (override instanceof IClickableIngredient<?> clickableIngredient) {
+                return Optional.of(clickableIngredient);
+            }
+            if (provider.getIngredients().isEmpty()) return Optional.empty();
+
+            return this.createClickableIngredient(factory, mapFirstIngredient(provider), hovered.getArea());
+        }
+        return Optional.empty();
+    }
+
+    private <I> I mapFirstIngredient(IngredientProvider<I> provider) {
+        return provider.renderMappingFunction().apply(provider.getIngredients().getStacks().get(0));
+    }
+
+    private <I> Optional<IClickableIngredient<?>> createClickableIngredient(IClickableIngredientFactory factory, I ingredient,
+                                                                            Rectangle area) {
+        Optional<IIngredientType<I>> type = ModularUIJeiPlugin.getJeiHelpers().getIngredientManager()
+                .getIngredientTypeChecked(ingredient);
+        return type.flatMap(ty -> factory.createBuilder(ty, ingredient).buildWithArea(area.asRect2i()));
+    }
+
+    @Override
     public void onComplete() {
         currentIngredient = null;
     }
@@ -104,16 +133,21 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public void setSearchFocused(boolean focused) {
-        // only set the search field state if it's JEI's actual search field and not JEMI/TMRV
-        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor) {
-            accessor.getSearchField().setFocused(focused);
+        // only set the search field state if it's JEI's actual search field and not JEMI
+        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlay realOverlay) {
+            if (focused) {
+                realOverlay.getSearchInputLayer().focus();
+            } else {
+                realOverlay.getSearchInputLayer().clearFocus();
+            }
         }
     }
 
     @Override
     public boolean isSearchFocused() {
-        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor){
-            return accessor.getSearchField().isFocused();
+        // only set the search field state if it's JEI's actual search field and not JEMI
+        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlay realOverlay) {
+            return realOverlay.getSearchInputLayer().hasKeyboardFocus();
         }
         return false;
     }
@@ -152,35 +186,6 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
                     .getRecipeViewerSettings().getAllExclusionAreas()
                     .stream().map(Rectangle::asRect2i)
                     .toList();
-        }
-
-        @Override
-        public @NotNull Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T screen, double mouseX, double mouseY) {
-            IWidget hovered = screen.screen().getContext().getTopHovered();
-            if (hovered instanceof IngredientProvider<?> provider) {
-                var override = provider.ingredientOverride();
-                if (override instanceof IClickableIngredient<?> clickableIngredient) {
-                    return Optional.of(clickableIngredient);
-                }
-                if (provider.getIngredients().isEmpty()) return Optional.empty();
-
-                Optional<? extends IClickableIngredient<?>> ingredient = this
-                        .createClickableIngredient(mapFirstIngredient(provider), hovered.getArea());
-
-                // noinspection unchecked
-                return (Optional<IClickableIngredient<?>>) ingredient;
-            }
-            return Optional.empty();
-        }
-
-        private <I> I mapFirstIngredient(IngredientProvider<I> provider) {
-            return provider.renderMappingFunction().apply(provider.getIngredients().getStacks().getFirst());
-        }
-
-        private <I> Optional<IClickableIngredient<I>> createClickableIngredient(I ingredient, Rectangle area) {
-            return ModularUIJeiPlugin.getRuntime()
-                    .getIngredientManager()
-                    .createClickableIngredient(ingredient, area.asRect2i(), false);
         }
     }
 }

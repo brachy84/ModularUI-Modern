@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Optional;
 
+@SuppressWarnings("NonExtendableApiUsage")
 @Mixin(value = RecipeLayout.class, remap = false)
 public abstract class RecipeLayoutMixin<R> implements IRecipeLayoutDrawable<R> {
 
