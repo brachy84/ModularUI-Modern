@@ -7,12 +7,13 @@ import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import brachy.modularui.screen.viewport.ModularGuiContext;
 
 import brachy.modularui.theme.WidgetThemeEntry;
+
+import brachy.modularui.utils.TooltipLines;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -72,9 +73,7 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
                 slotWidget.getTooltip(builder);
                 builder.getLines().forEach(line -> {
                     line.ifLeft(t -> {
-                        if (t instanceof Component c) {
-                            tooltip.addLine(c);
-                        }
+                        tooltip.addLine(TooltipLines.asComponent(t));
                     }).ifRight(c -> {
                         tooltip.addDrawableLine(new TooltipComponentIcon(c, false));
                     });

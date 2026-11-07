@@ -201,7 +201,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         return either.mapLeft(TooltipLines::asComponent);
     }
 
-    private static Component asComponent(FormattedText text) {
+    public static Component asComponent(FormattedText text) {
         if (text instanceof Component component) return component;
         MutableComponent out = Component.empty();
         text.visit((style, str) -> {
