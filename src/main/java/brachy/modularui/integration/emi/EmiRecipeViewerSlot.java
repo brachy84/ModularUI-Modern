@@ -1,11 +1,14 @@
 package brachy.modularui.integration.emi;
 
+import brachy.modularui.core.mixins.client.ClientTextTooltipAccessor;
 import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -31,7 +34,12 @@ public class EmiRecipeViewerSlot<I> extends RecipeViewerSlotWidget<I, EmiRecipeV
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
             for (ClientTooltipComponent ctc : this.slotWidget.getTooltip(getContext().getAbsMouseX(), getContext().getAbsMouseY())) {
-                tooltip.addDrawableLine(new ClientTooltipComponentIcon(ctc));
+                if (ctc instanceof ClientTextTooltipAccessor textComponent) {
+                    FormattedCharSequence text = textComponent.getText();
+                    tooltip.addLine(FontRenderHelper.fcsToComponent(text));
+                } else {
+                    tooltip.addDrawableLine(new ClientTooltipComponentIcon(ctc));
+                }
             }
         });
     }
