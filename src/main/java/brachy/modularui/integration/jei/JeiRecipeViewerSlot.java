@@ -1,18 +1,19 @@
 package brachy.modularui.integration.jei;
 
 import brachy.modularui.core.mixins.jei.RecipeSlotAccessor;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import brachy.modularui.screen.viewport.ModularGuiContext;
 
 import brachy.modularui.theme.WidgetThemeEntry;
+
+import brachy.modularui.utils.TooltipLines;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -28,6 +29,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
@@ -60,10 +62,18 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         size(18, 18);
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
-            if (slotWidget != null){
-                for (Component component : slotWidget.getTooltip()){
-                    tooltip.addLine(component);
-                }
+            if (slotWidget != null) {
+                JeiTooltip tooltipBuilder = new JeiTooltip();
+                // TODO ask mezz for new API for this
+                // noinspection removal
+                slotWidget.getTooltip(tooltipBuilder);
+                tooltipBuilder.getLines().forEach(line -> {
+                    line.ifLeft(text -> {
+                        tooltip.addLine(TooltipLines.asComponent(text));
+                    }).ifRight(component -> {
+                        tooltip.addDrawableLine(new TooltipComponentIcon(component, false));
+                    });
+                });
             }
         });
     }

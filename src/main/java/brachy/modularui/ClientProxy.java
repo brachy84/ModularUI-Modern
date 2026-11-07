@@ -2,7 +2,6 @@ package brachy.modularui;
 
 import brachy.modularui.animation.AnimatorManager;
 import brachy.modularui.api.drawable.IIcon;
-import brachy.modularui.drawable.ClientTooltipComponentIcon;
 import brachy.modularui.drawable.DelegateIcon;
 import brachy.modularui.drawable.DrawableTooltipComponent;
 import brachy.modularui.drawable.GuiSpriteManager;
@@ -86,7 +85,6 @@ public class ClientProxy extends CommonProxy {
         event.register(InteractableIcon.class, factory);
         event.register(KeyIcon.class, factory);
         event.register(TextIcon.class, factory);
-        event.register(ClientTooltipComponentIcon.class, ClientTooltipComponentIcon::getClientTooltipComponent);
         event.register(TooltipComponentIcon.class, TooltipComponentIcon::clientComponent);
     }
 
