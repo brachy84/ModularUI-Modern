@@ -186,12 +186,5 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
                     .stream().map(Rectangle::asRect2i)
                     .toList();
         }
-
-        @Override
-        public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
-            IClickableIngredientFactory defaultClickableIngredientFactory = ModularUIJeiPlugin.getJeiHelpers().getIngredientManager()
-                    .getClickableIngredientFactory();
-            return super.getClickableIngredientUnderMouse(defaultClickableIngredientFactory, containerScreen, mouseX, mouseY);
-        }
     }
 }
