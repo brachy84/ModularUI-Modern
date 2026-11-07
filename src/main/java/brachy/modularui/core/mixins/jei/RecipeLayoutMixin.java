@@ -11,7 +11,9 @@ import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Optional;
@@ -19,6 +21,9 @@ import java.util.Optional;
 @SuppressWarnings("NonExtendableApiUsage")
 @Mixin(value = RecipeLayout.class, remap = false)
 public abstract class RecipeLayoutMixin<R> implements IRecipeLayoutDrawable<R> {
+
+    @Shadow
+    private @Final IRecipeCategory<R> recipeCategory;
 
     @WrapOperation(method = "drawOverlays",
                    at = @At(value = "INVOKE", target = "Lmezz/jei/library/gui/recipes/RecipeLayout;getSlotUnderMouse(DD)Ljava/util/Optional;"))
@@ -33,10 +38,8 @@ public abstract class RecipeLayoutMixin<R> implements IRecipeLayoutDrawable<R> {
     @ModifyExpressionValue(method = "<init>",
                            at = @At(value = "INVOKE", target = "Lmezz/jei/api/recipe/category/IRecipeCategory;getWidth()I"),
                            require = 0)
-    private int modularui$makeWidthRecipeDependent(int original,
-                                                   @Local(argsOnly = true) IRecipeCategory<R> recipeCategory,
-                                                   @Local(argsOnly = true) R recipe) {
-        if (recipeCategory instanceof ModularUIJeiCategory<R> muiCategory) {
+    private int modularui$makeWidthRecipeDependent(int original, @Local(argsOnly = true) R recipe) {
+        if (this.recipeCategory instanceof ModularUIJeiCategory<R> muiCategory) {
             return muiCategory.getWidth(recipe);
         }
         return original;
@@ -45,10 +48,8 @@ public abstract class RecipeLayoutMixin<R> implements IRecipeLayoutDrawable<R> {
     @ModifyExpressionValue(method = "<init>",
                            at = @At(value = "INVOKE", target = "Lmezz/jei/api/recipe/category/IRecipeCategory;getHeight()I"),
                            require = 0)
-    private int modularui$makeHeightRecipeDependent(int original,
-                                                    @Local(argsOnly = true) IRecipeCategory<R> recipeCategory,
-                                                    @Local(argsOnly = true) R recipe) {
-        if (recipeCategory instanceof ModularUIJeiCategory<R> muiCategory) {
+    private int modularui$makeHeightRecipeDependent(int original, @Local(argsOnly = true) R recipe) {
+        if (this.recipeCategory instanceof ModularUIJeiCategory<R> muiCategory) {
             return muiCategory.getHeight(recipe);
         }
         return original;

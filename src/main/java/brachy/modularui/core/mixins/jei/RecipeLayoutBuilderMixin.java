@@ -24,7 +24,7 @@ public abstract class RecipeLayoutBuilderMixin<T> implements IRecipeLayoutBuilde
     @ModifyExpressionValue(method = { "createShapelessIcon", "getRecipeTransferButtonPosition" },
             at = @At(value = "INVOKE", target = "Lmezz/jei/api/recipe/category/IRecipeCategory;getWidth()I"), require = 0)
     private int modularui$makeWidthRecipeDependent(int original) {
-        if (recipeCategory instanceof ModularUIJeiCategory<T> muiCategory) {
+        if (this.recipeCategory instanceof ModularUIJeiCategory<T> muiCategory) {
             return muiCategory.getWidth(this.recipe);
         }
         return original;
@@ -33,8 +33,8 @@ public abstract class RecipeLayoutBuilderMixin<T> implements IRecipeLayoutBuilde
     @ModifyExpressionValue(method = { "createShapelessIcon", "getRecipeTransferButtonPosition" },
             at = @At(value = "INVOKE", target = "Lmezz/jei/api/recipe/category/IRecipeCategory;getHeight()I"), require = 0)
     private int modularui$makeHeightRecipeDependent(int original) {
-        if (recipeCategory instanceof ModularUIJeiCategory<T> muiCategory) {
-            return muiCategory.getHeight(recipe);
+        if (this.recipeCategory instanceof ModularUIJeiCategory<T> muiCategory) {
+            return muiCategory.getHeight(this.recipe);
         }
         return original;
     }
