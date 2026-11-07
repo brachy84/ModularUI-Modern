@@ -243,68 +243,54 @@ public class FontRenderHelper {
         return lines.stream().<Component>map(Component::literal).toList();
     }
 
-    public interface StyleSink {
+    public static FormattedText fcsToFormattedText(FormattedCharSequence fcs) {
+        List<FormattedTextPart> parts = findFormattedCharSequenceSegments(fcs);
 
-        boolean accept(int stylePos, int nextPos, Style style);
-    }
-
-    private static boolean feedChar(Style style, FormattedCharSink sink, int position, char character) {
-        return Character.isSurrogate(character) ? sink.accept(position, style, 65533) : sink.accept(position, style, character);
-    }
-
-    /**
-     * Copied and edited from {@link net.minecraft.util.StringDecomposer#iterateFormatted(String, int, Style, Style, FormattedCharSink)}.
-     */
-    public static boolean iterateFormatted(String text, int skip, Style currentStyle, Style defaultStyle,
-                                           FormattedCharSink sink, StyleSink styleSink) {
-        int i = text.length();
-        Style style = currentStyle;
-        int stylePos = skip;
-        boolean styleChanged = false;
-
-        for (int j = skip; j < i; ++j) {
-            char c0 = text.charAt(j);
-            if (c0 == 167) {
-                if (j + 1 >= i) {
-                    break;
-                }
-
-                char c1 = text.charAt(j + 1);
-                ChatFormatting chatformatting = ChatFormatting.getByCode(c1);
-                if (chatformatting != null) {
-                    style = chatformatting == ChatFormatting.RESET ? defaultStyle : style.applyLegacyFormat(chatformatting);
-                    styleChanged = true;
-                }
-
-                ++j;
-                continue;
-            }
-            if (styleChanged) {
-                if (!styleSink.accept(stylePos + 1, j, style)) return false;
-                styleChanged = false;
-            }
-            stylePos = j;
-            if (Character.isHighSurrogate(c0)) {
-                if (j + 1 >= i) {
-                    if (!sink.accept(j, style, 65533)) {
-                        return false;
-                    }
-                    break;
-                }
-
-                char c2 = text.charAt(j + 1);
-                if (Character.isLowSurrogate(c2)) {
-                    if (!sink.accept(j, style, Character.toCodePoint(c0, c2))) {
-                        return false;
-                    }
-                    ++j;
-                } else if (!sink.accept(j, style, 65533)) {
-                    return false;
-                }
-            } else if (!feedChar(style, sink, j, c0)) {
-                return false;
-            }
+        FormattedText[] real = new FormattedText[parts.size()];
+        for (int i = 0; i < parts.size(); i++) {
+            FormattedTextPart part = parts.get(i);
+            real[i] = FormattedText.of(part.text.toString(), part.style);
         }
-        return !styleChanged || styleSink.accept(stylePos + 1, -1, style);
+        return FormattedText.composite(real);
+    }
+
+    public static Component fcsToComponent(FormattedCharSequence fcs) {
+        List<FormattedTextPart> parts = findFormattedCharSequenceSegments(fcs);
+
+        MutableComponent out = Component.empty();
+        parts.forEach(part -> {
+            out.append(Component.literal(part.text.toString()).withStyle(part.style));
+        });
+        return out;
+    }
+
+    private static List<FormattedTextPart> findFormattedCharSequenceSegments(FormattedCharSequence fcs) {
+        List<FormattedTextPart> parts = new ArrayList<>();
+        parts.add(new FormattedTextPart(new StringBuilder(), Style.EMPTY));
+
+        fcs.accept((positionInCurrentSequence, style, codePoint) -> {
+            FormattedTextPart last = parts.get(parts.size() - 1);
+            // don't leave empty segments into the string
+            if (style.equals(last.style) || last.text.isEmpty()) {
+                last.style = style;
+                last.text.appendCodePoint(codePoint);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.appendCodePoint(codePoint);
+                parts.add(new FormattedTextPart(sb, style));
+            }
+            return true;
+        });
+        return parts;
+    }
+
+    private static class FormattedTextPart {
+        StringBuilder text;
+        Style style;
+
+        FormattedTextPart(StringBuilder text, Style style) {
+            this.text = text;
+            this.style = style;
+        }
     }
 }

@@ -9,6 +9,7 @@ import brachy.modularui.widget.sizer.Box;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,10 @@ public class ClientTooltipComponentIcon implements IIcon {
 
     public ClientTooltipComponentIcon(ClientTooltipComponent clientTooltipComponent) {
         this.clientTooltipComponent = clientTooltipComponent;
+    }
+
+    public ClientTooltipComponentIcon(TooltipComponent component) {
+        this(ClientTooltipComponent.create(component));
     }
 
     @Override
