@@ -22,7 +22,7 @@ configurations.configureEach {
 
 legacyForge {
     // Specify Forge version
-    version = libs.versions.minecraftForge.get()
+    version = "${libs.versions.minecraft.get()}-${libs.versions.forge.get()}"
 
     parchment {
         minecraftVersion = libs.versions.minecraft.get()
