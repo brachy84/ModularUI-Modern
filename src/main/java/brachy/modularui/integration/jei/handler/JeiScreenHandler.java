@@ -2,7 +2,6 @@ package brachy.modularui.integration.jei.handler;
 
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.core.mixins.jei.IngredientListOverlayAccessor;
 import brachy.modularui.integration.jei.GhostIngredientTarget;
 import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
 import brachy.modularui.integration.jei.ModularUIJeiPlugin;
@@ -27,6 +26,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,15 +134,20 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     @Override
     public void setSearchFocused(boolean focused) {
         // only set the search field state if it's JEI's actual search field and not JEMI
-        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor) {
-            accessor.getSearchField().setFocused(focused);
+        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlay realOverlay) {
+            if (focused) {
+                realOverlay.getSearchInputLayer().focus();
+            } else {
+                realOverlay.getSearchInputLayer().clearFocus();
+            }
         }
     }
 
     @Override
     public boolean isSearchFocused() {
-        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor){
-            return accessor.getSearchField().isFocused();
+        // only set the search field state if it's JEI's actual search field and not JEMI
+        if (ModularUIJeiPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlay realOverlay) {
+            return realOverlay.getSearchInputLayer().hasKeyboardFocus();
         }
         return false;
     }

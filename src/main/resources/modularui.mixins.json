@@ -13,7 +13,6 @@
     "client.StringSplitterAccessor",
     "emi.EmiRenderHelperMixin",
     "emi.RecipeScreenMixin",
-    "jei.IngredientListOverlayAccessor",
     "rei.DefaultDisplayViewingScreenMixin",
     "rei.EntryWidgetAccessor"
   ],
