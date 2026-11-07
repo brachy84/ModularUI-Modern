@@ -58,7 +58,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             // noinspection unchecked
             ContainerScreen.ofContainer((Class<T2>) clazz).register(registration);
         } else {
-            of(clazz).register(registration);
+            JeiScreenHandler.of(clazz).register(registration);
         }
     }
 
@@ -154,7 +154,6 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public @Nullable Object getCurrentlyDragged() {
-        if (currentIngredient == null) return null;
         return currentIngredient;
     }
 
@@ -186,6 +185,13 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
                     .getRecipeViewerSettings().getAllExclusionAreas()
                     .stream().map(Rectangle::asRect2i)
                     .toList();
+        }
+
+        @Override
+        public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
+            IClickableIngredientFactory defaultClickableIngredientFactory = ModularUIJeiPlugin.getJeiHelpers().getIngredientManager()
+                    .getClickableIngredientFactory();
+            return super.getClickableIngredientUnderMouse(defaultClickableIngredientFactory, containerScreen, mouseX, mouseY);
         }
     }
 }
