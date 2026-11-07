@@ -67,10 +67,12 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         tooltipDynamic(tooltip -> {
             if (slotWidget != null) {
                 JeiTooltip builder = new JeiTooltip();
+                // TODO ask mezz for new API for this
+                // noinspection removal
                 slotWidget.getTooltip(builder);
                 builder.getLines().forEach(line -> {
-                    line.ifLeft(l -> {
-                        if (l instanceof Component c) {
+                    line.ifLeft(t -> {
+                        if (t instanceof Component c) {
                             tooltip.addLine(c);
                         }
                     }).ifRight(c -> {
