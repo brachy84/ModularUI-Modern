@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
@@ -41,11 +40,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static brachy.modularui.integration.jei.ModularUIJeiPlugin.mapToJeiRole;
 
@@ -69,15 +67,16 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
             if (slotWidget != null) {
-                ITooltipBuilder tooltipBuilder = new JeiTooltip();
+                JeiTooltip tooltipBuilder = new JeiTooltip();
                 // TODO ask mezz for new API for this
                 // noinspection removal
                 slotWidget.getTooltip(tooltipBuilder);
                 tooltipBuilder.getLines().forEach(line -> {
-                    line.ifLeft(text -> tooltip.addLine(TooltipLines.asComponent(text)))
-                            .ifRight(component -> {
-                                tooltip.addDrawableLine(new ClientTooltipComponentIcon(ClientTooltipComponent.create(component)));
-                            });
+                    line.ifLeft(text -> {
+                        tooltip.addLine(TooltipLines.asComponent(text));
+                    }).ifRight(component -> {
+                        tooltip.addDrawableLine(new ClientTooltipComponentIcon(ClientTooltipComponent.create(component)));
+                    });
                 });
             }
         });
@@ -151,7 +150,7 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         if (!slotWidget.isEmpty()) {
             // check if the slot's ingredients are the same as our new ones and skip replacing them if so
             // this lets us optimize lookup by not parsing the focused ingredients if possible
-            Set<ITypedIngredient<?>> newIngredients = allIngredients.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+            Set<ITypedIngredient<?>> newIngredients = new HashSet<>(allIngredients);
             slotWidget.getAllIngredients().forEach(newIngredients::remove);
 
             // every ingredient was removed -> the ingredient lists are equal
