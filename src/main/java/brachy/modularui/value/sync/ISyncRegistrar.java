@@ -199,6 +199,16 @@ public interface ISyncRegistrar<S extends ISyncRegistrar<S>> {
         return Optional.ofNullable(findSyncHandlerNullable(name, id, type));
     }
 
+    <T extends SyncHandler<?>> T getOrCreateSyncHandler(String name, int id, Supplier<T> supplier);
+
+    default <T extends SyncHandler<?>> T getOrCreateSH(String name, Supplier<T> supplier) {
+        return getOrCreateSyncHandler(name, 0, supplier);
+    }
+
+    default <T extends SyncHandler<?>> T getOrCreateSH(String name, int id, Supplier<T> supplier) {
+        return getOrCreateSyncHandler(name, id, supplier);
+    }
+
     SlotGroup getSlotGroup(String name);
 
     static String makeSyncKey(String name, int id) {
