@@ -133,10 +133,10 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
     // Mostly copied from RecipeSlotBuilder#build
     private void replaceSlotIngredients(RecipeSlotAccessor recipeSlot, RecipeIngredientRole ingredientRole) {
         if (this.ingredientManager == null) {
-            if (ModularUIJeiPlugin.jeiHelpers == null) {
+            if (!ModularUIJeiPlugin.hasJeiHelpers()) {
                 return;
             }
-            this.ingredientManager = ModularUIJeiPlugin.jeiHelpers.getIngredientManager();
+            this.ingredientManager = ModularUIJeiPlugin.getJeiHelpers().getIngredientManager();
         }
 
         final DisplayIngredientAcceptor ingredients = new DisplayIngredientAcceptor(this.ingredientManager);

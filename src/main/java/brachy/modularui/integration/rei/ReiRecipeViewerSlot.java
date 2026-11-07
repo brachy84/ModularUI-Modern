@@ -30,11 +30,11 @@ public class ReiRecipeViewerSlot<I> extends RecipeViewerSlotWidget<I, ReiRecipeV
 
         this.tooltipAutoUpdate(true);
         this.tooltipDynamic(r -> {
-            if (slotWidget != null){
+            if (slotWidget != null) {
                 Tooltip tooltip = slotWidget.getCurrentTooltip(TooltipContext.ofMouse());
                 if (tooltip == null) return;
                 tooltip.entries().forEach(e -> {
-                    if (e.isText()){
+                    if (e.isText()) {
                         r.addLine(e.getAsText());
                     } else if (e.isTooltipComponent()) {
                         r.addDrawableLine(new ClientTooltipComponentIcon(ClientTooltipComponent.create(e.getAsTooltipComponent())));
@@ -62,7 +62,7 @@ public class ReiRecipeViewerSlot<I> extends RecipeViewerSlotWidget<I, ReiRecipeV
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         this.slotWidget.render(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
-        if (this.isHovering() && slotWidget instanceof EntryWidgetAccessor accessor){
+        if (this.isHovering() && slotWidget instanceof EntryWidgetAccessor accessor) {
             accessor.modularui$invokeDrawHighlighted(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
         }
     }
