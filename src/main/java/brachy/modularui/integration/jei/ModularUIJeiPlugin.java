@@ -30,12 +30,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @JeiPlugin
 public class ModularUIJeiPlugin implements IModPlugin {
 
-    @Getter
-    private static IJeiRuntime runtime = null;
-    public static IJeiHelpers jeiHelpers;
+    @Getter private static IJeiRuntime runtime = null;
+    @Getter private static IJeiHelpers jeiHelpers;
 
     public static boolean hasRuntime() {
         return runtime != null;
+    }
+
+    public static boolean hasJeiHelpers() {
+        return jeiHelpers != null;
     }
 
     public static RecipeIngredientRole mapToJeiRole(RecipeSlotRole slotRole) {
@@ -60,6 +63,7 @@ public class ModularUIJeiPlugin implements IModPlugin {
     @Override
     public void onRuntimeUnavailable() {
         runtime = null;
+        jeiHelpers = null;
     }
 
     @Override
