@@ -2,7 +2,7 @@ package brachy.modularui.utils;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.Text;
-import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.drawable.text.FontRenderHelper;
 import brachy.modularui.drawable.text.TextIcon;
 
@@ -180,7 +180,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
     }
 
     public static ClientTooltipComponent tooltipComponentToCTC(TooltipComponent comp) {
-        if (comp instanceof ClientTooltipComponentIcon icon) return icon.getClientTooltipComponent();
+        if (comp instanceof TooltipComponentIcon icon) return icon.clientComponent();
         if (comp instanceof ClientTooltipComponent ctc) return ctc;
         return ClientTooltipComponent.create(comp);
     }
@@ -201,7 +201,7 @@ public class TooltipLines extends AbstractList<Either<Component, TooltipComponen
         return either.mapLeft(TooltipLines::asComponent);
     }
 
-    private static Component asComponent(FormattedText text) {
+    public static Component asComponent(FormattedText text) {
         if (text instanceof Component component) return component;
         MutableComponent out = Component.empty();
         text.visit((style, str) -> {

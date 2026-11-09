@@ -1,6 +1,6 @@
 package brachy.modularui.integration.emi;
 
-import brachy.modularui.drawable.ClientTooltipComponentIcon;
+import brachy.modularui.drawable.TooltipComponentIcon;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.RecipeViewerSlotWidget;
 import brachy.modularui.screen.viewport.ModularGuiContext;
@@ -31,7 +31,7 @@ public class EmiRecipeViewerSlot<I> extends RecipeViewerSlotWidget<I, EmiRecipeV
         tooltipAutoUpdate(true);
         tooltipDynamic(tooltip -> {
             for (ClientTooltipComponent ctc : this.slotWidget.getTooltip(getContext().getAbsMouseX(), getContext().getAbsMouseY())) {
-                tooltip.addDrawableLine(new ClientTooltipComponentIcon(ctc));
+                tooltip.addDrawableLine(new TooltipComponentIcon(ctc, false));
             }
         });
     }
