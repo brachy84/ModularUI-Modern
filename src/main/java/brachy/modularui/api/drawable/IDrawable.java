@@ -1,7 +1,9 @@
 package brachy.modularui.api.drawable;
 
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.drawable.DrawableRegistry;
 import brachy.modularui.drawable.DrawableStack;
+import brachy.modularui.drawable.DrawableType;
 import brachy.modularui.drawable.Icon;
 import brachy.modularui.drawable.SubAreaDrawable;
 import brachy.modularui.screen.viewport.GuiContext;
@@ -9,9 +11,9 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.utils.Color;
-import brachy.modularui.utils.serialization.codec.CodecRegistry;
 import brachy.modularui.utils.serialization.codec.CodecUtil;
 import brachy.modularui.widget.Widget;
+import brachy.modularui.widget.WidgetType;
 import brachy.modularui.widget.sizer.Area;
 
 import com.mojang.serialization.Codec;
@@ -67,8 +69,6 @@ public interface IDrawable {
         }
     };
 
-    CodecRegistry<IDrawable> CODECS = new CodecRegistry<>();
-    MapCodec<IDrawable> CODEC_DISPATCH = CodecUtil.dispatchNullable(Codec.STRING, IDrawable::getTypeName, CODECS::getNullableCodec);
     Codec<IDrawable> CODEC_EMPTY_NONE = Codec.STRING.flatXmap(s -> {
         if (s == null || s.equals("empty") || s.equals("null")) return DataResult.success(EMPTY);
         if (s.equals("none")) return DataResult.success(NONE);
@@ -80,7 +80,7 @@ public interface IDrawable {
     });
     Codec<IDrawable> CODEC = CodecUtil.chainedCodec(
             CodecUtil.nullCodec(EMPTY), CODEC_EMPTY_NONE,
-            DrawableStack.CODEC, CODEC_DISPATCH.codec());
+            DrawableStack.CODEC, DrawableRegistry.INSTANCE.dispatchCodec.codec());
 
     static DataResult<JsonElement> toJson(IDrawable drawable) {
         return CODEC.encodeStart(JsonOps.INSTANCE, drawable);
@@ -220,8 +220,8 @@ public interface IDrawable {
         return new SubAreaDrawable(this).uv(u0, v0, u1, v1);
     }
 
-    default String getTypeName() {
-        return getClass().getSimpleName();
+    default DrawableType<?> getType() {
+        return null;
     }
 
     static boolean isVisible(@Nullable IDrawable drawable) {
@@ -237,6 +237,11 @@ public interface IDrawable {
      */
     class DrawableWidget extends Widget<DrawableWidget> {
 
+        public static final MapCodec<Widget<?>> CODEC = IDrawable.CODEC.fieldOf("drawable").flatXmap(d -> DataResult.success(d.asWidget()), w -> {
+            if (w instanceof DrawableWidget d) return DataResult.success(d.drawable);
+            return DataResult.error(() -> "Can only convert DrawableWidget back");
+        });
+
         private final IDrawable drawable;
 
         public DrawableWidget(IDrawable drawable) {
@@ -248,5 +253,17 @@ public interface IDrawable {
         public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
             this.drawable.drawAtZero(context, getArea(), getActiveWidgetTheme(widgetTheme, isHovering()));
         }
+
+        /*@Override
+        public WidgetType<?> getType() {
+            return WidgetType.DRAWABLE;
+        }
+
+        @Override
+        public DrawableWidget copyExact() {
+            var copy = new DrawableWidget(drawable);
+            Widget.CODEC.copyFields(this, copy);
+            return copy;
+        }*/
     }
 }

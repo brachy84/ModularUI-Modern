@@ -46,6 +46,7 @@ public class DebugOverlay extends CustomModularScreen {
     @Override
     public @NotNull ModularPanel<?> buildUI(ModularGuiContext context) {
         return new ModularPanel<>("debug")
+                .setEnabledIf(w -> ModularUIConfig.Dev.debugUI())
                 .fullScreenInvisible()
                 .child(new ContextMenuButton<>("menu_debug_options")
                         .horizontalCenter()
@@ -92,7 +93,7 @@ public class DebugOverlay extends CustomModularScreen {
                                                 .width(100)
                                                 .coverChildrenHeight()
                                                 .padding(2)
-                                                .child(new ListWidget<>()
+                                                .child(ListWidget.simple()
                                                         .maxSize(100)
                                                         .widthRel(1f)
                                                         .child(toggleOption(0, "Any", "showHovered"))
@@ -111,7 +112,7 @@ public class DebugOverlay extends CustomModularScreen {
                                                 .width(100)
                                                 .coverChildrenHeight()
                                                 .padding(2)
-                                                .child(new ListWidget<>()
+                                                .child(ListWidget.simple()
                                                         .maxSize(100)
                                                         .widthRel(1f)
                                                         .child(toggleOption(10, "Any", "showParent"))

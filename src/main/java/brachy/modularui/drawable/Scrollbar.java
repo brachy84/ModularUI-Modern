@@ -17,9 +17,7 @@ public record Scrollbar(boolean striped) implements IDrawable {
         return striped ? VANILLA : DEFAULT;
     }
 
-    public static final MapCodec<Scrollbar> CODEC = IDrawable.CODECS.register(
-            Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped),
-            "scrollbar", "Scrollbar");
+    public static final MapCodec<Scrollbar> CODEC = Codec.BOOL.fieldOf("striped").xmap(Scrollbar::get, Scrollbar::striped);
 
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
@@ -51,5 +49,10 @@ public record Scrollbar(boolean striped) implements IDrawable {
     @Override
     public boolean canApplyTheme() {
         return true;
+    }
+
+    @Override
+    public DrawableType<Scrollbar> getType() {
+        return DrawableType.SCROLLBAR;
     }
 }

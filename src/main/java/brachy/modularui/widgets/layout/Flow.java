@@ -260,27 +260,28 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget {
     @Override
     public void onChildChangeEnabled(IWidget child, boolean enabled) {
         if (this.collapseDisabledChildren) {
-            ILayoutWidget.super.onChildChangeEnabled(child, enabled);
+            scheduleResize();
+            //ILayoutWidget.super.onChildChangeEnabled(child, enabled);
         }
     }
 
     public Flow children(Iterable<IWidget> widgets) {
         for (IWidget widget : widgets) {
-            child(widget);
+            addChild(widget, -1);
         }
         return getThis();
     }
 
     public Flow children(int amount, IntFunction<IWidget> widgetCreator) {
         for (int i = 0; i < amount; i++) {
-            child(widgetCreator.apply(i));
+            addChild(widgetCreator.apply(i), -1);
         }
         return getThis();
     }
 
     public <T> Flow children(Iterable<T> it, Function<T, IWidget> widgetCreator) {
         for (T t : it) {
-            child(widgetCreator.apply(t));
+            addChild(widgetCreator.apply(t), -1);
         }
         return getThis();
     }

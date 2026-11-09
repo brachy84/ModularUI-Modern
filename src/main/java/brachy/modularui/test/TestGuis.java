@@ -35,6 +35,7 @@ import brachy.modularui.utils.ColorShade;
 import brachy.modularui.utils.Interpolation;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.math.DAM;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.value.BoolValue;
 import brachy.modularui.value.DoubleValue;
 import brachy.modularui.value.IntValue;
@@ -42,6 +43,7 @@ import brachy.modularui.value.ObjectValue;
 import brachy.modularui.value.StringValue;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widget.Widget;
+import brachy.modularui.widget.WidgetSerializer;
 import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.ColorPickerDialog;
 import brachy.modularui.widgets.CycleButtonWidget;
@@ -61,6 +63,7 @@ import brachy.modularui.widgets.menu.DropdownWidget;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 
 import net.minecraft.Util;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -131,7 +134,12 @@ public class TestGuis extends CustomModularScreen {
                 .padding(7)
                 .child(Flow.column()
                         .child(Text.str("Client Test UIs").asWidget().margin(1))
-                        .child(new ListWidget<>().widthRel(1f).expanded()
+                        .child(button("Json Test")
+                                .onMousePressed((ctx, button) -> {
+                                    ClientGUI.open(new ModularScreen(ModularUI.MOD_ID, TestGuis.buildJsonUI()));
+                                    return true;
+                                }))
+                        .child(ListWidget.simple().widthRel(1f).expanded()
                                 .children(uiMethods.size(), i -> {
                                     Method m = uiMethods.get(i);
                                     String name = m.getName();
@@ -142,7 +150,7 @@ public class TestGuis extends CustomModularScreen {
                                     return button(name)
                                             .onMousePressed((context1, button) -> {
                                                 try {
-                                                    ModularPanel<?> panel = (ModularPanel) m.invoke(null);
+                                                    ModularPanel<?> panel = (ModularPanel<?>) m.invoke(null);
                                                     if (TestGuis.withCode) {
                                                         // WIP: this is meant to put an image of the code next to ui for showcase purpose
                                                         panel.child(UITexture.builder()
@@ -182,6 +190,13 @@ public class TestGuis extends CustomModularScreen {
                 .overlay(Text.str(text));
     }
 
+    private static ModularPanel<?> buildJsonUI() {
+        IWidget w = WidgetSerializer.loadWidget(new ResourceLocation("modularui", "test"));
+        if (w == null) return new ModularPanel<>("json_fail").overlay(Text.str("JSON could not be loaded"));
+        if (w instanceof ModularPanel<?> p) return p;
+        return new ModularPanel<>("json").child(w);
+    }
+
     public static @NotNull ModularPanel<?> buildToggleGridListUI() {
         boolean[][] states = new boolean[4][16];
         // we need to do this to attach the theme since we have no screen, yet
@@ -191,7 +206,7 @@ public class TestGuis extends CustomModularScreen {
                 .height(100)
                 .coverChildrenWidth()
                 .padding(7)
-                .child(new ListWidget<>()
+                .child(ListWidget.simple()
                         .coverChildrenWidth()
                         .heightRel(1f)
                         .children(4, i -> new Grid()
@@ -209,7 +224,7 @@ public class TestGuis extends CustomModularScreen {
     }
 
     public static @NotNull ModularPanel<?> buildPendulumAnimationUI() {
-        IWidget widget = GuiTextures.MUI_LOGO.asWidget().size(20).pos(65, 65);
+        IWidget widget = GuiTextures.MUI_LOGO.asWidget().size(20).center();
         Animator animator = new Animator()
                 .bounds(0, 1)
                 .curve(Interpolation.SINE_INOUT)
@@ -219,13 +234,25 @@ public class TestGuis extends CustomModularScreen {
 
         animator.reset(true);
         animator.animate(true);
+        int l = 55;
+        float maxAngle = MathUtils.PI;
         return ModularPanel.defaultPanel("main").size(150)
+                // TODO: Why is the line on top visually???
+                .child(new TransformWidget(new Rectangle().color(0xFF404040).asWidget().size(l, 1).center())
+                        .transform(stack -> {
+                            stack.translate(l / 2f - 1, 0);
+                            stack.translate(0, 0.5f);
+                            stack.rotateZ(animator.getValue() * maxAngle);
+                            stack.translate(0, -0.5f);
+                        }))
                 .child(new TransformWidget(widget)
                         .transform(stack -> {
-                            double angle = Math.PI;
-                            float x = (float) (55 * Math.cos(animator.getValue() * angle));
-                            float y = (float) (55 * Math.sin(animator.getValue() * angle));
+                            float x = (float) (l * Math.cos(animator.getValue() * maxAngle));
+                            float y = (float) (l * Math.sin(animator.getValue() * maxAngle));
                             stack.translate(x, y);
+                            stack.translate(widget.getArea().width / 2f, widget.getArea().height / 2f);
+                            stack.rotateZ(animator.getValue() * maxAngle - MathUtils.PI_HALF);
+                            stack.translate(-widget.getArea().width / 2f, -widget.getArea().height / 2f);
                         }));
     }
 
@@ -432,7 +459,7 @@ public class TestGuis extends CustomModularScreen {
         Random rnd = new Random();
         return ModularPanel.defaultPanel("list", 100, 150)
                 .padding(7)
-                .child(new ListWidget<>()
+                .child(ListWidget.simple()
                         .sizeRel(1f)
                         .collapseDisabledChildren()
                         .children(12, i -> new Widget<>()
@@ -457,7 +484,7 @@ public class TestGuis extends CustomModularScreen {
                                 .height(16)
                                 .widthRel(1f)
                                 .autoUpdateOnChange(true))
-                        .child(new ListWidget<>()
+                        .child(ListWidget.simple()
                                 .collapseDisabledChildren()
                                 .expanded()
                                 .widthRel(1f)

@@ -8,6 +8,8 @@ import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widget.sizer.ResizeNode;
 import brachy.modularui.widgets.layout.IExpander;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -23,32 +25,80 @@ import java.util.NoSuchElementException;
 
 public class InternalWidgetTree {
 
-    @Contract("_,_,_,_,false -> !null")
-    @SuppressWarnings("unchecked")
-    static <T extends IWidget> T findChildAt(IWidget parent, Class<T> type, String[] path, int index,
-                                             boolean nullable) {
-        String current = path[index];
-        boolean isLast = index == path.length - 1;
-        for (IWidget widget : parent.getChildren()) {
-            if (widget.isName(current)) {
-                if (isLast) {
-                    if (!widget.isType(type)) {
-                        if (nullable) return null;
-                        throw new ClassCastException("Found widget at '" +
-                                Joiner.on('/').join(Arrays.copyOfRange(path, 0, index + 1)) + "' with type '" +
-                                widget.getClass().getName() + "', but expected type '" + type.getName() + "'.");
+    static <T extends IWidget> DataResult<T> findChildAt(IWidget parent, Class<T> type, String[] path) {
+        if (path.length == 0) return DataResult.error(() -> "Path is empty");
+        DataResult<IWidget> next = null;
+        for (int i = 0; i < path.length; i++) {
+            next = findChild(parent.getChildren(), path[i], i == path.length - 1 ? type : null);
+            var res = next.result();
+            if (res.isPresent()) {
+                parent = res.get();
+                continue;
+            }
+            return next.map(w -> (T) w);
+        }
+        return next.map(w -> (T) w);
+    }
+
+    static <T extends IWidget> DataResult<Pair<T, IWidget>> findChildAndParentAt(IWidget parent, Class<T> type, String[] path) {
+        if (path.length == 0) return DataResult.error(() -> "Path is empty");
+        IWidget targetParent = null;
+        DataResult<IWidget> next = null;
+        for (int i = 0; i < path.length; i++) {
+            targetParent = parent;
+            next = findChild(parent.getChildren(), path[i], i == path.length - 1 ? type : null);
+            var res = next.result();
+            if (res.isPresent()) {
+                parent = res.get();
+                continue;
+            }
+            IWidget finalTargetParent = targetParent;
+            return next.map(w -> Pair.of((T) w, finalTargetParent));
+        }
+        IWidget finalTargetParent = targetParent;
+        return next.map(w -> Pair.of((T) w, finalTargetParent));
+    }
+
+    static DataResult<IWidget> findChild(List<IWidget> children, String name, Class<?> type) {
+        if (name.startsWith("#")) {
+            name = name.substring(1);
+            if (name.isEmpty()) return DataResult.error(() -> "No index or widget type given");
+            if (Character.isDigit(name.charAt(0))) {
+                try {
+                    int index = Integer.parseInt(name);
+                    if (index > 0 && index < children.size()) {
+                        var w = children.get(index);
+                        if (type == null || type.isInstance(w)) {
+                            return DataResult.success(w);
+                        }
+                        return DataResult.error(() -> "A widget was found the index, but it does not have the required type");
+                    } else {
+                        return DataResult.error(() -> "Supplied index '%s' is out of bounds [0,%s).".formatted(index, children.size()));
                     }
-                    return (T) widget;
+                } catch (NumberFormatException ignored) {
+                    String finalName = name;
+                    return DataResult.error(() -> "Error parsing index. %s is not a number.".formatted(finalName));
                 }
-                T result = findChildAt(widget, type, path, index + 1, nullable);
-                if (result != null) return result;
+            }
+            var wType = WidgetRegistry.INSTANCE.getNullable(name);
+            if (wType == null) {
+                String finalName = name;
+                return DataResult.error(() -> "No widget type for %s was found".formatted(finalName));
+            }
+            for (IWidget child : children) {
+                if (child.getType() == wType && (type == null || type.isInstance(child))) {
+                    return DataResult.success(child);
+                }
+            }
+            return DataResult.error(() -> "No widget of type %s was found".formatted(wType.name()));
+        }
+        for (IWidget child : children) {
+            if (name.equals(child.getName()) && (type == null || type.isInstance(child))) {
+                return DataResult.success(child);
             }
         }
-        if (!nullable) {
-            throw new NoSuchElementException("Expected to find widget at '" +
-                    Joiner.on('/').join(Arrays.copyOfRange(path, 0, index + 1)) + "', but none was found.");
-        }
-        return null;
+        String finalName = name;
+        return DataResult.error(() -> "No child of name %s was found".formatted(finalName));
     }
 
     static void drawTree(IWidget parent, ModularGuiContext context, boolean ignoreEnabled,

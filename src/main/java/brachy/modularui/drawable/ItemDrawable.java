@@ -30,7 +30,7 @@ import java.util.List;
 @Accessors(fluent = true, chain = true)
 public class ItemDrawable implements IDrawable {
 
-    public static final MutableObjectCodec<ItemDrawable> CODEC = MutableObjectCodec.drawableBuilder(ItemDrawable::new)
+    public static final MutableObjectCodec<ItemDrawable> CODEC = MutableObjectCodec.builder(() -> new ItemDrawable())
             .add("items", ItemDrawable::items, ItemDrawable::getItemList, CodecUtil.listLike(ItemStack.CODEC)).alias("item")
             .addOpt("cycleTime", ItemDrawable::cycleTime, ItemDrawable::cycleTime, Codec.INT, 1000)
             .build();
@@ -152,8 +152,8 @@ public class ItemDrawable implements IDrawable {
     }
 
     @Override
-    public String getTypeName() {
-        return "item";
+    public DrawableType<ItemDrawable> getType() {
+        return DrawableType.ITEM;
     }
 
     @Override

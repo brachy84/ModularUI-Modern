@@ -20,7 +20,7 @@ import lombok.Getter;
  */
 public class Icon implements IIcon {
 
-    public static final MutableObjectCodec<Icon> CODEC = MutableObjectCodec.drawableBuilder(Icon::new)
+    public static final MutableObjectCodec<Icon> CODEC = MutableObjectCodec.builder(Icon::new)
             .add("drawable", Icon::drawable, Icon::getDrawable, IDrawable.CODEC)
             .addOpt("width", Icon::width, Icon::getWidth, Codec.INT, 0)
             .addOpt("height", Icon::height, Icon::getHeight, Codec.INT, 0)
@@ -179,6 +179,11 @@ public class Icon implements IIcon {
             Box.CODEC.copyFields(box, this.margin);
         }
         return this;
+    }
+
+    @Override
+    public DrawableType<Icon> getType() {
+        return DrawableType.ICON;
     }
 
     @Override

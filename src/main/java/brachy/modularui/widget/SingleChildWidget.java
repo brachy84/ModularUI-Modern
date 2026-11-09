@@ -2,6 +2,8 @@ package brachy.modularui.widget;
 
 import brachy.modularui.api.widget.IWidget;
 
+import brachy.modularui.utils.serialization.codec.MutableObjectCodec;
+
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +13,12 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W> {
+
+    public static final MutableObjectCodec<SingleChildWidget<?>> CODEC = MutableObjectCodec.<SingleChildWidget<?>>builder()
+            .instance(SingleChildWidget::new)
+            .addFieldsOf(Widget.CODEC, w -> w)
+            .addOpt("child", SingleChildWidget::setChild, SingleChildWidget::getChild, IWidget.CODEC, null)
+            .build();
 
     @Getter
     private IWidget child;
@@ -23,6 +31,10 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
 
     private void updateList() {
         this.list = this.child == null ? Collections.emptyList() : Collections.singletonList(this.child);
+    }
+
+    private void setChild(IWidget child) {
+        child(child);
     }
 
     public W child(IWidget child) {
@@ -54,5 +66,18 @@ public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W>
     @Override
     public void visitTransformChildren(UnaryOperator<IWidget> op) {
         child(op.apply(this.child));
+    }
+
+    @Override
+    public boolean applyModification(WidgetModification modification, IWidget childTarget) {
+        if (modification.isRemove()) {
+            child(null);
+            return true;
+        }
+        if (modification.isReplace()) {
+            child(modification.widget().copy());
+            return true;
+        }
+        return false;
     }
 }

@@ -49,7 +49,7 @@ public interface IPositioned<W extends IPositioned<W>> {
      * @see #coverChildrenWidth(int)
      */
     default W coverChildrenWidth() {
-        return coverChildrenWidth(8);
+        return coverChildrenWidth(-1);
     }
 
     /**
@@ -58,7 +58,7 @@ public interface IPositioned<W extends IPositioned<W>> {
      * @see #coverChildrenHeight(int)
      */
     default W coverChildrenHeight() {
-        return coverChildrenHeight(8);
+        return coverChildrenHeight(-1);
     }
 
     /**
