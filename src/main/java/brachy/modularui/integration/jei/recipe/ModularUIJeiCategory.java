@@ -165,9 +165,6 @@ public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
     public IWidget createRecipeSlotForWidget(IRecipeLayoutBuilder builder, IWidget widget, T recipe, IFocusGroup focuses, MutableInt index) {
         if (!(widget instanceof JeiRecipeViewerSlot recipeViewerSlot)) return widget;
 
-        recipeViewerSlot.setRecipeCategory(this);
-        recipeViewerSlot.setRecipe(recipe);
-        recipeViewerSlot.setFocuses(focuses);
         if (recipeViewerSlot.getName() == null) {
             recipeViewerSlot.name("jei_slot_" + index.getAndIncrement());
         }
