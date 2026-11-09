@@ -27,7 +27,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import org.jetbrains.annotations.ApiStatus;
@@ -49,8 +48,6 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
 
     @Setter private IRecipeCategory<T> recipeCategory;
     @Setter private T recipe;
-
-    @Setter private IIngredientManager ingredientManager;
 
     public JeiRecipeViewerSlot(Class<I> ingredientClass) {
         super(ingredientClass);
@@ -112,14 +109,11 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
 
     // Mostly copied from RecipeSlotBuilder#build
     private void replaceSlotIngredients(RecipeSlotAccessor recipeSlot, RecipeIngredientRole ingredientRole) {
-        if (this.ingredientManager == null) {
-            if (ModularUIJeiPlugin.jeiHelpers == null) {
-                return;
-            }
-            this.ingredientManager = ModularUIJeiPlugin.jeiHelpers.getIngredientManager();
+        if (ModularUIJeiPlugin.jeiHelpers == null) {
+            return;
         }
 
-        final DisplayIngredientAcceptor ingredients = new DisplayIngredientAcceptor(this.ingredientManager);
+        final DisplayIngredientAcceptor ingredients = new DisplayIngredientAcceptor(ModularUIJeiPlugin.jeiHelpers.getIngredientManager());
         ingredients.addIngredientsUnsafe(this.entries.getStacks().stream()
                 .map(this.renderMappingFunction)
                 .toList());
