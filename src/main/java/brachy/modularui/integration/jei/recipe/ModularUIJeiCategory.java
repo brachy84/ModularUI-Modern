@@ -4,7 +4,6 @@ import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IRichTextBuilder;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.core.mixins.jei.RecipeLayoutAccessor;
 import brachy.modularui.core.mixins.jei.RecipeLayoutBuilderAccessor;
 import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.integration.jei.JeiRecipeViewerSlot;
@@ -148,10 +147,6 @@ public abstract class ModularUIJeiCategory<T> implements IRecipeCategory<T> {
     @ApiStatus.OverrideOnly
     public IWidget transformWidget(IRecipeExtrasBuilder builder, IWidget widget) {
         if (!(widget instanceof JeiRecipeViewerSlot<?, ?> recipeViewerSlot)) return widget;
-
-        if (builder instanceof RecipeLayoutAccessor accessor) {
-            recipeViewerSlot.setCycler(accessor.modularui$getCycleTicker());
-        }
 
         String name = recipeViewerSlot.getName();
         assert name != null; // the slots should always have a name assigned in createRecipeSlotForWidget()

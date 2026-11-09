@@ -28,7 +28,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,7 +46,6 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
 
     @Getter private @Nullable IRecipeSlotDrawable slotWidget;
     @Setter private IFocusGroup focuses;
-    @Setter private ICycler cycler;
 
     @Setter private IRecipeCategory<T> recipeCategory;
     @Setter private T recipe;
@@ -99,8 +97,6 @@ public class JeiRecipeViewerSlot<I, T> extends RecipeViewerSlotWidget<I, JeiReci
         slotWidget.setPosition(1, 1);
 
         replaceSlotIngredients(recipeSlot, jeiIngredientRole);
-
-        recipeSlot.modularui$setCycler(this.cycler);
     }
 
     @ApiStatus.Internal
