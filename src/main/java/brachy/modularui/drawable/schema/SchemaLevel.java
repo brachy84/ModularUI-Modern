@@ -5,6 +5,7 @@ import brachy.modularui.utils.BlockPosUtil;
 import brachy.modularui.utils.sides.SidedAccessHelper;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,8 +34,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.entity.LevelCallback;
 import net.minecraft.world.level.entity.LevelEntityGetter;
@@ -56,7 +59,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3fc;
 
@@ -108,8 +110,8 @@ public class SchemaLevel extends Level implements ISchema {
                 true,
                 false,
                 0,
-                1000000);
-        this.biome = registryAccess.registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS);
+                SharedConstants.MAX_CHAINED_NEIGHBOR_UPDATES);
+        this.biome = registryAccess.registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.THE_VOID);
 
         // the argument named "size" is actually the default value.
         // We want all blocks to have max light, so we create a pre-filled light data layer
@@ -219,46 +221,32 @@ public class SchemaLevel extends Level implements ISchema {
 
     @Override
     public BlockPos getOrigin() {
-        return min;
+        return this.min;
     }
-
-    protected @Nullable LevelChunk getExistingChunkAt(BlockPos pos) {
-        return chunkSource.getChunkIfPresent(SectionPos.blockToSectionCoord(pos.getX()),
-                SectionPos.blockToSectionCoord(pos.getZ()));
-    }
-
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (isOutsideBuildHeight(pos)) {
+        if (!isLoaded(pos)) {
+            // EmptyLevelChunk returns VOID_AIR so we do the same here
             return Blocks.VOID_AIR.defaultBlockState();
         }
-        LevelChunk chunk = getExistingChunkAt(pos);
-        return chunk == null ? Blocks.AIR.defaultBlockState() : chunk.getBlockState(pos);
+        return super.getBlockState(pos);
     }
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (isOutsideBuildHeight(pos)) {
+        if (!isLoaded(pos)) {
             return Fluids.EMPTY.defaultFluidState();
         }
-        LevelChunk chunk = getExistingChunkAt(pos);
-        return chunk == null ? Fluids.EMPTY.defaultFluidState() : chunk.getFluidState(pos);
+        return super.getFluidState(pos);
     }
 
     @Override
     public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
-        if (isOutsideBuildHeight(pos) || getExistingChunkAt(pos) == null) {
+        if (!isLoaded(pos)) {
             return null;
         }
         return super.getBlockEntity(pos);
-    }
-
-    @Override
-    public boolean isLoaded(BlockPos pos) {
-        int chunkX = SectionPos.blockToSectionCoord(pos.getX());
-        int chunkZ = SectionPos.blockToSectionCoord(pos.getZ());
-        return chunkSource.hasChunk(chunkX, chunkZ);
     }
 
     @Override
