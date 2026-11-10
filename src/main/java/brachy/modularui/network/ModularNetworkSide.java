@@ -82,32 +82,18 @@ public abstract class ModularNetworkSide {
     }
 
     @ApiStatus.Internal
-    public void sendSyncHandlerPacket(String panel, SyncHandler<?> syncHandler, IPacketWriter<? super RegistryFriendlyByteBuf> writer, Player player) {
+    public void sendSyncHandlerPacket(String panel, SyncHandler<?> syncHandler, RegistryFriendlyByteBuf packet, Player player) {
         ModularSyncManager msm = syncHandler.getSyncManager().getModularSyncManager();
         if (!inverseActiveScreens.containsKey(msm)) return;
         int id = inverseActiveScreens.getInt(msm);
-        sendPacket(new SyncHandlerPacket(id, panel, syncHandler.getKey(), false, snapshotWriter(writer)), player);
+        sendPacket(new SyncHandlerPacket(id, panel, syncHandler.getKey(), false, packet), player);
     }
 
     @ApiStatus.Internal
-    public void sendActionPacket(ModularSyncManager msm, String panel, String key,
-                                 IPacketWriter<? super RegistryFriendlyByteBuf> writer, Player player) {
+    public void sendActionPacket(ModularSyncManager msm, String panel, String key, RegistryFriendlyByteBuf packet, Player player) {
         if (!inverseActiveScreens.containsKey(msm)) return;
         int id = inverseActiveScreens.getInt(msm);
-        sendPacket(new SyncHandlerPacket(id, panel, key, true, snapshotWriter(writer)), player);
-    }
-
-    private IPacketWriter<? super RegistryFriendlyByteBuf> snapshotWriter(
-            IPacketWriter<? super RegistryFriendlyByteBuf> writer) {
-        RegistryFriendlyByteBuf buffer = SidedAccessHelper.makeRegistryByteBuf(Unpooled.buffer());
-        try {
-            writer.write(buffer);
-            byte[] payload = new byte[buffer.readableBytes()];
-            buffer.getBytes(buffer.readerIndex(), payload);
-            return target -> target.writeBytes(payload);
-        } finally {
-            buffer.release();
-        }
+        sendPacket(new SyncHandlerPacket(id, panel, key, true, packet), player);
     }
 
     @ApiStatus.Internal

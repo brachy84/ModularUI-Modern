@@ -1,38 +1,22 @@
 package brachy.modularui.network.packets;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.api.IPacketWriter;
-import brachy.modularui.core.extensions.IRegistryFriendlyByteBufExtension;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.utils.NetworkUtils;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import org.jetbrains.annotations.Nullable;
-
-public record SyncHandlerPacket(int networkId, String panel, String key, boolean action,
-                                @Nullable("null on the sending side") RegistryFriendlyByteBuf packet,
-                                @Nullable("null on the receiving side") IPacketWriter<? super RegistryFriendlyByteBuf> packetWriter)
+public record SyncHandlerPacket(int networkId, String panel, String key, boolean action, RegistryFriendlyByteBuf packet)
         implements CustomPacketPayload {
 
     public static final ResourceLocation ID = ModularUI.id("sync_message");
     public static final Type<SyncHandlerPacket> TYPE = new Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncHandlerPacket> CODEC = StreamCodec
             .ofMember(SyncHandlerPacket::encode, SyncHandlerPacket::decode);
-
-    public SyncHandlerPacket(int networkId, String panel, String key, boolean action,
-                             IPacketWriter<? super RegistryFriendlyByteBuf> packetWriter) {
-        this(networkId, panel, key, action, null, packetWriter);
-    }
-
-    public SyncHandlerPacket(int networkId, String panel, String key, boolean action, RegistryFriendlyByteBuf packet) {
-        this(networkId, panel, key, action, packet, null);
-    }
 
     public static SyncHandlerPacket decode(RegistryFriendlyByteBuf buf) {
         int networkId = buf.readVarInt();
@@ -49,24 +33,11 @@ public record SyncHandlerPacket(int networkId, String panel, String key, boolean
         NetworkUtils.writeStringSafe(buf, this.panel);
         NetworkUtils.writeStringSafe(buf, this.key, 64, true);
         buf.writeBoolean(this.action);
-        NetworkUtils.writeByteBuf(buf, processPacketWriter(buf.registryAccess()));
-    }
-
-    private RegistryFriendlyByteBuf processPacketWriter(RegistryAccess registryAccess) {
-        if (this.packet != null) {
-            return packet;
-        } else {
-            RegistryFriendlyByteBuf buffer = IRegistryFriendlyByteBufExtension.createEmpty(registryAccess);
-            if (this.packetWriter != null) {
-                this.packetWriter.write(buffer);
-            }
-            return buffer;
-        }
+        NetworkUtils.writeByteBuf(buf, this.packet);
     }
 
     public void execute(IPayloadContext context) {
-        ModularNetwork.get(context.flow().isClientbound())
-                .receivePacket(context.player(), this);
+        ModularNetwork.get(context.flow().isClientbound()).receivePacket(context.player(), this);
     }
 
     @Override
