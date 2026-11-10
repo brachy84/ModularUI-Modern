@@ -1,6 +1,7 @@
 package brachy.modularui.utils.sides;
 
 import brachy.modularui.ModularUI;
+import brachy.modularui.utils.RegistryAccessContainer;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -19,10 +20,13 @@ public final class SidedAccessHelper {
 
     public static RegistryAccess getRegistries() {
         if (ModularUI.isClientThread()) {
-            return ClientCallWrapper.getClientRegistries();
+            RegistryAccess registries = ClientCallWrapper.getClientRegistries();
+            if (registries != null) return registries;
         } else {
-            return getServer().registryAccess();
+            MinecraftServer server = getServer();
+            if (server != null) return server.registryAccess();
         }
+        return RegistryAccessContainer.current();
     }
 
     public static RecipeManager getRecipeManager() {
