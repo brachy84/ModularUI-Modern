@@ -1,7 +1,6 @@
 package brachy.modularui.value.sync;
 
 import brachy.modularui.ModularUI;
-import brachy.modularui.api.IPacketWriter;
 import brachy.modularui.api.IPanelHandler;
 import brachy.modularui.api.ISyncedAction;
 import brachy.modularui.network.ModularNetwork;
@@ -165,12 +164,6 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
         return syncedAction.isExecute(!this.client);
     }
 
-    private boolean invokeSyncedAction(String mapKey, IPacketWriter<? super RegistryFriendlyByteBuf> writer) {
-        RegistryFriendlyByteBuf buf = SidedAccessHelper.makeRegistryByteBuf(Unpooled.buffer());
-        writer.write(buf);
-        return invokeSyncedAction(mapKey, buf);
-    }
-
     public ItemStack getCursorItem() {
         return getModularSyncManager().getCursorItem();
     }
@@ -317,14 +310,14 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
         return this;
     }
 
-    public void callSyncedAction(String mapKey, IPacketWriter<? super RegistryFriendlyByteBuf> writer) {
-        if (invokeSyncedAction(mapKey, writer)) {
-            ModularNetwork.get(isClient()).sendActionPacket(getModularSyncManager(), this.panelName, mapKey, writer, getPlayer());
+    public void callSyncedAction(String mapKey, RegistryFriendlyByteBuf packet) {
+        if (invokeSyncedAction(mapKey, packet)) {
+            ModularNetwork.get(isClient()).sendActionPacket(getModularSyncManager(), this.panelName, mapKey, packet, getPlayer());
         }
     }
 
     public void callSyncedAction(String mapKey) {
-        callSyncedAction(mapKey, buf -> {});
+        callSyncedAction(mapKey, SidedAccessHelper.makeRegistryByteBuf(Unpooled.buffer(0)));
     }
 
     @Override
