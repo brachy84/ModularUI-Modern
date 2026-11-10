@@ -31,6 +31,8 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -42,6 +44,8 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.Vec3;
@@ -219,6 +223,38 @@ public class SchemaLevel extends Level implements ISchema {
     @Override
     public BlockPos getOrigin() {
         return min;
+    }
+
+    protected @Nullable LevelChunk getExistingChunkAt(BlockPos pos) {
+        return chunkSource.getChunkIfPresent(SectionPos.blockToSectionCoord(pos.getX()),
+                SectionPos.blockToSectionCoord(pos.getZ()));
+    }
+
+
+    @Override
+    public BlockState getBlockState(BlockPos pos) {
+        if (isOutsideBuildHeight(pos)) {
+            return Blocks.VOID_AIR.defaultBlockState();
+        }
+        LevelChunk chunk = getExistingChunkAt(pos);
+        return chunk == null ? Blocks.AIR.defaultBlockState() : chunk.getBlockState(pos);
+    }
+
+    @Override
+    public FluidState getFluidState(BlockPos pos) {
+        if (isOutsideBuildHeight(pos)) {
+            return Fluids.EMPTY.defaultFluidState();
+        }
+        LevelChunk chunk = getExistingChunkAt(pos);
+        return chunk == null ? Fluids.EMPTY.defaultFluidState() : chunk.getFluidState(pos);
+    }
+
+    @Override
+    public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
+        if (isOutsideBuildHeight(pos) || getExistingChunkAt(pos) == null) {
+            return null;
+        }
+        return super.getBlockEntity(pos);
     }
 
     @Override

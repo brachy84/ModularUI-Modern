@@ -50,6 +50,10 @@ public class DummyChunkSource extends ChunkSource {
         return true;
     }
 
+    public @Nullable DummyChunk getChunkIfPresent(int chunkX, int chunkZ) {
+        return chunks.get(ChunkPos.asLong(chunkX, chunkZ));
+    }
+
     @Override
     public synchronized @Nullable ChunkAccess getChunk(int chunkX, int chunkZ, @NotNull ChunkStatus requiredStatus, boolean load) {
         ChunkPos pos = new ChunkPos(chunkX, chunkZ);
