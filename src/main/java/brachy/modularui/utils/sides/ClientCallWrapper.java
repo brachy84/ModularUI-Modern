@@ -1,9 +1,12 @@
 package brachy.modularui.utils.sides;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.RecipeManager;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Internal helper class acting as a safeguard for accessing client-only methods
@@ -12,8 +15,9 @@ import net.minecraft.world.item.crafting.RecipeManager;
 
     private ClientCallWrapper() {}
 
-    static RegistryAccess.Frozen getClientRegistries() {
-        return Minecraft.getInstance().getConnection().registryAccess();
+    static @Nullable RegistryAccess.Frozen getClientRegistries() {
+        ClientPacketListener connection = Minecraft.getInstance().getConnection();
+        return connection != null ? connection.registryAccess() : null;
     }
 
     static RecipeManager getClientRecipeManager() {

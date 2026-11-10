@@ -2,7 +2,6 @@ package brachy.modularui.drawable.schema;
 
 import brachy.modularui.ModularUI;
 import brachy.modularui.utils.BlockPosUtil;
-import brachy.modularui.utils.RegistryAccessContainer;
 import brachy.modularui.utils.sides.SidedAccessHelper;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -94,10 +93,8 @@ public class SchemaLevel extends Level implements ISchema {
     private final Holder<Biome> biome;
     private final DataLayer defaultDataLayer;
 
-    public static final SchemaLevel INSTANCE = new SchemaLevel();
-
     public SchemaLevel() {
-        this(RegistryAccessContainer.current());
+        this(SidedAccessHelper.getRegistries());
     }
 
     public SchemaLevel(RegistryAccess registryAccess) {

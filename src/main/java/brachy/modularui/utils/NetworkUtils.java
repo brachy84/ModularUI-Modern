@@ -7,6 +7,7 @@ import net.minecraft.network.VarInt;
 import net.minecraft.world.entity.player.Player;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 public class NetworkUtils {
 
     public static final Consumer<ByteBuf> EMPTY_PACKET = buffer -> {};
-    private static final int MAX_ENCODED = getMaxEncodedUtfLength(Short.MAX_VALUE);
+    private static final int MAX_ENCODED = ByteBufUtil.utf8MaxBytes(Short.MAX_VALUE);
 
     public static boolean isClient(Player player) {
         if (player == null) return ModularUI.isClientThread();
@@ -62,7 +63,7 @@ public class NetworkUtils {
         byte[] bytesTest = string.getBytes(StandardCharsets.UTF_8);
         byte[] bytes;
 
-        int maxEncoded = getMaxEncodedUtfLength(maxBytes);
+        int maxEncoded = ByteBufUtil.utf8MaxBytes(maxBytes);
         if (bytesTest.length > maxEncoded) {
             if (crash) {
                 throw new IllegalArgumentException("Max String size is " + maxEncoded + ", but found " +
@@ -79,6 +80,7 @@ public class NetworkUtils {
     }
 
     public static String readStringSafe(ByteBuf buffer) {
+
         int length = VarInt.read(buffer);
         if (length > MAX_ENCODED) {
             return null;
@@ -86,9 +88,5 @@ public class NetworkUtils {
         String s = buffer.toString(buffer.readerIndex(), length, StandardCharsets.UTF_8);
         buffer.readerIndex(buffer.readerIndex() + length);
         return s;
-    }
-
-    private static int getMaxEncodedUtfLength(int maxLength) {
-        return maxLength * 3;
     }
 }
