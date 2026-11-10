@@ -1,4 +1,4 @@
-package brachy.modularui.core.mixins.common;
+package brachy.modularui.core.mixins.common.registries;
 
 import brachy.modularui.utils.RegistryAccessContainer;
 
