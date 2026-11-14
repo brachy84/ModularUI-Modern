@@ -14,7 +14,11 @@
         "client.StringSplitterAccessor",
         "emi.EmiRenderHelperMixin",
         "emi.RecipeScreenMixin",
-        "jei.IngredientListOverlayAccessor",
+        "jei.RecipeLayoutAccessor",
+        "jei.RecipeLayoutBuilderAccessor",
+        "jei.RecipeLayoutBuilderMixin",
+        "jei.RecipeLayoutMixin",
+        "jei.RecipeSlotAccessor",
         "rei.DefaultDisplayViewingScreenMixin",
         "rei.EntryWidgetAccessor"
     ],
@@ -28,13 +32,7 @@
         "common.ReloadableServerResourcesMixin",
         "common.ServerPlayerAccessor",
         "common.TextColorMixin",
-        "common.WorldLoaderMixin",
-        "jei.RecipeGuiLogicMixin",
-        "jei.RecipeLayoutAccessor",
-        "jei.RecipeLayoutBuilderAccessor",
-        "jei.RecipeLayoutBuilderMixin",
-        "jei.RecipeLayoutMixin",
-        "jei.RecipeSlotAccessor"
+        "common.WorldLoaderMixin"
     ],
     "injectors": {
         "defaultRequire": 1,

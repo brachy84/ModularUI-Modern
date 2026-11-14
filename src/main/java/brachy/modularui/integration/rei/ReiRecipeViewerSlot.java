@@ -64,7 +64,7 @@ public class ReiRecipeViewerSlot<I> extends RecipeViewerSlotWidget<I, ReiRecipeV
     @Override
     public void draw(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
         this.slotWidget.render(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
-        if (this.isHovering() && slotWidget instanceof EntryWidgetAccessor accessor){
+        if (this.isHovering() && slotWidget instanceof EntryWidgetAccessor accessor) {
             accessor.modularui$invokeDrawHighlighted(context.getGraphics(), context.getMouseX(), context.getMouseY(), context.getRenderPartialTicks());
         }
     }
